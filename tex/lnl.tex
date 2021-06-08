@@ -1,0 +1,32 @@
+We can express Benton's linear/non-linear logic~\cite{Benton94} in the
+framework.
+There are two apparent discrepancies between L/nL and what we have seen so far
+to be expressible in the framework: the existence of multiple judgement modes
+and the restriction on the kinds of assumptions based on the mode.
+We will start by addressing these discrepancies, before presenting the encoding
+in full and proving the resulting system logically equivalent to
+$\lambda\gr{\mathcal R}$.
+
+\subsection{Encoding L/nL}
+
+In L/nL, we have a \emph{linear} and an \emph{intuitionistic} mode, with
+separate types (respectively $A$ and $X$) and typing judgements (respectively
+$\vdash_{\mathcal L}$ and $\vdash_{\mathcal C}$) connected by modalities $F$ and
+$G$.
+The mode of the conclusion type is the same as the mode of the judgement, so
+only a distinction in the conclusion mode is necessary.
+To achieve this distinction in the types, we have an indexed type family
+$\mathrm{Ty} : \mathrm{Frag} \to \mathrm{Set}$, and set the framework types to
+be the type $(f : \mathrm{Frag}) \times \mathrm{Ty}\,f$.
+% \AgdaDatatype{Ty}\AgdaSymbol{:}\AgdaDatatype{Frag}\AgdaSymbol{$\to$}
+% \AgdaDatatype{Set}
+
+In L/nL, while linear judgements can have both linear and intuitionistic
+assumptions, intuitionistic judgements can only have intuitionistic assumptions.
+We encode this invariant on intuitionistic judgements using the $\Box$
+premise combinator on all intuitionistic conclusions and wherever
+intuitionistic premises occur for linear conclusions.
+
+\subsection{Translating between L/nL and $\lambda\gr{\mathcal R}$}
+
+The translations largely follow Benton's originals.
