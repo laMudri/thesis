@@ -2,11 +2,11 @@
 let
   tex-env = texlive.combine {
     inherit (texlive) scheme-small latexmk beamer stmaryrd mathpartir rsfs
-                      cmll xcolor paralist makecell tikz-cd ncctools thmtools
-                      xifthen ifmtarg polytable etoolbox environ xkeyval
-                      lazylist trimspaces
-                      multirow enumitem changepage draftwatermark everypage
-                      titling;
+      cmll xcolor paralist makecell tikz-cd ncctools thmtools
+      xifthen ifmtarg polytable etoolbox environ xkeyval
+      lazylist trimspaces newunicodechar catchfilebetweentags catchfile
+      multirow enumitem changepage draftwatermark everypage
+      titling todonotes;
   };
 in stdenv.mkDerivation {
   name = "thesis";

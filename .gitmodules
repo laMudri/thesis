@@ -1,0 +1,3 @@
+[submodule "generic-lr"]
+	path = generic-lr
+	url = git@github.com:laMudri/generic-lr.git
