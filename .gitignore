@@ -16,6 +16,8 @@ src/latex/
 *.snm
 *.toc
 *.ptb
+*.lof
+*.lot
 
 *.auctex-auto
 
