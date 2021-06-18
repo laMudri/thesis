@@ -1,0 +1,107 @@
+In a seminal paper~\cite{Gentzen64}, Gerhard Gentzen introduces two syntactic
+paradigms which remain among the most studied to this day.
+These paradigms are \emph{natural deduction} and \emph{sequent calculus}, as
+exemplified by natural deduction calculi NJ and NK, and sequent calculi LJ and
+LK.
+Restricting attention to just the intuitionistic systems NJ and LJ, these
+actually differ in two orthogonal ways, which I shall prise apart in this
+section.
+The simpler distinction is that the logical rules in NJ are introduction and
+elimination rules, whereas the logical rules in LJ are left and right rules.
+But the more important distinction for this thesis is that where NJ has
+assumptions, LJ has sequents explictly manipulated by structural rules.
+I take the latter distinction to define natural deduction and sequent calculus,
+and wherever I need to make the former distinction I shall speak of
+\emph{intro-elim systems} and \emph{left-right systems}.
+
+I will use the rest of this section as follows.
+First, I introduce NJ and LJ, and some of their basic metatheory.
+Then, I will give examples of systems intermediate between Gentzen's natural
+deduction and sequent calculi: a left-right natural deduction calculus
+$\mu\tilde\mu$, and an intro-elim sequent calculus DILL\@.
+Both of these examples will reappear in later chapters.
+
+\subsection{Intro-elim natural deduction: NJ}
+
+\subsection{Left-right sequent calculus: LJ}
+
+\subsection{Left-right natural deduction: $\mu\tilde\mu$}
+The $\mu\tilde\mu$-calculus~\cite{CH00} (also known as
+$\overline\lambda\mu\tilde\mu$ or system L, and closely related to Wadler's
+dual calculus~\cite{Wadler03}) can be seen as an adaptation of natural deduction
+to classical logic.
+Though originally presented as a sequent calculus, the underlying natural
+deduction calculus was later given by Herbelin~\cite[p.\ 12]{Herbelin-hab}, and
+I will follow the latter.
+While Gentzen gave a natural deduction calculus NK for classical logic, NK
+relies on adding the \emph{axiom} of excluded middle.
+As axioms are not systematic parts of the calculus, they can hinder or break
+metatheoretic properties like normalisation.
+In contrast, the $\mu\tilde\mu$-calculus allows us to \emph{derive} excluded
+middle from entirely systematic components.
+
+In NJ, a derivation of $A$ from assumptions $\Gamma$ tells us that if each
+formula in $\Gamma$ is \emph{true}, then $A$ is also \emph{true}.
+The $\mu\tilde\mu$-calculus generalises the picture by allowing us to have
+both \emph{true} and \emph{false} assumptions, and allowing us to conclude that
+some $A$ is \emph{true}, that some $A$ is \emph{false}, or that we have reached
+a contradiction.
+% A similar judgement of contradiction appears in Prawitz' classical natural
+% deduction calculus~\cite{Prawitz65}.
+Following Herbelin, we notate the judgement that $A$ is true as ${}\vdash A$,
+that $A$ is false as $A \vdash{}$, and of contradiction as $\vdash$.
+The only way to derive a contradiction is to find some $A$ such that
+${}\vdash A$ and $A \vdash{}$.
+Meanwhile, we can derive ${}\vdash A$ by assuming $A \vdash{}$ and deriving
+$\vdash$, i.e., we can prove $A$ by assuming that $A$ is false and deriving a
+contradiction.
+Dually, we can derive $A \vdash{}$ by assuming ${}\vdash A$ and deriving
+$\vdash$.
+These three methods of derivation are encoded in the following rules.
+
+\begin{mathpar}
+  \inferrule*[right=Cut]
+  {{}\vdash A \\ A \vdash{}}
+  {\vdash}
+
+  \and
+
+  \inferrule*[right=$\mu$]
+  {
+    [A \vdash{}] \\\\ \vdots \\\\ \vdash
+    %\inferrule*[fraction={~~~}]
+    %{[A \vdash{}] \\\\ \vdots}
+    %{\vdash}
+  }
+  {{}\vdash A}
+
+  \and
+
+  \inferrule*[right=$\tilde\mu$]
+  {[{}\vdash A] \\\\ \vdots \\\\ \vdash}
+  {A \vdash{}}
+\end{mathpar}
+
+The rules for logical connectives describe how to \emph{prove} and how to
+\emph{refute} a formula whose principal connective is that connective.
+These correspond strongly with the right and left rules, respectively, of LJ,
+and for this reason, $\mu\tilde\mu$ is usually described elsewhere as a
+sequent calculus.
+For example, we could choose the following rules for disjunction.
+To prove $A \vee B$, we can assume that both $A$ and $B$ are false, and derive
+a contradiction.
+To refute $A \vee B$, we can refute $A$ and $B$ separately.
+
+\begin{mathpar}
+  \inferrule*[right=$\vee$-r]
+  {[A \vdash{}][B \vdash{}] \\\\ \vdots \\\\ \vdash}
+  {{}\vdash A \vee B}
+
+  \and
+
+  \inferrule*[right=$\vee$-l]
+  {A \vdash{} \\ B \vdash{}}
+  {A \vee B \vdash{}}
+\end{mathpar}
+
+\subsection{Intro-elim sequent calculus: DILL}
