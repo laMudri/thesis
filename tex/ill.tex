@@ -1,0 +1,191 @@
+\subsection{Motivation of linearity}
+
+In LJ, two distinct, but equiderivable, canonical definitions of $\wedge$ can
+be given.
+
+In the first approach, $\wedge^-$ is conceived to be a
+\emph{categorial product}.
+Such a product is constructed by providing two maps in from the same antecedents
+$\Gamma$.
+It is used by projecting out one of the sides.
+
+\begin{mathpar}
+  \inferrule*[right=$\wedge^-$-r]
+  {\Gamma \vdash A \\ \Gamma \vdash B}
+  {\Gamma \vdash A \wedge^- B}
+
+  \and
+
+  \inferrule*[right=$\wedge^-$-l$_0$]
+  {\Gamma, A \vdash C}
+  {\Gamma, A \wedge^- B \vdash C}
+
+  \and
+
+  \inferrule*[right=$\wedge^-$-l$_1$]
+  {\Gamma, B \vdash C}
+  {\Gamma, A \wedge^- B \vdash C}
+\end{mathpar}
+
+In the second approach, $\wedge^+$ is conceived to be a \emph{tensor product}.
+Intuitively, $\wedge^+$ internalises the comma of context concatenation.
+Such a product is used by giving access to both sides simultaneously.
+It is constructed by constructing both sides and combining the antecedents
+required by each side.
+
+\begin{mathpar}
+  \inferrule*[right=$\wedge^+$-r]
+  {\Gamma \vdash A \\ \Delta \vdash B}
+  {\Gamma, \Delta \vdash A \wedge^+ B}
+
+  \and
+
+  \inferrule*[right=$\wedge^+$-l]
+  {\Gamma, A, B \vdash C}
+  {\Gamma, A \wedge^+ B \vdash C}
+\end{mathpar}
+
+When we prove the logical equivalence of these two formulations, we notice that
+the structural rules of weakening and contraction are essential.
+When we remove weakening and contraction, $\wedge^-$ and $\wedge^+$ become
+logically distinct connectives, which we notate $\&$ and $\otimes$,
+respectively.
+
+\begin{mathpar}
+  \inferrule*[right=$\wedge^-$-r]
+  {%
+    \inferrule*[right=Weak$^*$,fraction={\cdot\cdots\cdot}]
+    {\Gamma \vdash A}
+    {\Gamma, \Delta \vdash A}
+    \\
+    \inferrule*[Right=Weak$^*$,fraction={\cdot\cdots\cdot}]
+    {\Delta \vdash B}
+    {\Gamma, \Delta \vdash B}
+  }
+  {\Gamma, \Delta \vdash A \wedge^- B}
+
+  \and
+
+  \inferrule*[right=Contr]
+  {%
+    \inferrule*[Right=$\wedge^-$-l$_0$]
+    {%
+      \inferrule*[Right=$\wedge^-$-l$_1$]
+      {\Gamma, A, B \vdash C}
+      {\Gamma, A, A \wedge^- B \vdash C}
+    }
+    {\Gamma, A \wedge^- B, A \wedge^- B \vdash C}
+  }
+  {\Gamma, A \wedge^- B \vdash C}
+\end{mathpar}
+
+\begin{mathpar}
+  \inferrule*[right=Contr$^*$,fraction={\cdot\cdots\cdot}]
+  {%
+    \mprset{defaultfraction}
+    \inferrule*[Right=$\wedge^+$-r]
+    {\Gamma \vdash A \\ \Gamma \vdash B}
+    {\Gamma, \Gamma \vdash A \wedge^+ B}
+  }
+  {\Gamma \vdash A \wedge^+ B}
+
+  \and
+
+  \inferrule*[right=$\wedge^+$-l]
+  {%
+    \inferrule*[Right=Weak]
+    {\Gamma, A \vdash C}
+    {\Gamma, A, B \vdash C}
+  }
+  {\Gamma, A \wedge^+ B \vdash C}
+
+  \and
+
+  \inferrule*[right=$\wedge^+$-l]
+  {%
+    \inferrule*[Right=Weak]
+    {\Gamma, B \vdash C}
+    {\Gamma, A, B \vdash C}
+  }
+  {\Gamma, A \wedge^+ B \vdash C}
+\end{mathpar}
+
+\subsection{The $\oc$-modality}
+
+\begin{mathpar}
+  \inferrule*[right=Promotion]
+  {\oc\Gamma \vdash A}
+  {\oc\Gamma \vdash \oc A}
+
+  \and
+
+  \inferrule*[right=Dereliction]
+  {\Gamma, A \vdash B}
+  {\Gamma, \oc A \vdash B}
+
+  \and
+
+  \inferrule*[right=Weakening]
+  {\Gamma \vdash B}
+  {\Gamma, \oc A \vdash B}
+
+  \and
+
+  \inferrule*[right=Contraction]
+  {\Gamma, \oc A, \oc A \vdash B}
+  {\Gamma, \oc A \vdash B}
+\end{mathpar}
+
+In the intuitionistic linear logic sequent calculus ILL, $\oc A$ is defined
+to be a proposition whose occurrences as antecedents can be deleted
+(\TirName{Weakening}) and duplicated (\TirName{Contraction}), from which we can
+extract $A$ (\TirName{Dereliction}), and which we can form from a conclusion
+$A$ only when all antecedents are of the form $\oc X$ for some proposition $X$
+(\TirName{Promotion}).
+In short, $\oc A$ can be seen as an intuitionistic version of $A$, supporting
+all of the structural rules of LJ, and only being able to be formed when it
+does not depend on anything linear.
+
+While this definition of $\oc$ works, in the sense that it gives the intended
+class of models and cut elimination is maintained, it has some disadvantages.
+Firstly, while the multiplicative and additive connectives are all characterised
+by universal properties, $\oc$ is not.
+This can be seen by the fact that taking the rules for $\oc$ and replacing each
+occurrence of $\oc$ by a fresh connective $\oc'$ produces a logically distinct
+connective.
+One cannot produce any derivation of $\oc' A \vdash \oc A$ because
+\TirName{Promotion} does not apply when there are antecedents not of the form
+$\oc X$.
+Finally, while $\oc$ is supposed to be a positive connective, it sometimes
+behaves like a negative connective.
+For example, for a positive connective like $\otimes$, the normal form proof
+of the identity sequent $P \otimes Q \vdash P \otimes Q$ starts (from the
+bottom) with a left rule and then, with the left in a more amenable form,
+applies the right rule.
+In contrast, the normal form proof of $\oc P \vdash \oc P$ starts with the
+right rule, as it needs to have everything on the left be of the form $\oc X$.
+
+\begin{mathpar}
+  \inferrule*[right=$\otimes$-l]
+  {%
+    \inferrule*[Right=$\otimes$-r]
+    {%
+      \inferrule*[right=Id]{ }{P \vdash P} \\
+      \inferrule*[Right=Id]{ }{Q \vdash Q}
+    }
+    {P, Q \vdash P \otimes Q}
+  }
+  {P \otimes Q \vdash P \otimes Q}
+
+  \and
+
+  \inferrule*[right=Pro]
+  {%
+    \inferrule*[Right=Der]
+    {%
+      \inferrule*[Right=Id]{ }{P \vdash P}
+    }
+    {\oc P \vdash P}
+  }
+  {\oc P \vdash \oc P}
+\end{mathpar}
