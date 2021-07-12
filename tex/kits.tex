@@ -1,0 +1,140 @@
+\def\prefix{../agda/latex}
+\CatchFileBetweenTags{\Var}{\prefix/SimpleKits.tex}{Var}
+\CatchFileBetweenTags{\Term}{\prefix/SimpleKits.tex}{Term}
+\CatchFileBetweenTags{\Ren}{\prefix/SimpleKits.tex}{Ren}
+\CatchFileBetweenTags{\bindRen}{\prefix/SimpleKits.tex}{bindRen}
+\CatchFileBetweenTags{\rename}{\prefix/SimpleKits.tex}{rename}
+\CatchFileBetweenTags{\leftTerm}{\prefix/SimpleKits.tex}{leftTerm}
+\CatchFileBetweenTags{\Sub}{\prefix/SimpleKits.tex}{Sub}
+\CatchFileBetweenTags{\bindSub}{\prefix/SimpleKits.tex}{bindSub}
+\CatchFileBetweenTags{\substitute}{\prefix/SimpleKits.tex}{substitute}
+\CatchFileBetweenTags{\Env}{\prefix/SimpleKits.tex}{Env}
+\CatchFileBetweenTags{\RenSub}{\prefix/SimpleKits.tex}{RenSub}
+\CatchFileBetweenTags{\Kit}{\prefix/SimpleKits.tex}{Kit}
+\CatchFileBetweenTags{\trav}{\prefix/SimpleKits.tex}{trav}
+\CatchFileBetweenTags{\renKit}{\prefix/SimpleKits.tex}{renKit}
+\CatchFileBetweenTags{\subKit}{\prefix/SimpleKits.tex}{subKit}
+
+\CatchFileBetweenTags{\RenGD}{\prefix/SimpleKits.tex}{RenGD}
+\CatchFileBetweenTags{\RenGADA}{\prefix/SimpleKits.tex}{RenGADA}
+\CatchFileBetweenTags{\GTh}{\prefix/SimpleKits.tex}{GTh}
+\CatchFileBetweenTags{\DTh}{\prefix/SimpleKits.tex}{DTh}
+\CatchFileBetweenTags{\GD}{\prefix/SimpleKits.tex}{GD}
+
+\subsection{Simultaneous renaming and simultaneous substitution}
+
+A simultaneous renaming from $\Gamma$ to $\Delta$ is a type-preserving map from
+variables in $\Delta$ to \emph{variables} in $\Gamma$, while a simultaneous
+substitution is a map into \emph{terms} in $\Gamma$.
+While simultaneous substitution gives us a notion of one context being
+\emph{derivable} from another, simultaneous renaming gives a similar notion
+of derivability restricted to structural rules.
+
+\begin{mathpar}
+  \inferrule*[right=Subst]
+  {%
+    \inferrule*[right=$\to$-E]
+    {%
+      \inferrule*[right=Var]{~}{A \to B, A \vdash A \to B}
+      \\
+      \inferrule*[Right=Var]{~}{A \to B, A \vdash A}
+    }
+    {A \to B, A \vdash B}
+    \\
+    B \vdash C
+  }
+  {A \to B, A \vdash C}
+\end{mathpar}
+
+\begin{displaymath}
+  \begin{prooftree}
+    \infer0[Var]{A \to B, A \vdash A \to B}
+    \infer0[Var]{A \to B, A \vdash A}
+    \infer2[$\to$-E]{A \to B, A \vdash B}
+    \hypo{B \vdash C}
+    \infer2[Subst]{A \to B, A \vdash C}
+  \end{prooftree}
+\end{displaymath}
+
+\subsection{Proofs of renaming and substitution}
+
+We start with a data type \AgdaDatatype{\_⊢\_} of intrinsically simply typed
+terms.
+Beside base types, the only type former we have is the function type constructor
+\AgdaInductiveConstructor{\_`→\_}.
+Contexts (of type \AgdaRecord{Ctx}) are implemented as the free magma on types
+(\AgdaDatatype{Ty}).
+Context concatenation is \AgdaFunction{\_++ᶜ\_}, and \AgdaFunction{[\_]ᶜ}
+embeds types into contexts.
+Typed variables in a context are given by \AgdaRecord{\_∋\_}.
+A variable in
+\AgdaBound{$\Gamma$}\AgdaSpace{}\AgdaRecord{$\ni$}\AgdaSpace{}\AgdaBound{A}
+is given by a path \AgdaField{idx} to a type in \AgdaBound{$\Gamma$}, together
+with a proof \AgdaField{tyq} that this type is equal to \AgdaBound{A}.
+Variables embed into terms via the \AgdaInductiveConstructor{var} constructor.
+
+\Var{}
+\Term{}
+
+For this syntax, a renaming from \AgdaBound{$\Gamma$} to \AgdaBound{$\Delta$}
+is a map from variables in \AgdaBound{$\Delta$} to variables in
+\AgdaBound{$\Gamma$}.
+Substitutions instead map into terms in \AgdaBound{$\Gamma$}.
+
+\Ren{}
+\Sub{}
+
+In the following, \AgdaFunction{ren} gives the action of a renaming on terms.
+We replace variables by new variables given by the renaming \AgdaBound{$\rho$}.
+For applications, we rename each subterm using the same renaming.
+For $\lambda$-abstractions, we want to rename the body, but the renaming we
+have has type \RenGD{}, whereas the renaming we need is of type \RenGADA{}.
+To make up the difference, we introduce the \AgdaFunction{bindRen} lemma,
+saying that any renaming can be extended to the right by a context
+\AgdaBound{$\Theta$}~\footnote{%
+  We only require extension to the right because our syntax only has binding
+  on the right.
+  We could also extend on the left.
+}.
+To produce such an extended renaming, we receive a variable in \DTh{}, with the
+two cases being that this variable is either in \AgdaBound{$\Delta$} or
+\AgdaBound{$\Theta$}.
+In the first case, we can use the original renaming \AgdaBound{$\rho$} to get
+a variable in \AgdaBound{$\Gamma$}, which can be extended in the obvious way
+to a variable in \GTh{}.
+In the second case, we have a variable in \AgdaBound{$\Theta$}, and just need
+to extend it to be a variable in \GTh{}.
+
+\bindRen{}
+\rename{}
+
+We use renaming to show that, like variables, we can extend the context of terms
+to the right.
+The operation below renames a term by replacing all variables with variables
+pointing to the left of the term's new context \GD{}.
+
+\leftTerm{}
+
+The action of a substitution on a term is given below.
+The structure is very similar to that of renaming.
+The differences are the following:
+
+\begin{itemize}
+  \item A substitution gives us terms, rather than variables.
+        This means that when we use the substitution on a variable, we already
+        have a term, and don't need to do any embedding into terms.
+  \item When dealing with newly bound variables in \AgdaFunction{bindSub}, we
+        need to produce terms, so we embed the newly bound variables into terms
+        using \AgdaInductiveConstructor{var}.
+  \item We use \AgdaFunction{$\swarrow^t$} instead of
+        \AgdaFunction{$\swarrow^v$}, because we are dealing with terms rather
+        than variables.
+\end{itemize}
+
+\bindSub{}
+\substitute{}
+
+\subsection{Kits}
+
+To abstract over the similarities between renaming and substitution, we can use
+\emph{kits} as introduced by McBride~\cite{McBride05,BHKM12}.

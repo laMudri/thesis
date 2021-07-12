@@ -6,7 +6,7 @@ let
       xifthen ifmtarg polytable etoolbox environ xkeyval
       lazylist trimspaces newunicodechar catchfilebetweentags catchfile
       multirow enumitem changepage draftwatermark everypage
-      titling todonotes;
+      titling todonotes ebproof;
   };
 in stdenv.mkDerivation {
   name = "thesis";

@@ -1,0 +1,223 @@
+\begin{code}
+{-# OPTIONS --safe --without-K --postfix-projections #-}
+module SimpleKits where
+
+open import Data.LTree
+open import Data.LTree.Vector
+open import Data.Product
+open import Function.Base using (id)
+open import Relation.Binary.PropositionalEquality hiding ([_])
+
+infix 4 _∋_ _⊢_
+infixr 5 _`→_
+infix 5 _++ᶜ_
+
+data Ty : Set where
+  ι : Ty
+  _`→_ : (A B : Ty) → Ty
+
+record Ctx : Set where
+  constructor ctx
+  field
+    {shape} : LTree
+    ty-ctx : Vector Ty shape
+open Ctx public
+
+[_]ᶜ : Ty → Ctx
+[ A ]ᶜ = ctx [ A ]
+[]ᶜ : Ctx
+[]ᶜ = ctx []
+_++ᶜ_ : (Γ Δ : Ctx) → Ctx
+ctx γ ++ᶜ ctx δ = ctx (γ ++ δ)
+\end{code}
+
+%<*Var>
+\begin{code}
+record _∋_ (Γ : Ctx) (A : Ty) : Set where
+  constructor el
+  field
+    idx : Ptr (Γ .shape)
+    tyq : Γ .ty-ctx idx ≡ A
+open _∋_ public
+\end{code}
+%</Var>
+
+\begin{code}
+hereᵛ : ∀ {A} → [ A ]ᶜ ∋ A
+hereᵛ = el here refl
+↙ᵛ : ∀ {Γ Δ A} → Γ ∋ A → Γ ++ᶜ Δ ∋ A
+↙ᵛ (el i q) = el (↙ i) q
+↘ᵛ : ∀ {Γ Δ A} → Δ ∋ A → Γ ++ᶜ Δ ∋ A
+↘ᵛ (el i q) = el (↘ i) q
+\end{code}
+
+%<*Term>
+\begin{code}
+data _⊢_ (Γ : Ctx) : Ty → Set where
+  var : ∀ {A} → Γ ∋ A → Γ ⊢ A
+  app : ∀ {A B} → Γ ⊢ A `→ B → Γ ⊢ A → Γ ⊢ B
+  lam : ∀ {A B} → Γ ++ᶜ [ A ]ᶜ ⊢ B → Γ ⊢ A `→ B
+\end{code}
+%</Term>
+
+\begin{code}
+module Basic where
+\end{code}
+
+%<*Ren>
+\begin{code}
+  Ren : (Γ Δ : Ctx) → Set
+  Ren Γ Δ = ∀ {A} → Δ ∋ A → Γ ∋ A
+\end{code}
+%</Ren>
+
+%<*bindRen>
+\begin{code}
+  bindRen : ∀ {Γ Δ Θ} → Ren Γ Δ → Ren (Γ ++ᶜ Θ) (Δ ++ᶜ Θ)
+  bindRen ρ (el (↙ i) q) = ↙ᵛ (ρ (el i q))
+  bindRen ρ (el (↘ i) q) = el (↘ i) q
+\end{code}
+%</bindRen>
+
+%<*rename>
+\begin{code}
+  ren : ∀ {Γ Δ A} → Ren Γ Δ → Δ ⊢ A → Γ ⊢ A
+  ren ρ (var x) = var (ρ x)
+  ren ρ (app M N) = app (ren ρ M) (ren ρ N)
+  ren ρ (lam M) = lam (ren (bindRen ρ) M)
+\end{code}
+%</rename>
+
+%<*leftTerm>
+\begin{code}
+  ↙ᵗ : ∀ {Γ Δ A} → Γ ⊢ A → Γ ++ᶜ Δ ⊢ A
+  ↙ᵗ = ren ↙ᵛ
+\end{code}
+%</leftTerm>
+
+%<*Sub>
+\begin{code}
+  Sub : (Γ Δ : Ctx) → Set
+  Sub Γ Δ = ∀ {A} → Δ ∋ A → Γ ⊢ A
+\end{code}
+%</Sub>
+
+%<*bindSub>
+\begin{code}
+  bindSub : ∀ {Γ Δ Θ} → Sub Γ Δ → Sub (Γ ++ᶜ Θ) (Δ ++ᶜ Θ)
+  bindSub ρ (el (↙ i) q) = ↙ᵗ (ρ (el i q))
+  bindSub ρ (el (↘ i) q) = var (el (↘ i) q)
+\end{code}
+%</bindSub>
+
+%<*substitute>
+\begin{code}
+  sub : ∀ {Γ Δ A} → Sub Γ Δ → Δ ⊢ A → Γ ⊢ A
+  sub ρ (var x) = ρ x
+  sub ρ (app M N) = app (sub ρ M) (sub ρ N)
+  sub ρ (lam M) = lam (sub (bindSub ρ) M)
+\end{code}
+%</substitute>
+
+\begin{code}
+  module Inline (Γ Δ Θ : Ctx) (A : Ty) where
+
+    stuff =
+\end{code}
+%<*RenGD>
+\begin{code}[inline]
+      Ren Γ Δ
+\end{code}
+%</RenGD>
+\begin{code}
+      ,′
+\end{code}
+%<*RenGADA>
+\begin{code}[inline]
+      Ren (Γ ++ᶜ [ A ]ᶜ) (Δ ++ᶜ [ A ]ᶜ)
+\end{code}
+%</RenGADA>
+\begin{code}
+      ,′
+\end{code}
+%<*GD>
+\begin{code}[inline]
+      Γ ++ᶜ Δ
+\end{code}
+%</GD>
+\begin{code}
+      ,′
+\end{code}
+%<*GTh>
+\begin{code}[inline]
+      Γ ++ᶜ Θ
+\end{code}
+%</GTh>
+\begin{code}
+      ,′
+\end{code}
+%<*DTh>
+\begin{code}[inline]
+      Δ ++ᶜ Θ
+\end{code}
+%</DTh>
+
+\begin{code}
+module Kits where
+\end{code}
+
+%<*Env>
+\begin{code}
+  Env : (K : Ctx → Ty → Set) (Γ Δ : Ctx) → Set
+  Env K Γ Δ = ∀ {A} → Δ ∋ A → K Γ A
+\end{code}
+%</Env>
+
+%<*RenSub>
+\begin{code}
+  Ren = Env _∋_
+  Sub = Env _⊢_
+\end{code}
+%</RenSub>
+
+%<*Kit>
+\begin{code}
+  record Kit (K : Ctx → Ty → Set) : Set where
+    constructor kit
+    field
+      ↙ᵏ : ∀ {Γ Δ A} → K Γ A → K (Γ ++ᶜ Δ) A
+      vr : ∀ {Γ A} → Γ ∋ A → K Γ A
+      tm : ∀ {Γ A} → K Γ A → Γ ⊢ A
+\end{code}
+%</Kit>
+
+%<*trav>
+\begin{code}
+    bindEnv : ∀ {Γ Δ Θ} → Env K Γ Δ → Env K (Γ ++ᶜ Θ) (Δ ++ᶜ Θ)
+    bindEnv ρ (el (↙ i) q) = ↙ᵏ (ρ (el i q))
+    bindEnv ρ (el (↘ i) q) = vr (el (↘ i) q)
+
+    trav : ∀ {Γ Δ A} → Env K Γ Δ → Δ ⊢ A → Γ ⊢ A
+    trav ρ (var x) = tm (ρ x)
+    trav ρ (app M N) = app (trav ρ M) (trav ρ N)
+    trav ρ (lam M) = lam (trav (bindEnv ρ) M)
+\end{code}
+%</trav>
+
+%<*renKit>
+\begin{code}
+  ∋-kit : Kit _∋_
+  ∋-kit = kit ↙ᵛ id var
+
+  ren = Kit.trav ∋-kit
+\end{code}
+%</renKit>
+
+%<*subKit>
+\begin{code}
+  ⊢-kit : Kit _⊢_
+  ⊢-kit = kit (ren ↙ᵛ) var id
+
+  sub = Kit.trav ⊢-kit
+\end{code}
+%</subKit>

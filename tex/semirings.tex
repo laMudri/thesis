@@ -1,0 +1,184 @@
+Addition gives the structural rules.
+Multiplication gives modalities.
+
+Compare with other work.
+About here, I can talk about Granule-style $\otimes$-pattern matching.
+
+\subsection{Partiality (or not)} \todo{Appendix?}
+
+As we have seen \todo{Have we?}, the way additive and multiplicative rules are
+realised algebraically is related to models of separation logic.
+Models of separation logic typically use \emph{partial} commutative monoids to
+model a heap, so it is tempting to generalise the commutative monoid of
+addition in our semirings to a \emph{partial} commutative monoid.
+However, we find that the most natural notion of \emph{partial semiring} is
+degenerate, in that all partial semirings are actually (total) semirings.
+
+Recall that a commutative monoid (or commutative monoid object) can be
+defined in any symmetric monoidal category.
+A partial commutative monoid is exactly a commutative monoid object in the
+category of sets and partial functions with the usual monoidal product
+\todo{Define this monoidal product somewhere.}.
+However, semirings need a Cartesian category in order to state the interaction
+equations between addition and multiplication.
+While the category of sets and partial functions is not Cartesian, the
+standard way to manufacture a Cartesian category out of a symmetric monoidal
+category $\mathcal C$ is to take the category of cocommutative comonoids
+$\mathrm{CComon}(\mathcal C)$.
+Intuitively, the cocommutative comonoid structure equips the underlying
+object $M$ with a \emph{delete} map $\eta : M \to I$ and a \emph{duplicate}
+map $\delta : M \to M \otimes M$ which are coherent with respect to each other.
+All morphisms in $\mathrm{CComon}(\mathcal C)$ must respect $\eta$ and
+$\delta$; in particular, both addition and multiplication must separately
+form bimonoids in $\mathcal C$ together with the cocommutative comonoid.
+
+\[
+  \begin{tikzpicture}[baseline]
+    \path
+    (-1,1) node(0) {0}
+    (1,2) node(x) {}
+    (0,0) node(*) {*}
+    (0,-1) node(res) {}
+    ;
+
+    \draw (0) -- (*);
+    \draw (x) to[out=270,in=45] (*);
+    \draw (*) -- (res);
+  \end{tikzpicture}
+  =\quad
+  \begin{tikzpicture}[baseline]
+    \path
+    (0,0) node(0) {0}
+    (0,2) node(x) {}
+    (0,-1) node(res) {}
+    (0,1) node[circle,draw](del) {}
+    ;
+
+    \draw (0) -- (res);
+    \draw (x) -- (del);
+  \end{tikzpicture}
+  \quad=
+  \begin{tikzpicture}[baseline]
+    \path
+    (1,1) node(0) {0}
+    (-1,2) node(x) {}
+    (0,0) node(*) {*}
+    (0,-1) node(res) {}
+    ;
+
+    \draw (0) -- (*);
+    \draw (x) to[out=270,in=135] (*);
+    \draw (*) -- (res);
+  \end{tikzpicture}
+\]
+\begin{displaymath}
+  \begin{matrix}
+    \begin{tikzpicture}[baseline]
+      \path
+      (-1,2) node(x) {}
+      (0,2) node(y) {}
+      (-0.5,1) node(+) {+}
+      (1,2) node(z) {}
+      (0,0) node(*) {*}
+      (0,-1) node(res) {}
+      ;
+
+      \draw (x) to[out=270,in=135] (+);
+      \draw (y) to[out=270,in=45] (+);
+      \draw (+) to[out=270,in=135] (*);
+      \draw (z) to[out=270,in=45] (*);
+      \draw (*) -- (res);
+    \end{tikzpicture}
+    =
+    \begin{tikzpicture}[baseline]
+      \path
+      (-2,3) node(x) {}
+      (-1,3) node(y) {}
+      (0,3) node(z) {}
+      (0,2) node[circle,draw](dup) {}
+      (-1,1) node(x*) {*}
+      (0,1) node(y*) {*}
+      (-0.5,0) node(+) {+}
+      (-0.5,-1) node(res) {}
+      ;
+
+      \draw (z) -- (dup);
+      \draw (x) to[out=270,in=135] (x*);
+      \draw (y) to[out=270,in=135] (y*);
+      \draw (dup) to[out=180,in=45] (x*);
+      \draw (dup) -- (y*);
+      \draw (x*) to[out=270,in=135] (+);
+      \draw (y*) to[out=270,in=45] (+);
+      \draw (+) -- (res);
+    \end{tikzpicture}
+    &\phantom{mmmm}&
+    \begin{tikzpicture}[baseline]
+      \path
+      (1,2) node(x) {}
+      (0,2) node(y) {}
+      (0.5,1) node(+) {+}
+      (-1,2) node(z) {}
+      (0,0) node(*) {*}
+      (0,-1) node(res) {}
+      ;
+
+      \draw (x) to[out=270,in=45] (+);
+      \draw (y) to[out=270,in=135] (+);
+      \draw (+) to[out=270,in=45] (*);
+      \draw (z) to[out=270,in=135] (*);
+      \draw (*) -- (res);
+    \end{tikzpicture}
+    =
+    \begin{tikzpicture}[baseline]
+      \path
+      (2,3) node(x) {}
+      (1,3) node(y) {}
+      (0,3) node(z) {}
+      (0,2) node[circle,draw](dup) {}
+      (1,1) node(x*) {*}
+      (0,1) node(y*) {*}
+      (0.5,0) node(+) {+}
+      (0.5,-1) node(res) {}
+      ;
+
+      \draw (z) -- (dup);
+      \draw (x) to[out=270,in=45] (x*);
+      \draw (y) to[out=270,in=45] (y*);
+      \draw (dup) to[out=0,in=135] (x*);
+      \draw (dup) -- (y*);
+      \draw (x*) to[out=270,in=45] (+);
+      \draw (y*) to[out=270,in=135] (+);
+      \draw (+) -- (res);
+    \end{tikzpicture}
+  \end{matrix}
+\end{displaymath}
+
+\begin{lemma}
+  For each object $X$ in $(\mathrm{Set}_{\mathrm{part}}, {\otimes})$, there is
+  a cocommutative comonoid over $X$.
+\end{lemma}
+\begin{proof}
+  Let $\eta(x) \coloneq ()$ and $\delta(x) \coloneq (x, x)$, with both
+  being defined for all $x$.
+  Checking that these satisfy the laws is routine.
+  Alternatively, we can see that both $\eta$ and $\delta$, being total, are
+  morphisms in $\mathrm{Set}$, where it is well known that they form a
+  cocommutative comonoid.
+  The equations in $\mathrm{Set}$ carry over to $\mathrm{Set}_{\mathrm{part}}$.
+\end{proof}
+
+\begin{lemma}
+  For each object $X$ in $(\mathrm{Set}_{\mathrm{part}}, {\otimes})$, any
+  comonoid over $X$ is the one described in the previous lemma.
+\end{lemma}
+\begin{proof}
+  The left unit law says that, for all $x$ and $x'$, we have
+  $\exists y.~\delta(x) = (y, x') \land \eta(y) = ()$ if and only if $x = x'$.
+  Letting $x'$ be $x$ and reading from right to left, we get that there is
+  some $y$ such that $\delta(x) = (y, x)$ and $\eta(y) = ()$.
+  Symmetrically, from the right unit law, there is some $z$ such that
+  $\delta(x) = (x, z)$ and $\eta(z) = ()$.
+  But because $\delta$, as a partial function, is deterministic, we have
+  $(y, x) = (x, z)$, giving us that $y = z = x$, and $\delta(x) = (x, x)$.
+  Moreover, $\eta(x) = \eta(y) = ()$.
+\end{proof}

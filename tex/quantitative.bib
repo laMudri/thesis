@@ -37,13 +37,14 @@
   bibsource = {dblp computer science bibliography, http://dblp.org}
 }
 
-@article{ girard87linear,
-    author = "Jean-Yves Girard",
-    title = "Linear Logic",
-    journal = "Theor. Comp. Sci.",
-    volume = 50,
-    pages = "1--101",
-    year = 1987 }
+@article{girard87linear,
+  author = "Jean-Yves Girard",
+  title = "Linear Logic",
+  journal = "Theor. Comp. Sci.",
+  volume = 50,
+  pages = "1--101",
+  year = 1987
+}
 
 @InProceedings{reed10distance,
   author =       {J. Reed and B. C. Pierce},
@@ -118,7 +119,7 @@
         abstract = {In programming, data is often considered to be infinitely copiable, arbitrarily discardable, and universally unconstrained. However this view is naive: some data encapsulates resources that are subject to protocols (e.g., file and device handles, channels); some data should not be arbitrarily copied or communicated (e.g., private data). Linear types provide a partial remedy by delineating data in two camps: "resources" to be used but never copied or discarded, and unconstrained values. However, this binary distinction is too coarse-grained. Instead, we propose the general notion of graded modal types, which in combination with linear and indexed types, provides an expressive type theory for enforcing fine-grained resource-like properties of data. We present a type system drawing together these aspects (linear, graded, and indexed) embodied in a fully-fledged functional language implementation, called Granule. We detail the type system, including its metatheoretic properties, and explore examples in the concrete language. This work advances the wider goal of expanding the reach of type systems to capture and verify a broader set of program properties.}
 }
 
-@MISC{rensub05,
+@MISC{McBride05,
     author = {Conor McBride},
     title = {Type-preserving renaming and substitution},
     year = {2005},
@@ -416,4 +417,21 @@ book{Prawitz65,
   url={https://books.google.co.uk/books?id=sJj3DQAAQBAJ},
   year={1965},
   publisher={Dover Publications}
+}
+
+@InProceedings{BBdPH93,
+  author="Benton, Nick
+  and Bierman, Gavin
+  and de Paiva, Valeria
+  and Hyland, Martin",
+  editor="Bezem, Marc
+  and Groote, Jan Friso",
+  title="A term calculus for Intuitionistic Linear Logic",
+  booktitle="Typed Lambda Calculi and Applications",
+  year="1993",
+  publisher="Springer Berlin Heidelberg",
+  address="Berlin, Heidelberg",
+  pages="75--90",
+  abstract="In this paper we consider the problem of deriving a term assignment system for Girard's Intuitionistic Linear Logic for both the sequent calculus and natural deduction proof systems. Our system differs from previous calculi (e.g. that of Abramsky [1]) and has two important properties which they lack. These are the substitution property (the set of valid deductions is closed under substitution) and subject reduction (reduction on terms is well-typed). We also consider term reduction arising from cut-elimination in the sequent calculus and normalisation in natural deduction. We explore the relationship between these and consider their computational content.",
+  isbn="978-3-540-47586-6"
 }

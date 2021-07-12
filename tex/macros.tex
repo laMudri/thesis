@@ -4,12 +4,16 @@
 \newcommand\grP{\grctx P}
 \newcommand\grQ{\grctx Q}
 \newcommand\grR{\grctx R}
+\newcommand\grPprime{\grP\gr'}
+\newcommand\grQprime{\grQ\gr'}
+\newcommand\name{\ensuremath{\lambda\grR}}
 \newcommand\grctxsub[2]{\grctx{#1}_{\gr{#2}}}
 \newcommand\grPe{\grctxsub P e}
 \newcommand\grPf{\grctxsub P f}
 \newcommand\grQe{\grctxsub Q e}
 \newcommand\grQf{\grctxsub Q f}
 \newcommand\sem[1]{\left\llbracket{#1}\right\rrbracket}
+\newcommand\size[1]{\left\lvert{#1}\right\rvert}
 \newcommand\ps{\mathit{ps}}
 \newcommand\qs{\mathit{qs}}
 \newcommand\rs{\mathit{rs}}
@@ -25,3 +29,13 @@
 \newcommand\sqin{\mathrel{\mathrlap{\sqsubset}{\mathord{-}}}}
 \newcommand\sqni{\mathrel{\mathrlap{\sqsupset}{\mathord{-}}}}
 \newcommand\subres{=}
+\newcommand\Ann{\mathscr R}
+
+\renewcommand\land{~\wedge~}
+\renewcommand\lor{~\vee~}
+
+\DeclareMathOperator\obj{Obj}
+\let\hom\relax
+\DeclareMathOperator\hom{Hom}
+\DeclareMathOperator\id{id}
+\DeclareMathOperator\sub{Sub}

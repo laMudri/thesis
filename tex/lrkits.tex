@@ -1,0 +1,253 @@
+As we discussed in \autoref{sec:kits}, simultaneous substitution gives a
+notion of derivability of one context from another, while simultaneous renaming
+gives a similar notion of derivability restricted to structural rules.
+To adapt these notions from an intuitionistic setting to our substructural
+setting, we must examine what it means to derive one context from another
+substructually.
+
+\begin{displaymath}
+  \begin{tikzpicture}[baseline]
+    \path
+    (-1,1) node (Gtop) {}
+    (-1,0) node (G) {$\Gamma$}
+    (-1,-1) node (Gbot) {}
+    ;
+    \node[draw,dotted,fit=(Gtop) (G) (Gbot)] (GG) {};
+
+    \path
+    (1,1) node (Dtop) {}
+    (1,0) node (D) {$\Delta$}
+    (1,-1) node (Dbot) {}
+    ;
+    \node[draw,dotted,fit=(Dtop) (D) (Dbot)] (DD) {};
+
+    \draw[->,double] (GG) -- (DD);
+  \end{tikzpicture}
+  \coloneqq
+  \begin{tikzpicture}[baseline]
+    \path
+    (-1,1) node (Gtop) {}
+    (-1,0) node (G) {$\Gamma$}
+    (-1,-1) node (Gbot) {}
+    ;
+    \node[draw,dotted,fit=(Gtop) (G) (Gbot)] (GG) {};
+
+    \path
+    (1,1) node[draw] (Dtop) {$\Delta_1$}
+    (1,0) node (D) {$\vdots$}
+    (1,-1) node[draw] (Dbot) {$\Delta_n$}
+    ;
+
+    \fill[green!20!white,opacity=1] (GG.north east)
+    parabola[bend at end] (Dtop.west)
+    parabola[bend at start] (GG.south east)
+    -- cycle;
+    \fill[blue!40!white,opacity=.5] (GG.north east)
+    parabola[bend at end] (Dbot.west)
+    parabola[bend at start] (GG.south east)
+    -- cycle;
+
+    \draw[->] (GG.north east) parabola[bend at end] (Dtop.west);
+    \draw (GG.south east) parabola[bend at end] (Dtop.west);
+    \draw[->] (GG.north east) parabola[bend at end] (D.west);
+    \draw (GG.south east) parabola[bend at end] (D.west);
+    \draw[->] (GG.north east) parabola[bend at end] (Dbot.west);
+    \draw (GG.south east) parabola[bend at end] (Dbot.west);
+  \end{tikzpicture}
+\end{displaymath}
+
+Semantically, we interpret a simple substitution from $\Gamma$ to $\Delta$ as
+a map of type $\sem\Gamma \to \sem\Delta$.
+With semantics of contexts given by a Cartesian product of their elements,
+this type is
+$\left(\prod_{(x : A) \in \Gamma}\sem A\right) \to
+\left(\prod_{(y : B) \in \Delta}\sem B\right)$.
+We can then do the following rearrangement.
+\todo{Internal vs external homs are not clear.}
+
+\begin{align*}
+  &\phantom{{}={}} \left(\prod_{(x : A) \in \Gamma}\sem A\right) \to
+    \left(\prod_{(y : B) \in \Delta}\sem B\right) \\
+  &\cong \prod_{(y : B) \in \Delta}\left(
+         \left(\prod_{(x : A) \in \Gamma}\sem A\right) \to \sem B
+         \right) \\
+  &= \prod_{(y : B) \in \Delta}\sem{\Gamma \vdash B} \\
+  &\cong \prod_B\left(\Delta \ni B \to \sem{\Gamma \vdash B}\right)
+\end{align*}
+
+Taking the semantics to be the term model, we get the standard definition of a
+simultaneous substitution.
+To see how this definition works, let us construct an example substitution:
+$A, B \to C, B \Longrightarrow B, C$.
+Intuitionistically, it suffices to give two separate substitutions,
+$A, B \to C, B \Longrightarrow B$ and $A, B \to C, B \Longrightarrow C$,
+which are both just terms.
+We indeed have terms $x : A, y : B \to C, z : B \vdash y : B$ and
+$x : A, y : B \to C, z : B \vdash y\,z : C$.
+
+When working with our semiring-annotated calculus \name{}, instead of Cartesian
+products we have (weighted) monoidal products, giving the type
+$\left(\bigotimes_{(\gr rx : A) \in \Gamma}\oc \gr r\sem A\right) \to
+\left(\bigotimes_{(\gr sy : B) \in \Delta}\oc \gr s\sem B\right)$.
+As the monoidal product is not a limit, we cannot do the rearrangement we did
+above.
+Instead, we must divide the domain up into pieces, with each piece supporting
+one factor from the codomain.
+
+To see this division, let us adapt the previous example to have type
+$\gr0A, \gr2(B \multimap C), \gr3B \Longrightarrow \gr1B, \gr2C$.
+To divide the goal up, we note that $
+\begin{pmatrix} \gr0 & \gr2 & \gr3 \end{pmatrix} =
+\begin{pmatrix} \gr0 & \gr0 & \gr1 \end{pmatrix} +
+\begin{pmatrix} \gr0 & \gr2 & \gr2 \end{pmatrix}
+$, so it suffices to give substitutions of types
+$\gr0A, \gr0(B \multimap C), \gr1B \Longrightarrow \gr1B$ and
+$\gr0A, \gr2(B \multimap C), \gr2B \Longrightarrow \gr2C$.
+Furthermore, our term calculus only supports $\gr1$-annotated conclusions,
+so we divide the second substitution type through by $\gr2$.
+Finally, we give the terms largely as before:
+$\gr0x : A, \gr0y : B \to C, \gr1z : B \vdash y : B$ and
+$\gr0x : A, \gr1y : B \to C, \gr1z : B \vdash z\,y : C$.
+
+\begin{displaymath}
+  \begin{tikzpicture}[baseline]
+    \path
+    (-1,1) node (Gtop) {}
+    (-1,0) node (G) {$\grP\gamma$}
+    (-1,-1) node (Gbot) {}
+    ;
+    \node[draw,dotted,fit=(Gtop) (G) (Gbot)] (GG) {};
+
+    \path
+    (1,1) node (Dtop) {}
+    (1,0) node (D) {$\grQ\delta$}
+    (1,-1) node (Dbot) {}
+    ;
+    \node[draw,dotted,fit=(Dtop) (D) (Dbot)] (DD) {};
+
+    \draw[->,double] (GG) -- (DD);
+  \end{tikzpicture}
+  \coloneqq
+  \begin{tikzpicture}[baseline]
+    \path
+    (-1,1) node (Gtop) {}
+    (-1,0) node (G) {$\grP\gamma$}
+    (-1,-1) node (Gbot) {}
+    ;
+    \node[draw,dotted,fit=(Gtop) (G) (Gbot)] (GG) {};
+
+    \path
+    (1,3) node (G1top) {}
+    (1,2) node (G1) {$\gr\Psi_1\gamma$}
+    (1,1) node (G1bot) {}
+    ;
+    \node[draw,dotted,fit=(G1top) (G1) (G1bot)] (GG1) {};
+    \draw[->] (GG) -- (GG1);
+
+    \path (1,0) node {$\vdots$};
+
+    \path
+    (1,-1) node (Gntop) {}
+    (1,-2) node (Gn) {$\gr\Psi_n\gamma$}
+    (1,-3) node (Gnbot) {}
+    ;
+    \node[draw,dotted,fit=(Gntop) (Gn) (Gnbot)] (GGn) {};
+    \draw[->] (GG) -- (GGn);
+
+    \path
+    (3,1) node[draw] (Dtop) {$\delta_1$}
+    (3,0) node (D) {$\vdots$}
+    (3,-1) node[draw] (Dbot) {$\delta_n$}
+    ;
+
+    \fill[green!20!white] (GG1.north east)
+    parabola[bend at end] (Dtop.west)
+    parabola[bend at start] (GG1.south east)
+    -- cycle;
+    \draw[->] (GG1.north east) parabola[bend at end] (Dtop.west);
+    \draw (GG1.south east) parabola[bend at end] (Dtop.west);
+
+    \fill[blue!20!white] (GGn.north east)
+    parabola[bend at end] (Dbot.west)
+    parabola[bend at start] (GGn.south east)
+    -- cycle;
+    \draw[->] (GGn.north east) parabola[bend at end] (Dbot.west);
+    \draw (GGn.south east) parabola[bend at end] (Dbot.west);
+  \end{tikzpicture}
+  \quad\textrm{where }\grP = \grQ\gr\Psi
+\end{displaymath}
+
+Generalising this division process, we derive the following (letting
+$\Gamma = \grP\gamma$ and $\Delta = \grQ\delta$).
+The various fragments of the original usage vector are collected up in the
+existentially quantified $\gr\Psi$.
+
+\begin{align*}
+  &\phantom{{}={}}
+    \left(\bigotimes_{(\gr rx : A) \in \Gamma}\oc \gr r\sem A\right) \to
+    \left(\bigotimes_{(\gr sy : B) \in \Delta}\oc \gr s\sem B\right) \\
+  &\cong \sum_{\gr\Psi : \size\Delta \to \size\Gamma \to \Ann}
+    \left(\grP = \sum\gr\Psi\right) \times
+    \prod_{(\gr sy : B) \in \Delta}\left(
+    \left(\bigotimes_{(\gr rx : A) \in \gr\Psi_y\gamma}\oc \gr r\sem A\right)
+    \to \oc \gr s\sem B
+    \right) \\
+  &\cong \sum_{\gr\Psi : \size\Delta \to \size\Gamma \to \Ann}
+    \left(\grP = \sum_{(\gr sy : B) \in \Delta}\gr s\gr\Psi_y\right) \times
+    \prod_{(\gr sy : B) \in \Delta}\left(
+    \left(\bigotimes_{(\gr rx : A) \in \gr\Psi_y\gamma}\oc \gr r\sem A\right)
+    \to \sem B
+    \right) \\
+  &= \sum_{\gr\Psi : \size\Delta \to \size\Gamma \to \Ann}
+    \left(\grP = \grQ\gr\Psi\right) \times
+    \prod_{(\gr sy : B) \in \Delta} \sem{\gr\Psi_y\gamma \vdash B}
+\end{align*}
+
+In other words, we interpret a linear substitution as a \emph{matrix}
+$\gr\Psi$ relating the two usage contexts, together with a term for each
+variable from $\Delta$ typed in a fragmented usage context dictated by
+$\gr\Psi$.
+
+While we naturally derive a matrix as a fragmentation of a usage vector, we can
+get a slightly cleaner presentation by instead using an abstract linear map.
+Let $\gr\Psi$ now be a linear map of type
+$\Ann^{\size\Delta} \to \Ann^{\size\Gamma}$, with application written postfix.
+The equation $\grP = \grQ\gr\Psi$ remains unchanged.
+As for $\prod_{(\gr sy : B) \in \Delta}\sem{\gr\Psi_y\gamma \vdash B}$, the most
+direct fix is to replace $\gr\Psi_y$ by $\langle y \rvert\gr\Psi$.
+But then we notice that $\langle y \rvert$ is exactly the $\grQprime$ satisfying
+$\grQprime\delta \sqni y : B$.
+Thus, let us derive the following.
+
+\begin{align*}
+  &\phantom{{}={}} \prod_{(\gr sy : B) \in \Delta}
+    \sem{\langle y \rvert \gr\Psi\gamma \vdash B} \\
+  &\cong \prod_{B,\grQprime} \left(\grQprime\delta \sqni B \to
+    \sem{\grQprime\gr\Psi\gamma \vdash B}\right) \\
+  &\cong \prod_{B,\grQprime,\grPprime} \left(
+    \grPprime = \grQprime\gr\Psi \to \grQprime\delta \sqni B \to
+    \sem{\grPprime\gamma \vdash B}\right)
+\end{align*}
+
+Putting everything back together gives us the final expression.
+
+\begin{align*}
+  &\sum_{\gr\Psi : \Ann^{\size\Delta} \to \Ann^{\size\Gamma}}
+    \left(\grP = \grQ\gr\Psi\right) \times
+    \prod_{B,\grQprime,\grPprime} \left(
+    \grPprime = \grQprime\gr\Psi \to \grQprime\delta \sqni B \to
+    \sem{\grPprime\gamma \vdash B}\right)
+\end{align*}
+
+We now have a new reading for the interpretation of a linear substitution:
+a linear map $\gr\Psi$ relating the two usage vectors $\grP$ and $\grQ$, and
+for any two similarly related usage vectors $\grPprime$ and $\grQprime$, we
+have a type-preserving function from variables in $\grQprime\delta$ to terms in
+$\grPprime\gamma$.
+Even though we don't use $\gr\Psi$ as a matrix containing fragmented usage
+vectors, we can still justify why it should be a \emph{linear} map.
+We need $\gr\Phi$ to respect all fragmentation of the usage context in a typing
+rule, and we know that all such fragmentation is done by linear operations
+zero, addition, and scaling by a constant.
+\todo{Expand. Substitutions need to preserve everything done to the context,
+and linear things are all we do to the context.}

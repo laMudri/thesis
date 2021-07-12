@@ -31,8 +31,10 @@
 \usepackage[strict]{changepage}
 
 \usepackage{amssymb}
+\usepackage{amsthm}
 \usepackage{catchfilebetweentags}
 \usepackage{cmll}
+\usepackage{ebproof}
 \usepackage[utf8]{inputenc}
 \usepackage{mathtools}
 \usepackage{mathpartir}
@@ -40,9 +42,13 @@
 \usepackage{stmaryrd}
 \usepackage{todonotes}
 
+\usepackage{tikz}
+\usetikzlibrary{cd,fit,matrix,positioning}
+
 \usepackage[conor]{agda}
 
 \newunicodechar{λ}{\ensuremath{\mathnormal\lambda}}
+\newunicodechar{ρ}{\ensuremath{\mathnormal\rho}}
 \newunicodechar{→}{\ensuremath{\mathnormal\to}}
 \newunicodechar{∀}{\ensuremath{\mathnormal\forall}}
 \newunicodechar{ι}{\ensuremath{\mathnormal\iota}}
@@ -51,6 +57,10 @@
 \newunicodechar{⊕}{\ensuremath{\mathnormal\oplus}}
 \newunicodechar{─}{\textrm{---}}
 \newunicodechar{ᶜ}{\ensuremath{\mathnormal{^c}}}
+\newunicodechar{ᵛ}{\ensuremath{\mathnormal{^v}}}
+\newunicodechar{ᵗ}{\ensuremath{\mathnormal{^t}}}
+\newunicodechar{↙}{\ensuremath{\mathnormal\swarrow}}
+\newunicodechar{↘}{\ensuremath{\mathnormal\searrow}}
 \newunicodechar{⊢}{\ensuremath{\mathnormal\vdash}}
 \newunicodechar{∧}{\ensuremath{\mathnormal\wedge}}
 \newunicodechar{⟦}{\ensuremath{\mathnormal\llbracket}}
@@ -60,8 +70,10 @@
 \newunicodechar{ℓ}{\ensuremath{\mathnormal\ell}}
 \newunicodechar{Γ}{\ensuremath{\mathnormal\Gamma}}
 \newunicodechar{Δ}{\ensuremath{\mathnormal\Delta}}
+\newunicodechar{Θ}{\ensuremath{\mathnormal\Theta}}
 \newunicodechar{Σ}{\ensuremath{\mathnormal\Sigma}}
 \newunicodechar{∈}{\ensuremath{\mathnormal\in}}
+\newunicodechar{∋}{\ensuremath{\mathnormal\ni}}
 \newunicodechar{′}{\ensuremath{\mathnormal'}}
 \newunicodechar{≡}{\ensuremath{\mathnormal\equiv}}
 \newunicodechar{⊤}{\ensuremath{\mathnormal\top}}
@@ -71,6 +83,15 @@
 \newunicodechar{₁}{\ensuremath{\mathnormal{_1}}}
 \newunicodechar{ℑ}{\ensuremath{\mathfrak I}}
 \newunicodechar{□}{\ensuremath{\mathnormal\Box}}
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
 
 \input{macros.tex}
 
@@ -178,12 +199,13 @@ which was licensed under CC BY 4.0.
 
 \chapter{Simply typed $\lambda$-calculus}
   \section{Basics}
-  \section{Kits}
+  \section{Kits}\label{sec:kits}
+  \input{kits.tex}
   \section{Natural deduction vs sequent calculus}
   \input{ndsc.tex}
   \section{Generic syntax}
 
-\chapter{Linearity (the struggle)}
+\chapter{Linearity}
   \section{Intuitionistic linear logic}
   \input{ill.tex}
   \section{Mechanisation survey}
@@ -199,18 +221,21 @@ which was licensed under CC BY 4.0.
   The idea of split contexts can also be applied to left-/right-rule systems.
   (Define this DILL variant.)
 
-  \section{Notice what additive/multiplicative/exponential rules look like}
+  %\section{Notice what additive/multiplicative/exponential rules look like}
+
+\chapter{Category theory}
+  Categories, (co)products, monoidal categories, string diagrams (in Rel),
+  monoid objects.
+  Examples: Set, Rel, partial functions, commutative monoids.
 
 \chapter{Usage restriction via semirings}
   \section{Why semirings?}
-  Addition gives the structural rules.
-  Multiplication gives modalities.
+  \input{semirings.tex}
 
-  Compare with other work.
-  About here, I can talk about Granule-style $\otimes$-pattern matching.
+  \section{$\lambda\mathcal{R}$}
 
   \section{What are linear renaming and substitution?}
-  \section{$\lambda\mathcal{R}$}
+  \input{lrkits.tex}
 
   \section{Linear natural deduction}
   This should stay fairly general, so it could be compiled to a DILL-style
@@ -220,9 +245,14 @@ which was licensed under CC BY 4.0.
   $\Box$, $\cdot$) so that we can do more generic programming (e.g., usage
   checker).
 
-\chapter{Semantics in worldly relations}
-
 \chapter{Weighted multicategories}
+  \section{Ordinary and Cartesian multicategories}
+  \input{multi.tex}
+  \section{Weighted multicategories}
+  \input{weighted.tex}
+  \section{Applications}
+
+\chapter{Semantics in worldly relations}
 
 \chapter{A framework for usage-restricted calculi}
   \input{framework.tex}
