@@ -126,9 +126,8 @@ The differences are the following:
   \item When dealing with newly bound variables in \AgdaFunction{bindSub}, we
         need to produce terms, so we embed the newly bound variables into terms
         using \AgdaInductiveConstructor{var}.
-  \item We use \AgdaFunction{$\swarrow^t$} instead of
-        \AgdaFunction{$\swarrow^v$}, because we are dealing with terms rather
-        than variables.
+  \item We use \AgdaFunction{$↙ᵗ$} instead of \AgdaFunction{$↙ᵛ$}, because we
+        are dealing with terms rather than variables.
 \end{itemize}
 
 \bindSub{}
@@ -138,3 +137,79 @@ The differences are the following:
 
 To abstract over the similarities between renaming and substitution, we can use
 \emph{kits} as introduced by McBride~\cite{McBride05,BHKM12}.
+Each of the three differences above is turned into a parameter of
+\AgdaFunction{trav} (generalising \AgdaFunction{ren} and \AgdaFunction{sub})
+and \AgdaFunction{bindEnv} (generalising \AgdaFunction{bindRen} and
+\AgdaFunction{bindSub}).
+In the types, \AgdaFunction{Ren} and \AgdaFunction{Sub} are generalised by
+\AgdaFunction{Env}\AgdaSpace{}\AgdaBound{K} --- a function from variables in
+\AgdaBound{$\Delta$} to \AgdaBound{K}-things in \AgdaBound{$\Gamma$}.
+
+\Env{}
+
+The function \AgdaFunction{trav} produces a term-to-term mapping based on an
+environment \AgdaBound{$\rho$}.
+Like renaming and substitution, the traversal \AgdaFunction{trav} replaces
+variables according to \AgdaBound{$\rho$}, while keeping the rest of the
+syntactic forms intact.
+The three differences between renaming and substitution present themselves as
+requirements of the notion of \emph{kit} we can choose:
+
+\begin{itemize}
+  \item In the \AgdaInductiveConstructor{var} case of \AgdaFunction{trav}, we
+        apply the environment \AgdaBound{$\rho$} to get a \AgdaBound{K}-thing,
+        and need something to turn this \AgdaBound{K}-thing into a term.
+        We let \AgdaField{tm} be this context- and type-preserving map from
+        \AgdaBound{K}-things to terms.
+  \item When dealing with newly bound variables in \AgdaFunction{bindEnv}, we
+        need to convert the new variable into a \AgdaBound{K}-thing in order to
+        put it into the environment.
+        We let \AgdaField{vr} be this context- and type-preserving map from
+        variables to \AgdaBound{K}-things.
+  \item When working out where to map old variables in an extended context, we
+        need \AgdaBound{K}-things to be stable under context extensions.
+        We let \AgdaField{↙ᵏ} be the function embedding a \AgdaBound{K}-thing
+        into an extended context.
+\end{itemize}
+
+\trav{}
+
+The three parameters can be given to these functions by filling the fields of
+the \AgdaRecord{Kit} record.
+
+\Kit{}
+
+We may now redefine the types \AgdaFunction{Ren} and \AgdaFunction{Sub} via
+\AgdaFunction{Env}, and derive the actions of renaming and substitution from
+\AgdaFunction{trav}.
+Notice that \AgdaFunction{↙ᵗ} (written out as
+\AgdaFunction{ren}\AgdaSpace{}\AgdaFunction{↙ᵛ}) still relies on renaming, but
+because \AgdaFunction{ren} is only being used to fill a parameter of
+\AgdaFunction{trav}, \AgdaFunction{trav} itself can be used to define
+\AgdaFunction{ren} in a non-circular way.
+Thus, we have succeeded in avoiding the duplication of code between
+\AgdaFunction{ren} and \AgdaFunction{sub}.
+%\todo{Distribute code horizontally}
+
+\begin{multicols}{3}
+  \noindent\RenSub{} \columnbreak
+
+  \noindent\renKit{} \columnbreak
+
+  \noindent\subKit{}
+\end{multicols}
+
+%\noindent
+%\begin{tabular}{l|l|l}
+%  \begin{minipage}{.25\textwidth}
+%    \RenSub{}
+%  \end{minipage}
+%  &
+%  \begin{minipage}{.25\textwidth}
+%    \renKit{}
+%  \end{minipage}
+%  &
+%  \begin{minipage}{.25\textwidth}
+%    \subKit{}
+%  \end{minipage}
+%\end{tabular}
