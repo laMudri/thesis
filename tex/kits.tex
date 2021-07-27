@@ -7,51 +7,34 @@ While simultaneous substitution gives us a notion of one context being
 \emph{derivable} from another, simultaneous renaming gives a similar notion
 of derivability restricted to structural rules.
 
-\begin{mathpar}
-  \inferrule*[right=Subst]
-  {%
-    \inferrule*[right=$\to$-E]
-    {%
-      \inferrule*[right=Var]{~}{A \to B, A \vdash A \to B}
-      \\
-      \inferrule*[Right=Var]{~}{A \to B, A \vdash A}
-    }
-    {A \to B, A \vdash B}
-    \\
-    B \vdash C
-  }
-  {A \to B, A \vdash C}
-\end{mathpar}
+In the derivation below, we assume the existence of a derivation of
+$B, C \to C \vdash C$, and by the admissibility of substitution we thus have a
+derivation of $A \to B, A \vdash C$.
+Intuitively, the context $A \to B, A$ derives the context $B, C \to C$, so
+anything derived from $B, C \to C$ can also be derived from $A \to B, A$.
+We see formally that $A \to B, A$ derives $B, C \to C$ by deriving each element
+of the latter from the former --- hence the first two premises of the Subst
+rule below, deriving $B$ and $C \to C$ from $A \to B, A$.
 
-\begin{displaymath}
+\begin{align*}
+  &\begin{prooftree}
+    \hypo{\Pi}
+    \infer[no rule]1{A \to B, A \vdash B}
+    \infer0[Var]{A \to B, A, C \vdash C}
+    \infer1[$\to$-I]{A \to B, A \vdash C \to C}
+    \hypo{B, C \to C \vdash C}
+    \infer3[Subst]{A \to B, A \vdash C}
+  \end{prooftree}
+  \\\\
+  &\textrm{where }\Pi \coloneqq
   \begin{prooftree}
     \infer0[Var]{A \to B, A \vdash A \to B}
     \infer0[Var]{A \to B, A \vdash A}
     \infer2[$\to$-E]{A \to B, A \vdash B}
-    \hypo{B \vdash C}
-    \infer2[Subst]{A \to B, A \vdash C}
   \end{prooftree}
-\end{displaymath}
+\end{align*}
 
-\subsection{Proofs of renaming and substitution}
-
-We start with a data type \AgdaDatatype{\_⊢\_} of intrinsically simply typed
-terms.
-Beside base types, the only type former we have is the function type constructor
-\AgdaInductiveConstructor{\_`→\_}.
-Contexts (of type \AgdaRecord{Ctx}) are implemented as the free magma on types
-(\AgdaDatatype{Ty}).
-Context concatenation is \AgdaFunction{\_++ᶜ\_}, and \AgdaFunction{[\_]ᶜ}
-embeds types into contexts.
-Typed variables in a context are given by \AgdaRecord{\_∋\_}.
-A variable in
-\AgdaBound{$\Gamma$}\AgdaSpace{}\AgdaRecord{$\ni$}\AgdaSpace{}\AgdaBound{A}
-is given by a path \AgdaField{idx} to a type in \AgdaBound{$\Gamma$}, together
-with a proof \AgdaField{tyq} that this type is equal to \AgdaBound{A}.
-Variables embed into terms via the \AgdaInductiveConstructor{var} constructor.
-
-\Var{}
-\Term{}
+\subsection{Proofs of admissibility of renaming and substitution}
 
 For this syntax, a renaming from \AgdaBound{$\Gamma$} to \AgdaBound{$\Delta$}
 is a map from variables in \AgdaBound{$\Delta$} to variables in
@@ -61,132 +44,156 @@ Substitutions instead map into terms in \AgdaBound{$\Gamma$}.
 \Ren{}
 \Sub{}
 
-In the following, \AgdaFunction{ren} gives the action of a renaming on terms.
-We replace variables by new variables given by the renaming \AgdaBound{$\rho$}.
-For applications, we rename each subterm using the same renaming.
-For $\lambda$-abstractions, we want to rename the body, but the renaming we
-have has type \RenGD{}, whereas the renaming we need is of type \RenGADA{}.
-To make up the difference, we introduce the \AgdaFunction{bindRen} lemma,
-saying that any renaming can be extended to the right by a context
-\AgdaBound{$\Theta$}~\footnote{%
-  We only require extension to the right because our syntax only has binding
-  on the right.
-  We could also extend on the left.
-}.
-To produce such an extended renaming, we receive a variable in \DTh{}, with the
-two cases being that this variable is either in \AgdaBound{$\Delta$} or
-\AgdaBound{$\Theta$}.
-In the first case, we can use the original renaming \AgdaBound{$\rho$} to get
-a variable in \AgdaBound{$\Gamma$}, which can be extended in the obvious way
-to a variable in \GTh{}.
-In the second case, we have a variable in \AgdaBound{$\Theta$}, and just need
-to extend it to be a variable in \GTh{}.
+We define \AgdaFunction{ren} as the action of a renaming on terms.
+The idea of simultaneous renaming is to preserve the structure of the term, but
+replace all of the variables from \AgdaBound{$\Delta$} by variables from
+\AgdaBound{$\Gamma$}, with the mapping given by the renaming \AgdaBound{$\rho$}.
 
-\bindRen{}
 \rename{}
 
-We use renaming to show that, like variables, we can extend the context of terms
-to the right.
-The operation below renames a term by replacing all variables with variables
-pointing to the left of the term's new context \GD{}.
+The \AgdaInductiveConstructor{var} case is where the action of the renaming
+happens: the variable \AgdaBound{x} from \AgdaBound{$\Delta$} is mapped to the
+variable \AgdaBound{$\rho$}\AgdaSpace{}\AgdaBound{x} from \AgdaBound{$\Gamma$}.
+In the \AgdaInductiveConstructor{app} case, we have terms \AgdaBound{M}
+\AgdaSymbol{:} \AgdaBound{$\Delta$} \AgdaDatatype{$\vdash$}
+\AgdaBound{A} \AgdaInductiveConstructor{`$\to$} \AgdaBound{B} and \AgdaBound{N}
+\AgdaSymbol{:} \AgdaBound{$\Delta$} \AgdaDatatype{$\vdash$} \AgdaBound{A}.
+We may apply \AgdaFunction{ren} \AgdaBound{$\rho$} recursively to both
+\AgdaBound{M} and \AgdaBound{N} to change their contexts from
+\AgdaBound{$\Delta$} to \AgdaBound{$\Gamma$}, and the
+\AgdaInductiveConstructor{app} constructor then produces the desired term in
+\AgdaBound{$\Gamma$}.
+Finally, in the \AgdaInductiveConstructor{lam} case, we get a term
+\AgdaBound{M} \AgdaSymbol{:} \DA{} \AgdaDatatype{$\vdash$} \AgdaBound{B} and,
+after introducing a \AgdaInductiveConstructor{lam} on the right, are in need
+of a term of type \GA{} \AgdaDatatype{$\vdash$} \AgdaBound{B}.
+To recursively apply \AgdaFunction{ren} to \AgdaBound{M}, we must thus extend
+the renaming \AgdaBound{$\rho$} \AgdaSymbol{:} \RenGD{} with the newly bound
+variable.
+For this, we need an auxiliary function \AgdaFunction{bindRen} such that
+\AgdaFunction{bindRen} \AgdaBound{$\rho$} \AgdaSymbol{:} \RenGADA{}.
+This new renaming will act like \AgdaBound{$\rho$} for variables in
+\AgdaBound{$\Delta$}, and map the new variable of type \AgdaBound{A} to the
+corresponding new variable in \GA{}.
+
+\bindRen{}
+
+The \AgdaFunction{bindRen} given here has a slightly generalised type, where
+instead of binding just a single variable of type \AgdaBound{A}, we could
+bind a whole context \AgdaBound{$\Theta$} of new variables.
+The first case of \AgdaFunction{bindRen} is for old variables from
+\AgdaBound{$\Delta$}, where we apply \AgdaBound{$\rho$} to get a variable in
+\AgdaBound{$\Gamma$}, and then use \AgdaFunction{$↙ᵛ$} to embed that variable
+into \GTh{}.
+The second case is for new variables from \AgdaBound{$\Theta$}, which embed
+straight into \GTh{}.
+
+The \AgdaFunction{sub} function below gives the action of a substitution.
+Similarly to renaming, we want to preserve the structure of the term, except
+now variables in the original term are replaced by \emph{terms} in the new
+context.
+
+\substitute{}
+
+Given that this time, \AgdaBound{$\rho$} is a substitution rather than a
+renaming, \AgdaBound{$\rho$} \AgdaBound{x} is a term, and is sufficient in the
+\AgdaInductiveConstructor{var} case.
+The \AgdaInductiveConstructor{app} case again deals with the subterms
+recursively and then recombines them with \AgdaInductiveConstructor{app}.
+In the \AgdaInductiveConstructor{lam} case, we again have a mismatch if we
+want to apply \AgdaFunction{sub} recursively to the subterm \AgdaBound{M} with
+an extra free variable.
+We have \AgdaBound{$\rho$} \AgdaSymbol{:} \SubGD{} but need a substitution of
+type \SubGADA{}, so we introduce the auxiliary definition
+\AgdaFunction{bindSub}.
+
+\bindSub{}
+
+For the old variables in the first case, we have \AgdaBound{$\rho$} to turn
+them into terms in \AgdaBound{$\Gamma$}.
+Turning a term in \AgdaBound{$\Gamma$} into a term in \GTh{} requires a form
+of weakening we have not yet proved, so I write \AgdaFunction{$↙ᵗ$} in analogy
+with \AgdaFunction{$↙ᵛ$}, and prove it below.
+In the second case, we want to substitute the new variable by the \emph{term}
+referring to this new variable in \GTh{}.
+
+The final piece to define substitution is to define the function that weakens
+a term by some newly bound variables \AgdaBound{$\Delta$}.
+For this, we use the action of renaming, which we have fully defined already,
+and in particular rename each variable in the term from a variable in
+\AgdaBound{$\Gamma$} to a variable in \GD{}.
 
 \leftTerm{}
 
-The action of a substitution on a term is given below.
-The structure is very similar to that of renaming.
-The differences are the following:
+With this, the action of substitution is defined, and depends on the action
+of renaming.
 
-\begin{itemize}
-  \item A substitution gives us terms, rather than variables.
-        This means that when we use the substitution on a variable, we already
-        have a term, and don't need to do any embedding into terms.
-  \item When dealing with newly bound variables in \AgdaFunction{bindSub}, we
-        need to produce terms, so we embed the newly bound variables into terms
-        using \AgdaInductiveConstructor{var}.
-  \item We use \AgdaFunction{$↙ᵗ$} instead of \AgdaFunction{$↙ᵛ$}, because we
-        are dealing with terms rather than variables.
-\end{itemize}
+\subsection{Syntactic kits}\label{sec:syntactic-kits}
 
-\bindSub{}
-\substitute{}
-
-\subsection{Kits}
-
-To abstract over the similarities between renaming and substitution, we can use
-\emph{kits} as introduced by McBride~\cite{McBride05,BHKM12}.
-Each of the three differences above is turned into a parameter of
-\AgdaFunction{trav} (generalising \AgdaFunction{ren} and \AgdaFunction{sub})
-and \AgdaFunction{bindEnv} (generalising \AgdaFunction{bindRen} and
-\AgdaFunction{bindSub}).
-In the types, \AgdaFunction{Ren} and \AgdaFunction{Sub} are generalised by
-\AgdaFunction{Env}\AgdaSpace{}\AgdaBound{K} --- a function from variables in
-\AgdaBound{$\Delta$} to \AgdaBound{K}-things in \AgdaBound{$\Gamma$}.
+The statements of simultaneous renaming and simultaneous substitution are
+very similar, with substitution being the generalisation that allows
+replacement by terms rather than just variables.
+I will introduce a type family \AgdaFunction{Env} of \emph{environments}, and
+redefine \AgdaFunction{Ren} and \AgdaFunction{Sub} as environments of
+variables and terms, respectively.
 
 \Env{}
+\RenSub{}
 
-The function \AgdaFunction{trav} produces a term-to-term mapping based on an
-environment \AgdaBound{$\rho$}.
-Like renaming and substitution, the traversal \AgdaFunction{trav} replaces
-variables according to \AgdaBound{$\rho$}, while keeping the rest of the
-syntactic forms intact.
-The three differences between renaming and substitution present themselves as
-requirements of the notion of \emph{kit} we can choose:
+The processes I described for constructing proofs of the admissibility of
+renaming and substitution were also similar.
+Indeed, when we line up the resulting functions, \AgdaFunction{ren} and
+\AgdaFunction{sub}, and their auxiliaries, \AgdaFunction{bindRen} and
+\AgdaFunction{bindSub}, we notice only three key
+differences:~\cite{McBride05,BHKM12}
 
 \begin{itemize}
-  \item In the \AgdaInductiveConstructor{var} case of \AgdaFunction{trav}, we
-        apply the environment \AgdaBound{$\rho$} to get a \AgdaBound{K}-thing,
-        and need something to turn this \AgdaBound{K}-thing into a term.
-        We let \AgdaField{tm} be this context- and type-preserving map from
-        \AgdaBound{K}-things to terms.
-  \item When dealing with newly bound variables in \AgdaFunction{bindEnv}, we
-        need to convert the new variable into a \AgdaBound{K}-thing in order to
-        put it into the environment.
-        We let \AgdaField{vr} be this context- and type-preserving map from
-        variables to \AgdaBound{K}-things.
-  \item When working out where to map old variables in an extended context, we
-        need \AgdaBound{K}-things to be stable under context extensions.
-        We let \AgdaField{↙ᵏ} be the function embedding a \AgdaBound{K}-thing
-        into an extended context.
+  \item In the first cases of \AgdaFunction{bindRen} and \AgdaFunction{bindSub},
+    we do \AgdaFunction{$↙ᵛ$} and \AgdaFunction{$↙ᵗ$}, respectively, based on
+    whether we are weakening a variable or a term.
+  \item In the second case of \AgdaFunction{bindSub}, we do an extra wrapping of
+    the new variable by \AgdaInductiveConstructor{var}, so as to make it a term
+    to go in the substitution.
+  \item In the \AgdaInductiveConstructor{var} case of \AgdaFunction{ren}, we
+    have \AgdaInductiveConstructor{var} \AgdaSymbol(\AgdaBound{$\rho$}
+    \AgdaBound{x}\AgdaSymbol) rather than just \AgdaBound{$\rho$} \AgdaBound{x},
+    because the renaming \AgdaBound{$\rho$} gives us a variable rather than a
+    term.
 \end{itemize}
 
-\trav{}
-
-The three parameters can be given to these functions by filling the fields of
-the \AgdaRecord{Kit} record.
+We may abstract over these three differences using the record \AgdaRecord{Kit}.
+As in \AgdaFunction{Env}, we think of \AgdaBound{K} as being either
+\AgdaDatatype{\_$\ni$\_} or \AgdaDatatype{\_$\vdash$\_}.
+The fields of \AgdaRecord{Kit} are given in the same order as the points of
+difference above.
+Wherever the difference was presence or absence of
+\AgdaInductiveConstructor{var}, we will be able to fill that field with either
+\AgdaInductiveConstructor{var} or the identity function \AgdaFunction{id}.
 
 \Kit{}
 
-We may now redefine the types \AgdaFunction{Ren} and \AgdaFunction{Sub} via
-\AgdaFunction{Env}, and derive the actions of renaming and substitution from
-\AgdaFunction{trav}.
-Notice that \AgdaFunction{↙ᵗ} (written out as
-\AgdaFunction{ren}\AgdaSpace{}\AgdaFunction{↙ᵛ}) still relies on renaming, but
-because \AgdaFunction{ren} is only being used to fill a parameter of
-\AgdaFunction{trav}, \AgdaFunction{trav} itself can be used to define
-\AgdaFunction{ren} in a non-circular way.
-Thus, we have succeeded in avoiding the duplication of code between
-\AgdaFunction{ren} and \AgdaFunction{sub}.
-%\todo{Distribute code horizontally}
+The field \AgdaField{$\swarrow^k$} can be seen as a property of the
+judgement form \AgdaBound{K}, saying that it supports a form of weakening.
+We use \AgdaField{vr} when adding a newly bound variable to an environment, and
+use \AgdaField{tm} when we do a lookup from an environment and want to get a
+term out.
+Given a \AgdaRecord{Kit} \AgdaBound{K}, we can write the syntactic traversal
+function \AgdaFunction{trav} and its auxiliary \AgdaFunction{bindEnv}, in the
+model of \AgdaFunction{ren}, \AgdaFunction{sub}, and their auxiliaries.
 
-\begin{multicols}{3}
-  \noindent\RenSub{} \columnbreak
+\trav{}
+\bindEnv{}
 
+Concrete kits can be given for variables and terms either by inspecting
+\AgdaFunction{ren} and \AgdaFunction{sub} or by following the types.
+Notice that the kit for terms requires the admissibility of renaming so as to
+achieve weakening of a substitution by newly bound variables.
+Fortunately, this can be the \AgdaFunction{ren} defined below in terms of
+\AgdaFunction{trav}, so we can keep \AgdaFunction{trav} as the only syntactic
+traversal we have to write.
+
+\begin{multicols}{2}
   \noindent\renKit{} \columnbreak
 
   \noindent\subKit{}
 \end{multicols}
-
-%\noindent
-%\begin{tabular}{l|l|l}
-%  \begin{minipage}{.25\textwidth}
-%    \RenSub{}
-%  \end{minipage}
-%  &
-%  \begin{minipage}{.25\textwidth}
-%    \renKit{}
-%  \end{minipage}
-%  &
-%  \begin{minipage}{.25\textwidth}
-%    \subKit{}
-%  \end{minipage}
-%\end{tabular}

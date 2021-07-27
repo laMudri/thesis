@@ -140,6 +140,22 @@ module Basic where
 \begin{code}
       ,′
 \end{code}
+%<*SubGD>
+\begin{code}[inline]
+      Sub Γ Δ
+\end{code}
+%</SubGD>
+\begin{code}
+      ,′
+\end{code}
+%<*SubGADA>
+\begin{code}[inline]
+      Sub (Γ ++ᶜ [ A ]ᶜ) (Δ ++ᶜ [ A ]ᶜ)
+\end{code}
+%</SubGADA>
+\begin{code}
+      ,′
+\end{code}
 %<*GD>
 \begin{code}[inline]
       Γ ++ᶜ Δ
@@ -161,6 +177,22 @@ module Basic where
       Δ ++ᶜ Θ
 \end{code}
 %</DTh>
+\begin{code}
+      ,′
+\end{code}
+%<*GA>
+\begin{code}[inline]
+      Γ ++ᶜ [ A ]ᶜ
+\end{code}
+%</GA>
+\begin{code}
+      ,′
+\end{code}
+%<*DA>
+\begin{code}[inline]
+      Δ ++ᶜ [ A ]ᶜ
+\end{code}
+%</DA>
 
 \begin{code}
 module Kits where
@@ -174,7 +206,7 @@ module Kits where
 %</Env>
 
 %<*RenSub>
-\begin{code}[inline]
+\begin{code}
   Ren = Env _∋_
   Sub = Env _⊢_
 \end{code}
@@ -191,12 +223,16 @@ module Kits where
 \end{code}
 %</Kit>
 
-%<*trav>
+%<*bindEnv>
 \begin{code}
     bindEnv : ∀ {Γ Δ Θ} → Env K Γ Δ → Env K (Γ ++ᶜ Θ) (Δ ++ᶜ Θ)
     bindEnv ρ (el (↙ i) q) = ↙ᵏ (ρ (el i q))
     bindEnv ρ (el (↘ i) q) = vr (el (↘ i) q)
+\end{code}
+%</bindEnv>
 
+%<*trav>
+\begin{code}
     trav : ∀ {Γ Δ A} → Env K Γ Δ → Δ ⊢ A → Γ ⊢ A
     trav ρ (var x) = tm (ρ x)
     trav ρ (app M N) = app (trav ρ M) (trav ρ N)
@@ -204,20 +240,24 @@ module Kits where
 \end{code}
 %</trav>
 
+\begin{code}
+  open Kit using (trav)
+\end{code}
+
 %<*renKit>
-\begin{code}[inline]
+\begin{code}
   ∋-kit : Kit _∋_
   ∋-kit = kit ↙ᵛ id var
 
-  ren = Kit.trav ∋-kit
+  ren = trav ∋-kit
 \end{code}
 %</renKit>
 
 %<*subKit>
-\begin{code}[inline]
+\begin{code}
   ⊢-kit : Kit _⊢_
   ⊢-kit = kit (ren ↙ᵛ) var id
 
-  sub = Kit.trav ⊢-kit
+  sub = trav ⊢-kit
 \end{code}
 %</subKit>
