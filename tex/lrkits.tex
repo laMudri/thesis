@@ -5,6 +5,13 @@ To adapt these notions from an intuitionistic setting to our substructural
 setting, we must examine what it means to derive one context from another
 substructually.
 
+In the intuitionistic case, we say that to derive a context $\Delta$ from a
+context $\Gamma$ is to derive each element $\Delta_i$ from $\Gamma$.
+We may justify this by an intermediate step --- noting that contexts are
+understood to be Cartesian products of their elements, and giving a map into
+a Cartesian product is the same as giving a map into each factor.
+I picture this definition as the diagram below.
+
 \begin{displaymath}
   \begin{tikzpicture}[baseline]
     \path
@@ -56,58 +63,52 @@ substructually.
   \end{tikzpicture}
 \end{displaymath}
 
-Semantically, we interpret a simple substitution from $\Gamma$ to $\Delta$ as
-a map of type $\sem\Gamma \to \sem\Delta$.
-With semantics of contexts given by a Cartesian product of their elements,
-this type is
-$\left(\prod_{(x : A) \in \Gamma}\sem A\right) \to
-\left(\prod_{(y : B) \in \Delta}\sem B\right)$.
-We can then do the following rearrangement.
-\todo{Internal vs external homs are not clear.}
-
-\begin{align*}
-  &\phantom{{}={}} \left(\prod_{(x : A) \in \Gamma}\sem A\right) \to
-    \left(\prod_{(y : B) \in \Delta}\sem B\right) \\
-  &\cong \prod_{(y : B) \in \Delta}\left(
-         \left(\prod_{(x : A) \in \Gamma}\sem A\right) \to \sem B
-         \right) \\
-  &= \prod_{(y : B) \in \Delta}\sem{\Gamma \vdash B} \\
-  &\cong \prod_B\left(\Delta \ni B \to \sem{\Gamma \vdash B}\right)
-\end{align*}
-
-Taking the semantics to be the term model, we get the standard definition of a
-simultaneous substitution.
 To see how this definition works, let us construct an example substitution:
 $A, B \to C, B \Longrightarrow B, C$.
-Intuitionistically, it suffices to give two separate substitutions,
-$A, B \to C, B \Longrightarrow B$ and $A, B \to C, B \Longrightarrow C$,
-which are both just terms.
+Because the codomain is a Cartesian product, it suffices to give two separate
+substitutions, $A, B \to C, B \Longrightarrow B$ and
+$A, B \to C, B \Longrightarrow C$, with a substitution into a singleton
+context being just a term.
 We indeed have terms $x : A, y : B \to C, z : B \vdash y : B$ and
 $x : A, y : B \to C, z : B \vdash y\,z : C$.
+It is also instructive to look at an identity substitution (which is also a
+renaming), $A, B \Longrightarrow A, B$, witnessed by terms
+$x : A, y : B \vdash x : A$ and $x : A, y : B \vdash y : B$.
 
-When working with our semiring-annotated calculus \name{}, instead of Cartesian
-products we have (weighted) monoidal products, giving the type
-$\left(\bigotimes_{(\gr rx : A) \in \Gamma}\oc \gr r\sem A\right) \to
-\left(\bigotimes_{(\gr sy : B) \in \Delta}\oc \gr s\sem B\right)$.
-As the monoidal product is not a limit, we cannot do the rearrangement we did
-above.
-Instead, we must divide the domain up into pieces, with each piece supporting
-one factor from the codomain.
+When working with our semiring-annotated calculus \name{}, contexts are no
+longer understood as Cartesian products.
+This means that substitutions of type $\Gamma \Longrightarrow \Delta$ are no
+longer equivalent to collections of substitutions
+$\Gamma \Longrightarrow \Delta_i$.
+Indeed, notice that we should still have an identity substitution of type
+$\gr1A, \gr1B \Longrightarrow \gr1A, \gr1B$, but we do not have terms proving
+either $\gr1A, \gr1B \vdash A$ or $\gr1A, \gr1B \vdash B$.
+What we do have are terms $x : \gr1A, y : \gr0B \vdash x : A$ and
+$x : \gr0A, y : \gr1B \vdash y : B$, and if we pointwise add together the
+annotations of the two terms, we get back the original context
+$x : \gr1A, y : \gr1B$.
+Furthermore, adding up the annotations is not just a random operation;
+linear contexts are understood to be tensor products of their elements, and
+introduction rule for the tensor product involves summing the annotations of
+the two sides.
 
-To see this division, let us adapt the previous example to have type
-$\gr0A, \gr2(B \multimap C), \gr3B \Longrightarrow \gr1B, \gr2C$.
-To divide the goal up, we note that $
-\begin{pmatrix} \gr0 & \gr2 & \gr3 \end{pmatrix} =
-\begin{pmatrix} \gr0 & \gr0 & \gr1 \end{pmatrix} +
-\begin{pmatrix} \gr0 & \gr2 & \gr2 \end{pmatrix}
-$, so it suffices to give substitutions of types
-$\gr0A, \gr0(B \multimap C), \gr1B \Longrightarrow \gr1B$ and
-$\gr0A, \gr2(B \multimap C), \gr2B \Longrightarrow \gr2C$.
-Furthermore, our term calculus only supports $\gr1$-annotated conclusions,
-so we divide the second substitution type through by $\gr2$.
-Finally, we give the terms largely as before:
-$\gr0x : A, \gr0y : B \to C, \gr1z : B \vdash y : B$ and
-$\gr0x : A, \gr1y : B \to C, \gr1z : B \vdash z\,y : C$.
+For any annotated context $\Delta$, we have
+$\Delta \vdash \bigotimes_{(\gr rx : A) \in \Delta}\oc\gr rA$ by iterated
+application of $\otimes$-I with $\oc$-I and Var at the leaves.
+Let $\Gamma = \grP\gamma$ and $\Delta = \grQ\delta$.
+If we are to produce substitutions from $\Gamma$ to $\Delta$ in this
+pattern, we simulate the applications of $\otimes$-I by producing, for each
+element in $\Delta$, a usage context for $\gamma$ such that the whole collection
+sums to $\grP$, then simulate the applications of $\oc$-I by dividing each of
+the new usage contexts by the corresponding annotation in $\Delta$, calling
+the divided usage contexts $\gr\Psi_x$, and finally, instead of a variable
+from $\delta$, we give a term of type $\gr\Psi_x\gamma \vdash \delta_x$.
+In summary, the constraint on the collection of usage contexts $\gr\Psi$ is
+that $\grP = \sum_{(\gr rx : A) \in \Delta}\gr r\gr\Psi_x$.
+Moreover, if we take $\grP$ and $\grQ$ to be row vectors and $\gr\Psi$ to be a
+matrix, the latter expression is equal to the vector-matrix multiplication
+$\grQ\gr\Psi$.
+The resulting definition of simultaneous substitution is depicted below.
 
 \begin{displaymath}
   \begin{tikzpicture}[baseline]
@@ -177,67 +178,50 @@ $\gr0x : A, \gr1y : B \to C, \gr1z : B \vdash z\,y : C$.
   \quad\textrm{where }\grP = \grQ\gr\Psi
 \end{displaymath}
 
-Generalising this division process, we derive the following (letting
-$\Gamma = \grP\gamma$ and $\Delta = \grQ\delta$).
-The various fragments of the original usage vector are collected up in the
-existentially quantified $\gr\Psi$.
+In type theory, we write out the definition as follows.
 
-\begin{align*}
-  &\phantom{{}={}}
-    \left(\bigotimes_{(\gr rx : A) \in \Gamma}\oc \gr r\sem A\right) \to
-    \left(\bigotimes_{(\gr sy : B) \in \Delta}\oc \gr s\sem B\right) \\
-  &\cong \sum_{\gr\Psi : \size\Delta \to \size\Gamma \to \Ann}
-    \left(\grP = \sum\gr\Psi\right) \times
-    \prod_{(\gr sy : B) \in \Delta}\left(
-    \left(\bigotimes_{(\gr rx : A) \in \gr\Psi_y\gamma}\oc \gr r\sem A\right)
-    \to \oc \gr s\sem B
-    \right) \\
-  &\cong \sum_{\gr\Psi : \size\Delta \to \size\Gamma \to \Ann}
-    \left(\grP = \sum_{(\gr sy : B) \in \Delta}\gr s\gr\Psi_y\right) \times
-    \prod_{(\gr sy : B) \in \Delta}\left(
-    \left(\bigotimes_{(\gr rx : A) \in \gr\Psi_y\gamma}\oc \gr r\sem A\right)
-    \to \sem B
-    \right) \\
-  &= \sum_{\gr\Psi : \size\Delta \to \size\Gamma \to \Ann}
+\begin{displaymath}
+  \sum_{\gr\Psi : \size\Delta \to \size\Gamma \to \Ann}
     \left(\grP = \grQ\gr\Psi\right) \times
-    \prod_{(\gr sy : B) \in \Delta} \sem{\gr\Psi_y\gamma \vdash B}
-\end{align*}
+    \prod_{(x : A) \in \delta}\gr\Psi_x\gamma \vdash A
+\end{displaymath}
 
-In other words, we interpret a linear substitution as a \emph{matrix}
-$\gr\Psi$ relating the two usage contexts, together with a term for each
-variable from $\Delta$ typed in a fragmented usage context dictated by
-$\gr\Psi$.
+We can see the step-by-step construction of a substitution play out by adapting
+the previous example to have type
+$\gr0A, \gr2(B \multimap C), \gr3B \Longrightarrow \gr1B, \gr2C$.
+To split the goal up, we note that $
+\begin{pmatrix} \gr0 & \gr2 & \gr3 \end{pmatrix} =
+\begin{pmatrix} \gr0 & \gr0 & \gr1 \end{pmatrix} +
+\begin{pmatrix} \gr0 & \gr2 & \gr2 \end{pmatrix}
+$, so it suffices to give substitutions of types
+$\gr0A, \gr0(B \multimap C), \gr1B \Longrightarrow \gr1B$ and
+$\gr0A, \gr2(B \multimap C), \gr2B \Longrightarrow \gr2C$.
+Furthermore, our term calculus only supports $\gr1$-annotated conclusions,
+so we divide the second substitution type through by $\gr2$.
+Finally, we give the terms largely as before:
+$\gr0x : A, \gr0y : B \to C, \gr1z : B \vdash y : B$ and
+$\gr0x : A, \gr1y : B \to C, \gr1z : B \vdash z\,y : C$.
 
 While we naturally derive a matrix as a fragmentation of a usage vector, we can
 get a slightly cleaner presentation by instead using an abstract linear map.
 Let $\gr\Psi$ now be a linear map of type
 $\Ann^{\size\Delta} \to \Ann^{\size\Gamma}$, with application written postfix.
 The equation $\grP = \grQ\gr\Psi$ remains unchanged.
-As for $\prod_{(\gr sy : B) \in \Delta}\sem{\gr\Psi_y\gamma \vdash B}$, the most
-direct fix is to replace $\gr\Psi_y$ by $\langle y \rvert\gr\Psi$.
-But then we notice that $\langle y \rvert$ is exactly the $\grQprime$ satisfying
-$\grQprime\delta \sqni y : B$.
-Thus, let us derive the following.
+Where we previously wrote $\gr\Psi_x$, the most direct replacement would be
+$\langle x \rvert\gr\Psi$, with $\langle x \rvert$ being the $x$th basis row
+vector.
+But then we notice that $\langle x \rvert$ is exactly the $\grQprime$ satisfying
+$\grQprime\delta \sqni x : B$.
+This gives us the following definition, which can be verified by equationally
+substituting $\grPprime$ and expanding the definition of $\sqni$.
 
-\begin{align*}
-  &\phantom{{}={}} \prod_{(\gr sy : B) \in \Delta}
-    \sem{\langle y \rvert \gr\Psi\gamma \vdash B} \\
-  &\cong \prod_{B,\grQprime} \left(\grQprime\delta \sqni B \to
-    \sem{\grQprime\gr\Psi\gamma \vdash B}\right) \\
-  &\cong \prod_{B,\grQprime,\grPprime} \left(
-    \grPprime = \grQprime\gr\Psi \to \grQprime\delta \sqni B \to
-    \sem{\grPprime\gamma \vdash B}\right)
-\end{align*}
-
-Putting everything back together gives us the final expression.
-
-\begin{align*}
-  &\sum_{\gr\Psi : \Ann^{\size\Delta} \to \Ann^{\size\Gamma}}
+\begin{displaymath}
+  \sum_{\gr\Psi : \Ann^{\size\Delta} \to \Ann^{\size\Gamma}}
     \left(\grP = \grQ\gr\Psi\right) \times
-    \prod_{B,\grQprime,\grPprime} \left(
-    \grPprime = \grQprime\gr\Psi \to \grQprime\delta \sqni B \to
-    \sem{\grPprime\gamma \vdash B}\right)
-\end{align*}
+    \prod_{A,\grQprime,\grPprime} \left(
+    \grPprime = \grQprime\gr\Psi \to \grQprime\delta \sqni A \to
+    \grPprime\gamma \vdash A\right)
+\end{displaymath}
 
 We now have a new reading for the interpretation of a linear substitution:
 a linear map $\gr\Psi$ relating the two usage vectors $\grP$ and $\grQ$, and
@@ -251,3 +235,31 @@ rule, and we know that all such fragmentation is done by linear operations
 zero, addition, and scaling by a constant.
 \todo{Expand. Substitutions need to preserve everything done to the context,
 and linear things are all we do to the context.}
+
+Taking a lead from \autoref{sec:kits}, we deduce a definition of
+\emph{environment} by replacing the $\vdash$ in the definition of simultaneous
+substitution by an arbitrary type family $\mathcal V$.
+Letting $\mathcal V$ be $\sqni$ gives us a notion of simultaneous renaming,
+allowing for renamings with types such as
+$\gr6A, \gr0B, \gr1C \stackrel\sqni\Longrightarrow \gr1C, \gr2A, \gr4A$.
+
+It is worth noting that, when contexts are Cartesian products, passing from
+``a map into $\Delta$'' to ``for each $A \in \Delta$, a map into $A$'' does not
+lose any generality because the universal property of Cartesian products
+states that every map into a Cartesian product can be given factor-wise.
+Hence, $\Delta$ and the one-element context $\prod_{A \in \Delta}A$ are
+isomorphic in the category of contexts and simultaneous substitution.
+However, tensor products are not limits, so don't have the same universal
+property.
+Indeed, many annotated contexts are not isomorphic to the weighted product of
+their elements.
+For example, we do not have a substitution of type
+$\gr1(A \otimes B) \Longrightarrow \gr1A, \gr1B$ because we would first need
+to pattern-match on the tensor product \emph{before} trying to derive the
+target context.
+This loss of generality is however justified when we consider the action of a
+substitution.
+Substitutions should only be replacing variables by terms, whereas if
+substitutions were allowed to pattern-match before introducing the target, then
+the substitution would have to replace the original term by a term that first
+pattern-matches and then continues like the original term.
