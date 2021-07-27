@@ -6,25 +6,32 @@
 \newcommand\grR{\grctx R}
 \newcommand\grPprime{\grP\gr'}
 \newcommand\grQprime{\grQ\gr'}
+\newcommand\grRprime{\grR\gr'}
 \newcommand\name{\ensuremath{\lambda\grR}}
 \newcommand\grctxsub[2]{\grctx{#1}_{\gr{#2}}}
 \newcommand\grPe{\grctxsub P e}
 \newcommand\grPf{\grctxsub P f}
 \newcommand\grQe{\grctxsub Q e}
 \newcommand\grQf{\grctxsub Q f}
+\newcommand\grRl{\grctxsub R l}
+\newcommand\grRr{\grctxsub R r}
 \newcommand\sem[1]{\left\llbracket{#1}\right\rrbracket}
 \newcommand\size[1]{\left\lvert{#1}\right\rvert}
 \newcommand\ps{\mathit{ps}}
 \newcommand\qs{\mathit{qs}}
 \newcommand\rs{\mathit{rs}}
 \newcommand\dotto{\mathrel{\dot\to}}
+\newcommand\dotlr{\mathrel{\dot\leftrightarrow}}
 \newcommand\dottimes{\mathbin{\dot\times}}
+%\newcommand\dotplus{\mathbin{\dot+}}
 \newcommand\wand{\mathrel{\mathord{-}\hspace{-0.75ex}*}}
 \newcommand\sep{\mathbin{*}}
-\newcommand\env[1]{(#1\mathrm{-Env})}
-\newcommand\thinningN{\mathrm{Thinning}}
-\newcommand\thinning[2]{\thinningN~#1~#2}
+%\newcommand\env[1]{(#1\mathrm{-Env})}
+%\newcommand\thinningN{\mathrm{Thinning}}
+%\newcommand\thinning[2]{\thinningN~#1~#2}
+\newcommand\U{\mathcal U}
 \newcommand\V{\mathcal V}
+\newcommand\W{\mathcal W}
 \newcommand\C{\mathcal C}
 \newcommand\sqin{\mathrel{\mathrlap{\sqsubset}{\mathord{-}}}}
 \newcommand\sqni{\mathrel{\mathrlap{\sqsupset}{\mathord{-}}}}
@@ -39,3 +46,9 @@
 \DeclareMathOperator\hom{Hom}
 \DeclareMathOperator\id{id}
 \DeclareMathOperator\sub{Sub}
+
+\newcommand\env[1]{\stackrel{#1}\Longrightarrow}
+
+\newcommand\plr[1]{\left(#1\right)}
+\newcommand\blr[1]{\left[#1\right]}
+\newcommand\forallb[1]{\forall\blr{~#1~}}

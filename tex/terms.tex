@@ -1,0 +1,18 @@
+
+We start with a data type \AgdaDatatype{\_⊢\_} of intrinsically simply typed
+terms.
+Beside base types, the only type former we have is the function type constructor
+\AgdaInductiveConstructor{\_`→\_}.
+Contexts (of type \AgdaRecord{Ctx}) are implemented as the free magma on types
+(\AgdaDatatype{Ty}).
+Context concatenation is \AgdaFunction{\_++ᶜ\_}, and \AgdaFunction{[\_]ᶜ}
+embeds types into contexts.
+Typed variables in a context are given by \AgdaRecord{\_∋\_}.
+A variable in
+\AgdaBound{$\Gamma$}\AgdaSpace{}\AgdaRecord{$\ni$}\AgdaSpace{}\AgdaBound{A}
+is given by a path \AgdaField{idx} to a type in \AgdaBound{$\Gamma$}, together
+with a proof \AgdaField{tyq} that this type is equal to \AgdaBound{A}.
+Variables embed into terms via the \AgdaInductiveConstructor{var} constructor.
+
+\Var{}
+\Term{}

@@ -1,0 +1,260 @@
+%This should stay fairly general, so it could be compiled to a DILL-style
+%calculus as well as the one with usage annotations.
+%Our framework compiles a ND system down to a sequent calculus.
+%It isolates the building blocks of typing rules ($\vdash$, $\wedge$, $*$,
+%$\Box$, $\cdot$) so that we can do more generic programming (e.g., usage
+%checker).
+
+The typing rules presented in the previous section are somewhat convoluted,
+and also contain a lot of repeated patterns.
+For example, nearly half of the rules include the premise
+$\grR \leq \grP + \grQ$.
+Also, the presence of usage annotations, which are often different in different
+parts of a rule, means that we keep repeating the context.
+Explicit contexts go against the style of natural deduction, which is based
+around being parametric in the context, so that substitution is agnostic to the
+details of typing rules.
+
+In this section, I introduce the \emph{bunched connectives}.
+These are inspired by bunched logic~\cite{oHP99}, and will not only be used for
+stating the syntax, but will reappear in the semantics.
+The idea is to generalise the space between premises from Gentzen's natural
+deduction so as to allow for any linear manipulations of usage annotations.
+Similar connectives, but with different interpretations, could be used to
+define other linear-like type theories, like DILL, but here I will focus on the
+usage annotation style.
+The interpretations I use are defined in \autoref{fig:bunched}.
+
+\begin{figure}
+  \begin{align*}
+    \dot1\,\grR &\coloneqq 1 \\
+    (T \dottimes U)\,\grR &\coloneqq T\,\grR \times U\,\grR \\
+    (T \dotto U)\,\grR &\coloneqq T\,\grR \to U\,\grR \\
+    I^*\,\grR &\coloneqq \grR \leq \gr0 \\
+    (T \sep U)\,\grR &\coloneqq \Sigma \grP,\grQ.~ \plr{\grR \leq \grP + \grQ}
+                       \times T\,\grP \times U\,\grQ \\
+    (\gr r \cdot T)\,\grR &\coloneqq \Sigma \grP.~ \plr{\grR \leq \gr r\grP}
+                       \times T\,\grP
+  \end{align*}
+  \caption{The bunched connectives}
+  \label{fig:bunched}
+\end{figure}
+
+The simplest connectives are those we've already seen for intuitionistic
+systems --- $\dot1$, $\dottimes$, and $\dotto$.
+The absence of premises is encoded by $\dot1$, while the space between premises
+sharing a context is encoded by $\dottimes$.
+When we interpret a rule as a constructor of an inductive definition, $\dotto$
+interprets the horizontal line, reflecting the fact that the usage annotations
+we start off with in the premises are those of the conclusion.
+The prototypical rules that use $\dot1$ and $\dottimes$ are the introduction
+rules for $\top$ and $\with$, respectively.
+
+\begin{align*}
+  \begin{prooftree}
+    \infer0{\grR\Gamma \vdash \top}
+  \end{prooftree}
+  &\quad\rightsquigarrow\quad
+  \begin{prooftree}
+    \set{separation=0.75em}
+    \hypo{\dot1}
+    \infer1{\vdash \top}
+  \end{prooftree}
+  \\\\
+  \begin{prooftree}
+    \hypo{\grR\Gamma \vdash A}
+    \hypo{\grR\Gamma \vdash B}
+    \infer2{\grR\Gamma \vdash A \with B}
+  \end{prooftree}
+  &\quad\rightsquigarrow\quad
+  \begin{prooftree}
+    \set{separation=0.75em}
+    \hypo{\vdash A}
+    \hypo{\dottimes}
+    \hypo{\vdash B}
+    \infer3{\vdash A \with B}
+  \end{prooftree}
+\end{align*}
+
+The rest of the bunched connectives are for linear decompositions of the usage
+annotations.
+The three basic left semimodule operators --- zero, addition, and left-scaling
+--- each get a bunched connective --- $I^*$, $\sep$, and $\gr r \cdot {}$,
+respectively.
+The prototypical typing rules for each of these three connectives are the
+introduction rules for $I$, $\otimes$, and $\oc_{\gr r}$, respectively.
+
+\begin{align*}
+  \begin{prooftree}
+    \hypo{\grR \leq \gr0}
+    \infer1{\grR\Gamma \vdash I}
+  \end{prooftree}
+  &\quad\rightsquigarrow\quad
+  \begin{prooftree}
+    \set{separation=0.75em}
+    \hypo{I^*}
+    \infer1{\vdash I}
+  \end{prooftree}
+  \\\\
+  \begin{prooftree}
+    \hypo{\grP\Gamma \vdash A}
+    \hypo{\grQ\Gamma \vdash B}
+    \hypo{\grR \leq \grP + \grQ}
+    \infer3{\grR\Gamma \vdash A \otimes B}
+  \end{prooftree}
+  &\quad\rightsquigarrow\quad
+  \begin{prooftree}
+    \set{separation=0.75em}
+    \hypo{\vdash A}
+    \hypo{\sep}
+    \hypo{\vdash B}
+    \infer3{\vdash A \otimes B}
+  \end{prooftree}
+  \\\\
+  \begin{prooftree}
+    \hypo{\grP\Gamma \vdash A}
+    \hypo{\grR \leq \gr r\grP}
+    \infer2{\grR\Gamma \vdash \oc_{\gr r} A}
+  \end{prooftree}
+  &\quad\rightsquigarrow\quad
+  \begin{prooftree}
+    \set{separation=0.75em}
+    \hypo{\gr r \cdot (\vdash A)}
+    \infer1{\vdash \oc_{\gr r} A}
+  \end{prooftree}
+\end{align*}
+
+The full system \name{} is stated in terms of bunched connectives in
+\autoref{fig:lr-bunched}.
+%I have not included a variable rule because, like with intuitionistic
+%natural deduction,
+
+These bunched connectives should not be confused for the linear connectives
+they appear in the introduction rules of.
+For example, it would make sense to define a bunched connective $\dotplus$,
+defined analogously to $\dottimes$.
+This $\dotplus$ could be used to rephrase the introduction rules for $\oplus$.
+We then have maps both ways between $T \dottimes (U \dotplus V)$ and
+$(T \dottimes U) \dotplus (T \dottimes V)$, reminiscent of bunched logic,
+whereas linear logic only has a map from $(A \with B) \oplus (A \with C)$ to
+$A \with (B \oplus C)$, and not a map the other way.
+%For example, linearly we have
+%$\oc_{\gr r}(A \with B) \simeq \oc_{\gr r} A \otimes \oc_{\gr r} B$, while the
+%expressions $\gr r \cdot (A \dottimes B)$ and $\gr r \cdot A \sep \gr r \cdot B$
+%are generally incomparable.
+We will also see later that, while $(\dottimes, \dotto)$ gives a Cartesian
+closed structure, $\sep$ is monoidally closed, with an internal hom $\wand$.
+Looking at the interpretations, the connection with bunched logic makes sense.
+Instead of the partial commutative monoid (representing heaps) found in
+standard semantics of bunched logic, we have a left semimodule of usage
+contexts, which we are similarly interested in splitting and sharing between
+various subterms.
+
+\begin{figure}
+  \ebproofset{separation=0.75em}
+  \begin{displaymath}
+    \begin{prooftree}
+      \hypo{\sqni A}
+      \infer1[Var]{\vdash A}
+    \end{prooftree}
+  \end{displaymath}
+
+  \begin{displaymath}
+    \begin{matrix}
+      \begin{prooftree}
+        \hypo{I^*}
+        \infer1[$I$-I]{\vdash I}
+      \end{prooftree}
+      &&
+      \begin{prooftree}
+        \hypo{\vdash I}
+        \hypo{\sep}
+        \hypo{\vdash C}
+        \infer3[$I$-E]{\vdash C}
+      \end{prooftree}
+      \\\\
+      \begin{prooftree}
+        \hypo{\vdash A}
+        \hypo{\sep}
+        \hypo{\vdash B}
+        \infer3[$\otimes$-I]{\vdash A \otimes B}
+      \end{prooftree}
+      &&
+      \begin{prooftree}
+        \hypo{\vdash A \otimes B}
+        \hypo{\sep}
+        \hypo{\gr1A, \gr1B \vdash C}
+        \infer3[$\otimes$-E]{\vdash C}
+      \end{prooftree}
+      \\\\
+      \begin{prooftree}
+        \hypo{\gr1A \vdash B}
+        \infer1[$\multimap$-I]{\vdash A \multimap B}
+      \end{prooftree}
+      &&
+      \begin{prooftree}
+        \hypo{\vdash A \multimap B}
+        \hypo{\sep}
+        \hypo{\vdash A}
+        \infer3[$\multimap$-E]{\vdash B}
+      \end{prooftree}
+      \\\\
+      \begin{prooftree}
+        \hypo{\dot1}
+        \infer1[$\top$-I]{\vdash \top}
+      \end{prooftree}
+      &&
+      \textrm{(no $\top$-E)}
+      \\\\
+      \begin{prooftree}
+        \hypo{\vdash A}
+        \hypo{\dottimes}
+        \hypo{\vdash B}
+        \infer3[$\with$-I]{\vdash A \with B}
+      \end{prooftree}
+      &&
+      \begin{prooftree}
+        \hypo{\vdash A_0 \with A_1}
+        \infer1[$\with$-E$_i$, for $i \in \{0,1\}$]{\vdash A_i}
+      \end{prooftree}
+      \\\\
+      \textrm{(no $0$-I)}
+      &&
+      \begin{prooftree}
+        \hypo{\vdash 0}
+        \hypo{\sep}
+        \hypo{\dot1}
+        \infer3[$0$-E]{\vdash C}
+      \end{prooftree}
+      \\\\
+      \begin{prooftree}
+        \hypo{\vdash A_i}
+        \infer1[$\oplus$-I$_i$, for $i \in \{0,1\}$]{\vdash A_0 \oplus A_1}
+      \end{prooftree}
+      &&
+      \begin{prooftree}
+        \hypo{\vdash A \oplus B}
+        \hypo{\sep}
+        \hypo{(\gr1A \vdash C}
+        \hypo{\dottimes}
+        \hypo{\gr1B \vdash C)}
+        \infer5[$\oplus$-E]{\vdash C}
+      \end{prooftree}
+      \\\\
+      \begin{prooftree}
+        \hypo{\gr r \cdot (\vdash A)}
+        \infer1[$\oc$-I]{\vdash \oc_{\gr r} A}
+      \end{prooftree}
+      &&
+      \begin{prooftree}
+        \hypo{\vdash \oc_{\gr r} A}
+        \hypo{\sep}
+        \hypo{\gr rA \vdash C}
+        \infer3[$\oc$-E]{\vdash C}
+      \end{prooftree}
+    \end{matrix}
+  \end{displaymath}
+  \ebproofset{separation=1.5em}
+  \caption{\name{} stated using bunched connectives}
+  \label{fig:lr-bunched}
+\end{figure}

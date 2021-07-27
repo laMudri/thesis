@@ -1,0 +1,202 @@
+\begin{remark}
+  Given an environment $\rho : \grP\gamma \env\V \grQ\delta$ and a $\grPprime$
+  and a $\grQprime$ such that $\grPprime = \grQprime\plr{\rho.\gr\Psi}$,
+  there is also an environment of type $\grPprime\gamma \env\V \grQprime\delta$
+  with the same linear map and action on variables.
+\end{remark}
+\begin{proof}
+  The only part of the definition of an environment dependent on $\grP$ or
+  $\grQ$ is the constraint $\grP = \grQ\gr\Psi$, which we are able to replace
+  for $\grPprime$ and $\grQprime$.
+\end{proof}
+
+When constructing an environment, we can do so by cases on the shape of the
+target context.
+We can create an environment into the empty context when all usage annotations
+on the source context are $\gr0$.
+We can create an environment into a concatenated context when we can additively
+split up the annotations of the source context and produce environments into
+both halves from the split sources.
+We can create an environment into a singleton context when there is a context
+$\gr r$ times smaller than the source context in which we can produce a value
+of the appropriate type.
+
+\begin{lemma}\label{thm:construct-env}
+  We can define all of the following equivalences for any values of the free
+  variables.
+  \begin{itemize}
+    \item $\forallb{I \dotlr \plr{{-} \env\V {\cdot}}}$
+    \item $\forallb{\plr{{-} \env\V \Gamma} \sep \plr{{-} \env\V \Delta}
+      \dotlr \plr{{-} \env\V \Gamma, \Delta}}$
+    \item
+      $\forallb{\gr r \cdot \plr{\V\,(-)\,A} \dotlr \plr{{-} \env\V \gr rA}}$
+  \end{itemize}
+\end{lemma}
+\begin{proof}
+  There are 6 cases to check.
+  Throughout, we write $\Gamma$ as $\grP\gamma$ and $\Delta$ as $\grQ\delta$
+  when convenient.
+  \begin{description}
+    \item[$I(\to)$]
+      Let $\gr\Psi$ be the unique linear map out of the zero space.
+      By definition, $\gr0 = \grQ\gr\Psi$.
+      There are no variables to act upon.
+    \item[$I(\gets)$]
+      $\grQ\gr\Psi$ is an empty sum, so if $\grP = \grQ\gr\Psi$ then
+      $\grP = \gr0$.
+    \item[$\sep(\to)$]
+      Let the given environments be $\rho : \grRl\theta \env\V \Gamma$ and
+      $\sigma : \grRr\theta \env\V \Delta$, with $\grR = \grRl + \grRr$.
+      Define $\gr\Psi \coloneqq [\rho.\gr\Psi, \sigma.\gr\Psi]$, using the
+      coproduct structure of the concatenated vector space.
+      We have $\grR = \grRl + \grRr =
+      \grP\plr{\rho.\gr\Psi} + \grQ\plr{\sigma.\gr\Psi} =
+      \plr{\grP, \grQ}\gr\Psi$.
+      To act on variables, we are given
+      $\grRprime = \plr{\grPprime, \grQprime}\gr\Psi$ and
+      $\grPprime\gamma, \grQprime\delta \sqni A$.
+      Without loss of generality, let us have $\grPprime\gamma \sqni A$ and
+      $\grQprime = \gr0$.
+      Thus, $\grRprime = \grPprime\plr{\rho.\gr\Psi}$, and we can act on the
+      variable using $\rho$.
+    \item[$\sep(\gets)$]
+      Let the unnamed context be $\Theta$, also written $\grR\theta$.
+      The linear map
+      $\gr\Psi : \Ann^{\size\Gamma + \size\Delta} \to \Ann^{\size\Theta}$ splits
+      into
+      $\gr\Psi_{\gr l} : \Ann^{\size\Gamma} \to \Ann^{\size\Theta}
+      \coloneqq \langle \id, 0 \rangle; \gr\Psi$ and
+      $\gr\Psi_{\gr r} : \Ann^{\size\Delta} \to \Ann^{\size\Theta}
+      \coloneqq \langle 0, \id \rangle; \gr\Psi$, using the product structure of
+      the concatenated vector space.
+      Let $\grRl \coloneqq \grP\gr\Psi_{\gr l}$ and
+      $\grRr \coloneqq \grQ\gr\Psi_{\gr r}$, by definition satisfying the
+      required equations.
+      For the action on variables, let us consider the left environment.
+      We are given $\grRprime = \grPprime\gr\Psi_{\gr l}$ and
+      $\grPprime\gamma \sqni A$.
+      From these, we get
+      $\grRprime = \grPprime\gr\Psi_{\gr l} = \plr{\grPprime, \gr0}\gr\Psi$ and
+      $\grPprime\gamma, \gr0\delta \sqni A$.
+      We can therefore act using the original environment.
+    \item[$\cdot(\to)$]
+      Let $\grP$ and $\grPprime$ be such that $\grP = \gr r\grPprime$ and let
+      $v : \V\,\grPprime\gamma\,A$.
+      Let $\gr\Psi : \Ann \to \Ann^{\size\gamma}
+      \coloneqq \gr r\gr' \mapsto \gr r\gr'\grPprime$.
+      By definition and the previous assumption, we have $\grP = \gr r\gr\Psi$.
+      When acting on a variable, we have $\grP\gr{''} = \gr r\gr'\gr\Psi$
+      and $\gr r\gr'A \sqni A'$.
+      The latter tells us that $A = A'$ and $\gr r\gr' = \gr1$.
+      Thus, $\grP\gr{''} = \grPprime$.
+      We therefore need a value of type $\V\,\grPprime\gamma\,A$, which we can
+      take to be $v$.
+    \item[$\cdot(\gets)$]
+      Let us have an environment of type $\grP\gamma \env\V \gr rA$.
+      We want to use its action on variables to yield a value.
+      To do this, we let $\grPprime \coloneqq \gr1\gr\Psi$, and use this
+      equation, together with the fact that we have a variable of type
+      $\gr1A \sqni A$, to get a value of type $\V\,\grPprime\gamma\,A$.
+      Furthermore, we derive $\grP = \gr r\gr\Psi = \gr r\grPprime$, as
+      required.
+  \end{description}
+\end{proof}
+
+We could, indeed, use these three clauses to define what an environment is.
+However, I find them difficult to work with, as it is often easier to do
+linear algebraic proofs separately from the rest of an environment.
+For identity and composition, as we are about to see, the original definition
+is easier to use because we can rely on the identity and composition of linear
+maps.
+Concretely, an inductive proof of identity would, for example, involve
+constructing an environment of type
+$\grP\gamma, \grQ\delta \env\V \grP\gamma, \grQ\delta$ by constructing
+environments of types $\grP\gamma, \gr0\delta \env\V \grP\gamma$ and
+$\gr0\gamma, \grQ\delta \env\V \grQ\delta$.
+These are not identity environments, so we would have to strengthen the
+induction hypothesis.
+
+The requirements for identity and composition of environments look a bit like
+the unit and lift of a Kleisli triple.
+
+\begin{lemma}[Identity environment]
+  Given a function $\mathrm{vr} : \forallb{{\sqni} \dotto \V}$, for any
+  $\Gamma$ we have an environment of type $\Gamma \env\V \Gamma$.
+\end{lemma}
+\begin{proof}
+  Let $\gr\Psi$ be the identity map, which clearly satisfies
+  $\grP = \grP\gr\Psi$.
+  When acting on a variable, the equation $\grPprime = \grQprime\gr\Psi$ means
+  that $\grPprime = \grQprime$, so we want, from a variable of type
+  $\grPprime\gamma \sqni A$, a value of type $\V\,\grPprime\gamma\,A$, which
+  we can get from $\mathrm{vr}$.
+\end{proof}
+
+\begin{lemma}\label{thm:env-comp-lemma}
+  Given an environment $\rho : \Gamma \env\U \Delta$ for which we have, for any
+  $\grPprime$ and $\grQprime$ such that
+  $\grPprime = \grQprime\plr{\rho.\gr\Psi}$, we have a function
+  $\mathrm{lift}_\rho :
+  \forallb{\V\,\grQprime\delta \dotto \W\,\grPprime\gamma}$,
+  we can map environments of type $\Delta \env\V \Theta$ into environments of
+  type $\Gamma \env\W \Theta$.
+\end{lemma}
+\begin{proof}
+  Let $\rho$ be as in the statement, and let $\sigma : \Delta \env\V \Theta$.
+  For the environment we are constructing, let
+  $\gr\Psi \coloneqq \sigma.\gr\Psi; \rho.\gr\Psi$, noting that
+  $\grP = \grQ\plr{\rho.\gr\Psi} =
+  \plr{\grR\plr{\sigma.\gr\Psi}}\plr{\rho.\gr\Psi}$.
+  For the action on variables, we are given $\grPprime = \grRprime\gr\Psi$ with
+  $\grRprime\theta \sqni A$.
+  We can immediately apply the action of $\sigma$, giving us a value of type
+  $\V\,\plr{\grRprime\plr{\sigma.\gr\Psi}}\,A$.
+  We note that
+  $\grPprime = \plr{\grRprime\plr{\sigma.\gr\Psi}}\plr{\rho.\gr\Psi}$, and
+  apply $\mathrm{lift}_\rho$ to get the desired value.
+\end{proof}
+
+\begin{corollary}[Composition of environments]
+  Given a function
+  $\mathrm{lift} : \plr{\rho : \grP\gamma \env\U \grQ\delta} \to
+  \forall \grPprime, \grQprime.~\grPprime = \grQprime\plr{\rho.\gr\Psi} \to
+  \forallb{\V\,\grQprime\delta \dotto \W\,\grPprime\gamma}$, then we can
+  compose environments of types $\Gamma \env\U \Delta$ and
+  $\Delta \env\V \Theta$ into an environment of type $\Gamma \env\W \Theta$.
+\end{corollary}
+
+\begin{example}
+  We can derive the following instances of environment composition.
+  \begin{itemize}
+    \item If $\U = \V = \W = {\sqni}$, then $\mathrm{lift}$ is given by the
+      action of the renaming $\rho$ on variables.
+      This allows us to derive composition of renamings.
+    \item More generally, if $\V = {\sqni}$ and $\U = \W$, we can still use
+      the action of the environment $\rho$.
+      This means that renamings post-compose with any other sort of environment.
+    \item If $\V = \W = {\vdash}$, then $\mathrm{lift}$ is given by a
+      syntactic traversal.
+      For example, if $\U = {\sqni}$, we need the action of renaming on terms
+      to show that a renaming followed by a substitution composes to a
+      substitution.
+      If $\U = {\vdash}$, then the action of substitution on terms gives us that
+      substitutions compose.
+    \item More generally, if $\V = {\vdash}$ and we have a semantics from
+      $\U$ to $\W$, then $\mathrm{lift}$ can be given by the semantic traversal
+      of terms.
+  \end{itemize}
+\end{example}
+
+% Concatenation is difficult; save to after I've talked about renamings.
+
+% Finally for this section, we give the conditions under which the
+% context-forming operations (empty, concatenation, and singleton) have a
+% functorial action with respect to $\V$-environments.
+%
+% \begin{lemma}
+%   For any $\V$, there is an environment ${\cdot} \env\V {\cdot}$.
+% \end{lemma}
+% \begin{proof}
+%   By \autoref{thm:construct-env}, it suffices to show $I\,{\cdot}$, which is
+%   trivially true.
+% \end{proof}

@@ -94,8 +94,10 @@
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{example}[theorem]{Example}
 \newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
 
 \input{macros.tex}
+\input{lagda.tex}
 
 % Page Margins - Strath Requirement
 \usepackage[left=4cm,right=2.5cm,top=2cm,bottom=4cm,includehead,includefoot,headheight=15pt]{geometry}
@@ -199,19 +201,14 @@ which was licensed under CC BY 4.0.
 
 \chapter{Introduction}
 
-\chapter{Simply typed $\lambda$-calculus}
-  \section{Basics}
-  \section{Kits}\label{sec:kits}
-  \input{kits.tex}
-  \section{Generic semantics}
-  \section{Generic syntax}
-  \section{Natural deduction vs sequent calculus}
-  \input{ndsc.tex}
+\chapter{Mathematical preliminaries}
+  Categories, (co)products, monoidal categories, string diagrams (in Rel),
+  monoid objects.
+  Examples: Set, Rel, partial functions, commutative monoids.
 
 \chapter{Linearity}
   \section{Intuitionistic linear logic}
   \input{ill.tex}
-  \section{Mechanisation survey}
   \section{DILL}
   DILL provides a syntax in which $\oc$ is characterised by a universal
   property.
@@ -224,12 +221,19 @@ which was licensed under CC BY 4.0.
   The idea of split contexts can also be applied to left-/right-rule systems.
   (Define this DILL variant.)
 
+  \section{Mechanisation survey}
+
   %\section{Notice what additive/multiplicative/exponential rules look like}
 
-\chapter{Category theory}
-  Categories, (co)products, monoidal categories, string diagrams (in Rel),
-  monoid objects.
-  Examples: Set, Rel, partial functions, commutative monoids.
+\chapter{Mechanisation of simple types}
+  \section{Term representation}
+  \input{terms.tex}
+  \section{Renaming and substitution}\label{sec:kits}
+  \input{kits.tex}
+  \section{Generic semantics}
+  \section{Generic syntax}
+  \section{Natural deduction vs sequent calculus}
+  \input{ndsc.tex}
 
 \chapter{Usage restriction via semirings}
   \section{Why semirings?}
@@ -237,16 +241,17 @@ which was licensed under CC BY 4.0.
 
   \section{$\lambda\mathcal{R}$}
 
+  \section{Linear natural deduction}
+  \input{lnd.tex}
+
   \section{What are linear renaming and substitution?}
   \input{lrkits.tex}
 
-  \section{Linear natural deduction}
-  This should stay fairly general, so it could be compiled to a DILL-style
-  calculus as well as the one with usage annotations.
-  Our framework compiles a ND system down to a sequent calculus.
-  It isolates the building blocks of typing rules ($\vdash$, $\wedge$, $*$,
-  $\Box$, $\cdot$) so that we can do more generic programming (e.g., usage
-  checker).
+  \section{Properties of linear environments}
+  \input{lenv.tex}
+
+  \section{Substitution is admissible in \name{}}
+  \input{lrsub.tex}
 
 \chapter{Weighted multicategories}
   \section{Ordinary and Cartesian multicategories}
