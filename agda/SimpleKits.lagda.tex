@@ -15,14 +15,20 @@ infix 5 _++ᶜ_
 data Ty : Set where
   ι : Ty
   _`→_ : (A B : Ty) → Ty
+\end{code}
 
+%<*Ctx>
+\begin{code}
 record Ctx : Set where
   constructor ctx
   field
     {shape} : LTree
     ty-ctx : Vector Ty shape
 open Ctx public
+\end{code}
+%</Ctx>
 
+\begin{code}
 [_]ᶜ : Ty → Ctx
 [ A ]ᶜ = ctx [ A ]
 []ᶜ : Ctx
