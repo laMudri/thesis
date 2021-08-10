@@ -1,9 +1,9 @@
-\begin{remark}
+\begin{lemma}\label{thm:env-resize}
   Given an environment $\rho : \grP\gamma \env\V \grQ\delta$ and a $\grPprime$
   and a $\grQprime$ such that $\grPprime = \grQprime\plr{\rho.\gr\Psi}$,
   there is also an environment of type $\grPprime\gamma \env\V \grQprime\delta$
   with the same linear map and action on variables.
-\end{remark}
+\end{lemma}
 \begin{proof}
   The only part of the definition of an environment dependent on $\grP$ or
   $\grQ$ is the constraint $\grP = \grQ\gr\Psi$, which we are able to replace
@@ -321,6 +321,6 @@ the unit and lift of a Kleisli triple.
 %   For any $\V$, there is an environment ${\cdot} \env\V {\cdot}$.
 % \end{lemma}
 % \begin{proof}
-%   By \autoref{thm:construct-env}, it suffices to show $I\,{\cdot}$, which is
+%   By \cref{thm:construct-env}, it suffices to show $I\,{\cdot}$, which is
 %   trivially true.
 % \end{proof}

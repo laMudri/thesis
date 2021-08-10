@@ -5,8 +5,8 @@
 %$\Box$, $\cdot$) so that we can do more generic programming (e.g., usage
 %checker).
 
-The typing rules presented in the previous section are somewhat convoluted,
-and also contain a lot of repeated patterns.
+The typing rules presented in the previous section contain a lot of detail and
+repeated patterns.
 For example, nearly half of the rules include the premise
 $\grR \leq \grP + \grQ$.
 Also, the presence of usage annotations, which are often different in different
@@ -15,15 +15,19 @@ Explicit contexts go against the style of natural deduction, which is based
 around being parametric in the context, so that substitution is agnostic to the
 details of typing rules.
 
-In this section, I introduce the \emph{bunched connectives}.
+To encapsulate the repeated patterns and facilitate an implicit context style,
+I introduce the \emph{bunched connectives}.
 These are inspired by bunched logic~\cite{oHP99}, and will not only be used for
 stating the syntax, but will reappear in the semantics.
 The idea is to generalise the space between premises from Gentzen's natural
 deduction so as to allow for any linear manipulations of usage annotations.
+Among other things, this generalisation will allow us to distinguish between
+$\with$-introduction and $\otimes$-introduction by a choice of connective:
+either \emph{sharing} or \emph{separating} conjunction.
 Similar connectives, but with different interpretations, could be used to
 define other linear-like type theories, like DILL, but here I will focus on the
 usage annotation style.
-The interpretations I use are defined in \autoref{fig:bunched}.
+The interpretations I use are defined in \cref{fig:bunched}.
 
 \begin{figure}
   \begin{align*}
@@ -125,7 +129,7 @@ introduction rules for $I$, $\otimes$, and $\oc_{\gr r}$, respectively.
 \end{align*}
 
 The full system \name{} is stated in terms of bunched connectives in
-\autoref{fig:lr-bunched}.
+\cref{fig:lr-bunched}.
 %I have not included a variable rule because, like with intuitionistic
 %natural deduction,
 
@@ -142,8 +146,12 @@ $A \with (B \oplus C)$, and not a map the other way.
 %$\oc_{\gr r}(A \with B) \simeq \oc_{\gr r} A \otimes \oc_{\gr r} B$, while the
 %expressions $\gr r \cdot (A \dottimes B)$ and $\gr r \cdot A \sep \gr r \cdot B$
 %are generally incomparable.
-We will also see later that, while $(\dottimes, \dotto)$ gives a Cartesian
+We will also see later\todo{Forward reference} that, while
+$(\dottimes, \dotto)$ gives a Cartesian
 closed structure, $\sep$ is monoidally closed, with an internal hom $\wand$.
+Indeed, the Cartesian closed structure is sufficient to give us the interaction
+between $\dotplus$ and $\dottimes$, by the fact that $A \dottimes {-}$ is a
+left adjoint, and therefore preserves colimits.
 Looking at the interpretations, the connection with bunched logic makes sense.
 Instead of the partial commutative monoid (representing heaps) found in
 standard semantics of bunched logic, we have a left semimodule of usage

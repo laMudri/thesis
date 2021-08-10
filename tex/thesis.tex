@@ -33,6 +33,7 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{catchfilebetweentags}
+\usepackage[capitalize]{cleveref}
 \usepackage{cmll}
 \usepackage{ebproof}
 \usepackage[utf8]{inputenc}
@@ -201,18 +202,14 @@ which was licensed under CC BY 4.0.
 \chapter{Usage restriction via semirings}
   \section{Why semirings?}
   \input{semirings.tex}
-
-  \section{$\lambda\mathcal{R}$}
-
+  \section{A usage-annotated calculus}
+  \input{lr.tex}
   \section{Linear natural deduction}
   \input{lnd.tex}
-
   \section{What are linear renaming and substitution?}
-  \input{lrkits.tex}
-
+  \input{lrkits.tex}\label{sec:lrkits}
   \section{Properties of linear environments}
-  \input{lenv.tex}
-
+  \input{lenv.tex}\label{sec:lenv}
   \section{Substitution is admissible in \name{}}
   \input{lrsub.tex}
 
@@ -223,7 +220,7 @@ which was licensed under CC BY 4.0.
   \input{weighted.tex}
   \section{Applications}
 
-\chapter{Semantics in worldly relations}
+\chapter{Semantics in worldly relations}\label{sec:wrel}
 
 \chapter{A framework for usage-restricted calculi}
   \input{framework.tex}
