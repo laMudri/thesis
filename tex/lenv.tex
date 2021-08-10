@@ -116,6 +116,130 @@ $\gr0\gamma, \grQ\delta \env\V \grQ\delta$.
 These are not identity environments, so we would have to strengthen the
 induction hypothesis.
 
+One of the primary test cases for environments is simultaneous substitution,
+which will look like the following rule.
+The admissibility of substitution will be by induction on the derivation of
+$\Delta \vdash A$, so we will need to be able to adapt any environment we are
+given to work with any possible context of new premises.
+In the simply typed case, the only change to the context we encountered was the
+binding of new variables.
+Now, with usage annotations, we furthermore have linear decompositions of the
+context, necessitating changes to the environment whenever usage annotations
+change.
+I will deal first with linear decompositions.
+
+\begin{displaymath}
+  \begin{prooftree}
+    \hypo{\Gamma \env{\vdash} \Delta}
+    \hypo{\Delta \vdash A}
+    \infer2[sub]{\Gamma \vdash A}
+  \end{prooftree}
+\end{displaymath}
+
+There are three kinds of linear decompositions we have to deal with: zero,
+addition, and scaling; corresponding to bunched connectives $I^*$, $\sep$, and
+$\gr r \cdot {}$, respectively.
+In each case, we have a simple preservation lemma, transforming an environment
+of type $\Gamma \env\V \Delta$ and a decomposition of $\Delta$ into a
+decomposition of $\Gamma$ and environments for all of the decomposed fragments
+of $\Gamma$ and $\Delta$.
+
+\begin{lemma}[environments preserve zero]\label{thm:lr-env-zero}
+  Given an environment of type $\grP\gamma \env\V \grQ\delta$ such that
+  $\grQ \leq \gr 0$, we also have that $\grP \leq \gr 0$.
+\end{lemma}
+\begin{proof}
+  $\grP \leq \grQ\gr\Psi \leq \gr0\gr\Psi = \gr0$, by environment
+  compatibility and monotonicity and linearity of $\gr\Psi$.
+\end{proof}
+
+\begin{lemma}[environments preserve addition]\label{thm:lr-env-add}
+  Given an environment of type $\grP\gamma \env\V \grQ\delta$ such that
+  $\grQ \leq \grQl + \grQr$ for some $\grQl$ and $\grQr$, we also have $\grPl$
+  and $\grPr$ such that $\grP \leq \grPl + \grPr$ and there are environments
+  of types $\grPl\gamma \env\V \grQl\delta$ and
+  $\grPr\gamma \env\V \grQr\delta$.
+\end{lemma}
+\begin{proof}
+  Let $\grPl \coloneqq \grQl\gr\Psi$ and $\grPr \coloneqq \grQr\gr\Psi$.
+  Then, $\grP \leq \grQ\gr\Psi \leq \plr{\grQl + \grQr}\gr\Psi =
+  \grQl\gr\Psi + \grQr\gr\Psi = \grPl + \grPr$, satisfying the first condition.
+  Because clearly $\grPl \leq \grQl\gr\Psi$ and $\grPr \leq \grQr\gr\Psi$,
+  \cref{thm:env-resize} on the original environment gives us the required
+  pair of new environments.
+\end{proof}
+
+\begin{lemma}[environments preserve scaling]\label{thm:lr-env-scale}
+  Given an environment of type $\grP\gamma \env\V \grQ\delta$ such that
+  $\grQ \leq \gr r\grQprime$ for some $\grQprime$, we also have a $\grPprime$
+  such that $\grP \leq \gr r\grPprime$ and there is an environment of type
+  $\grPprime\gamma \env\V \grQprime\delta$.
+\end{lemma}
+\begin{proof}
+  Let $\grPprime \coloneqq \grQprime\gr\Psi$.
+  Then, $\grP \leq \grQ\gr\Psi \leq \plr{\gr r\grQprime}\gr\Psi =
+  \gr r\plr{\grQprime\gr\Psi} = \gr r\grPprime$, satisfying the first condition.
+  Because clearly $\grPprime \leq \grQprime\gr\Psi$,
+  \cref{thm:env-resize} on the original environment gives us the required
+  new environment.
+\end{proof}
+
+Finally, I will also take the opportunity to give the bind lemma, allowing
+environments to incorporate newly bound variables.
+In the intuitionistic case, the bind lemma had two requirements on $\V$: $\V$
+admits weakening and we can map variables into $\V$-values.
+With usage annotations, the former is unreasonable, but it turns out that we
+only need weakening by variables whose usage annotation is less than or equal
+to $\gr0$.
+The latter stays as-is, with the note that ``variable'' now means a
+usage-checked variable.
+
+\begin{lemma}[bind]\label{thm:lr-bind}
+  Given functions
+  ${\swarrow^k} : \forall \Gamma, \grR, \theta.~\grR \leq \gr0 \to
+  \forallb{\V\,\Gamma \dotto \V\,\plr{\Gamma, \grR\theta}}$ and
+  $\mathrm{vr} : \forallb{{\sqni} \dotto \V}$, we can turn an environment of
+  type $\Gamma \env\V \Delta$ into an environment of type
+  $\Gamma, \Theta \env\V \Delta, \Theta$ for any context $\Theta$.
+\end{lemma}
+\begin{proof}
+  Let $\grP\gamma \coloneqq \Gamma$, $\grQ\delta \coloneqq \Delta$, and
+  $\grR\theta \coloneqq \Theta$.
+  Let the new linear map $\gr\Psi\gr' : \Ann^{\size\Delta + \size\Theta} \to
+  \Ann^{\size\Gamma + \size\Theta}$ be $\gr\Psi \oplus \gr I$.
+  That is, in block matrix notation,
+  $\begin{pmatrix} \gr\Psi & \gr0 \\ \gr0 & \gr I \end{pmatrix}$.
+  Checking that this linear map fits, we have
+  $\begin{pmatrix}\grP & \grR\end{pmatrix}
+  \leq \begin{pmatrix}\grQ\gr\Psi & \grR\gr I\end{pmatrix}
+  = \begin{pmatrix}\grQ & \grR\end{pmatrix}\plr{\gr\Psi \oplus \gr I}$.
+  For the action on variables, we are given vectors $\grPprime$,
+  $\grR\gr'_\grP$, $\grQprime$, and $\grR\gr'_\grQ$ such that
+  $\begin{pmatrix} \grPprime & \grR\gr'_\grP \end{pmatrix} \leq
+  \begin{pmatrix} \grQprime & \grR\gr'_\grQ \end{pmatrix}
+  \plr{\gr\Psi \oplus \gr I}$ and we have a variable of type
+  $\grQprime\delta, \grR\gr'_\grQ\theta \sqni A$ for some type $A$.
+  The constraint on the new vectors reduces to $\grPprime \leq \grQprime\gr\Psi$
+  and $\grR\gr'_\grP \leq \grR\gr'_\grQ$.
+  From the variable we either have a variable $x$ in $\delta$ with
+  $\grQprime \leq \langle x \rvert$ and $\grR\gr'_\grQ \leq \gr0$, or a
+  variable $y$ in $\theta$ with $\grQprime \leq \gr0$ and
+  $\grR\gr'_\grQ \leq \langle y \rvert$.
+  In the former case, the action of the original environment on $x$ gives us a
+  $\V$-value in $\grPprime\gamma$, and the $\gr0$-weakening principle
+  $\swarrow^k$, noting that $\grR\gr'_\grP \leq \grR\gr'_\grQ \leq \gr0$, gives
+  us a $\V$-value in $\grPprime\gamma, \grR\gr'_\grP\theta$.
+  In the latter case, we have that
+  $\begin{pmatrix} \grPprime & \grR\gr'_\grP \end{pmatrix}
+  \leq \begin{pmatrix} \grQprime\gr\Psi & \grR\gr'_\grQ \end{pmatrix}
+  \leq \begin{pmatrix} \gr0\gr\Psi & \langle y \rvert \end{pmatrix}
+  = \begin{pmatrix} \gr0 & \langle y \rvert \end{pmatrix}
+  = \left\langle {\searrow}y \right\rvert$, so $y$ also serves as a
+  usage-checked variable in $\grPprime\gamma, \grR\gr'_\grP\theta$.
+  From this usage-checked variable, we get a $\V$-value in the same context
+  using $\mathrm{vr}$.
+\end{proof}
+
 The requirements for identity and composition of environments look a bit like
 the unit and lift of a Kleisli triple.
 
