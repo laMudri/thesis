@@ -20,7 +20,7 @@ When using an assumption within a derivation, we must say which free variable
 it corresponds to.
 Free variables are introduced by \emph{variable-binding} rules, like
 $\to$-introduction.
-\autoref{fig:explicit-contexts} gives an example of the same derivation written
+\cref{fig:explicit-contexts} gives an example of the same derivation written
 in Gentzen's style and in the explicit context style.
 
 \begin{sidewaysfigure}
@@ -69,7 +69,7 @@ restricted ways:
 
 Having chosen to use explicit contexts, the mechanisation must have a chosen
 representation of contexts as a data structure.
-While the notation in \autoref{fig:explicit-contexts} uses names $f$ and $x$
+While the notation in \cref{fig:explicit-contexts} uses names $f$ and $x$
 for variables, I opt for a nameless representation.
 In a nameless representation, variables are identified by their position in
 the context, rather than by a name.
@@ -87,8 +87,8 @@ The contents of the context --- the types --- are then stored in the functional
 vector \AgdaField{ty-ctx}, which is a mapping from leaves in \AgdaField{shape}
 to object language types \AgdaDatatype{Ty}.
 The advantages of the functional vector representation will not become clear
-until later chapters, where I make use of the ease of look-up and $\eta$-law
-of functions.
+until later chapters\todo{forward reference}, where I make use of the ease of
+look-up and $\eta$-law of functions.
 However, I claim for now that there is little to no disadvantage in the
 functional vector representation --- in particular, we have no need for
 function extensionality principles because we never talk about equality of
@@ -100,6 +100,7 @@ injective, so that in cases where multiple new variables are bound in a subterm
 (for example, $\otimes$-elimination), Agda's unification-based solving will
 be more able to infer which variables have just been bound.
 
+\missingfigure{LTree}
 \Ctx{}
 
 We start with a data type \AgdaDatatype{\_⊢\_} of intrinsically simply typed
