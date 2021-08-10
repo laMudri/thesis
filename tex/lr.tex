@@ -1,0 +1,140 @@
+In this section, I introduce the syntax of the type theory \name{}, which makes
+use of usage annotations.
+I use this syntax to write some example programs, which will motivate the
+denotational semantics explored in \cref{sec:wrel}.
+For the rest of this thesis, \name{} will serve as both a prototypical
+usage-constrained syntax and a target of semantic analyses.
+
+The calculus \name{} is similar in spirit to intuitionistic linear logic (ILL).
+The types of \name{}, listed in \cref{fig:lr-types}, are almost identical
+to those of ILL, differing only in the exponential modality $\oc$
+(read ``bang'').
+In particular, I include distinguished tensor- and with-product types
+($\otimes$, $\with$) and their units ($I$, $\top$), function types
+($\multimap$), additive sum types and their unit ($\oplus$, $0$), and the
+graded modality $\oc_{\gr r}$.
+The idea of $\oc_{\gr r}$ is to internalise an annotation of $\gr r$ on a
+variable in the context.
+In this position, an assumption of type $\oc_{\gr r} A$ acts like an assumption
+of type $A$ that is to be used according to $\gr r$ rather than the standard
+$\gr1$.
+
+\begin{figure}
+  \begin{displaymath}
+    A, B, C \Coloneqq I \mid A \otimes B \mid A \multimap B \mid \top
+    \mid A \with B \mid 0 \mid A \oplus B \mid \oc_{\gr r} A
+  \end{displaymath}
+  \caption{The types of \name{}}
+  \label{fig:lr-types}
+\end{figure}
+
+\begin{figure}
+  \begin{displaymath}
+    \begin{prooftree}
+      \hypo{\gamma \ni x : A}
+      \hypo{\grP \le \langle x \rvert}
+      \infer2[Var]{\grP\gamma \vdash A}
+    \end{prooftree}
+  \end{displaymath}
+
+  \begin{displaymath}
+    \begin{matrix}
+      \begin{prooftree}
+        \hypo{\grP \le \gr0}
+        \infer1[$I$-I]{\grP\gamma \vdash I}
+      \end{prooftree}
+      &&
+      \begin{prooftree}
+        \hypo{\grR \le \grP + \grQ}
+        \hypo{\grP\gamma \vdash I}
+        \hypo{\grQ\gamma \vdash C}
+        \infer3[$I$-E]{\grR\gamma \vdash C}
+      \end{prooftree}
+      \\\\
+      \begin{prooftree}
+        \hypo{\grR \le \grP + \grQ}
+        \hypo{\grP\gamma \vdash A}
+        \hypo{\grQ\gamma \vdash B}
+        \infer3[$\otimes$-I]{\grR\gamma \vdash A \otimes B}
+      \end{prooftree}
+      &&
+      \begin{prooftree}
+        \hypo{\grR \le \grP + \grQ}
+        \hypo{\grP\gamma \vdash A \otimes B}
+        \hypo{\grQ\gamma, \gr1A, \gr1B \vdash C}
+        \infer3[$\otimes$-E]{\grR\gamma \vdash C}
+      \end{prooftree}
+      \\\\
+      \begin{prooftree}
+        \hypo{\grR\gamma, \gr1A \vdash B}
+        \infer1[$\multimap$-I]{\grR\gamma \vdash A \multimap B}
+      \end{prooftree}
+      &&
+      \begin{prooftree}
+        \hypo{\grR \le \grP + \grQ}
+        \hypo{\grP\gamma \vdash A \multimap B}
+        \hypo{\grQ\gamma \vdash A}
+        \infer3[$\multimap$-E]{\grR\gamma \vdash B}
+      \end{prooftree}
+      \\\\
+      \begin{prooftree}
+        \infer0[$\top$-I]{\grR\gamma \vdash \top}
+      \end{prooftree}
+      &&
+      \textrm{(no $\top$-E)}
+      \\\\
+      \begin{prooftree}
+        \hypo{\grR\gamma \vdash A}
+        \hypo{\grR\gamma \vdash B}
+        \infer2[$\with$-I]{\grR\gamma \vdash A \with B}
+      \end{prooftree}
+      &&
+      \begin{prooftree}
+        \hypo{\grR\gamma \vdash A_0 \with A_1}
+        \infer1[$\with$-E$_i$, for $i \in \{0,1\}$]{\grR\gamma \vdash A_i}
+      \end{prooftree}
+      \\\\
+      \textrm{(no $0$-I)}
+      &&
+      \begin{prooftree}
+        \hypo{\grR \le \grP + \grQ}
+        \hypo{\grP\gamma \vdash 0}
+        \infer2[$0$-E]{\grR\gamma \vdash C}
+      \end{prooftree}
+      \\\\
+      \begin{prooftree}
+        \hypo{\grR\gamma \vdash A_i}
+        \infer1[$\oplus$-I$_i$, for $i \in \{0,1\}$]%
+        {\grR\gamma \vdash A_0 \oplus A_1}
+      \end{prooftree}
+      &&
+      \begin{prooftree}
+        \hypo{\grR \le \grP + \grQ}
+        \hypo{\grP\gamma \vdash A \oplus B}
+        \hypo{\grQ\gamma, \gr1A \vdash C}
+        \hypo{\grQ\gamma, \gr1B \vdash C}
+        \infer4[$\oplus$-E]{\grR\gamma \vdash C}
+      \end{prooftree}
+      \\\\
+      \begin{prooftree}
+        \hypo{\grR \le \gr r\grP}
+        \hypo{\grP\gamma \vdash A}
+        \infer2[$\oc$-I]{\grR\gamma \vdash \oc_{\gr r} A}
+      \end{prooftree}
+      &&
+      \begin{prooftree}
+        \hypo{\grR \le \grP + \grQ}
+        \hypo{\grP\gamma \vdash \oc_{\gr r} A}
+        \hypo{\grQ\gamma, \gr rA \vdash C}
+        \infer3[$\oc$-E]{\grR\gamma \vdash C}
+      \end{prooftree}
+    \end{matrix}
+  \end{displaymath}
+  \caption{\name{}}
+  \label{fig:lr}
+\end{figure}
+
+The operational semantics of \name{} are standard.
+Assuming type preservation under reduction, \name{} enjoys all of the standard
+operational properties via a forgetful translation to simply typed
+$\lambda$-calculus.
