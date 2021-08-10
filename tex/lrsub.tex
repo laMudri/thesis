@@ -1,9 +1,58 @@
-With the notion of \emph{environment} decided, the proofs of admissibility of
-renaming and substitution are structured in the same way as they are in
-\autoref{sec:syntactic-kits}.
-We start with a slightly modified definition of \AgdaRecord{Kit}.
-While intuitionistic kits require arbitrary (right-)weakening, this assumption
-is unrealistic in the linear setting.
-However, we can expect weakening by $\gr0$-use variables.
+\def\LRKits{../agda/latex/LRKits.tex}
 
-\missingfigure{Kit}
+From \cref{sec:lrkits,sec:lenv}, we have fixed a notion of \emph{environment}
+and proved that it is preserved under all syntax-forming operations.
+In this section, I put these properties together in the style of
+\cref{sec:syntactic-kits} to prove the admissibility of simultaneous renaming,
+simultaneous substitution, and then single substitution.
+
+We start with a slightly modified definition of \AgdaRecord{Kit}.
+We saw in \cref{thm:lr-bind} that in the usage-annotated context, we replace
+general weakening of $\V$-values by weakening by $\gr0$-use variables.
+Meanwhile, the function $\mathrm{vr}$, also seen in \cref{thm:lr-bind}, maps
+usage-checked variables to $\V$-values, and the function $\mathrm{tm}$, used
+to coerce $V$-values yielded by the environment into terms, stays the same.
+I state weakening in a slightly different way than previously, so as to help
+unification against a known result type.
+The type \AgdaFunction{Weakening}\AgdaSpace{}\AgdaBound{$\V$} can be read as
+saying that, for any context $\grP\gamma$ of shape $s + t$, if the right of
+$\grP$ is below $\gr0$, then a value in the left part of $\grP\gamma$ weakens
+to a value in the whole of $\grP\gamma$.
+
+\ExecuteMetaData[\LRKits]{Kit}
+
+To demonstrate the important points succinctly, I cut \name{} down to just the
+$\oc\gr r$-fragment.
+The introduction rule and pattern-matching eliminator feature scaling, addition,
+and variable binding, missing out only on sharing (which is trivial) and zero
+(which is simpler than, and analogous to, addition).
+The resulting type of well typed terms is below.
+
+\ExecuteMetaData[\LRKits]{Tm}
+
+Given a \AgdaRecord{Kit}, \cref{thm:lr-bind} looks like the following.
+The \AgdaField{lookup} clauses still contain essentially the same structure as
+in the intuitionistic case: discriminating on whether the variable is old or
+new, using the given environment \AgdaBound{$\rho$} and weakening on the old
+variables, and using \AgdaField{vr} to repackage new variables.
+I will not explain any of the algebraic manipulations here; see
+\cref{thm:lr-bind}.
+
+\ExecuteMetaData[\LRKits]{bindEnv}
+
+Given \AgdaFunction{bindEnv}, along with \AgdaFunction{env-+} and
+\AgdaFunction{env-*}, standing for \cref{thm:lr-env-add} and
+\cref{thm:lr-env-scale}, respectively, we can reproduce the syntactic traversal
+\AgdaFunction{trav}.
+With all these lemmas in place, we can see how writing \AgdaFunction{trav}
+becomes routine --- when processing a rule, we work our way up through the
+premise connectives, applying \AgdaFunction{env-*} wherever we see a
+\AgdaFunction{$\cdot^c$}, \AgdaFunction{env-+} wherever we see a
+\AgdaFunction{$*^c$}, and \AgdaFunction{bindEnv} wherever we see a
+\AgdaFunction{Bind}.
+We when use whatever environments (with names beginning with
+\AgdaBound{$\rho$}) and whatever usage vector splitting facts (with names
+beginning with \AgdaBound{sp}) come out of this process to recursively
+traverse the subterms and recombine the results.
+
+\ExecuteMetaData[\LRKits]{trav}

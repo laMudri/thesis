@@ -1,0 +1,191 @@
+\begin{code}
+{-# OPTIONS --safe --without-K --postfix-projections --prop #-}
+open import Algebra.Po
+open import Level
+
+module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
+
+  open PoSemiring poSemiring renaming (Carrier to Ann)
+
+  open import Algebra.Relational renaming (_↘_↙_ to _↘-_-↙_)
+  open import Data.LTree
+  open import Data.LTree.Vector
+  open import Data.Product
+  open import Data.Wrap
+  open import Function using (id; _∘_; Equivalence)
+  open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
+  open import Relation.Nary
+  open import Relation.Unary.Bunched
+
+  data Ty : Set where
+    ι : Ty
+    `! : (r : Ann) (A : Ty) → Ty
+
+  open import Generic.Linear.Operations rawPoSemiring
+  open import Generic.Linear.Algebra poSemiring
+  open import Generic.Linear.Syntax Ty Ann
+  open import Generic.Linear.Syntax.Interpretation Ty rawPoSemiring
+  open import Generic.Linear.Variable Ty rawPoSemiring
+  open import Generic.Linear.Environment Ty poSemiring
+  open import Generic.Linear.Environment.Properties Ty poSemiring
+  open import Generic.Linear.Environment.Categorical Ty poSemiring
+\end{code}
+
+%<*Tm>
+\begin{code}
+  Bind : Ctx → (Ctx → Set) → (Ctx → Set)
+  Bind Δ T Γ = T (Γ ++ᶜ Δ)
+
+  data _⊢_ : Ctx → Ty → Set where
+    var : ∀[ _∋_ ⇒ _⊢_ ]
+    !-I : ∀ {r A} → ∀[ r ·ᶜ (_⊢ A) ⇒ _⊢ `! r A ]
+    !-E : ∀ {r A C} → ∀[ (_⊢ `! r A) ✴ᶜ Bind [ r · A ]ᶜ (_⊢ C) ⇒ _⊢ C ]
+\end{code}
+%</Tm>
+
+\begin{code}
+  module _ {𝓥 : Ctx → Ty → Set} where
+
+    env-+ : ∀ {s t γ δ P Qₗ Qᵣ} →
+      let Γ = ctx {s} P γ; Δₗ = ctx {t} Qₗ δ; Δᵣ = ctx {t} Qᵣ δ in
+      (λ Q → [ 𝓥 ] Γ ⇒ᵉ ctx Q δ) ◇ _≤[ Qₗ +* Qᵣ ] →
+      (λ Pₗ → [ 𝓥 ] ctx Pₗ γ ⇒ᵉ Δₗ)
+        ↘- P ≤[_+*_] -↙
+      (λ Pᵣ → [ 𝓥 ] ctx Pᵣ γ ⇒ᵉ Δᵣ)
+    env-+ (ρ , sp) =
+      let sumsₗ ↘, sp′ ,↙ sumsᵣ = ρ .asLinRel .linRel .rel-+ₘ (sp , ρ .sums) in
+      record { [_]_⇒ᵉ_ ρ; sums = sumsₗ }
+        ↘, sp′ ,↙
+      record { [_]_⇒ᵉ_ ρ; sums = sumsᵣ }
+
+    env-* : ∀ {s t γ δ P Q′ r} →
+      let Γ = ctx {s} P γ; Δ′ = ctx {t} Q′ δ in
+      (λ Q → [ 𝓥 ] Γ ⇒ᵉ ctx Q δ) ◇ _≤[ r *ₗ Q′ ] →
+      P ≤[ r *ₗ_] ◇ (λ P′ → [ 𝓥 ] ctx P′ γ ⇒ᵉ Δ′)
+    env-* (ρ , sp) =
+      let sp′ , sums′ = ρ .asLinRel .linRel .rel-*ₘ (sp , ρ .sums) in
+      sp′ , record { [_]_⇒ᵉ_ ρ; sums = sums′ }
+\end{code}
+
+%<*Kit>
+\begin{code}
+  Weakening : ∀ {v} {A : Set} → (Ctx → A → Set v) → Set v
+  Weakening 𝓥 =
+    ∀ {s t P} {γ : Vector Ty (s <+> t)} → P ∘ ↘ ≤* 0* →
+    ∀[ 𝓥 (ctx (P ∘ ↙) (γ ∘ ↙)) ⇒ 𝓥 (ctx P γ) ]
+
+  record Kit (𝓥 : Ctx → Ty → Set) : Set where
+    constructor kit
+    field
+      ↙ᵏ : Weakening 𝓥
+      vr : ∀[ _∋_ ⇒ 𝓥 ]
+      tm : ∀[ 𝓥 ⇒ _⊢_ ]
+\end{code}
+%</Kit>
+
+\begin{code}
+    open Equivalence
+\end{code}
+
+%<*bindEnv>
+\begin{code}
+    bindEnv : ∀ {Γ Δ Θ} → [ 𝓥 ] Γ ⇒ᵉ Δ → [ 𝓥 ] Γ ++ᶜ Θ ⇒ᵉ Δ ++ᶜ Θ
+    bindEnv ρ .M = [ [ ρ .M │ 0ᴹ ] ─ [ 0ᴹ │ 1ᴹ ] ]
+    bindEnv ρ .asLinRel = ρ .asLinRel ⊕AsLinRel idAsLinRel
+    bindEnv ρ .sums = ρ .sums , ≤*-refl
+    bindEnv ρ .lookup (ll , rr) (lvar (↙ i) q b) =
+      let bl , br = un++ₙ b in
+      ↙ᵏ (≤*-trans rr br) (ρ .lookup ll (lvar i q bl))
+    bindEnv ρ .lookup (ll , rr) (lvar (↘ i) q b) =
+      let bl , br = un++ₙ b in
+      let bl′ = 0*→≤* (ρ .asLinRel .linRel .rel-0ₘ (≤*→0* bl , ll)) in
+      vr (lvar (↘ i) q (bl′ ++ₙ ≤*-trans rr br))
+\end{code}
+%</bindEnv>
+
+%<*trav>
+\begin{code}
+    trav : ∀ {Γ Δ A} → [ 𝓥 ] Γ ⇒ᵉ Δ → Δ ⊢ A → Γ ⊢ A
+    trav ρ (var x) = tm (ρ .lookup (ρ .sums) x)
+    trav ρ (!-I (⟨ sp* ⟩· M)) =
+      let sp*′ , ρ′ = env-* (ρ , sp*) in
+      !-I (⟨ sp*′ ⟩· (trav ρ′ M))
+    trav ρ (!-E (M ✴⟨ sp+ ⟩ N)) =
+      let ρₗ ↘, sp+′ ,↙ ρᵣ = env-+ (ρ , sp+) in
+      !-E (trav ρₗ M ✴⟨ sp+′ ⟩ trav (bindEnv ρᵣ) N)
+\end{code}
+%</trav>
+
+%<*dlv>
+\begin{code}
+  ↙ᵛ : Weakening _∋_
+  ↙ᵛ Q0 v .idx = ↙ (v .idx)
+  ↙ᵛ Q0 v .tyq = v .tyq
+  ↙ᵛ Q0 v .basis = v .basis ++ₙ Q0
+\end{code}
+%</dlv>
+
+\begin{code}
+  open Kit
+\end{code}
+
+%<*var-kit>
+\begin{code}
+  ∋-kit : Kit _∋_
+  ∋-kit = kit ↙ᵛ id var
+
+  ren = trav ∋-kit
+\end{code}
+%</var-kit>
+
+\begin{code}
+  instance
+    identityEnv-⊢ : IdentityEnv _⊢_
+    identityEnv-⊢ .pure = var
+\end{code}
+
+%<*dlv-env>
+\begin{code}
+  ↙^Env : {𝓥 : Ctx → Ty → Set} → Weakening 𝓥 → Weakening [ 𝓥 ]_⇒ᵉ_
+  ↙^Env ↙^𝓥 Q0 ρ .M = [ ρ .M │ 0ᴹ ]
+  ↙^Env ↙^𝓥 Q0 ρ .asLinRel = [ ρ .asLinRel │ 0AsLinRel ]AsLinRel
+  ↙^Env ↙^𝓥 Q0 ρ .sums = ρ .sums , ≤*→0* Q0
+  ↙^Env ↙^𝓥 Q0 ρ .lookup (r , sp0) v = ↙^𝓥 (0*→≤* sp0) (ρ .lookup r v)
+
+  ↙ᵛ-env :
+    ∀ {s t P} {γ : Vector Ty (s <+> t)} → P ∘ ↘ ≤* 0* →
+    [ _∋_ ] ctx P γ ⇒ᵉ ctx (P ∘ ↙) (γ ∘ ↙)
+  ↙ᵛ-env Q0 = ↙^Env ↙ᵛ Q0 id^Env
+\end{code}
+%</dlv-env>
+
+%<*sub>
+\begin{code}
+  ⊢-kit : Kit _⊢_
+  ⊢-kit = kit (λ Q0 → ren (↙ᵛ-env Q0)) var id
+
+  sub = trav ⊢-kit
+\end{code}
+%</sub>
+
+\begin{code}
+  idˢ : ∀ {Γ} → [ _⊢_ ] Γ ⇒ᵉ Γ
+  idˢ = id^Env
+
+  psh-⊢ : IsPresheaf _⊢_
+  psh-⊢ QP = ren (subuse^Env QP)
+
+  mutual
+    open With-psh^𝓥 psh-⊢
+\end{code}
+
+%<*subSingle>
+\begin{code}
+    sub[-] : ∀ {s P Q R γ r A B} → R ≤[ Q +*_] ◇ _≤[ r *ₗ P ] →
+      ctx {s} P γ ⊢ A → ctx Q γ ++ᶜ [ r · A ]ᶜ ⊢ B → ctx R γ ⊢ B
+    sub[-] {Q = Q} {R} {γ} {r} {A} (sp+ , sp*) t = sub σ
+      where
+      σ : [ _⊢_ ] ctx R γ ⇒ᵉ ctx Q γ ++ᶜ [ r · A ]ᶜ
+      σ = ++ᵉ (idˢ ✴⟨ sp+ ⟩ [-]ᵉ (⟨ sp* ⟩· t))
+\end{code}
+%</subSingle>
