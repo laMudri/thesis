@@ -1,0 +1,17 @@
+The traversal \AgdaFunction{trav} from the last section is generic in the sense
+that $\V$, the type of entries in an environment, can be instantiated to many
+different things.
+However, in practice we only use $\ni$ and $\vdash$, giving us renaming and
+substitution, respectively.
+This is because \AgdaFunction{trav} only targets terms, and does so by keeping
+term constructors intact and replacing only the variables by things from the
+environment.
+This makes substitution the most general possible traversal.
+
+If we want to capture a broader range of traversals, including not just
+syntactic but also \emph{semantic} operations, we must be able to target things
+other than terms, and act in an interesting way on term constructors.
+Doing a straight generalisation of the type of \AgdaFunction{trav}, this
+suggests that we want a function with the following type.
+
+\missingfigure{Semantic traversal type signature}
