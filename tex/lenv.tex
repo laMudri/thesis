@@ -1,13 +1,13 @@
 \begin{lemma}\label{thm:env-resize}
   Given an environment $\rho : \grP\gamma \env\V \grQ\delta$ and a $\grPprime$
-  and a $\grQprime$ such that $\grPprime = \grQprime\plr{\rho.\gr\Psi}$,
+  and a $\grQprime$ such that $\grPprime \leq \grQprime\plr{\rho.\gr\Psi}$,
   there is also an environment of type $\grPprime\gamma \env\V \grQprime\delta$
   with the same linear map and action on variables.
 \end{lemma}
 \begin{proof}
   The only part of the definition of an environment dependent on $\grP$ or
-  $\grQ$ is the constraint $\grP = \grQ\gr\Psi$, which we are able to replace
-  for $\grPprime$ and $\grQprime$.
+  $\grQ$ is the constraint $\grP \leq \grQ\gr\Psi$, which we are able to
+  replace for $\grPprime$ and $\grQprime$.
 \end{proof}
 
 When constructing an environment, we can do so by cases on the shape of the
@@ -23,11 +23,13 @@ of the appropriate type.
 
 \begin{lemma}\label{thm:construct-env}
   We can define all of the following equivalences for any values of the free
-  variables.
+  variables, assuming that $\V$ respects subusaging (i.e.,
+  $\grPprime \leq \grP \to
+  \forallb{\V\,\grP\gamma \dotto \V\,\grPprime\gamma}$).
   \begin{itemize}
     \item $\forallb{I \dotlr \plr{{-} \env\V {\cdot}}}$
-    \item $\forallb{\plr{{-} \env\V \Gamma} \sep \plr{{-} \env\V \Delta}
-      \dotlr \plr{{-} \env\V \Gamma, \Delta}}$
+    \item $\forallb{\plr{{-} \env\V \Delta_l} \sep \plr{{-} \env\V \Delta_r}
+      \dotlr \plr{{-} \env\V \Delta_l, \Delta_r}}$
     \item
       $\forallb{\gr r \cdot \plr{\V\,(-)\,A} \dotlr \plr{{-} \env\V \gr rA}}$
   \end{itemize}
@@ -39,65 +41,71 @@ of the appropriate type.
   \begin{description}
     \item[$I(\to)$]
       Let $\gr\Psi$ be the unique linear map out of the zero space.
-      By definition, $\gr0 = \grQ\gr\Psi$.
+      By assumption and definition, $\grP \leq \gr0 = \grQ\gr\Psi$.
       There are no variables to act upon.
     \item[$I(\gets)$]
-      $\grQ\gr\Psi$ is an empty sum, so if $\grP = \grQ\gr\Psi$ then
-      $\grP = \gr0$.
+      $\grQ\gr\Psi$ is an empty sum, so if $\grP \leq \grQ\gr\Psi$ then
+      $\grP \leq \gr0$.
     \item[$\sep(\to)$]
-      Let the given environments be $\rho : \grRl\theta \env\V \Gamma$ and
-      $\sigma : \grRr\theta \env\V \Delta$, with $\grR = \grRl + \grRr$.
-      Define $\gr\Psi \coloneqq [\rho.\gr\Psi, \sigma.\gr\Psi]$, using the
+      Let the given environments be $\rho_l : \grPl\gamma \env\V \grQl\delta$
+      and $\rho_r : \grPr\gamma \env\V \grQr\delta$, with
+      $\grP \leq \grPl + \grPr$.
+      Define $\gr\Psi \coloneqq [\rho_l.\gr\Psi, \rho_r.\gr\Psi]$, using the
       coproduct structure of the concatenated vector space.
-      We have $\grR = \grRl + \grRr =
-      \grP\plr{\rho.\gr\Psi} + \grQ\plr{\sigma.\gr\Psi} =
-      \plr{\grP, \grQ}\gr\Psi$.
-      To act on variables, we are given
-      $\grRprime = \plr{\grPprime, \grQprime}\gr\Psi$ and
-      $\grPprime\gamma, \grQprime\delta \sqni A$.
-      Without loss of generality, let us have $\grPprime\gamma \sqni A$ and
-      $\grQprime = \gr0$.
-      Thus, $\grRprime = \grPprime\plr{\rho.\gr\Psi}$, and we can act on the
-      variable using $\rho$.
+      We have $\grP \leq \grPl + \grPr \leq
+      \grQl\plr{\rho_l.\gr\Psi} + \grQr\plr{\rho_r.\gr\Psi} =
+      \begin{pmatrix} \grQl & \grQr \end{pmatrix}\gr\Psi$.
+      To act on variables, we are given $\grPprime \leq
+      \begin{pmatrix} \gr{\grQ'_l} & \gr{\grQ'_r} \end{pmatrix}\gr\Psi$ and
+      $\gr{\grQ'_l}\delta_l, \gr{\grQ'_r}\delta_r \sqni A$.
+      Without loss of generality, let us have $\gr{\grQ'_l}\delta_l \sqni A$
+      and $\gr{\grQ'_r} \leq \gr0$.
+      Thus, $\grPprime \leq
+      \gr{\grQ'_l}\plr{\rho_l.\gr\Psi} + \gr{\grQ'_r}\plr{\rho_r.\gr\Psi} \leq
+      \gr{\grQ'_l}\plr{\rho_l.\gr\Psi}$,
+      and we can act on the variable using $\rho_l$.
     \item[$\sep(\gets)$]
-      Let the unnamed context be $\Theta$, also written $\grR\theta$.
+      Let the unnamed context be $\Gamma$, also written $\grP\gamma$.
       The linear map
-      $\gr\Psi : \Ann^{\size\Gamma + \size\Delta} \to \Ann^{\size\Theta}$ splits
-      into
-      $\gr\Psi_{\gr l} : \Ann^{\size\Gamma} \to \Ann^{\size\Theta}
-      \coloneqq \langle \id, 0 \rangle; \gr\Psi$ and
-      $\gr\Psi_{\gr r} : \Ann^{\size\Delta} \to \Ann^{\size\Theta}
-      \coloneqq \langle 0, \id \rangle; \gr\Psi$, using the product structure of
+      $\gr\Psi : \Ann^{\size{\Delta_l} + \size{\Delta_r}} \to \Ann^{\size\Gamma}$
+      splits into
+      $\gr\Psi_{\gr l} : \Ann^{\size{\Delta_l}} \to \Ann^{\size\Gamma}
+      \coloneqq \alr{\id, 0}; \gr\Psi$ and
+      $\gr\Psi_{\gr r} : \Ann^{\size{\Delta_r}} \to \Ann^{\size\Gamma}
+      \coloneqq \alr{0, \id}; \gr\Psi$, using the product structure of
       the concatenated vector space.
-      Let $\grRl \coloneqq \grP\gr\Psi_{\gr l}$ and
-      $\grRr \coloneqq \grQ\gr\Psi_{\gr r}$, by definition satisfying the
-      required equations.
-      For the action on variables, let us consider the left environment.
-      We are given $\grRprime = \grPprime\gr\Psi_{\gr l}$ and
-      $\grPprime\gamma \sqni A$.
+      Let $\grPl \coloneqq \grQl\gr\Psi_{\gr l}$ and
+      $\grPr \coloneqq \grQr\gr\Psi_{\gr r}$, by definition satisfying the
+      required constraints.
+      For the action on variables, let us consider the left environment (with
+      the right environment following symmetrically).
+      We are given $\gr{\grP'_l} \leq \gr{\grQ'_l}\gr\Psi_{\gr l}$ and
+      $\gr{\grQ'_l}\delta_l \sqni A$.
       From these, we get
-      $\grRprime = \grPprime\gr\Psi_{\gr l} = \plr{\grPprime, \gr0}\gr\Psi$ and
-      $\grPprime\gamma, \gr0\delta \sqni A$.
+      $\gr{\grP'_l} \leq \gr{\grQ'_l}\gr\Psi_{\gr l} =
+      \begin{pmatrix} \gr{\grQ'_l} & \gr0 \end{pmatrix}\gr\Psi$ and
+      $\gr{\grQ'_l}\delta_l, \gr0\delta_r \sqni A$.
       We can therefore act using the original environment.
     \item[$\cdot(\to)$]
-      Let $\grP$ and $\grPprime$ be such that $\grP = \gr r\grPprime$ and let
+      Let $\grP$ and $\grPprime$ be such that $\grP \leq \gr r\grPprime$ and let
       $v : \V\,\grPprime\gamma\,A$.
       Let $\gr\Psi : \Ann \to \Ann^{\size\gamma}
       \coloneqq \gr r\gr' \mapsto \gr r\gr'\grPprime$.
-      By definition and the previous assumption, we have $\grP = \gr r\gr\Psi$.
-      When acting on a variable, we have $\grP\gr{''} = \gr r\gr'\gr\Psi$
+      By definition and the previous assumption, we have
+      $\grP \leq \gr r\gr\Psi$.
+      When acting on a variable, we have $\grP\gr{''} \leq \gr r\gr'\gr\Psi$
       and $\gr r\gr'A \sqni A'$.
-      The latter tells us that $A = A'$ and $\gr r\gr' = \gr1$.
-      Thus, $\grP\gr{''} = \grPprime$.
-      We therefore need a value of type $\V\,\grPprime\gamma\,A$, which we can
-      take to be $v$.
+      The latter tells us that $A = A'$ and $\gr r\gr' \leq \gr1$.
+      Thus, $\grP\gr{''} \leq \grPprime$.
+      Therefore, by subusaging, we may produce a value of type
+      $\V\,\grPprime\gamma\,A$, which we can take to be $v$.
     \item[$\cdot(\gets)$]
       Let us have an environment of type $\grP\gamma \env\V \gr rA$.
       We want to use its action on variables to yield a value.
       To do this, we let $\grPprime \coloneqq \gr1\gr\Psi$, and use this
       equation, together with the fact that we have a variable of type
       $\gr1A \sqni A$, to get a value of type $\V\,\grPprime\gamma\,A$.
-      Furthermore, we derive $\grP = \gr r\gr\Psi = \gr r\grPprime$, as
+      Furthermore, we derive $\grP \leq \gr r\gr\Psi = \gr r\grPprime$, as
       required.
   \end{description}
 \end{proof}
@@ -242,6 +250,7 @@ usage-checked variable.
 
 The requirements for identity and composition of environments look a bit like
 the unit and lift of a Kleisli triple.
+\todo{Change from equality to inequality}
 
 \begin{lemma}[Identity environment]
   Given a function $\mathrm{vr} : \forallb{{\sqni} \dotto \V}$, for any
@@ -289,6 +298,7 @@ the unit and lift of a Kleisli triple.
   $\Delta \env\V \Theta$ into an environment of type $\Gamma \env\W \Theta$.
 \end{corollary}
 
+\todo{What do these choices mean?}
 \begin{example}
   We can derive the following instances of environment composition.
   \begin{itemize}

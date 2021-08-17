@@ -1,101 +1,73 @@
-\paragraph{New explanation}
-Recalling from \cref{sec:kits}, we have the following definition of
-\emph{environments} for simple types.
+In an effort to stick to the syntactic kits and traversals approach of
+\cref{sec:syntactic-kits}, I will derive the types of simultaneous renaming
+and simultaneous substitution from a generic type of \emph{environments}.
+To get a type of environments suitable for the usage-aware setting, I first
+analyse intuitionistic environments, distilling the slick functional definition
+(\cref{def:simple-env}) into a more basic recursive definition
+(\cref{def:simple-rec-env}).
+This recursive definition is easy to make usage-aware (\cref{def:lr-rec-env}),
+which gives a basis from which to derive the function-based definition I will
+take as primary (\cref{def:lr-env}).
+The resulting definition makes explicit the role of algebraic linearity in the
+metatheory of semiring-annotated calculi.
 
-\begin{definition}[Simple environment]
+Recalling from \cref{sec:kits}, we have the following definition of
+environments for simple types.
+
+\begin{definition}[Simple environment]\label{def:simple-env}
   A $\V$-\emph{environment} between simply typed contexts $\Gamma$ and $\Delta$
   is a function, polymorphic in type $A$, from variables of type $A$ in
   $\Delta$ to inhabitants of $\V\,\Gamma\,A$.
   We write the type of such environments as $\Gamma \env\V \Delta$.
 \end{definition}
 
-\begin{definition}[Simple recursive environment]
+The first thing to note is that this definition is inadequate for \name{}.
+For example, suppose we have a term
+$\plr{M{_\otimes}N} : \grR\gamma \vdash A \otimes B$ and a substitution
+$\sigma : \grR\gamma \env\vdash \grR\gr'\delta$.
+From the $\otimes$-I rule, we have $M : \grP\gamma \vdash A$ and
+$N : \grQ\gamma \vdash B$ for some $\grP$ and $\grQ$ such that
+$\grR \leq \grP + \grQ$.
+We want to apply $\sigma$ to the subterms $M$ and $N$, but this is impossible
+because their contexts are not $\grR\gamma$, and we have no way to adapt
+$\sigma$ to these new contexts.
+Another instructive failure is the general non-existence of identity
+environments, like a renaming of type $\gr1A, \gr1B \env\sqni \gr1A, \gr1B$.
+We do not have a variable of type $\gr1A, \gr1B \sqni A$ or, symmetrically,
+$\gr1A, \gr1B \sqni B$, because, in each case, there is one variable with
+annotation $\gr1$ which we have not actually used.
+This example suggests that the values of a usage-aware environment should be
+derived in \emph{different} usage contexts, such as in $\gr1A, \gr0B \sqni A$.
+
+To see why this definition of environment works for simply typed
+$\lambda$-calculus but not \name{}, I produce an equivalent definition by
+recursion on the target context.
+This recursive definition (\cref{def:simple-rec-env}), and particularly the
+case where $\Delta$ is a concatenation, makes it clear how $\Gamma$ is being
+copied for use in each $\V$-value.
+I take the equivalence of \cref{def:simple-env} and \cref{def:simple-rec-env}
+as obvious, because any function from variables in $\Delta$ can be
+defunctionalised as a data structure with the same shape as $\Delta$.
+
+\begin{definition}[Simple recursive environment]\label{def:simple-rec-env}
   A \emph{recursive $\V$-environment} between simply typed contexts $\Gamma$ and
   $\Delta$ is defined by cases on the shape of $\Delta$ (where
   $\Gamma \env\V_R \Delta$ is the notation for the type of recursive
   environments for given $\V$, $\Gamma$, and $\Delta$):
   \begin{itemize}
-    \item If $\Delta$ is empty, then there is one environment.
-    \item If $\Delta$ is a concatenation $\Delta_l, \Delta_r$, then an
-      environment is a pair of environments of types
-      $\Gamma \env\V_R \Delta_l$ and $\Gamma \env\V_R \Delta_r$.
-    \item If $\Delta$ is a singleton $A$, then an environment is a value of
-      type $\V\,\Gamma\,A$.
+    \item There is one environment $\alr{} : \Gamma \env\V {\cdot}$.
+    \item For $\rho_l : \Gamma \env\V_R \Delta_l$ and
+      $\rho_r : \Gamma \env\V \Delta_r$, we have an environment
+      $\alr{\rho_l, \rho_r} : \Gamma \env\V_R \Delta_l, \Delta_r$.
+    \item For any value $v : \V\,\Gamma\,A$, we have an environment
+      $\alr{v} : \Gamma \env\V_R A$.
   \end{itemize}
 \end{definition}
 
-\begin{definition}[Usage-annotated recursive environment]
-  A \emph{recursive $\V$-environment} between annotated contexts $\Gamma$ and
-  $\Delta$ is defined by cases on the shape of $\Delta$ (where
-  $\Gamma = \grP\gamma$ and $\Gamma \env\V_R \Delta$ is the notation for the
-  type of recursive environments for given $\V$, $\Gamma$, and $\Delta$):
-  \begin{itemize}
-    \item If $\Delta$ is empty, then an environment exists if $\grP = \gr0$.
-    \item If $\Delta$ is a concatenation $\Delta_l, \Delta_r$, then an
-      environment is a choice of usage vectors $\grPl$ and $\grPr$ such that
-      $\grP = \grPl + \grPr$ and we have a pair of environments of types
-      $\grPl\gamma \env\V_R \Delta_l$ and $\grPr\gamma \env\V_R \Delta_r$.
-    \item If $\Delta$ is a singleton $\gr rA$, then an environment is a choice
-      of a usage vector $\grPprime$ such that $\grP = \gr r\grPprime$ and we
-      have a value of type $\V\,\grPprime\gamma\,A$.
-  \end{itemize}
-\end{definition}
-
-From this definition, we can recover a functional-style definition by
-separating choices of usage vectors from the provision of $\V$-values.
-In particular, the only choices of usage vectors that are essential are the
-$\grPprime$s in the singleton case, with the choices in the concatenation case
-being determined as scalings and sums of these $\grPprime$s.
-I let $\gr\Psi$ collect up these $\size\Delta$-many choices of
-$\size\Gamma$-length usage vectors and note that the constraint on $\gr\Psi$
-generated by all the scaling and summing is
-$\grP = \sum_{\plr{x : \gr rA} \in \Delta} \gr r\gr\Psi_x$.
-
-\begin{definition}[Usage-annotated environment (tentative)]
-  A \emph{$\V$-environment} between annotated contexts $\Gamma$ and $\Delta$
-  (written $\grP\gamma$ and $\grQ\delta$, respectively, when convenient)
-  is a matrix $\gr\Psi : \Ann^{\size\Delta \times \size\Gamma}$ such that
-  $\grP = \sum_{\plr{x : \gr rA} \in \Delta} \gr r\gr\Psi_x$ and for each
-  $\plr{x : A} \in \delta$ we have a value of type $\V\,\gr\Psi_x\gamma\,A$.
-\end{definition}
-
-We may note, further, that the constraint
-$\grP = \sum_{\plr{x : \gr rA} \in \Delta} \gr r\gr\Psi_x$ can be stated as the
-vector-matrix multiplication $\grP = \grQ\gr\Psi$.
-Using the same operation, we have that $\gr\Psi_x = \langle x \rvert\gr\Psi$.
-Because $\langle x \rvert$ is exactly the $\grQprime$ such that
-$\plr{x : A} \sqin \grQprime\delta$, we can rephrase the function producing
-$\V$-values as: for each $A$, $\grPprime$, and $\grQprime$ such that
-$\grPprime = \grQprime\gr\Psi$, a function from $\grQprime\delta \sqni A$ to
-$\V\,\grPprime\gamma\,A$.
-Finally, I choose to switch from matrices and matrix multiplication to
-linear maps and their actions, which are easier to work with.
-All of these changes yield my primary definition of an environment for
-usage-annotated calculi.
-
-\begin{definition}[Usage-annotated environment]
-  A \emph{$\V$-environment} between annotated contexts $\Gamma$ and $\Delta$
-  (written $\grP\gamma$ and $\grQ\delta$, respectively, when convenient)
-  is a linear map $\gr\Psi : \Ann^{\size\Delta} \to \Ann^{\size\Gamma}$ (written
-  postfix) such that $\grP = \grQ\gr\Psi$ and for each $A$, $\grPprime$, and
-  $\grQprime$ such that $\grPprime = \grQprime\gr\Psi$, a function from
-  $\grQprime\delta \sqni A$ to $\V\,\grPprime\gamma\,A$.
-\end{definition}
-
-\paragraph{Old explanation}
-As we discussed in \cref{sec:kits}, simultaneous substitution gives a
-notion of derivability of one context from another, while simultaneous renaming
-gives a similar notion of derivability restricted to structural rules.
-To adapt these notions from an intuitionistic setting to our substructural
-setting, we must examine what it means to derive one context from another
-substructually.
-
-In the intuitionistic case, we say that to derive a context $\Delta$ from a
-context $\Gamma$ is to derive each element $\Delta_i$ from $\Gamma$.
-We may justify this by an intermediate step --- noting that contexts are
-understood to be Cartesian products of their elements, and giving a map into
-a Cartesian product is the same as giving a map into each factor.
-I picture this definition as the diagram below.
+I picture the sharing of $\Gamma$ in \cref{def:simple-rec-env} in the diagram
+below.
+The converging arrows from $\Gamma$ to each $\Delta_i$ represent the indices of
+values appearing in a simple environment.
 
 \begin{displaymath}
   \begin{tikzpicture}[baseline]
@@ -148,52 +120,74 @@ I picture this definition as the diagram below.
   \end{tikzpicture}
 \end{displaymath}
 
-To see how this definition works, let us construct an example substitution:
-$A, B \to C, B \Longrightarrow B, C$.
-Because the codomain is a Cartesian product, it suffices to give two separate
-substitutions, $A, B \to C, B \Longrightarrow B$ and
-$A, B \to C, B \Longrightarrow C$, with a substitution into a singleton
-context being just a term.
-We indeed have terms $x : A, y : B \to C, z : B \vdash y : B$ and
-$x : A, y : B \to C, z : B \vdash y\,z : C$.
-It is also instructive to look at an identity substitution (which is also a
-renaming), $A, B \Longrightarrow A, B$, witnessed by terms
-$x : A, y : B \vdash x : A$ and $x : A, y : B \vdash y : B$.
+To account for usage, we must replace the simple copying of $\Gamma$ by
+copying of just the types $\gamma$ and \emph{sharing up} of the usage
+annotations $\grP$.
+Fortunately, our three basic ways of sharing up usage vectors --- zero,
+addition, and scaling --- apply directly to the three possible shapes of the
+target context --- empty, concatenation, and a usage-annotated singleton.
 
-When working with our semiring-annotated calculus \name{}, contexts are no
-longer understood as Cartesian products.
-This means that substitutions of type $\Gamma \Longrightarrow \Delta$ are no
-longer equivalent to collections of substitutions
-$\Gamma \Longrightarrow \Delta_i$.
-Indeed, notice that we should still have an identity substitution of type
-$\gr1A, \gr1B \Longrightarrow \gr1A, \gr1B$, but we do not have terms proving
-either $\gr1A, \gr1B \vdash A$ or $\gr1A, \gr1B \vdash B$.
-What we do have are terms $x : \gr1A, y : \gr0B \vdash x : A$ and
-$x : \gr0A, y : \gr1B \vdash y : B$, and if we pointwise add together the
-annotations of the two terms, we get back the original context
-$x : \gr1A, y : \gr1B$.
-Furthermore, adding up the annotations is not just a random operation;
-linear contexts are understood to be tensor products of their elements, and
-introduction rule for the tensor product involves summing the annotations of
-the two sides.
+\begin{definition}[Usage-annotated recursive environment]\label{def:lr-rec-env}
+  A \emph{recursive $\V$-environment} between annotated contexts $\Gamma$ and
+  $\Delta$ is defined by cases on the shape of $\Delta$ (where
+  $\Gamma \env\V_R \Delta$ is the notation for the
+  type of recursive environments for given $\V$, $\Gamma$, and $\Delta$):
+  \begin{itemize}
+    \item There is one environment $\alr{} : \grP\gamma \env\V {\cdot}$
+      whenever $\grP \leq \gr0$.
+    \item For $\rho_l : \grPl\gamma \env\V_R \Delta_l$ and
+      $\rho_r : \grPr\gamma \env\V \Delta_r$, we have an environment
+      $\alr{\rho_l, \rho_r} : \grP\gamma \env\V_R \Delta_l, \Delta_r$ whenever
+      $\grP \leq \grPl + \grPr$.
+    \item For any value $v : \V\,\grPprime\gamma\,A$, we have an environment
+      $\alr{v} : \grP\gamma \env\V_R \gr rA$ whenever
+      $\grP \leq \gr r\grPprime$.
+  \end{itemize}
+\end{definition}
 
-For any annotated context $\Delta$, we have
-$\Delta \vdash \bigotimes_{(\gr rx : A) \in \Delta}\oc\gr rA$ by iterated
-application of $\otimes$-I with $\oc$-I and Var at the leaves.
-Let $\Gamma = \grP\gamma$ and $\Delta = \grQ\delta$.
-If we are to produce substitutions from $\Gamma$ to $\Delta$ in this
-pattern, we simulate the applications of $\otimes$-I by producing, for each
-element in $\Delta$, a usage context for $\gamma$ such that the whole collection
-sums to $\grP$, then simulate the applications of $\oc$-I by dividing each of
-the new usage contexts by the corresponding annotation in $\Delta$, calling
-the divided usage contexts $\gr\Psi_x$, and finally, instead of a variable
-from $\delta$, we give a term of type $\gr\Psi_x\gamma \vdash \delta_x$.
-In summary, the constraint on the collection of usage contexts $\gr\Psi$ is
-that $\grP = \sum_{(\gr rx : A) \in \Delta}\gr r\gr\Psi_x$.
-Moreover, if we take $\grP$ and $\grQ$ to be row vectors and $\gr\Psi$ to be a
-matrix, the latter expression is equal to the vector-matrix multiplication
-$\grQ\gr\Psi$.
-The resulting definition of simultaneous substitution is depicted below.
+\begin{example}
+  Assume $\Ann$ is the natural numbers with ordering given by $=$ and the usual
+  addition and multiplication.
+  There is an intuitionistic recursive environment
+  \[
+    \alr{\alr{z},\alr{y\,z}} :
+    \plr{x : A, y : B \to C, z : B} \env\vdash_R \plr{B, C}.
+  \]
+  There is also a usage-aware recursive environment
+  \[
+    \alr{\alr{z},\alr{y\,z}} :
+    \plr{\gr0x : A, \gr2y : B \multimap C, \gr3z : B} \env\vdash_R
+    \plr{\gr1B, \gr2C}.
+  \]
+  The latter relies on the observations that
+  $\begin{pmatrix} \gr0 & \gr2 & \gr3 \end{pmatrix} =
+  \begin{pmatrix} \gr0 & \gr0 & \gr1 \end{pmatrix}
+  + \begin{pmatrix} \gr0 & \gr2 & \gr2 \end{pmatrix}$ and, on the right, that
+  $\begin{pmatrix} \gr0 & \gr2 & \gr2 \end{pmatrix} =
+  \gr2\begin{pmatrix} \gr0 & \gr1 & \gr1 \end{pmatrix}$.
+  Then, we have $\gr0x : A, \gr0y : B \multimap C, \gr1z : B \vdash z : B$ and
+  $\gr0x : A, \gr1y : B \multimap C, \gr1z : B \vdash y\,z : C$.
+\end{example}
+
+From the example, we can see that the important usage vectors are the initial
+one $\begin{pmatrix} \gr0 & \gr2 & \gr3 \end{pmatrix}$ and the usage vectors
+at which terms are derived: $\begin{pmatrix} \gr0 & \gr0 & \gr1 \end{pmatrix}$
+and $\begin{pmatrix} \gr0 & \gr1 & \gr1 \end{pmatrix}$.
+I will call the latter the \emph{leaf vectors}.
+The intermediate vector $\begin{pmatrix} \gr0 & \gr2 & \gr2 \end{pmatrix}$ can
+be worked out from the leaf vector
+$\begin{pmatrix} \gr0 & \gr1 & \gr1 \end{pmatrix}$ and the scaling factor
+$\gr2$ found in the codomain context $\gr1B, \gr2C$.
+Even when the ordering on annotations is given by a non-equivalence relation
+$\leq$, there is a canonical least choice for all of the intermediate vectors,
+together with a constraint that the entire linear combination of all the leaf
+vectors is less than or equal to the initial usage vector.
+In symbols, we may let $\gr\Psi$ be the collection of leaf vectors, and state
+the constraint as $\grP \leq \sum_{\plr{x : \gr rA} \in \Delta} \gr r\gr\Psi_x$.
+Seeing $\gr\Psi$ instead as a $\size\Delta \times \size\Gamma$ matrix, this
+constraint is $\grP \leq \grQ\gr\Psi$, using vector-matrix multiplication.
+The resulting picture is below, showing $\grP$ being split up into $\gr\Psi$,
+and then each $\V$-value being constructed in a separate $\gr\Psi_i\gamma$.
 
 \begin{displaymath}
   \begin{tikzpicture}[baseline]
@@ -260,91 +254,72 @@ The resulting definition of simultaneous substitution is depicted below.
     \draw[->] (GGn.north east) parabola[bend at end] (Dbot.west);
     \draw (GGn.south east) parabola[bend at end] (Dbot.west);
   \end{tikzpicture}
-  \quad\textrm{where }\grP = \grQ\gr\Psi
+  \quad\textrm{where }\grP \leq \grQ\gr\Psi
 \end{displaymath}
 
-In type theory, we write out the definition as follows.
+From this point, we can recover a functional-style definition of usage-aware
+environments.
+We choose our leaf vectors $\gr\Psi$ up-front, check the inequality, and then
+produce a value at each leaf vector.
+%From this definition, we can recover a functional-style definition by
+%separating choices of usage vectors from the provision of $\V$-values.
+%In particular, the only choices of usage vectors that are essential are the
+%$\grPprime$s in the singleton case, with the choices in the concatenation case
+%being determined as scalings and sums of these $\grPprime$s.
+%I let $\gr\Psi$ collect up these $\size\Delta$-many choices of
+%$\size\Gamma$-length usage vectors and note that the constraint on $\gr\Psi$
+%generated by all the scaling and summing is
+%$\grP = \sum_{\plr{x : \gr rA} \in \Delta} \gr r\gr\Psi_x$.
 
-\begin{displaymath}
-  \sum_{\gr\Psi : \size\Delta \to \size\Gamma \to \Ann}
-    \left(\grP = \grQ\gr\Psi\right) \times
-    \prod_{(x : A) \in \delta}\gr\Psi_x\gamma \vdash A
-\end{displaymath}
+\begin{definition}[Usage-annotated environment (tentative)]
+  A \emph{$\V$-environment} between annotated contexts $\Gamma$ and $\Delta$
+  (written $\grP\gamma$ and $\grQ\delta$, respectively, when convenient)
+  is a matrix $\gr\Psi : \Ann^{\size\Delta \times \size\Gamma}$ such that
+  $\grP \leq \grQ\gr\Psi$ and for each
+  $\plr{x : A} \in \delta$ we have a value of type $\V\,\gr\Psi_x\gamma\,A$.
+\end{definition}
 
-We can see the step-by-step construction of a substitution play out by adapting
-the previous example to have type
-$\gr0A, \gr2(B \multimap C), \gr3B \Longrightarrow \gr1B, \gr2C$.
-To split the goal up, we note that $
-\begin{pmatrix} \gr0 & \gr2 & \gr3 \end{pmatrix} =
-\begin{pmatrix} \gr0 & \gr0 & \gr1 \end{pmatrix} +
-\begin{pmatrix} \gr0 & \gr2 & \gr2 \end{pmatrix}
-$, so it suffices to give substitutions of types
-$\gr0A, \gr0(B \multimap C), \gr1B \Longrightarrow \gr1B$ and
-$\gr0A, \gr2(B \multimap C), \gr2B \Longrightarrow \gr2C$.
-Furthermore, our term calculus only supports $\gr1$-annotated conclusions,
-so we divide the second substitution type through by $\gr2$.
-Finally, we give the terms largely as before:
-$\gr0x : A, \gr0y : B \to C, \gr1z : B \vdash y : B$ and
-$\gr0x : A, \gr1y : B \to C, \gr1z : B \vdash z\,y : C$.
+I find this definition somewhat fiddly because of its reliance on low-level
+concepts like non-usage-checked variables and rows of a matrix.
+We may note that $\gr\Psi_x = \bra x\gr\Psi$, from which point, requiring not
+just $\V\,\gr\Psi_x\gamma\,A$ but rather $\V\,\plr{\grQprime\gr\Psi}\gamma\,A$
+for any $\grQprime \leq \bra x$ is a minor change (and equivalent if $\V$
+respects subusaging, which is practically always the case).
+``An $x$ such that $(x : A) \in \delta$ and $\grQprime \leq \bra x\gr\Psi$''
+is exactly the definition of $\grQprime\delta \sqni A$.
+I further regularise this clause by asking for a
+$\grPprime \leq \grQprime\gr\Psi$ rather than $\grQprime\gr\Psi$ exactly,
+leaving us needing, for each $\grPprime$ and $\grQprime$ related in the same
+way ($\gr\Psi$) as $\grP$ and $\grQ$, a function from $\grQprime\delta \sqni A$
+to $\V\,\grPprime\gamma\,A$.
+Finally, I choose to switch from matrices and matrix multiplication to
+linear maps and their actions, which are easier to work with.
+All of these changes yield my primary definition of an environment for
+usage-annotated calculi.
 
-While we naturally derive a matrix as a fragmentation of a usage vector, we can
-get a slightly cleaner presentation by instead using an abstract linear map.
-Let $\gr\Psi$ now be a linear map of type
-$\Ann^{\size\Delta} \to \Ann^{\size\Gamma}$, with application written postfix.
-The equation $\grP = \grQ\gr\Psi$ remains unchanged.
-Where we previously wrote $\gr\Psi_x$, the most direct replacement would be
-$\langle x \rvert\gr\Psi$, with $\langle x \rvert$ being the $x$th basis row
-vector.
-But then we notice that $\langle x \rvert$ is exactly the $\grQprime$ satisfying
-$\grQprime\delta \sqni x : B$.
-This gives us the following definition, which can be verified by equationally
-substituting $\grPprime$ and expanding the definition of $\sqni$.
+\begin{definition}[Usage-annotated environment]\label{def:lr-env}
+  A \emph{$\V$-environment} between annotated contexts $\Gamma$ and $\Delta$
+  (written $\grP\gamma$ and $\grQ\delta$, respectively, when convenient)
+  is a linear map $\gr\Psi : \Ann^{\size\Delta} \to \Ann^{\size\Gamma}$ (written
+  postfix) such that $\grP \leq \grQ\gr\Psi$ and for each $A$, $\grPprime$, and
+  $\grQprime$ such that $\grPprime \leq \grQprime\gr\Psi$, a function from
+  $\grQprime\delta \sqni A$ to $\V\,\grPprime\gamma\,A$.
+\end{definition}
 
-\begin{displaymath}
-  \sum_{\gr\Psi : \Ann^{\size\Delta} \to \Ann^{\size\Gamma}}
-    \left(\grP = \grQ\gr\Psi\right) \times
-    \prod_{A,\grQprime,\grPprime} \left(
-    \grPprime = \grQprime\gr\Psi \to \grQprime\delta \sqni A \to
-    \grPprime\gamma \vdash A\right)
-\end{displaymath}
+The following simple lemma shows that usage-annotated environments are, in a
+sense, as good as simple environments on usage-checked variables.
+What usage-annotated environments give us beyond simple environments is the
+ability to accommodate linear decompositions, in a way I will make precise in
+the next section.
 
-We now have a new reading for the interpretation of a linear substitution:
-a linear map $\gr\Psi$ relating the two usage vectors $\grP$ and $\grQ$, and
-for any two similarly related usage vectors $\grPprime$ and $\grQprime$, we
-have a type-preserving function from variables in $\grQprime\delta$ to terms in
-$\grPprime\gamma$.
-Even though we don't use $\gr\Psi$ as a matrix containing fragmented usage
-vectors, we can still justify why it should be a \emph{linear} map.
-We need $\gr\Phi$ to respect all fragmentation of the usage context in a typing
-rule, and we know that all such fragmentation is done by linear operations
-zero, addition, and scaling by a constant.
-\todo{Expand. Substitutions need to preserve everything done to the context,
-and linear things are all we do to the context.}
-
-Taking a lead from \cref{sec:kits}, we deduce a definition of
-\emph{environment} by replacing the $\vdash$ in the definition of simultaneous
-substitution by an arbitrary type family $\mathcal V$.
-Letting $\mathcal V$ be $\sqni$ gives us a notion of simultaneous renaming,
-allowing for renamings with types such as
-$\gr6A, \gr0B, \gr1C \stackrel\sqni\Longrightarrow \gr1C, \gr2A, \gr4A$.
-
-It is worth noting that, when contexts are Cartesian products, passing from
-``a map into $\Delta$'' to ``for each $A \in \Delta$, a map into $A$'' does not
-lose any generality because the universal property of Cartesian products
-states that every map into a Cartesian product can be given factor-wise.
-Hence, $\Delta$ and the one-element context $\prod_{A \in \Delta}A$ are
-isomorphic in the category of contexts and simultaneous substitution.
-However, tensor products are not limits, so don't have the same universal
-property.
-Indeed, many annotated contexts are not isomorphic to the weighted product of
-their elements.
-For example, we do not have a substitution of type
-$\gr1(A \otimes B) \Longrightarrow \gr1A, \gr1B$ because we would first need
-to pattern-match on the tensor product \emph{before} trying to derive the
-target context.
-This loss of generality is however justified when we consider the action of a
-substitution.
-Substitutions should only be replacing variables by terms, whereas if
-substitutions were allowed to pattern-match before introducing the target, then
-the substitution would have to replace the original term by a term that first
-pattern-matches and then continues like the original term.
+\begin{lemma}
+  We can use an environment $\rho : \Gamma \env\V \Delta$ to get from a
+  usage-checked variable $x : \Delta \sqni A$ to a value of type
+  $\V\,\Gamma\,A$.
+\end{lemma}
+\begin{proof}
+  Let $\Gamma = \grP\gamma$ and $\Delta = \grQ\delta$.
+  Set $\grPprime \coloneqq \grP$ and $\grQprime \coloneqq \grQ$, then
+  $\grPprime \leq \grQprime\gr\Psi$ by the constraint in $\rho$, and we can
+  use the lookup function to map $x$ to a value.
+\end{proof}
