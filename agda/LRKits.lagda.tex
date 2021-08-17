@@ -119,9 +119,9 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
 %<*dlv>
 \begin{code}
   ↙ᵛ : Weakening _∋_
-  ↙ᵛ Q0 v .idx = ↙ (v .idx)
-  ↙ᵛ Q0 v .tyq = v .tyq
-  ↙ᵛ Q0 v .basis = v .basis ++ₙ Q0
+  ↙ᵛ R0 v .idx = ↙ (v .idx)
+  ↙ᵛ R0 v .tyq = v .tyq
+  ↙ᵛ R0 v .basis = v .basis ++ₙ R0
 \end{code}
 %</dlv>
 
@@ -147,22 +147,22 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
 %<*dlv-env>
 \begin{code}
   ↙^Env : {𝓥 : Ctx → Ty → Set} → Weakening 𝓥 → Weakening [ 𝓥 ]_⇒ᵉ_
-  ↙^Env ↙^𝓥 Q0 ρ .M = [ ρ .M │ 0ᴹ ]
-  ↙^Env ↙^𝓥 Q0 ρ .asLinRel = [ ρ .asLinRel │ 0AsLinRel ]AsLinRel
-  ↙^Env ↙^𝓥 Q0 ρ .sums = ρ .sums , ≤*→0* Q0
-  ↙^Env ↙^𝓥 Q0 ρ .lookup (r , sp0) v = ↙^𝓥 (0*→≤* sp0) (ρ .lookup r v)
+  ↙^Env ↙^𝓥 R0 ρ .M = [ ρ .M │ 0ᴹ ]
+  ↙^Env ↙^𝓥 R0 ρ .asLinRel = [ ρ .asLinRel │ 0AsLinRel ]AsLinRel
+  ↙^Env ↙^𝓥 R0 ρ .sums = ρ .sums , ≤*→0* R0
+  ↙^Env ↙^𝓥 R0 ρ .lookup (r , sp0) v = ↙^𝓥 (0*→≤* sp0) (ρ .lookup r v)
 
   ↙ᵛ-env :
     ∀ {s t P} {γ : Vector Ty (s <+> t)} → P ∘ ↘ ≤* 0* →
     [ _∋_ ] ctx P γ ⇒ᵉ ctx (P ∘ ↙) (γ ∘ ↙)
-  ↙ᵛ-env Q0 = ↙^Env ↙ᵛ Q0 id^Env
+  ↙ᵛ-env R0 = ↙^Env ↙ᵛ R0 id^Env
 \end{code}
 %</dlv-env>
 
 %<*sub>
 \begin{code}
   ⊢-kit : Kit _⊢_
-  ⊢-kit = kit (λ Q0 → ren (↙ᵛ-env Q0)) var id
+  ⊢-kit = kit (λ R0 → ren (↙ᵛ-env R0)) var id
 
   sub = trav ⊢-kit
 \end{code}
@@ -186,6 +186,6 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
     sub[-] {Q = Q} {R} {γ} {r} {A} (sp+ , sp*) t = sub σ
       where
       σ : [ _⊢_ ] ctx R γ ⇒ᵉ ctx Q γ ++ᶜ [ r · A ]ᶜ
-      σ = ++ᵉ (idˢ ✴⟨ sp+ ⟩ [-]ᵉ (⟨ sp* ⟩· t))
+      σ = ++ᵉ (id^Env ✴⟨ sp+ ⟩ [-]ᵉ (⟨ sp* ⟩· t))
 \end{code}
 %</subSingle>
