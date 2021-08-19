@@ -53,16 +53,22 @@ $\gr1$.
       \\\\
       \begin{prooftree}
         \hypo{\grR \le \grP + \grQ}
-        \hypo{\grP\gamma \vdash A}
-        \hypo{\grQ\gamma \vdash B}
-        \infer3[$\otimes$-I]{\grR\gamma \vdash A \otimes B}
+        \hypo{%
+          \begin{matrix}
+            \grP\gamma \vdash A \\ \grQ\gamma \vdash B
+          \end{matrix}%
+        }
+        \infer2[$\otimes$-I]{\grR\gamma \vdash A \otimes B}
       \end{prooftree}
       &&
       \begin{prooftree}
-        \hypo{\grR \le \grP + \grQ}
-        \hypo{\grP\gamma \vdash A \otimes B}
+        \hypo{%
+          \begin{matrix}
+            \grR \le \grP + \grQ \\ \grP\gamma \vdash A \otimes B
+          \end{matrix}%
+        }
         \hypo{\grQ\gamma, \gr1A, \gr1B \vdash C}
-        \infer3[$\otimes$-E]{\grR\gamma \vdash C}
+        \infer2[$\otimes$-E]{\grR\gamma \vdash C}
       \end{prooftree}
       \\\\
       \begin{prooftree}
@@ -109,11 +115,17 @@ $\gr1$.
       \end{prooftree}
       &&
       \begin{prooftree}
-        \hypo{\grR \le \grP + \grQ}
-        \hypo{\grP\gamma \vdash A \oplus B}
-        \hypo{\grQ\gamma, \gr1A \vdash C}
-        \hypo{\grQ\gamma, \gr1B \vdash C}
-        \infer4[$\oplus$-E]{\grR\gamma \vdash C}
+        \hypo{%
+          \begin{matrix}
+            \grR \le \grP + \grQ \\ \grP\gamma \vdash A \oplus B
+          \end{matrix}%
+        }
+        \hypo{%
+          \begin{matrix}
+            \grQ\gamma, \gr1A \vdash C \\ \grQ\gamma, \gr1B \vdash C
+          \end{matrix}%
+        }
+        \infer2[$\oplus$-E]{\grR\gamma \vdash C}
       \end{prooftree}
       \\\\
       \begin{prooftree}
