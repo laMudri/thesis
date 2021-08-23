@@ -146,7 +146,105 @@ $\gr1$.
   \label{fig:lr}
 \end{figure}
 
-The operational semantics of \name{} are standard.
-Assuming type preservation under reduction, \name{} enjoys all of the standard
-operational properties via a forgetful translation to simply typed
-$\lambda$-calculus.
+I will not cover the operational semantics or equational theory of \name{} in
+this thesis.
+I will discuss a denotational semantics in \cref{sec:wrel}.
+
+The following features are of note.
+
+\paragraph{Subusaging}
+Several typing rules contain constraints of the form $\grP \leq \grQ$, for
+certain usage vectors $\grP$ and $\grQ$.
+To a first approximation, $\leq$ can simply be read as $=$.
+The point of using $\leq$ rather than $=$ is to allow for \emph{subusaging},
+i.e., subsumption of usage annotations.
+For usage annotations $\gr r$ and $\gr s$, the inequality $\gr r \leq \gr s$
+states that an assumption with annotation $\gr r$ can be used wherever an
+assumption with annotation $\gr s$ is required.
+A mnemonic is that $\gr r$ is less specific than $\gr s$.
+The principle is reflected by the admissible subusaging rule.
+
+\[
+  \begin{prooftree}
+    \hypo{\grP \leq \grQ}
+    \hypo{\grQ\gamma \vdash A}
+    \infer2[Subuse]{\grP\gamma \vdash A}
+  \end{prooftree}
+\]
+
+Subusaging is essential to nearly all interesting choices of $\Ann$.
+For example, we can capture intuitionistic linear logic by choosing $\Ann$ to
+be $\{\gr0 > \gr\omega < \gr1\}$.
+This allows variables annotated $\gr\omega$ (``unrestricted'') to be both
+weakened/discarded (because $\gr\omega \leq \gr0$) and derelicted/used
+(because $\gr\omega \leq \gr1$).
+
+\paragraph{Tensor- and with-products}
+Like intuitionistic linear logic (ILL), \name{} distinguishes tensor-products
+($A \otimes B$) from with-products ($A \with B$).
+Whereas in ILL, rules like $\otimes$-introduction involve splitting the
+assumptions between the two subterms, in \name{}, this splitting is done by
+choosing usage annotations which add up to the usage annotations of the
+conclusion.
+For example, we can derive $\vdash A \otimes B \multimap B \otimes A$ as
+follows.
+Notice that the assumption $A \otimes B$ is still present in all subderivations,
+even after it has been ``used up''.
+The only thing that stops us using the assumption again is that, for a general
+choice of $\Ann$, we do not have $\gr0 \leq \gr1$ or $\gr1 \leq \gr1 + \gr1$.
+
+\begin{small}
+  \[
+    \nabla \coloneqq
+    \begin{prooftree}
+      \infer0{\plr{\gr0\;\gr1\;\gr1} \leq
+        \plr{\gr0\;\gr0\;\gr1} + \plr{\gr0\;\gr1\;\gr0}}
+      \infer0{\plr{\gr0\;\gr0\;\gr1} \leq \plr{\gr0\;\gr0\;\gr1}}
+      \infer1[Var]{\gr0\plr{A \otimes B}, \gr0A, \gr1B \vdash B}
+      \infer0{\plr{\gr0\;\gr1\;\gr0} \leq \plr{\gr0\;\gr1\;\gr0}}
+      \infer1[Var]{\gr0\plr{A \otimes B}, \gr1A, \gr0B \vdash A}
+      \infer3[$\otimes$-I]%
+      {\gr0\plr{A \otimes B}, \gr1A, \gr1B \vdash B \otimes A}
+    \end{prooftree}
+  \]
+
+  \[
+    \begin{prooftree}
+      \infer0{\plr{\gr1} \leq \plr{\gr1} + \plr{\gr0}}
+      \infer0{\plr{\gr1} \leq \plr{\gr1}}
+      \infer1[Var]{\gr1\plr{A \otimes B} \vdash A \otimes B}
+      \hypo{\nabla}
+      \infer[no rule]1{\gr0\plr{A \otimes B}, \gr1A, \gr1B \vdash B \otimes A}
+      \infer3[$\otimes$-E]{\gr1\plr{A \otimes B} \vdash B \otimes A}
+      \infer1[$\multimap$-I]{\vdash A \otimes B \multimap B \otimes A}
+    \end{prooftree}
+  \]
+\end{small}
+
+\begin{example}
+  The following judgements hold for any partially ordered semiring.
+  Derivations are left as an exercise to the reader.
+  \begin{itemize}
+    \item $\vdash A \oplus A \multimap A$
+    \item $\vdash A \multimap A \with A$
+    \item $\vdash A \oplus 0 \multimapboth A$
+    \item $\vdash A \otimes 0 \multimapboth 0$
+    \item $\vdash \oc\gr1A \multimapboth A$
+    \item If $\gr r \leq \gr s$, then $\vdash \oc\gr rA \multimap \oc\gr sA$
+  \end{itemize}
+\end{example}
+
+To get a feeling for \name{}, I will temporarily fix
+$\Ann \coloneqq (\mathbb N, =, 0, +, 1, \times)$.
+That is, the usual semiring of natural numbers with ordering given by equality.
+Under this discipline, the usage constraints enforce a form of exact usage
+counting.
+
+\begin{example}
+  The following judgements hold for the natural number semiring.
+  Derivations are left as an exercise to the reader.
+  \begin{itemize}
+    \item $\vdash \oc\gr2A \multimap A \otimes A$
+    \item $\vdash \oc\gr5A \multimap \oc\gr2A \otimes \oc\gr3A$
+  \end{itemize}
+\end{example}
