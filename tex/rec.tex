@@ -1,0 +1,177 @@
+Based on an intuitive understanding of ``usage'', recursion introduces a new
+phenomenon relative to the forms of programs we have seen so far:
+terms can be used an unbounded number of times.
+For example, notice the following reduction in Agda.
+
+\missingfigure{\texttt{foldr \_+\_ 0 (1 :: 2 :: 3 :: []) = 1 + (2 + (3 + 0))}}
+
+The function \AgdaFunction{\_+\_} has been copied into 3 different places in
+the running of the program.
+This copying is despite no type telling us that \AgdaFunction{\_+\_} would be
+used 3 times (both \verb|[1,2,3]| and \verb|[2,3]| have type
+\AgdaDatatype{List}\AgdaSpace{}\AgdaDatatype{$\mathbb N$}, despite the
+corresponding folds using \AgdaFunction{\_+\_} a different number of times).
+As such, when checking an application of \AgdaFunction{foldr}, we need check
+that we can use its functional argument (\AgdaFunction{\_+\_} in this case) an
+arbitrary number of times.
+If we were to fix $\Ann$ as the $\{\gr0, \gr1, \gr\omega\}$ posemiring, then
+wrapping the type of the functional argument in $\oc\gr\omega$ would suffice.
+However, we want to remain generic in the choice of semiring.
+
+I propose the following additions to \name{} to support a broad class of
+inductive types.
+I define strictly positive functors syntactically, with the only notable
+restriction being not being allowed to use the type variable $X$ in the domain
+of a function type.
+I then add least fixed points of such strictly positive functors to the syntax
+of types.
+
+\begin{align*}
+  U &\Coloneqq A \multimap (-) \mid \oc\gr r(-) \\
+  {\odot} &\Coloneqq {\otimes} \mid {\oplus} \mid {\with} \\
+  F[X], G[X] &\Coloneqq X \mid A \mid U(F[X]) \mid F[X] \odot G[X] \\
+  A &\Coloneqq \cdots \mid \mu X.~F[X]
+\end{align*}
+
+\begin{example}
+  We may define $\mathrm{List}_A \coloneqq \mu X.~I \oplus \plr{A \otimes X}$.
+\end{example}
+
+In the typing rules, introduction of an inductive type is standard.
+For the elimination rule, we follow a similar pattern to other pattern-matching
+rules --- $\oplus$-E, $\otimes$-E, and $\oc$-E --- by splitting the context
+and typing the eliminand in one half ($\grP$).
+We type the continuation in the other half, but because the continuation may
+be used multiple times, and in a modal context, we require that $\grQ$ is
+preserved by all linear operations.
+
+\begin{displaymath}
+  \begin{prooftree}
+    \hypo{\grR\gamma \vdash F[\mu X.~F[X]]}
+    \infer1[$\mu$-I]{\grR\gamma \vdash \mu X.~F[X]}
+  \end{prooftree}
+\end{displaymath}
+\begin{displaymath}
+  \begin{prooftree}
+    \hypo{\grR \leq \grP + \grQ}
+    \hypo{\grP\gamma \vdash \mu X.~F[X]}
+    \hypo{%
+      \begin{matrix*}[l]
+        \grQ \leq \gr0 \\
+        \grQ \leq \grQ + \grQ \\
+        \forall \gr r.~\grQ \leq \gr r\grQ
+      \end{matrix*}%
+    }
+    \hypo{\grQ\gamma, \gr1F[C] \vdash C}
+    \infer4[$\mu$-E]{\grR\gamma \vdash C}
+  \end{prooftree}
+\end{displaymath}
+
+\begin{example}\label{thm:list-rules}
+  For lists, we can derive the following introduction and elimination rules
+  (with usage constraints omitted for brevity when obvious).
+
+  \begin{align*}
+    \begin{prooftree}
+      \hypo{\grR \leq \gr0}
+      \infer1[$I$-I]{I}
+      \infer1[$\oplus$-I$_0$]%
+      {\grR\gamma \vdash I \oplus \plr{A \otimes \mathrm{List}_A}}
+      \infer1[$\mu$-I]{\grR\gamma \vdash \mathrm{List}_A}
+    \end{prooftree}
+    &&
+    \begin{prooftree}
+      \hypo{\grR \leq \grP + \grQ}
+      \hypo{\grP\gamma \vdash A}
+      \hypo{\grQ\gamma \vdash \mathrm{List}_A}
+      \infer3[$\otimes$-I]{\grR\gamma \vdash A \otimes \mathrm{List}_A}
+      \infer1[$\oplus$-I$_1$]%
+      {\grR\gamma \vdash I \oplus \plr{A \otimes \mathrm{List}_A}}
+      \infer1[$\mu$-I]{\grR\gamma \vdash \mathrm{List}_A}
+    \end{prooftree}
+  \end{align*}
+  \begin{displaymath}
+    \begin{prooftree}
+      \hypo{\grP\gamma \vdash \mathrm{List}_A}
+      \infer0[Var]{\gr0\gamma, \gr1\plr{I \oplus \plr{A \otimes C}}
+        \vdash I \oplus \plr{A \otimes C}}
+      \hypo{\nabla^n}
+      \hypo{\nabla^c}
+      \infer3[$\oplus$-E]{\grQ\gamma, \gr1\plr{I \oplus \plr{A \otimes C}}
+        \vdash C}
+      \infer2[$\mu$-E]{\grR\gamma \vdash C}
+    \end{prooftree}
+  \end{displaymath}
+  \begin{align*}
+    \textrm{where }\nabla^n &\coloneqq
+    \begin{prooftree}
+      \infer0[Var]{\gr0\gamma, \gr1I \vdash I}
+      \hypo{\grQ\gamma \vdash C}
+      \infer1[Wk]{\grQ\gamma, \gr0I \vdash C}
+      \infer2[$I$-E]{\grQ\gamma, \gr1I \vdash C}
+      \infer1[Wk]{\grQ\gamma, \gr0\plr{I \oplus \plr{A \otimes C}}, \gr1I
+        \vdash C}
+    \end{prooftree}
+    \\\\
+    \textrm{and }\nabla^c &\coloneqq
+    \begin{prooftree}
+      \infer0[Var]{\gr0\gamma, \gr1\plr{A \otimes C} \vdash A \otimes C}
+      \hypo{\grQ\gamma, \gr1A, \gr1C \vdash C}
+      \infer1[Wk]{\grQ\gamma, \gr0\plr{A \otimes C}, \gr1A, \gr1C \vdash C}
+      \infer2[$\otimes$-E]{\grQ\gamma, \gr1\plr{A \otimes C} \vdash C}
+      \infer1[Wk]%
+      {\grQ\gamma, \gr0\plr{I \oplus \plr{A \otimes C}}, \gr1\plr{A \otimes C}
+        \vdash C}
+    \end{prooftree}
+  \end{align*}
+\end{example}
+
+Following \cref{sec:lnd}, I want to turn the ad hoc constraints on $\grP$,
+$\grQ$, and $\grR$ into the result of some premise combinators.
+To do this, I introduce a new combinator $\Box^{0{+}{\times}}$ defined below,
+along with the resulting implicit-context typing rules.
+
+\begin{align*}
+  \plr{\Box^{0{+}{\times}}\,T}\grR \coloneqq
+  \plr{\grR \leq \gr0} \times \plr{\grR \leq \grR + \grR} \times
+  \plr{\forall \gr r.~\grR \leq \gr r\grR} \times T\,\grR
+\end{align*}
+
+\begin{align*}
+  \begin{prooftree}[comb]
+    \hypo{\vdash F[\mu X.~F[X]]}
+    \infer1[$\mu$-I]{\vdash \mu X.~F[X]}
+  \end{prooftree}
+  &&
+  \begin{prooftree}[comb]
+    \hypo{\vdash \mu X.~F[X]}
+    \hypo{\sep}
+    \hypo{\Box^{0{+}{\times}}\plr{\gr1F[C] \vdash C}}
+    \infer3[$\mu$-E]{\vdash C}
+  \end{prooftree}
+\end{align*}
+
+\begin{example}
+  We can state the rules for lists derived in \cref{thm:list-rules} as follows.
+  \begin{align*}
+    \begin{prooftree}[comb]
+      \hypo{I^*}
+      \infer1{\vdash \mathrm{List}_A}
+    \end{prooftree}
+    &&
+    \begin{prooftree}[comb]
+      \hypo{\vdash A}
+      \hypo{\sep}
+      \hypo{\vdash \mathrm{List}_A}
+      \infer3{\vdash \mathrm{List}_A}
+    \end{prooftree}
+    &&
+    \begin{prooftree}[comb]
+      \hypo{\vdash \mathrm{List}_A}
+      \hypo{\sep}
+      \hypo{\Box^{0{+}{\times}}
+        \plr{\vdash C\hskip0.75em\dottimes\hskip0.75em\gr1A, \gr1C \vdash C}}
+      \infer3{\vdash C}
+    \end{prooftree}
+  \end{align*}
+\end{example}
