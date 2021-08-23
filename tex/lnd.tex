@@ -59,8 +59,7 @@ rules for $\top$ and $\with$, respectively.
     \infer0{\grR\Gamma \vdash \top}
   \end{prooftree}
   &\quad\rightsquigarrow\quad
-  \begin{prooftree}
-    \set{separation=0.75em}
+  \begin{prooftree}[comb]
     \hypo{\dot1}
     \infer1{\vdash \top}
   \end{prooftree}
@@ -71,8 +70,7 @@ rules for $\top$ and $\with$, respectively.
     \infer2{\grR\Gamma \vdash A \with B}
   \end{prooftree}
   &\quad\rightsquigarrow\quad
-  \begin{prooftree}
-    \set{separation=0.75em}
+  \begin{prooftree}[comb]
     \hypo{\vdash A}
     \hypo{\dottimes}
     \hypo{\vdash B}
@@ -94,8 +92,7 @@ introduction rules for $I$, $\otimes$, and $\oc_{\gr r}$, respectively.
     \infer1{\grR\Gamma \vdash I}
   \end{prooftree}
   &\quad\rightsquigarrow\quad
-  \begin{prooftree}
-    \set{separation=0.75em}
+  \begin{prooftree}[comb]
     \hypo{I^*}
     \infer1{\vdash I}
   \end{prooftree}
@@ -107,8 +104,7 @@ introduction rules for $I$, $\otimes$, and $\oc_{\gr r}$, respectively.
     \infer3{\grR\Gamma \vdash A \otimes B}
   \end{prooftree}
   &\quad\rightsquigarrow\quad
-  \begin{prooftree}
-    \set{separation=0.75em}
+  \begin{prooftree}[comb]
     \hypo{\vdash A}
     \hypo{\sep}
     \hypo{\vdash B}
@@ -121,8 +117,7 @@ introduction rules for $I$, $\otimes$, and $\oc_{\gr r}$, respectively.
     \infer2{\grR\Gamma \vdash \oc_{\gr r} A}
   \end{prooftree}
   &\quad\rightsquigarrow\quad
-  \begin{prooftree}
-    \set{separation=0.75em}
+  \begin{prooftree}[comb]
     \hypo{\gr r \cdot (\vdash A)}
     \infer1{\vdash \oc_{\gr r} A}
   \end{prooftree}
