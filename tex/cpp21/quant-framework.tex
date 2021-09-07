@@ -1,0 +1,60 @@
+\documentclass[sigplan,10pt,anonymous,review]{acmart}
+\settopmatter{printfolios=true,printccs=false,printacmref=false}
+
+\usepackage[conor]{agda}
+\usepackage{catchfilebetweentags}
+\usepackage{cleveref}
+\usepackage{ebproof}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\usepackage{newunicodechar}
+\usepackage{stmaryrd}
+\usepackage{todonotes}
+
+\input{../macros.tex}
+\input{lagda.tex}
+
+\def\Syntaxtex{../../generic-lr/src/latex/Generic/Linear/Syntax.tex}
+\def\Interpretationtex%
+{../../generic-lr/src/latex/Generic/Linear/Syntax/Interpretation.tex}
+
+\begin{document}
+
+\title{A Framework for Substructural Programming Languages}
+
+\author{James Wood}
+\orcid{0000-0002-8080-3350}
+\affiliation{%
+  \institution{University of Strathclyde}%
+  \city{Glasgow}%
+  \country{UK}%
+}
+\email{james.wood.100@strath.ac.uk}
+
+\author{Robert Atkey}
+\orcid{0000-0002-4414-5047}
+\affiliation{%
+  \institution{University of Strathclyde}%
+  \city{Glasgow}%
+  \country{UK}%
+}
+\email{robert.atkey@strath.ac.uk}
+
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+
+\section{Vectors over semirings}\label{sec:algebra}
+\input{algebra}
+
+\section{Environments}\label{sec:env}
+\input{env}
+
+\section{Generic syntax}\label{sec:syntax}
+\input{syntax}
+
+\section{Semantics}\label{sec:semantics}
+
+\section{Conclusions}\label{sec:conc}
+
+\end{document}

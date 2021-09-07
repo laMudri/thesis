@@ -35,10 +35,12 @@
 %\newcommand\env[1]{(#1\mathrm{-Env})}
 %\newcommand\thinningN{\mathrm{Thinning}}
 %\newcommand\thinning[2]{\thinningN~#1~#2}
-\newcommand\U{\mathcal U}
+\providecommand\U{}
+\renewcommand\U{\mathcal U}
 \newcommand\V{\mathcal V}
 \newcommand\W{\mathcal W}
-\newcommand\C{\mathcal C}
+\providecommand\C{}
+\renewcommand\C{\mathcal C}
 \newcommand\sqin{\mathrel{\mathrlap{\sqsubset}{\mathord{-}}}}
 \newcommand\sqni{\mathrel{\mathrlap{\sqsupset}{\mathord{-}}}}
 \newcommand\subres{=}
@@ -59,5 +61,8 @@
 \newcommand\blr[1]{\left[{#1}\right]}
 \newcommand\alr[1]{\left\langle{#1}\right\rangle}
 \newcommand\forallb[1]{\forall\blr{~#1~}}
+
+\newcommand\leO{\;{\leq}0}
+\newcommand\leI{\;{\leq}1}
 
 \ebproofnewstyle{comb}{separation=0.75em}

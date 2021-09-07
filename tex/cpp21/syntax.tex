@@ -1,0 +1,34 @@
+\subsection{Descriptions}
+
+We capture the form of rules exemplified previously\todo{Previously?} via
+\emph{descriptions} of rules.
+The key to making these descriptions work is that they only allow syntactic
+forms that preserve environments.
+These forms are: absence and multiplicity of subterms with the same usage
+annotations, absence and multiplicity of subterms with summed usage annotations,
+scaling of a subterm, and variable binding.
+
+A type \AgdaRecord{System} is made up of multiple \AgdaRecord{Rule}s.
+Each \AgdaRecord{Rule} comprises a tree of \AgdaDatatype{Premises} and a type
+of conclusion.
+
+\ExecuteMetaData[\Syntaxtex]{Scoped}
+
+A single premise is introduced by the
+\AgdaInductiveConstructor{$\langle$\_`$\vdash$\_$\rangle$} constructor.
+This allows binding of some variables \AgdaBound{$\Gamma$} (with specified
+types and usage annotations) and the specification of a conclusion type
+\AgdaBound{A}.
+The rest of the constructors are descriptions for the first-order bunched
+connectives, and are interpreted directly as such.
+\todo{Remove Box}
+\todo{Remove instance arguments}
+
+\ExecuteMetaData[\Syntaxtex]{Premises}
+\ExecuteMetaData[\Interpretationtex]{semp}
+
+\ExecuteMetaData[\Syntaxtex]{Rule}
+\ExecuteMetaData[\Interpretationtex]{semr}
+
+\ExecuteMetaData[\Syntaxtex]{System}
+\ExecuteMetaData[\Interpretationtex]{sems}

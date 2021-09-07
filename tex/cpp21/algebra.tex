@@ -1,0 +1,90 @@
+The basic algebraic structure we concern ourselves with is \emph{partially
+ordered semirings}, or \emph{posemirings} for short.
+A posemiring is a (not necessarily commutative) semiring on a partially ordered
+set, where both operations are monotonic.
+
+\begin{definition}
+  A \emph{posemiring} is a tuple $(\Ann, \leq, 0, +, 1, *)$ such that the
+  following laws hold (universally quantified in all the variables).
+  \begin{itemize}
+    \item $x \leq x' \to y \leq y' \to x + y \leq x' + y'$
+    \item $x \leq x' \to y \leq y' \to x * y \leq x' * y'$
+    \item $0 + x = x \land x + 0 = x$
+    \item $(x + y) + z = x + (y + z)$
+    \item $x + y = y + x$
+    \item $1 * x = x \land x * 1 = x$
+    \item $(x * y) * z = x * (y * z)$
+    \item $0 * x = 0 \land x * 0 = 0$
+    \item $(x + y) * z = x * z + y * z$
+    \item $x * (y + z) = x * y + x * z$
+  \end{itemize}
+\end{definition}
+
+We also make use, particularly in the mechanisation, of an alternative
+definition based on relations.
+
+\begin{definition}
+  A \emph{relational posemiring} is a tuple
+  $(\Ann, \leq, {{-}\leq}0, {{-}\leq}[{-}+{-}],
+  {{-}\leq}1, {{-}\leq}[{-}*{-}])$
+  such that the following laws hold (with free variables universally
+  quantified).
+  \begin{itemize}
+    \item $x' \leq x \to {x \leq}0 \to {x' \leq}0$
+    \item $x' \leq x \to y \leq y' \to z \leq z' \to
+      {x \leq}[y+z] \to {x' \leq}[y'+z']$
+    \item $x' \leq x \to {x \leq}1 \to {x' \leq}1$
+    \item $x' \leq x \to y \leq y' \to z \leq z' \to
+      {x \leq}[y*z] \to {x' \leq}[y'*z']$
+    \item $\plr{\exists y.~{y \leq}0 \land {x \leq}[y+z]}
+      \leftrightarrow x \leq z$
+    \item $\plr{\exists z.~{x \leq}[y+z] \land {z \leq}0}
+      \leftrightarrow x \leq y$
+    \item $\plr{\exists wx.~{wx \leq}[w+x] \land {z \leq}[wx+y]}$
+      $\leftrightarrow$
+
+      $\plr{\exists xy.~{z \leq}[w+xy] \land {xy \leq}[x+y]}$
+    \item $\exists x.~{x \leq}0 \land \forall x'.~{x' \leq}0 \to x' \leq x$
+    \item $\vdots$
+    %\item $x \leq x' \to y \leq y' \to x + y \leq x' + y'$
+    %\item $x \leq x' \to y \leq y' \to x * y \leq x' * y'$
+    %\item $0 + x = x \land x + 0 = x$
+    %\item $(x + y) + z = x + (y + z)$
+    %\item $x + y = y + x$
+    %\item $1 * x = x \land x * 1 = x$
+    %\item $(x * y) * z = x * (y * z)$
+    %\item $0 * x = 0 \land x * 0 = 0$
+    %\item $(x + y) * z = x * z + y * z$
+    %\item $x * (y + z) = x * y + x * z$
+  \end{itemize}
+\end{definition}
+
+An element of a chosen posemiring $\Ann$ describes the usage restrictions on
+a variable.
+Therefore, a \emph{vector} of elements from $\Ann$ describes the usage
+restrictions of a whole context's worth of variables.
+From the posemiring operations of $\Ann$, we derive the standard vector
+operations of zero, addition, and multiplication by a scalar.
+We can also form the standard basis vectors at any given dimension.
+
+\begin{figure}
+  \begin{align*}
+    \dot1\,\grR &\coloneqq 1 \\
+    (T \dottimes U)\,\grR &\coloneqq T\,\grR \times U\,\grR \\
+    (T \dotto U)\,\grR &\coloneqq T\,\grR \to U\,\grR \\
+    I^*\,\grR &\coloneqq \grR \leq \gr0 \\
+    (T \sep U)\,\grR &\coloneqq \Sigma \grP,\grQ.~\plr{\grR \leq \grP + \grQ}
+                       \times T\,\grP \times U\,\grQ \\
+    (\gr r \cdot T)\,\grR &\coloneqq \Sigma \grP.~\plr{\grR \leq \gr r\grP}
+                       \times T\,\grP \\
+    (T \wand U)\,\grP &\coloneqq \Pi \grQ,\grR.~\plr{\grR \leq \grP + \grQ}
+                       \to T\,\grQ \to U\,\grR
+  \end{align*}
+  \caption{The bunched connectives}
+  \label{fig:bunched}
+\end{figure}
+
+Operations like renaming and substitution are essentially translations from one
+context to another.
+When faced with two vector spaces arranged in this way, a natural thing to
+consider is the \emph{linear maps} from one space to the other.
