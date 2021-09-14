@@ -1,3 +1,108 @@
+\subsection{A prototypical type system}
+
+\begin{figure}
+  \begin{align*}
+    \begin{prooftree}
+      \hypo{\grR \leq \bra x}
+      \hypo{\gamma_x = A}
+      \infer2[Var]{\grR\gamma \vdash A}
+    \end{prooftree}
+  \end{align*}
+  \begin{align*}
+    \begin{prooftree}
+      \hypo{\grR\gamma, \gr1A \vdash B}
+      \infer1[$\multimap$-I]{\grR\gamma \vdash A \multimap B}
+    \end{prooftree}
+    &&
+    \begin{prooftree}
+      \hypo{\grR \leq \grP + \grQ}
+      \hypo{\grP\gamma &\vdash A \multimap B}
+      \infer[no rule]1{\grQ\gamma &\vdash A \phantom{{} \multimap B}}
+      \infer2[$\multimap$-E]{\grR\gamma \vdash B}
+    \end{prooftree}
+  \end{align*}
+  \begin{align*}
+    \begin{prooftree}
+      \hypo{\grR\gamma \vdash A_i}
+      \infer1[$\oplus$-I$_i$]{\grR\gamma \vdash A_0 \oplus A_1}
+    \end{prooftree}
+    &&
+    \begin{prooftree}
+      \hypo{\grR \leq \grP + \grQ}
+      \infer[no rule]1{\grP\gamma \vdash A \oplus B}
+      \hypo{\grQ\gamma, \gr1A &\vdash C}
+      \infer[no rule]1{\grQ\gamma, \gr1B &\vdash C}
+      \infer2[$\oplus$-E]{\grR\gamma \vdash C}
+    \end{prooftree}
+  \end{align*}
+  \begin{align*}
+    \begin{prooftree}
+      \hypo{\grR \leq \gr r\grP}
+      \hypo{\grP\gamma \vdash A}
+      \infer2[$\oc_{\gr r}$-I]{\grR\gamma \vdash \oc_{\gr r} A}
+    \end{prooftree}
+    &&
+    \begin{prooftree}
+      \hypo{\grR \leq \grP + \grQ}
+      \hypo{\grP\gamma \vdash \oc_{\gr r} A}
+      \infer[no rule]1{\grQ\gamma, \gr rA \vdash C}
+      \infer2[$\oc_{\gr r}$-E]{\grR\gamma \vdash C}
+    \end{prooftree}
+  \end{align*}
+  \caption{A fragment of \name{}}\label{fig:lr}
+\end{figure}
+
+\begin{figure}
+  \begin{align*}
+    \begin{prooftree}[comb]
+      \hypo{\sqni A}
+      \infer1[Var]{\vdash A}
+    \end{prooftree}
+    &&
+    \begin{prooftree}[comb]
+      \hypo{\gr1A \vdash B}
+      \infer1[$\multimap$-I]{\vdash A \multimap B}
+    \end{prooftree}
+    &&
+    \begin{prooftree}[comb]
+      \hypo{\vdash A \multimap B}
+      \hypo{\sep}
+      \hypo{\vdash A}
+      \infer3[$\multimap$-E]{\vdash B}
+    \end{prooftree}
+  \end{align*}
+  \begin{align*}
+    \begin{prooftree}[comb]
+      \hypo{\vdash A_i}
+      \infer1[$\oplus$-I$_i$]{\vdash A_0 \oplus A_1}
+    \end{prooftree}
+    &&
+    \begin{prooftree}[comb]
+      \hypo{\vdash A \oplus B}
+      \hypo{\sep}
+      \hypo{(\gr1A \vdash C}
+      \hypo{\dottimes}
+      \hypo{\gr1B \vdash C)}
+      \infer5[$\oplus$-E]{\vdash C}
+    \end{prooftree}
+  \end{align*}
+  \begin{align*}
+    \begin{prooftree}[comb]
+      \hypo{\gr r \cdot \plr{\vdash A}}
+      \infer1[$\oc_{\gr r}$-I]{\vdash \oc_{\gr r} A}
+    \end{prooftree}
+    &&
+    \begin{prooftree}[comb]
+      \hypo{\vdash \oc_{\gr r} A}
+      \hypo{\sep}
+      \hypo{\gr rA \vdash C}
+      \infer3[$\oc_{\gr r}$-E]{\vdash C}
+    \end{prooftree}
+  \end{align*}
+  \caption{\cref{fig:lr} restated in terms of bunched combinators}
+  \label{fig:lr-comb}
+\end{figure}
+
 \subsection{Descriptions}
 
 We capture the form of rules exemplified previously\todo{Previously?} via
@@ -12,23 +117,95 @@ A type \AgdaRecord{System} is made up of multiple \AgdaRecord{Rule}s.
 Each \AgdaRecord{Rule} comprises a tree of \AgdaDatatype{Premises} and a type
 of conclusion.
 
-\ExecuteMetaData[\Syntaxtex]{Scoped}
-
 A single premise is introduced by the
 \AgdaInductiveConstructor{$\langle$\_`$\vdash$\_$\rangle$} constructor.
-This allows binding of some variables \AgdaBound{$\Gamma$} (with specified
+This allows binding of some variables \AgdaBound{$\Delta$} (with specified
 types and usage annotations) and the specification of a conclusion type
 \AgdaBound{A}.
 The rest of the constructors are descriptions for the first-order bunched
 connectives, and are interpreted directly as such.
-\todo{Remove Box}
-\todo{Remove instance arguments}
 
 \ExecuteMetaData[\Syntaxtex]{Premises}
+\ExecuteMetaData[\Syntaxtex]{Rule}
+\ExecuteMetaData[\Syntaxtex]{System}
+
+As an example, we transcribe the system defined in \cref{fig:lr-comb} into a
+description.
+We first give the set of types in a standard way (together with base type
+\AgdaInductiveConstructor{$\iota$}).
+
+\ExecuteMetaData[\PaperExamplestex]{Ty}
+
+Then, we give the set of labels.
+There is one label for each instantiation of a logical rule, but the labels
+contain no further information about subterms or restrictions on the context.
+
+\ExecuteMetaData[\PaperExamplestex]{qlR}
+
+Finally, we specify, for each label, the rest of the information about that
+rule.
+We do not have a variable rule, because the variable rule is implicit to any
+type system.
+
+\ExecuteMetaData[\PaperExamplestex]{lR}
+
+The next thing we want to do is to build terms in the described type system.
+
+\ExecuteMetaData[\Syntaxtex]{Scoped}
+
+To specify the meaning of descriptions, we assume some
+\ExecuteMetaData[\Interpretationtex]{X}, over which we form one layer of syntax.
+The first argument to \AgdaBound{X} is the new variables bound by this layer
+of syntax, as exemplified in the first clause of
+\AgdaFunction{$\llbracket$\_$\rrbracket$p}.
+The second argument is the context containing the variables being carried over
+from the previous layer.
+Notice that this is not, in general, the same as the context from the previous
+layer, because the usage annotations may have been changed by connectives like
+\AgdaInductiveConstructor{\_`$*$\_} and \AgdaInductiveConstructor{\_`$\cdot$\_}.
+The third argument is the type of subterm required.
+
+With the first clause of \AgdaFunction{$\llbracket$\_$\rrbracket$p} explained,
+the rest are simply interpretations into bunched combinators.
+
 \ExecuteMetaData[\Interpretationtex]{semp}
 
-\ExecuteMetaData[\Syntaxtex]{Rule}
+The interpretation of a \AgdaRecord{Rule} is to check that the rule targets
+the desired type and then interpret the rules premises \AgdaBound{ps}.
+Notice that the interpretation of the premises is independent of the conclusion
+of the rule, which accounts for the difference in type between
+\AgdaFunction{$\llbracket$\_$\rrbracket$p} and
+\AgdaFunction{$\llbracket$\_$\rrbracket$r}.
+
 \ExecuteMetaData[\Interpretationtex]{semr}
 
-\ExecuteMetaData[\Syntaxtex]{System}
+The interpretation of a \AgdaRecord{System} is to choose a rule label
+\AgdaBound{l} from \AgdaBound{L} and interpret the corresponding rule
+\AgdaBound{rs}\AgdaSpace{}\AgdaBound{l} in the same context and for the same
+conclusion.
+
 \ExecuteMetaData[\Interpretationtex]{sems}
+
+The most obvious way to make such an \AgdaBound{X} is to use some existing
+\AgdaFunction{Scoped} on an extended context.
+This is what \AgdaFunction{Scope} does --- take the new variables
+\AgdaBound{$\Delta$}, concatenate them onto the existing context
+\AgdaBound{$\Gamma$}, and pass the extended context onto the judgement
+\AgdaBound{T}.
+
+\ExecuteMetaData[\Syntaxtex]{Scope}
+
+It is this method we use to deal with new variables in syntax.
+Terms resemble the free monad over a layer-of-syntax functor, though that
+picture is complicated by variable binding.
+A term is either a variable or a use of a logical rule together with terms
+for each of the required subterms.
+
+\ExecuteMetaData[\Termtex]{Term}
+
+\missingfigure{Example term}
+
+A layer of syntax supports the following functorial action.
+{\color{red}(Maybe this has to go later, because it talks about linear maps.)}
+
+\ExecuteMetaData[\Maptex]{map-s-type}

@@ -6,16 +6,27 @@ generic-lr-lagda-modules = $(call find-lagda-modules,generic-lr/src)
 lagda2tex-names = $(subst .lagda.tex,.tex,$(subst $(1)/,$(1)/latex/,$(2)))
 
 lagda-outputs = $(call lagda2tex-names,agda,$(agda-lagda-modules)) $(call lagda2tex-names,generic-lr/src,$(generic-lr-lagda-modules))
+lagda-processed-outputs = $(subst /latex/,/processed-latex/,lagda-outputs)
 
-tex/thesis.pdf: tex/*.tex $(lagda-outputs)
+tex/thesis.pdf: tex/*.tex $(lagda-processed-outputs)
 	cd tex; latexmk -halt-on-error thesis.tex
 
 define lagda2tex
-$(call lagda2tex-names,$(1),$(2)): $(2)
-	cd $(1); agda --latex $(subst $(1)/,,$(2))
+$(1)/processed-latex/%.tex: $(1)/latex/%.tex
+	mkdir -p $$(dir $$@)
+	sed \
+	-e 's/=⇒/⇛/g' \
+	-e 's/\\AgdaFunction{U}/\\AgdaFunction{⒈}/g' \
+	-e 's/`⊤/`⒈/g' \
+	-e 's/─✴/⇥/g' \
+	-e 's/\\AgdaFunction{⇒}/\\AgdaFunction{⇴}/g' \
+	$$< >$$@
+
+$(1)/latex/%.tex: $(1)/%.lagda.tex
+	cd $(1); agda --latex $$(subst $(1)/,,$$<)
 endef
-$(foreach f,$(agda-lagda-modules),$(eval $(call lagda2tex,agda,$(f))))
-$(foreach f,$(generic-lr-lagda-modules),$(eval $(call lagda2tex,generic-lr/src,$(f))))
+$(eval $(call lagda2tex,agda))
+$(eval $(call lagda2tex,generic-lr/src))
 
 .PHONY: clean
 clean:

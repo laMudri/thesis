@@ -4,23 +4,31 @@
 \usepackage[conor]{agda}
 \usepackage{catchfilebetweentags}
 \usepackage{cleveref}
+\usepackage{cmll}
 \usepackage{ebproof}
 \usepackage{mathrsfs}
 \usepackage{mathtools}
 \usepackage{newunicodechar}
 \usepackage{stmaryrd}
+\setlength{\marginparwidth}{2cm}
 \usepackage{todonotes}
+\usepackage{turnstile}
 
 \input{../macros.tex}
 \input{lagda.tex}
 
-\def\Syntaxtex{../../generic-lr/src/latex/Generic/Linear/Syntax.tex}
-\def\Interpretationtex%
-{../../generic-lr/src/latex/Generic/Linear/Syntax/Interpretation.tex}
+\def\genericlr{../../generic-lr/src/processed-latex}
+\def\Syntaxtex{\genericlr/Generic/Linear/Syntax.tex}
+\def\Interpretationtex{\genericlr/Generic/Linear/Syntax/Interpretation.tex}
+\def\Maptex{\genericlr/Generic/Linear/Syntax/Interpretation/Map.tex}
+\def\Termtex{\genericlr/Generic/Linear/Syntax/Term.tex}
+\def\Semanticstex{\genericlr/Generic/Linear/Semantics.tex}
+\def\Renamingtex{\genericlr/Generic/Linear/Renaming.tex}
+\def\PaperExamplestex{\genericlr/Generic/Linear/Example/PaperExamples.tex}
 
 \begin{document}
 
-\title{A Framework for Substructural Programming Languages}
+\title{A Framework for Substructural Type Systems}
 
 \author{James Wood}
 \orcid{0000-0002-8080-3350}
@@ -40,21 +48,34 @@
 }
 \email{robert.atkey@strath.ac.uk}
 
+\keywords{substructural, linear, metatheory, type system, mechanisation}
+
+\begin{abstract}
+  We present a framework for mechanising the metatheory of certain substructural
+  type systems.
+\end{abstract}
+
 \maketitle
 
 \section{Introduction}\label{sec:intro}
+\input{intro}
 
 \section{Vectors over semirings}\label{sec:algebra}
 \input{algebra}
 
-\section{Environments}\label{sec:env}
-\input{env}
-
 \section{Generic syntax}\label{sec:syntax}
 \input{syntax}
 
+\section{Environments}\label{sec:env}
+\input{env}
+
 \section{Semantics}\label{sec:semantics}
+\input{semantics}
 
 \section{Conclusions}\label{sec:conc}
+
+\bibliographystyle{ACM-Reference-Format}
+\citestyle{acmauthoryear}
+\bibliography{quant-framework}
 
 \end{document}
