@@ -6,10 +6,17 @@ generic-lr-lagda-modules = $(call find-lagda-modules,generic-lr/src)
 lagda2tex-names = $(subst .lagda.tex,.tex,$(subst $(1)/,$(1)/latex/,$(2)))
 
 lagda-outputs = $(call lagda2tex-names,agda,$(agda-lagda-modules)) $(call lagda2tex-names,generic-lr/src,$(generic-lr-lagda-modules))
-lagda-processed-outputs = $(subst /latex/,/processed-latex/,lagda-outputs)
+lagda-processed-outputs = $(subst /latex/,/processed-latex/,$(lagda-outputs))
 
-tex/thesis.pdf: tex/*.tex $(lagda-processed-outputs)
-	cd tex; latexmk -halt-on-error thesis.tex
+.PHONY: thesis cpp lagda
+
+tex/thesis.pdf: tex/*.tex tex/quantitative.bib lagda
+	cd tex; latexmk -pdf -halt-on-error thesis.tex
+thesis: tex/thesis.pdf
+
+tex/cpp21/quant-framework.pdf: tex/cpp21/*.tex tex/macros.tex tex/quantitative.bib lagda
+	cd tex/cpp21; latexmk -pdf -halt-on-error quant-framework.tex
+cpp: tex/cpp21/quant-framework.pdf
 
 define lagda2tex
 $(1)/processed-latex/%.tex: $(1)/latex/%.tex
@@ -28,7 +35,10 @@ endef
 $(eval $(call lagda2tex,agda))
 $(eval $(call lagda2tex,generic-lr/src))
 
+lagda: $(lagda-processed-outputs)
+
 .PHONY: clean
 clean:
 	rm $(lagda-outputs)
+	rm $(lagda-processed-outputs)
 	cd tex; latexmk -C
