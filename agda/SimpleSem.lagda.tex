@@ -4,132 +4,287 @@ module SimpleSem where
 
 open import Data.LTree
 open import Data.LTree.Vector
+open import Data.Nat.Base
 open import Data.Product
-open import Function.Base using (id)
+open import Data.Unit
+open import Function.Base using (id; _ˢ_)
 open import Relation.Binary.PropositionalEquality hiding ([_])
+open import Relation.Nary
 
-infix 4 _∋_ _⊢_
-infixr 5 _`→_
-infix 5 _++ᶜ_
-
-data Ty : Set where
-  ι : Ty
-  _`→_ : (A B : Ty) → Ty
+open import SimpleKits
+open Kits hiding (ren; sub; Kit)
 \end{code}
 
-%<*Ctx>
+%<*EnvSyntax>
 \begin{code}
-record Ctx : Set where
-  constructor ctx
-  field
-    {shape} : LTree
-    ty-ctx : Vector Ty shape
-open Ctx public
+infix 20 [_]_⇒ᵉ_
+[_]_⇒ᵉ_ = Env
 \end{code}
-%</Ctx>
+%</EnvSyntax>
 
 \begin{code}
-[_]ᶜ : Ty → Ctx
-[ A ]ᶜ = ctx [ A ]
-[]ᶜ : Ctx
-[]ᶜ = ctx []
-_++ᶜ_ : (Γ Δ : Ctx) → Ctx
-ctx γ ++ᶜ ctx δ = ctx (γ ++ δ)
+module Circle where
 \end{code}
 
-%<*Var>
+%<*Circle>
 \begin{code}
-record _∋_ (Γ : Ctx) (A : Ty) : Set where
-  constructor el
-  field
-    idx : Ptr (Γ .shape)
-    tyq : Γ .ty-ctx idx ≡ A
-open _∋_ public
-\end{code}
-%</Var>
-
-\begin{code}
-hereᵛ : ∀ {A} → [ A ]ᶜ ∋ A
-hereᵛ = el here refl
-↙ᵛ : ∀ {Γ Δ A} → Γ ∋ A → Γ ++ᶜ Δ ∋ A
-↙ᵛ (el i q) = el (↙ i) q
-↘ᵛ : ∀ {Γ Δ A} → Δ ∋ A → Γ ++ᶜ Δ ∋ A
-↘ᵛ (el i q) = el (↘ i) q
-\end{code}
-
-%<*Term>
-\begin{code}
-data _⊢_ (Γ : Ctx) : Ty → Set where
-  var : ∀ {A} → Γ ∋ A → Γ ⊢ A
-  app : ∀ {A B} → Γ ⊢ A `→ B → Γ ⊢ A → Γ ⊢ B
-  lam : ∀ {A B} → Γ ++ᶜ [ A ]ᶜ ⊢ B → Γ ⊢ A `→ B
-\end{code}
-%</Term>
-
-\begin{code}
-module Kits where
-\end{code}
-
-%<*Env>
-\begin{code}
-  Env : (K : Ctx → Ty → Set) (Γ Δ : Ctx) → Set
-  Env K Γ Δ = ∀ {A} → Δ ∋ A → K Γ A
-\end{code}
-%</Env>
-
-%<*RenSub>
-\begin{code}
-  Ren = Env _∋_
-  Sub = Env _⊢_
-\end{code}
-%</RenSub>
-
-\begin{code}
-  □ : (Ctx → Set) → (Ctx → Set)
-  □ T Γ = ∀ {Γ⁺} → Ren Γ⁺ Γ → T Γ⁺
-
   ○ : (Ctx → Set) → (Ctx → Set)
   ○ T Γ = ∀ {Δ} → T (Γ ++ᶜ Δ)
 \end{code}
+%</Circle>
 
-%<*Kit>
+\begin{code}
+  module Explicit where
+
+    record Semantics′ (𝓥 𝓒 : Ctx → Ty → Set) : Set where
+      constructor kit
+      field
+        ↙ᵏ : ∀ {Γ Δ A} → 𝓥 Γ A → 𝓥 (Γ ++ᶜ Δ) A
+\end{code}
+%<*semVarApp>
+\begin{code}
+        ⟦var⟧ : ∀ {Γ A} → 𝓥 Γ A → 𝓒 Γ A
+        ⟦app⟧ : ∀ {Γ A B} → 𝓒 Γ (A `→ B) → 𝓒 Γ A → 𝓒 Γ B
+\end{code}
+%</semVarApp>
+\begin{code}
+        ⟦lam⟧ : ∀ {Γ A B} →
+          (∀ {Δ} → 𝓥 (Γ ++ᶜ Δ) A → 𝓒 (Γ ++ᶜ Δ) B) → 𝓒 Γ (A `→ B)
+\end{code}
+
+%<*SemanticsExplicit>
+\begin{code}
+    record Semantics (𝓥 𝓒 : Ctx → Ty → Set) : Set where
+      constructor kit
+      field
+        ↙ᵏ : ∀ {Γ Δ A} → 𝓥 Γ A → 𝓥 (Γ ++ᶜ Δ) A
+        ⟦var⟧ : ∀ {Γ A} → 𝓥 Γ A → 𝓒 Γ A
+        ⟦app⟧ : ∀ {Γ A B} → 𝓒 Γ (A `→ B) → 𝓒 Γ A → 𝓒 Γ B
+        ⟦lam⟧ : ∀ {Γ A B} →
+          (∀ {Δ} → 𝓥 (Γ ++ᶜ Δ) A → 𝓒 (Γ ++ᶜ Δ) B) → 𝓒 Γ (A `→ B)
+\end{code}
+%</SemanticsExplicit>
+
+%<*SemanticsCircle>
 \begin{code}
   record Semantics (𝓥 𝓒 : Ctx → Ty → Set) : Set where
     constructor kit
+    infix 20 _𝓥⊢_ _𝓒⊢_; private _𝓥⊢_ = 𝓥; _𝓒⊢_ = 𝓒
     field
-      ↙ᵏ : ∀ {Γ Δ A} → 𝓥 Γ A → 𝓥 (Γ ++ᶜ Δ) A
-      ⟦var⟧ : ∀ {Γ A} → 𝓥 Γ A → 𝓒 Γ A
-      ⟦app⟧ : ∀ {Γ A B} → 𝓒 Γ (A `→ B) → 𝓒 Γ A → 𝓒 Γ B
-      ⟦lam⟧ : ∀ {Γ A B} → ○ (λ Γ⁺ → 𝓥 Γ⁺ A → 𝓒 Γ⁺ B) Γ → 𝓒 Γ (A `→ B)
+      ↙ᵏ : ∀ {A} → ∀[ _𝓥⊢ A ⇒ ○ (_𝓥⊢ A) ]
+      ⟦var⟧ : ∀ {A} → ∀[ _𝓥⊢ A ⇒ _𝓒⊢ A ]
+      ⟦app⟧ : ∀ {A B} → ∀[ _𝓒⊢ (A `→ B) ⇒ _𝓒⊢ A ⇒ _𝓒⊢ B ]
+      ⟦lam⟧ : ∀ {A B} → ∀[ ○ (_𝓥⊢ A ⇒ _𝓒⊢ B) ⇒ _𝓒⊢ (A `→ B) ]
 \end{code}
-%</Kit>
+%</SemanticsCircle>
 
-N.B., without the □, we can write \verb|sem| without \verb|bindEnv|.
+N.B., without the ○/□, we can write \verb|sem| without \verb|bindEnv|.
+It is useless, though.
 \begin{code}
-    bindEnv : ∀ {Γ Δ Γr Δr} →
-      Env 𝓥 Γ Δ → Env 𝓥 (Γ ++ᶜ Γr) Δr → Env 𝓥 (Γ ++ᶜ Γr) (Δ ++ᶜ Δr)
+    bindEnv : ∀ {Δ Δr} →
+      ∀[ [ 𝓥 ]_⇒ᵉ Δ ⇒ ○ ([ 𝓥 ]_⇒ᵉ Δr ⇒ [ 𝓥 ]_⇒ᵉ (Δ ++ᶜ Δr)) ]
     bindEnv ρ σ (el (↙ i) q) = ↙ᵏ (ρ (el i q))
     bindEnv ρ σ (el (↘ i) q) = σ (el i q)
+\end{code}
 
+%<*semType>
+\begin{code}
     sem : ∀ {Γ Δ A} → Env 𝓥 Γ Δ → Δ ⊢ A → 𝓒 Γ A
+\end{code}
+%</semType>
+\begin{code}
     sem ρ (var x) = ⟦var⟧ (ρ x)
     sem ρ (app M N) = ⟦app⟧ (sem ρ M) (sem ρ N)
     sem ρ (lam M) = ⟦lam⟧ (λ v → sem (bindEnv ρ (λ { (el i refl) → v })) M)
 
   module _ where
     open Semantics
+\end{code}
 
+%<*RenSemCircle>
+\begin{code}
     RenSem : Semantics _∋_ _⊢_
-    RenSem .↙ᵏ = ↙ᵛ
+    RenSem .↙ᵏ v = ↙ᵛ v
     RenSem .⟦var⟧ = var
     RenSem .⟦app⟧ = app
-    RenSem .⟦lam⟧ b = lam (b (↘ᵛ hereᵛ))  -- (b ↙ᵛ (↘ᵛ hereᵛ))
+    RenSem .⟦lam⟧ b = lam (b (↘ᵛ hereᵛ))
 
     ren = sem RenSem
-
-    -- SubSem : Semantics _⊢_ _⊢_
-    -- SubSem .↙ᵏ = {!!}
-    -- SubSem .⟦var⟧ = id
-    -- SubSem .⟦app⟧ = app
-    -- SubSem .⟦lam⟧ b = lam (b ↙ᵛ (var (↘ᵛ hereᵛ)))
 \end{code}
+%</RenSemCircle>
+
+\begin{code}
+    SubSem : Semantics _⊢_ _⊢_
+    SubSem .↙ᵏ M = ren ↙ᵛ M
+    SubSem .⟦var⟧ = id
+    SubSem .⟦app⟧ = app
+    SubSem .⟦lam⟧ b = lam (b (var (↘ᵛ hereᵛ)))
+
+    sub = sem SubSem
+\end{code}
+
+%<*SetSemCircle>
+\begin{code}
+    ⟦_⟧Ty : Ty → Set
+    ⟦ ι ⟧Ty = ℕ
+    ⟦ A `→ B ⟧Ty = ⟦ A ⟧Ty → ⟦ B ⟧Ty
+    ⟦_⟧Ctx : Ctx → Set
+    ⟦ Γ ⟧Ctx = Liftₙ ⟦_⟧Ty (Γ .ty-ctx)
+    ⟦_⊢_⟧ : Ctx → Ty → Set
+    ⟦ Γ ⊢ A ⟧ = ⟦ Γ ⟧Ctx → ⟦ A ⟧Ty
+
+    SetSem : Semantics _∋_ ⟦_⊢_⟧
+    SetSem .↙ᵏ v = ↙ᵛ v
+    SetSem .⟦var⟧ (el i refl) γ = γ .get i
+    SetSem .⟦app⟧ m n γ = (m γ) (n γ)
+    SetSem .⟦lam⟧ b γ x = b (↘ᵛ hereᵛ) (γ ++ₙ [ x ]ₙ)
+
+    set : ∀ {Γ A} → Γ ⊢ A → ⟦ Γ ⊢ A ⟧
+    set = sem SetSem id
+\end{code}
+%</SetSemCircle>
+
+\begin{code}
+    module _ {A B Γ} (
+\end{code}
+%<*bRenSemCircle>
+\begin{code}[inline]
+      b : ○ (_∋ A ⇒ _⊢ B) Γ
+\end{code}
+%</bRenSemCircle>
+\begin{code}
+      ) (T0 :
+\end{code}
+%<*resRenSemCircle>
+\begin{code}[inline]
+      Γ ++ᶜ [ A ]ᶜ ⊢ B
+\end{code}
+%</resRenSemCircle>
+\begin{code}
+      ) (
+\end{code}
+%<*mSetSemCircle>
+\begin{code}[inline]
+      m : ⟦ Γ ⟧Ctx → (⟦ A ⟧Ty → ⟦ B ⟧Ty)
+\end{code}
+%</mSetSemCircle>
+\begin{code}
+      ) (
+\end{code}
+%<*nSetSemCircle>
+\begin{code}[inline]
+      n : ⟦ Γ ⟧Ctx → ⟦ A ⟧Ty
+\end{code}
+%</nSetSemCircle>
+\begin{code}
+      ) (
+\end{code}
+%<*gammaSetSemCircle>
+\begin{code}[inline]
+      γ : ⟦ Γ ⟧Ctx
+\end{code}
+%</gammaSetSemCircle>
+\begin{code}
+      ) (T1 :
+\end{code}
+%<*semGA>
+\begin{code}[inline]
+      ⟦ Γ ⊢ A ⟧
+\end{code}
+%</semGA>
+\begin{code}
+      ) where
+
+module Box where
+\end{code}
+
+%<*Box>
+\begin{code}
+  □ : (Ctx → Set) → (Ctx → Set)
+  □ T Γ = ∀ {Γ⁺} → Ren Γ⁺ Γ → T Γ⁺
+\end{code}
+%</Box>
+
+%<*Semantics>
+\begin{code}
+  record Semantics (𝓥 𝓒 : Ctx → Ty → Set) : Set where
+    constructor kit
+    infix 20 _𝓥⊢_ _𝓒⊢_; private _𝓥⊢_ = 𝓥; _𝓒⊢_ = 𝓒
+    field
+      ren^𝓥 : ∀ {A} → ∀[ _𝓥⊢ A ⇒ □ (_𝓥⊢ A) ]
+      ⟦var⟧ : ∀ {A} → ∀[ _𝓥⊢ A ⇒ _𝓒⊢ A ]
+      ⟦app⟧ : ∀ {A B} → ∀[ _𝓒⊢ (A `→ B) ⇒ _𝓒⊢ A ⇒ _𝓒⊢ B ]
+      ⟦lam⟧ : ∀ {A B} → ∀[ □ (_𝓥⊢ A ⇒ _𝓒⊢ B) ⇒ _𝓒⊢ (A `→ B) ]
+\end{code}
+%</Semantics>
+
+%<*bindEnv>
+\begin{code}
+    bindEnv : ∀ {Δ Δr} →
+      ∀[ [ 𝓥 ]_⇒ᵉ Δ ⇒ □ ([ 𝓥 ]_⇒ᵉ Δr ⇒ [ 𝓥 ]_⇒ᵉ (Δ ++ᶜ Δr)) ]
+    bindEnv ρ r σ (el (↙ i) q) = ren^𝓥 (ρ (el i q)) r
+    bindEnv ρ r σ (el (↘ i) q) = σ (el i q)
+\end{code}
+%</bindEnv>
+
+%<*sem>
+\begin{code}
+    sem : ∀ {Γ Δ A} → Env 𝓥 Γ Δ → Δ ⊢ A → Γ 𝓒⊢ A
+    sem ρ (var x) = ⟦var⟧ (ρ x)
+    sem ρ (app M N) = ⟦app⟧ (sem ρ M) (sem ρ N)
+    sem ρ (lam M) = ⟦lam⟧ λ r v →
+      sem (bindEnv ρ r (λ { (el i refl) → v })) M
+\end{code}
+%</sem>
+
+\begin{code}
+  module _ where
+    open Semantics
+\end{code}
+
+%<*ren>
+\begin{code}
+    RenSem : Semantics _∋_ _⊢_
+    RenSem .ren^𝓥 v r = r v
+    RenSem .⟦var⟧ = var
+    RenSem .⟦app⟧ = app
+    RenSem .⟦lam⟧ b = lam (b ↙ᵛ (↘ᵛ hereᵛ))
+
+    ren = sem RenSem
+\end{code}
+%</ren>
+
+%<*sub>
+\begin{code}
+    SubSem : Semantics _⊢_ _⊢_
+    SubSem .ren^𝓥 M r = ren r M
+    SubSem .⟦var⟧ = id
+    SubSem .⟦app⟧ = app
+    SubSem .⟦lam⟧ b = lam (b ↙ᵛ (var (↘ᵛ hereᵛ)))
+
+    sub = sem SubSem
+\end{code}
+%</sub>
+
+%<*Kit>
+\begin{code}
+    record Kit (𝓥 : Ctx → Ty → Set) : Set where
+      constructor kit
+      infix 20 _𝓥⊢_; private _𝓥⊢_ = 𝓥
+      field
+        ren^𝓥 : ∀ {A} → ∀[ _𝓥⊢ A ⇒ □ (_𝓥⊢ A) ]
+        vr : ∀ {A} → ∀[ _∋ A ⇒ _𝓥⊢ A ]
+        tm : ∀ {A} → ∀[ _𝓥⊢ A ⇒ _⊢ A ]
+    open Kit
+\end{code}
+%</Kit>
+
+%<*kit>
+\begin{code}
+    KitSem : ∀ {𝓥} → Kit 𝓥 → Semantics 𝓥 _⊢_
+    KitSem K .ren^𝓥 = K .ren^𝓥
+    KitSem K .⟦var⟧ = K .tm
+    KitSem K .⟦app⟧ = app
+    KitSem K .⟦lam⟧ b = lam (b ↙ᵛ (K .vr (↘ᵛ hereᵛ)))
+\end{code}
+%</kit>

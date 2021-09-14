@@ -19,10 +19,6 @@
 \newcommand\grQr{\grctxsub Q r}
 \newcommand\grRl{\grctxsub R l}
 \newcommand\grRr{\grctxsub R r}
-\newcommand\sem[1]{\left\llbracket{#1}\right\rrbracket}
-\newcommand\size[1]{\left\lvert{#1}\right\rvert}
-\newcommand\bra[1]{\left\langle{#1}\right\rvert}
-\newcommand\ket[1]{\left\lvert{#1}\right\rangle}
 \newcommand\ps{\mathit{ps}}
 \newcommand\qs{\mathit{qs}}
 \newcommand\rs{\mathit{rs}}
@@ -32,9 +28,6 @@
 %\newcommand\dotplus{\mathbin{\dot+}}
 \newcommand\wand{\mathrel{\mathord{-}\hspace{-0.75ex}*}}
 \newcommand\sep{\mathbin{*}}
-%\newcommand\env[1]{(#1\mathrm{-Env})}
-%\newcommand\thinningN{\mathrm{Thinning}}
-%\newcommand\thinning[2]{\thinningN~#1~#2}
 \providecommand\U{}
 \renewcommand\U{\mathcal U}
 \newcommand\V{\mathcal V}
@@ -57,10 +50,16 @@
 
 \newcommand\env[1]{\stackrel{#1}\Longrightarrow}
 
-\newcommand\plr[1]{\left({#1}\right)}
-\newcommand\blr[1]{\left[{#1}\right]}
-\newcommand\alr[1]{\left\langle{#1}\right\rangle}
+\usepackage{mleftright}
+\newcommand\lr[3]{\mleft#1{#2}\mright#3}
+\newcommand\sem[1]{\lr\llbracket{#1}\rrbracket}
+\newcommand\size[1]{\lr\lvert{#1}\rvert}
+\newcommand\plr[1]{\lr({#1})}
+\newcommand\blr[1]{\lr[{#1}]}
 \newcommand\forallb[1]{\forall\blr{~#1~}}
+\newcommand\alr[1]{\lr\langle{#1}\rangle}
+\newcommand\bra[1]{\lr\langle{#1}\rvert}
+\newcommand\ket[1]{\lr\lvert{#1}\rangle}
 
 \newcommand\leO{\;{\leq}0}
 \newcommand\leI{\;{\leq}1}

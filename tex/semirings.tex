@@ -1,10 +1,153 @@
-\chapter{Usage restriction via semirings}
+\chapter{Usage restriction via semirings}\label{sec:semirings}
 
-Addition gives the structural rules.
-Multiplication gives modalities.
+The methods described in \cref{sec:simple} for simply typed $\lambda$-calculus
+make crucial use of \emph{weakening} --- the fact that if we have
+$\Gamma \vdash A$, then we also have $\Gamma, \Delta \vdash A$.
+We use this property to update environments as they go under binders.
+However, as we saw in \cref{sec:linearity}, there are interesting calculi in
+which general weakening does not hold.
+As such, one of the aims of this chapter will be to find a form of weakening
+applicable to variables of any type, while essentially retaining linearity
+(as opposed to affinity).
 
-Compare with other work.
-About here, I can talk about Granule-style $\otimes$-pattern matching.
+As explained by McBride~\cite{McBride16}, the first insight is to, instead of
+removing variables from the context of certain subterms, add an annotation to
+free variables saying whether they are to be used or not.
+We may use an annotation $\gr0$ on variables that are not to be used, and an
+annotation $\gr1$ on variables that are to be used.
+This convention lets us transcribe the usual $\otimes$-introduction rule
+(left) as a rule with usage annotations (right).
+I use lowercase $\gamma$ and $\delta$ to emphasise that the whole context is
+now a list of types together with their usage annotations.
+\todo{Reword: what's capital $\Gamma$}
+If $\gamma = x_1 : A_1, \ldots, x_m : A_m$, then
+$\gr r\gamma = \gr rx_1 : A_1, \ldots, \gr rx_m : A_m$.
+
+\[
+  \begin{prooftree}
+    \hypo{\Gamma \vdash A}
+    \hypo{\Delta \vdash B}
+    \infer2{\Gamma, \Delta \vdash A \otimes B}
+  \end{prooftree}
+  \quad\rightsquigarrow\quad
+  \begin{prooftree}
+    \hypo{\gr1\gamma, \gr0\delta \vdash A}
+    \hypo{\gr0\gamma, \gr1\delta \vdash B}
+    \infer2{\gr1\gamma, \gr1\delta \vdash A \otimes B}
+  \end{prooftree}
+\]
+
+What the existence of $\gr0$ has bought us is that variables never go out of
+scope in subterms; rather, we lose the ability to use certain variables.
+Additionally, we recover a form of weakening: if $\Gamma \vdash A$, then also
+$\Gamma, \gr0\delta \vdash A$, because the resulting term indeed uses no
+variables from $\delta$.
+A rigorous proof of weakening for terms will come in \cref{sec:lrsub}.
+
+If we follow the DILL style of variable management, there are not just the two
+states \emph{used} ($\gr1$) and \emph{not used} ($\gr0$), but also
+\emph{usable unrestrictedly}.
+If we assign unrestricted (or \emph{intuitionistic}) variables an annotation
+$\gr\omega$, we can make the following transcription of the DILL
+$\otimes$-introduction rule.
+
+\[
+  \begin{prooftree}
+    \hypo{\Theta; \Gamma \vdash A}
+    \hypo{\Theta; \Delta \vdash B}
+    \infer2{\Theta; \Gamma, \Delta \vdash A \otimes B}
+  \end{prooftree}
+  \quad\rightsquigarrow\quad
+  \begin{prooftree}
+    \hypo{\gr\omega\theta, \gr1\gamma, \gr0\delta \vdash A}
+    \hypo{\gr\omega\theta, \gr0\gamma, \gr1\delta \vdash B}
+    \infer2{\gr\omega\theta, \gr1\gamma, \gr1\delta \vdash A \otimes B}
+  \end{prooftree}
+\]
+
+To conceptualise the criteria on the usage annotations involved in this rule,
+I introduce a formal $+$ operation on usage annotations.
+The rule stated above relies on the facts that $\gr1 + \gr0 = \gr1$,
+$\gr0 + \gr1 = \gr1$, and $\gr\omega + \gr\omega = \gr\omega$.
+The capital calligraphic letters $\grP$, $\grQ$, and $\grR$ stand for all of
+the usage annotations in a given context, with $\grR\gamma$ standing for
+$\grR_1x_1 : \gamma_1, \ldots, \grR_mx_m : \gamma_m$.
+Addition lifts pointwise to these vectors of usage annotations.
+It is worth noting now that, thanks to the fact that $\gr0 + \gr0 = \gr0$, the
+rule on the right now accepts $\gr0$-annotated variables in its conclusion,
+which is essential for weakening to be admissible.
+
+\[
+  \begin{prooftree}
+    \hypo{\gr\omega\theta, \gr1\gamma, \gr0\delta \vdash A}
+    \hypo{\gr\omega\theta, \gr0\gamma, \gr1\delta \vdash B}
+    \infer2{\gr\omega\theta, \gr1\gamma, \gr1\delta \vdash A \otimes B}
+  \end{prooftree}
+  \quad\rightsquigarrow\quad
+  \begin{prooftree}
+    \hypo{\grR = \grP + \grQ}
+    \hypo{\grP\gamma \vdash A}
+    \hypo{\grQ\gamma \vdash B}
+    \infer3{\grR\gamma \vdash A \otimes B}
+  \end{prooftree}
+\]
+
+Some other transcriptions:
+
+\[
+  \begin{prooftree}
+    \infer0{\Theta; A \vdash A}
+  \end{prooftree}
+  \quad\rightsquigarrow\quad
+  \begin{prooftree}
+    \infer0{\gr\omega\theta, \gr1A, \gr0\delta \vdash A}
+  \end{prooftree}
+  \quad\rightsquigarrow\quad
+  \begin{prooftree}
+    \hypo{\grR \leq \bra x}
+    \hypo{\gamma_x = A}
+    \infer2{\grR\gamma \vdash A}
+  \end{prooftree}
+\]
+
+\[
+  \begin{prooftree}
+    \infer0{\Theta, A; {\cdot} \vdash A}
+  \end{prooftree}
+  \quad\rightsquigarrow\quad
+  \begin{prooftree}
+    \infer0{\gr\omega\theta, \gr\omega A, \gr0\delta \vdash A}
+  \end{prooftree}
+  \quad\rightsquigarrow\quad
+  \begin{prooftree}
+    \hypo{\grR \leq \bra x}
+    \hypo{\gamma_x = A}
+    \infer2{\grR\gamma \vdash A}
+  \end{prooftree}
+\]
+
+%In \cref{sec:simple}, we saw that the logical rules of simply typed
+%$\lambda$-calculus can be described in terms of three basic premise combinators:
+%$\dot1$, standing for no premises; $\dottimes$, allowing for multiple premises
+%in the same context; and $\Theta \vdash A$, requiring a subterm of type $A$
+%having bound the extra variables from context $\Theta$.
+%However, we remember from \cref{sec:linearity} that in a substructural setting,
+%we do not always want to copy assumptions for use in all subterms.
+%This motivates me to introduce the additional premise combinators $I^*$, $\sep$,
+%and $\cdot$ in \cref{sec:lnd}, allowing for the modes of usage exhibited in
+%the introduction rules for $I$, $\otimes$, and $\oc$, respectively.
+
+In \cref{sec:lr}, I define the usage-annotated calculus \name{}, which has
+appeared previously in my work with Atkey~\cite{WA20}, and can be seen as a
+simply typed version of Atkey's dependently typed calculus QTT~\cite{Atkey18}.
+The idea of \name{} is to augment simply typed $\lambda$-calculus with
+annotations on free variables, and give enough types to manipulate these
+annotations.
+I use \cref{sec:lnd} to introduce some notation that allows us to restate the
+typing rules of \name{} so as to not mention contexts explicitly.
+The first problem I tackle with this new syntax is proving admissibility of
+substitution.
+I follow the methodology from \cref{sec:kits}, which
 
 \section{A usage-annotated calculus}\label{sec:lr}
 \input{lr.tex}
@@ -16,7 +159,7 @@ About here, I can talk about Granule-style $\otimes$-pattern matching.
 \input{lenv.tex}
 \section{Substitution is admissible in \name{}}\label{sec:lrsub}
 \input{lrsub.tex}
-\section{Recursion}\label{sec:rec}
+\section{Adding recursion to \name{}}\label{sec:rec}
 \input{rec.tex}
 \section{Addendum: (lack of) partiality}\label{sec:part}
 \input{part.tex}
