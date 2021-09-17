@@ -1,0 +1,34 @@
+\subsection{Renaming and substitution}
+
+In an unpublished note, \citet{McBride05} gives a parametrised traversal
+yielding homomorphisms of syntax.
+The parameters are collected in the record \AgdaRecord{Kit}.
+We make a minor change to the original presentation, where instead of our
+\AgdaField{ren\textasciicircum{}$\V$} field, \citeauthor{McBride05} has the
+field \AgdaField{wk} allowing only context extensions.
+As for the other two fields, \AgdaField{vr} allows us to map variables to
+$\V$-values, so as to put newly bound variables in environments; and
+\AgdaField{tm} allows us to extract terms from $\V$-values, as required when
+we use the environment to evaluate a free variable.
+
+\ExecuteMetaData[\Syntactictex]{Kit}
+
+Where \citeauthor{McBride05} gave the traversal explicitly, we go via our
+generic semantic traversal.
+The first two fields of \AgdaRecord{Semantics} derive directly from fields of
+\AgdaRecord{Kit}.
+Meanwhile, to handle term constructors, we first \AgdaFunction{reify} to get a
+collection of traversed subterms, and then use \AgdaInductiveConstructor{`con}
+to assemble these subterms into a similarly shaped syntactic form as we started
+with.
+The \AgdaField{vr} field is used implicitly in \AgdaFunction{reify}, as it is
+used to show that $\V$-identity environments exist.
+
+\ExecuteMetaData[\Syntactictex]{kit-to-sem}
+
+\ExecuteMetaData[\Syntactictex]{Ren-Kit}
+\ExecuteMetaData[\Syntactictex]{Sub-Kit}
+
+\subsection{A denotational semantics}
+
+\subsection{A usage elaborator}

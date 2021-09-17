@@ -1,4 +1,4 @@
 name: thesis
 depend: standard-library
 include: . ../generic-lr/src
-flags: --safe --without-K --postfix-projections
+flags: --without-K --postfix-projections

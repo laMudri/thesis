@@ -136,22 +136,23 @@ We first give the set of types in a standard way (together with base type
 
 \ExecuteMetaData[\PaperExamplestex]{Ty}
 
-Then, we give the set of labels.
+%Then, we give the set of labels.
 There is one label for each instantiation of a logical rule, but the labels
 contain no further information about subterms or restrictions on the context.
 
 \ExecuteMetaData[\PaperExamplestex]{qlR}
 
 Finally, we specify, for each label, the rest of the information about that
-rule.
+rule {\color{red}(premises and conclusion)}.
 We do not have a variable rule, because the variable rule is implicit to any
 type system.
+{\color{red}(Looks like \cref{fig:lr-comb})}
 
 \ExecuteMetaData[\PaperExamplestex]{lR}
 
 The next thing we want to do is to build terms in the described type system.
 
-\ExecuteMetaData[\Syntaxtex]{Scoped}
+\ExecuteMetaData[\Syntaxtex]{OpenFam}
 
 To specify the meaning of descriptions, we assume some
 \ExecuteMetaData[\Interpretationtex]{X}, over which we form one layer of syntax.
@@ -187,13 +188,15 @@ conclusion.
 \ExecuteMetaData[\Interpretationtex]{sems}
 
 The most obvious way to make such an \AgdaBound{X} is to use some existing
-\AgdaFunction{Scoped} on an extended context.
+\AgdaFunction{OpenFam} on an extended context.
 This is what \AgdaFunction{Scope} does --- take the new variables
 \AgdaBound{$\Delta$}, concatenate them onto the existing context
 \AgdaBound{$\Gamma$}, and pass the extended context onto the judgement
 \AgdaBound{T}.
 
 \ExecuteMetaData[\Syntaxtex]{Scope}
+
+{\color{red}(Forward ref: for now, we could have inlined \texttt{Scope}.)}
 
 It is this method we use to deal with new variables in syntax.
 Terms resemble the free monad over a layer-of-syntax functor, though that

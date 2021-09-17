@@ -1,0 +1,40 @@
+\begin{code}
+{-# OPTIONS --without-K --sized-types --postfix-projections #-}
+
+open import Algebra.Po
+open import Level
+
+module Snippets (Ty : Set) (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
+
+open import Generic.Linear.Everything Ty poSemiring
+
+open import Function.Extra
+open import Size
+
+s0 : ∀ {v c} (𝓥 : OpenFam v) (𝓒 : OpenFam c) → ExtOpenFam _
+s0 𝓥 𝓒 Δ Γ A =
+\end{code}
+%<*KripkeVCDGA>
+\begin{code}[inline]
+  Kripke 𝓥 𝓒 Δ Γ A
+\end{code}
+%</KripkeVCDGA>
+\begin{code}
+s1 : ∀ {v c} (𝓥 : OpenFam v) (𝓒 : OpenFam c)
+  (s₁ sₙ : Ann) (B₁ Bₙ : Ty) (⋯ : OpenType 0ℓ) (Γ : Ctx) (A : Ty) → _
+s1 𝓥 𝓒 s₁ sₙ B₁ Bₙ ⋯ Γ A =
+\end{code}
+%<*KripkeExpanded>
+\begin{code}[inline]
+  □ʳ (s₁ ·ᶜ [ 𝓥 ]_⊨ B₁ ─✴ᶜ ⋯ ─✴ᶜ sₙ ·ᶜ [ 𝓥 ]_⊨ Bₙ ─✴ᶜ [ 𝓒 ]_⊨ A) Γ
+\end{code}
+%</KripkeExpanded>
+\begin{code}
+s2 : System → Size → (Γ Δ : Ctx) → Ty → Set
+s2 d sz Γ Δ A =
+\end{code}
+%<*term-with-bound>
+\begin{code}[inline]
+  [ d , sz ] Γ ++ᶜ Δ ⊢ A
+\end{code}
+%</term-with-bound>

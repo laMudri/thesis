@@ -1,6 +1,9 @@
 \documentclass[sigplan,10pt,anonymous,review]{acmart}
 \settopmatter{printfolios=true,printccs=false,printacmref=false}
 
+\citestyle{acmauthoryear}
+\bibliographystyle{ACM-Reference-Format}
+
 \usepackage[conor]{agda}
 \usepackage{catchfilebetweentags}
 \usepackage{cleveref}
@@ -23,8 +26,10 @@
 \def\Maptex{\genericlr/Generic/Linear/Syntax/Interpretation/Map.tex}
 \def\Termtex{\genericlr/Generic/Linear/Syntax/Term.tex}
 \def\Semanticstex{\genericlr/Generic/Linear/Semantics.tex}
+\def\Syntactictex{\genericlr/Generic/Linear/Semantics/Syntactic.tex}
 \def\Renamingtex{\genericlr/Generic/Linear/Renaming.tex}
 \def\PaperExamplestex{\genericlr/Generic/Linear/Example/PaperExamples.tex}
+\def\Snippetstex{../../agda/processed-latex/Snippets.tex}
 
 \begin{document}
 
@@ -51,8 +56,35 @@
 \keywords{substructural, linear, metatheory, type system, mechanisation}
 
 \begin{abstract}
-  We present a framework for mechanising the metatheory of certain substructural
-  type systems.
+  Mechanisation of programming language research is of growing interest, and
+  the act of mechanising type systems and their metatheory is generally becoming
+  easier as new techniques are invented.
+  However, state-of-the-art techniques mostly rely on \emph{structurality} of
+  the type system --- that weakening, contraction, and exchange are admissible
+  and variables can be used unrestrictedly once assumed.
+  Linear logic, and many related subsequent systems, provide motivations for
+  breaking some of these assumptions.
+
+  We present a framework for mechanising the metatheory of certain
+  substructural type systems, in a style resembling mechanised metatheory of
+  structural type systems.
+  The framework covers a wide range of simply typed syntaxes with semiring
+  usage annotations, via a metasyntax of typing rules.
+  The metasyntax for the premises of a typing rule is related to bunched logic,
+  featuring both sharing and separating conjunction, roughly corresponding to
+  the additive and multiplicative features of linear logic.
+  The bunched flavour is carried over into the semantics, together with the use
+  of basic linear algebra constructs.
+  For example, \emph{environments} are presented equivalently as values
+  accumulated via separating conjunction, and as functions from variables to
+  values supported by linear maps.
+  Producing a generic semantic traversal has us combine environments with a
+  separating implication, producing a Kripke function space of the form
+  $\Box(A \wand B)$.
+  From the generic semantic traversal, we derive totally generic renaming and
+  substitution operations, a specific denotational semantics, and a
+  syntax-generic \emph{usage elaborator} which greatly facilitates writing
+  concrete terms.
 \end{abstract}
 
 \maketitle
@@ -72,10 +104,11 @@
 \section{Semantics}\label{sec:semantics}
 \input{semantics}
 
+\section{Example traversals}\label{sec:examples}
+\input{examples}
+
 \section{Conclusions}\label{sec:conc}
 
-\bibliographystyle{ACM-Reference-Format}
-\citestyle{acmauthoryear}
 \bibliography{quant-framework}
 
 \end{document}
