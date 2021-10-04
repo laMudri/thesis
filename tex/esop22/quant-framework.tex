@@ -1,0 +1,190 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+
+\usepackage[conor]{agda}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{catchfilebetweentags}
+\usepackage{cleveref}
+\usepackage{cmll}
+\usepackage{ebproof}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{newunicodechar}
+\usepackage{stmaryrd}
+\usepackage{todonotes}
+\usepackage{turnstile}
+
+\input{../macros.tex}
+\input{lagda.tex}
+
+\def\genericlr{../../generic-lr/src/processed-latex}
+\def\Syntaxtex{\genericlr/Generic/Linear/Syntax.tex}
+\def\Interpretationtex{\genericlr/Generic/Linear/Syntax/Interpretation.tex}
+\def\Maptex{\genericlr/Generic/Linear/Syntax/Interpretation/Map.tex}
+\def\Termtex{\genericlr/Generic/Linear/Syntax/Term.tex}
+\def\Semanticstex{\genericlr/Generic/Linear/Semantics.tex}
+\def\Syntactictex{\genericlr/Generic/Linear/Semantics/Syntactic.tex}
+\def\Renamingtex{\genericlr/Generic/Linear/Renaming.tex}
+\def\PaperExamplestex{\genericlr/Generic/Linear/Example/PaperExamples.tex}
+\def\UsageChecktex{\genericlr/Generic/Linear/Example/UsageCheck.tex}
+\def\Snippetstex{../../agda/processed-latex/Snippets.tex}
+
+\begin{document}
+%
+\title{A Framework for Substructural Type Systems
+  \thanks{Supported by organization x.}}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{James Wood\inst{1}\orcidID{0000-0002-8080-3350} \and
+Robert Atkey\inst{1}\orcidID{0000-0002-4414-5047}}
+%
+\authorrunning{J. Wood, R. Atkey}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{University of Strathclyde, Glasgow, UK
+\email{\{james.wood.100,robert.atkey\}@strath.ac.uk}}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+  Mechanisation of programming language research is of growing interest, and
+  the act of mechanising type systems and their metatheory is generally becoming
+  easier as new techniques are invented.
+  However, state-of-the-art techniques mostly rely on \emph{structurality} of
+  the type system --- that weakening, contraction, and exchange are admissible
+  and variables can be used unrestrictedly once assumed.
+  Linear logic, and many related subsequent systems, provide motivations for
+  breaking some of these assumptions.
+
+  We present a framework for mechanising the metatheory of certain
+  substructural type systems, in a style resembling mechanised metatheory of
+  structural type systems.
+  The framework covers a wide range of simply typed syntaxes with semiring
+  usage annotations, via a metasyntax of typing rules.
+  The metasyntax for the premises of a typing rule is related to bunched logic,
+  featuring both sharing and separating conjunction, roughly corresponding to
+  the additive and multiplicative features of linear logic.
+  The bunched flavour is carried over into the semantics, together with the use
+  of basic linear algebra constructs.
+  For example, \emph{environments} are presented equivalently as values
+  accumulated via separating conjunction, and as functions from variables to
+  values supported by linear maps.
+  Producing a generic semantic traversal has us combine environments with a
+  separating implication, producing a Kripke function space of the form
+  $\Box(A \wand B)$.
+  From the generic semantic traversal, we derive totally generic renaming and
+  substitution operations, a specific denotational semantics, and a
+  syntax-generic \emph{usage elaborator} which greatly facilitates writing
+  concrete terms.
+
+\keywords{First keyword  \and Second keyword \and Another keyword.}
+\end{abstract}
+%
+%
+%
+\begin{enumerate}
+\item (Section 1)
+  \begin{enumerate}
+  \item   Motivate intrinsically typed syntax (in Agda)
+    \begin{enumerate}
+    \item Show the ``GADT'' for well scoped syntax
+    \item Show the well typed version
+    \end{enumerate}
+  \item Motivate adding posemiring annotations
+    \begin{enumerate}
+    \item Pointing to the existing work (Brunel et al., Ghica and Smith, Granule, previous of ours, Bernardy and Abel)
+    \item The fact that we can encode lots of other systems (DILL, PD, monotonicity, information flow, differential privacy)
+    \end{enumerate}
+  \end{enumerate}
+\item (Section 2) Background / notation fixing for:
+  \begin{enumerate}
+  \item Partially ordered semirings
+  \item Vectors
+  \item Linear maps and linear relations (as a generalisation of $P \leq Q\Psi$ which is easier to work with)
+  \end{enumerate}
+\item (Section 3) Bunched Typing Rules
+  \begin{enumerate}
+  \item Introduces $\lambda\mathcal{R}$
+  \item Rephrases the typing rules in terms of bunches (as well as implicit contexts)
+  \end{enumerate}
+\item (Section 4) Universe of Generic Usage-annotated syntax
+  \begin{enumerate}
+  \item Premises
+  \item Rules
+  \item Systems
+  \item Example(s)
+  \item Intepretation as Terms
+  \item Examples of Terms; using pattern synonyms (point out that proofs of usage accounting are painful)
+  \end{enumerate}
+\item (Section 5) Example Syntaxes
+  \begin{enumerate}
+  \item $\lambda\mathcal{R}$ (incl DILL, PD, differential privacy, monotonicity)
+  \item Inductive types with a well resourced fold
+  \item Bernardy-Abel style
+  \item First-order (circuitry)
+  \item LNL
+  \item $\lambda\mu\tilde{\mu}$
+  \end{enumerate}
+\item (Section 6) Environments
+  \begin{enumerate}
+  \item Motivate in terms of renaming and substitution for simple types (where it is just a function)
+  \item Motivate the general idea of using linear relations (i.e. transformations + weakening)
+    \begin{enumerate}
+    \item Key idea / slogan : environment = change of basis
+    \end{enumerate}
+  \item Definition of environments
+  \item Examples
+  \item Properties, incl. preservation of linear operations
+  \end{enumerate}
+\item (Section 7) Semantics, or How to apply an Environment to a Term
+  \begin{enumerate}
+  \item Renameability
+  \item $\mathsf{semantics}$
+  \end{enumerate}
+\item (Section 8) Examples of Semantics
+  \begin{enumerate}
+  \item Renaming and Substitution (term-valued)
+  \item Denotational Semantics (relational world-indexed (\texttt{Generic/Linear/Example/WRel.agda})
+  \item Usage Elaborator
+  \end{enumerate}
+\item (Section 9) Related Work
+\item (Section 10) Conclusion
+\end{enumerate}
+
+\section{Introduction}\label{sec:intro}
+\input{intro}
+
+\section{Vectors over semirings}\label{sec:algebra}
+\input{algebra}
+
+\section{Generic syntax}\label{sec:syntax}
+\input{syntax}
+
+\section{Environments}\label{sec:env}
+\input{env}
+
+\section{Semantics}\label{sec:semantics}
+\input{semantics}
+
+\section{Example traversals}\label{sec:examples}
+\input{examples}
+
+\section{Conclusions}\label{sec:conc}
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+\bibliographystyle{splncs04nat}
+\bibliography{quant-framework}
+\end{document}

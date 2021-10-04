@@ -1,0 +1,85 @@
+Our aim with the following traversals is to derive a recursion scheme for
+terms which abstracts over some of the details of variable binding and
+changes to usage annotations.
+We follow the structure given by \citet{AACMM20} closely, with
+the main difference having come already in the syntax and environments.
+
+\subsection{Renameability}
+
+{\color{red}(Maybe this goes in the Environment section.)}
+We saw in \cref{sec:env} that our notion of \emph{environment} specialises to
+\emph{simultaneous renaming} by setting $\V$ to be $\sqni$.
+
+\ExecuteMetaData[\Renamingtex]{Ren}
+\ExecuteMetaData[\Renamingtex]{Boxr}
+\ExecuteMetaData[\Renamingtex]{Renameable}
+
+\begin{lemma}[\AgdaFunction{ren\textasciicircum{}Env}]\label{thm:env-ren}
+  If $\plr{-} \sdtstile{}\V A$ is renameable for all $A$, then so is
+  $\plr{-} \env\V \Delta$ for all $\Delta$.
+\end{lemma}
+\begin{proof}
+  For renameable $\V$, we can implement $\mathrm{lift}$ as in
+  \cref{thm:env-comp} with $\U \coloneqq {\sqni}$ and
+  $\V \coloneqq \W \coloneqq \V$.
+  Renaming the environment then becomes an instance of environment composition.
+\end{proof}
+
+\subsection{Semantic traversal}
+
+Earlier, when talking about syntax, we saw \AgdaFunction{Scope} as a simple way
+to let an open family admit context extensions.
+However, a key component of our generic semantic traversal is to make use of
+the open family \AgdaBound{$\V$} of \emph{values}, which are the sort of thing
+we store in an environment.
+The definition \AgdaFunction{Kripke} gives an alternative to
+\AgdaFunction{Scope} which interprets the newly bound variables via a
+requirement of $\V$-values rather than extra assumptions for the
+$\C$-computation.
+
+\ExecuteMetaData[\Semanticstex]{Kripke}
+
+\AgdaFunction{Wrap} is a device that turns any type family into an equivalent
+type family that is definitionally injective in its indices.
+It turns the type family into a parametrised record with a single field
+\AgdaField{get} whose type is the type in the body of the $\lambda$-abstraction.
+For understanding the meaning of the type family, \AgdaFunction{Wrap} can be
+ignored.
+If $\Delta$ is of the form $\gr{s_1}B_1, \ldots, \gr{s_n}B_n$, then
+\ExecuteMetaData[\Snippetstex]{KripkeVCDGA}\ is equivalent to
+\ExecuteMetaData[\Snippetstex]{KripkeExpanded}.
+That is to say, the Kripke function is expecting a value for each newly bound
+variable, at the multiplicity of its annotation, together with the resources
+supporting each of those values.
+The need for \AgdaFunction{$\Box^r$} is exemplified by the following construct
+\AgdaFunction{reify}, where we weaken \AgdaBound{$\Gamma$} by a $\gr0$ed-out
+version of \AgdaBound{$\Delta$}.
+The \AgdaBound{$\Delta$} then gets filled in by the $\V$-values.
+
+For typical choices of \AgdaBound{$\V$} (specifically, those which support
+identity environments as per \cref{thm:env-id}),
+\AgdaFunction{Kripke}\AgdaSpace{}\AgdaBound{$\V$}\AgdaSpace{}\AgdaBound{$\C$}
+is stronger than \AgdaFunction{Scope}\AgdaSpace{}\AgdaBound{$\C$}.
+To show this, we instantiate the Kripke function with the renaming
+$\swarrow^r : \Gamma, \gr0\delta \env\sqni \Gamma$ to extend the scope, and
+pass it an argument environment
+$\plr{\id^\V; \searrow^r} : \gr0\gamma, \Delta \env\V \Delta$ to fill in the
+extended part.
+Post-composition of a renaming comes from \cref{thm:env-comp}.
+{\color{red}(TODO: refer to specific example of composition.)}
+
+\ExecuteMetaData[\Syntactictex]{reify}
+
+We tend to use \AgdaFunction{reify} in syntactic traversals, where, for example,
+\ExecuteMetaData[\Snippetstex]{term-with-bound}\ could be passed to a syntax
+constructor and make sense.
+
+\ExecuteMetaData[\Semanticstex]{Semantics}
+
+\ExecuteMetaData[\Semanticstex]{Comp}
+
+\ExecuteMetaData[\Semanticstex]{semantics-type}
+\ExecuteMetaData[\Semanticstex]{body-type}
+
+\ExecuteMetaData[\Semanticstex]{semantics}
+\ExecuteMetaData[\Semanticstex]{body}
