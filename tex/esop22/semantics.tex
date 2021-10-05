@@ -65,21 +65,55 @@ $\swarrow^r : \Gamma, \gr0\delta \env\sqni \Gamma$ to extend the scope, and
 pass it an argument environment
 $\plr{\id^\V; \searrow^r} : \gr0\gamma, \Delta \env\V \Delta$ to fill in the
 extended part.
-Post-composition of a renaming comes from \cref{thm:env-comp}.
-{\color{red}(TODO: refer to specific example of composition.)}
+Post-composition of a renaming comes from \cref{thm:env-postren}.
 
 \ExecuteMetaData[\Syntactictex]{reify}
 
 We tend to use \AgdaFunction{reify} in syntactic traversals, where, for example,
 \ExecuteMetaData[\Snippetstex]{term-with-bound}\ could be passed to a syntax
 constructor and make sense.
+\todo{It's also used in the denotational semantics, so we need a better
+  explanation.}
 
 \ExecuteMetaData[\Semanticstex]{Semantics}
 
-\ExecuteMetaData[\Semanticstex]{Comp}
+%\ExecuteMetaData[\Semanticstex]{Comp}
+
+We mutually define the action \AgdaFunction{semantics} and its lemma
+\AgdaFunction{body}.
+The purpose of \AgdaFunction{semantics} is to turn a term into a
+\AgdaBound{$\C$}-value using a \AgdaBound{$\V$}-environment and the fields of
+\AgdaRecord{Semantics}.
+Meanwhile, \AgdaFunction{body} does a similar job, but also deals with
+newly bound variables.
+In particular, \AgdaFunction{body} takes a term in a context extended by
+\AgdaBound{$\Theta$}, and produces a Kripke function from
+\AgdaBound{$\V$}-values for \AgdaBound{$\Theta$} to \AgdaBound{$\C$}-values.
 
 \ExecuteMetaData[\Semanticstex]{semantics-type}
-\ExecuteMetaData[\Semanticstex]{body-type}
+
+In \AgdaFunction{semantics}, to deal with a variable \AgdaBound{v}, we look it
+up in the environment \AgdaBound{$\rho$}, then use the
+\AgdaField{$\sem{\text{var}}$} field to map the resulting
+\AgdaBound{$\V$}-value to a \AgdaBound{$\C$}-value.
+To deal with a syntactic construct, we use the functoriality of a layer of
+syntax, together with recursive calls to \AgdaFunction{semantics} via
+\AgdaFunction{body}.
+Recall that \AgdaFunction{relocate} (\cref{thm:env-resize}) adjusts the
+environment \AgdaBound{$\rho$} to work in the usage contexts of the subterms.
 
 \ExecuteMetaData[\Semanticstex]{semantics}
+
+For \AgdaFunction{body}, we are given
+$\rho : \grP\gamma \env\V \Delta$,
+$\mathit{th} : \grP\gr{^+}\gamma^+ \env\sqni \grP\gamma$,
+$\sigma : \grQ\gr{^+}\gamma^+ \env\V \Theta$,
+with $r : \grR\gr{^+} \leq \grP\gr{^+} + \grQ\gr{^+}$.
+\todo{This needs some explanation.}
+We are aiming for an environment of type
+$\grR\gr{^+}\gamma \env\V \Delta, \Theta$, which we get by renaming $\rho$ by
+$\mathit{th}$ to give $\rho'$, then using \cref{thm:env-rules} to stick
+together the environment $\rho'$ for old variables $\Delta$ and the
+environment $\sigma$ for the new variables $\Theta$.
+
 \ExecuteMetaData[\Semanticstex]{body}
