@@ -38,3 +38,12 @@ s2 d sz Γ Δ A =
   [ d , sz ] Γ ++ᶜ Δ ⊢ A
 \end{code}
 %</term-with-bound>
+\begin{code}
+_ : (Γ Θ : Ctx) → Ctx
+_ = λ Γ Θ →
+\end{code}
+%<*GT>
+\begin{code}[inline]
+  Γ ++ᶜ Θ
+\end{code}
+%</GT>
