@@ -206,7 +206,21 @@ for each of the required subterms.
 
 \ExecuteMetaData[\Termtex]{Term}
 
-\missingfigure{Example term}
+Here is an example term, using the \AgdaFunction{$\lambda$R} system.
+First, for ease of writing, we introduce pattern synonyms for each of the
+typing rules we use.
+
+\ExecuteMetaData[\PaperExamplestex]{patterns}
+
+Our example term is a function that flips a tagged union wrapped in an
+arbitrarily annotated \emph{bang}.
+Much of the effort in writing such a term goes into writing the various
+relatedness proofs between usage contexts --- observing, for example, that two
+usage contexts sum together to make a third, or that a usage context used for
+a variable is a basis vector.
+We give a method of automating these proofs in \cref{sec:usage-elaborator}.
+
+\ExecuteMetaData[\PaperExamplestex]{lR-term}
 
 A layer of syntax supports the following functorial action.
 {\color{red}(Maybe this has to go later, because it talks about linear maps.)}
