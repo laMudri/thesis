@@ -51,6 +51,153 @@ that terms are renameable, is a corollary of \AgdaFunction{Ren-Kit}.
 
 \subsection{A denotational semantics}
 
+To abbreviate this section, we use a simplified syntax compared to \name{}.
+We allow for an arbitrary family of base types \AgdaBound{BaseTy}, and a single
+type former \mbox{\ExecuteMetaData[\WReltex]{rAToB}}, equivalent to
+\mbox{\ExecuteMetaData[\PaperExamplestex]{BangrAToB}} from the earlier system.
+
+\ExecuteMetaData[\WReltex]{Ty}
+
+In the term syntax, $\lambda$-abstraction now binds a variable with annotation
+\AgdaBound{r}, while application needs to scale its argument by \AgdaBound{r}
+(both in accordance with the function type they are acting on).
+
+\ExecuteMetaData[\WReltex]{AnnArr}
+
+In this subsection, we take the usage annotations to be the 4-element variance
+posemiring.
+We establish the property that all terms are monotonic in their free variables.
+This monotonicity can be covariant or contravariant (or neither or both)
+depending on the annotation of each free variable.
+This provides an additional example to those of \citet{AbelBernardy2020}.
+\todo{Cite before here.}
+
+We will take semantics of this system into
+\emph{worldly relations}~\cite{AbelBernardy2020}.
+A worldly relation over a poset of worlds \AgdaBound{W} is a set over which
+we have a \AgdaBound{W}-indexed binary relation satisfying a presheaf-like
+property with respect to the order on \AgdaBound{W}.
+
+\ExecuteMetaData[\WReltex]{WRel}
+
+\begin{example}
+  When \AgdaBound{W} is the 1-element set, a worldly relation is just a set
+  equipped with a binary relation.
+\end{example}
+
+Morphisms between worldly relations \AgdaBound{R} and \AgdaBound{S} consist of
+a mapping between the underlying sets such that that mapping preserves
+relatedness from \AgdaBound{R} to \AgdaBound{S}.
+
+\ExecuteMetaData[\WReltex]{WRelMor}
+
+When the poset of worlds forms a (relational) commutative monoid, such worldly
+relations support a symmetric monoidal closed structure.
+We reuse the bunched connectives \AgdaRecord{$I^*$}, \AgdaRecord{$\sep$}, and
+\AgdaRecord{$\wand$}, now over worlds rather than contexts.
+
+\ExecuteMetaData[\WReltex]{IR}
+\ExecuteMetaData[\WReltex]{tensorR}
+\ExecuteMetaData[\WReltex]{lollyR}
+
+The final piece of sematics we need is a \emph{bang} operator.
+Instead of requiring extra algebraic structure on the worlds, we allow the
+semantic \emph{bang} to be an arbitrary annotation-indexed functor on worldly
+relations.
+This functor must respect all of the structure on the indices, making it a
+graded comonad over multiplication, as well as being lax monoidal at any
+particular index \AgdaBound{r}.
+
+\ExecuteMetaData[\WReltex]{Bang}
+
+\begin{example}
+  With \AgdaBound{W} being the 1-element set and annotations coming from the
+  variance semiring, we can define the following \emph{bang}.
+  It is always the identity on the set component, while the relation component
+  consists of flipping the relation for contravariance and taking conjunctions
+  to achieve both covariance and contravariance.
+  When we want neither covariance nor contravariance, we use the always true
+  predicate on worlds \AgdaFunction{$\dot1$}.
+
+  \ExecuteMetaData[\Monotonicitytex]{BangR}
+\end{example}
+
+To associate semantics to syntax, we start as standard by associating worldly
+relations to types.
+We also extend the semantics of types to contexts, using \AgdaFunction{I$^R$},
+\AgdaFunction{$\otimes^R$}, and \AgdaField{!$^R$} to interpret the empty
+context, concatenation, and usage annotations on singletons, respectively.
+
+\ExecuteMetaData[\WReltex]{sem}
+
+The semantics of a term is then to be a morphism from the interpretation of the
+context to the interpretation of the term's type.
+
+\ExecuteMetaData[\WReltex]{sem-vdash}
+
+Variables are given semantics by \AgdaFunction{lookup$^R$} (definition omitted).
+
+\ExecuteMetaData[\WReltex]{lookupR-type}
+
+Now, we give a \AgdaRecord{Semantics}.
+The choice of \AgdaBound{$\V$} as
+\AgdaRecord{\AgdaUnderscore{}$\sqni$\AgdaUnderscore{}} is somewhat arbitrary,
+given that a standard denotational semantics would not use intermediate
+environments in the same sense as renaming and substitution, but allows us to
+reuse the standard facts that variables support renaming and identity
+environments.
+With this choice of \AgdaBound{$\V$} and \AgdaBound{$\C$}, we interpret
+environment entries by \AgdaFunction{lookup$^R$}.
+Meanwhile, for the logical rules, we ignore environments by using
+\AgdaFunction{reify} to just deal with morphisms in an extended context.
+As such, $\lambda$-abstractions are easy to interpret, while applications
+require some massaging to remove the extension by an empty context, followed by
+some plumbing to split the interpretation of the context according to the usage
+constraints and feed the interpretation of the argument \AgdaBound{n$'$} into
+the interpretation of the function \AgdaBound{m$'$}.
+
+\ExecuteMetaData[\WReltex]{Wrel}
+
+In order to map open terms to interpretations, we take the action of the
+semantics and give the identity renaming as the starting environment.
+
+\ExecuteMetaData[\WReltex]{wrel}
+
+\begin{example}
+  We can make a subtraction function from primitive addition and negation on
+  integers.
+  Subtraction is covariant in its first argument and contravariant in its
+  second argument.
+  We give the definition in pseudocode, as we have not yet seen how to
+  conveniently write terms (\cref{sec:usage-elaborator}).
+
+  \begin{align*}
+    &{\sim\sim}p :
+      {\uparrow\uparrow}\mathbb Z \multimap
+      {\uparrow\uparrow}\mathbb Z \multimap \mathbb Z,
+      {\sim\sim}n : {\downarrow\downarrow}\mathbb Z \multimap \mathbb Z
+      \vdash \mathnormal{minus} :
+      {\uparrow\uparrow}\mathbb Z \multimap
+      {\downarrow\downarrow}\mathbb Z \multimap
+      \mathbb Z
+    \\
+    &\mathnormal{minus} \coloneqq \lambda x.~\lambda y.~p\,x\,(n\,y)
+  \end{align*}
+
+  We observe that the set component of this term's semantics is just the
+  expected Agda function when the two free variables are given appropriate
+  interpretations.
+
+  \ExecuteMetaData[\Monotonicitytex]{minus-set}
+
+  Furthermore, the relational component of the semantics yields the free
+  theorem that the Agda subtraction so defined is monotonic in the expected way.
+  This relies on library proofs that addition and negation are suitably
+  monotonic.
+
+  \ExecuteMetaData[\Monotonicitytex]{thm}
+\end{example}
+
 \subsection{A usage elaborator}\label{sec:usage-elaborator}
 
 Using the constructs we have seen so far, producing example terms soon becomes
