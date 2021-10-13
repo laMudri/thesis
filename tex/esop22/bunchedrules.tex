@@ -1,3 +1,80 @@
+Let $\Ann$ be a posemiring. Our framework represents well typed and
+$\Ann$-resourced terms \emph{intrinsically}. Intrinsic typing means
+that we represent well typed and $\Ann$-resourced terms (and
+\emph{only} those) as inhabitants of an inductive family
+$\grR\gamma \vdash A$ indexed by resource contexts $\grR$, type
+contexts $\gamma$, and types $A$. We represent typing contexts as
+trees with types at the leaves, and resource contexts as functions
+that assign elements of $\Ann$ to members of the context. Using trees
+instead of lists for typing contexts has the advantage that extension
+of a context by multiple variables does not lead to complex counting
+argument to access the pre-existing variables.\todo{left and right
+  constructors for paths}
+
+\begin{figure}
+  \begin{displaymath}
+    \begin{prooftree}
+      \hypo{x : \grR\gamma \sqni A}
+      \infer1{\AgdaInductiveConstructor{var}~x : \grR\gamma \vdash A}
+    \end{prooftree}
+  \end{displaymath}
+  \begin{displaymath}
+    \begin{prooftree}
+      \hypo{t : \grR\gamma, \gr1A \vdash B}
+      \infer1{\AgdaInductiveConstructor{⊸I}~t : \grR\gamma \vdash A \multimap B}
+    \end{prooftree}
+    \qquad
+    \begin{prooftree}
+      \hypo{p : \grR \leq \grP + \grQ}
+      \hypo{s : \grP\gamma &\vdash A \multimap B}
+      \infer[no rule]1{t : \grQ\gamma &\vdash A \phantom{{} \multimap B}}
+      \infer2{\AgdaInductiveConstructor{⊸E}~p~s~t : \grR\gamma \vdash B}
+    \end{prooftree}
+  \end{displaymath}
+  \begin{displaymath}
+    \begin{prooftree}
+      \hypo{t : \grR\gamma \vdash A_i}
+      \infer1{\AgdaInductiveConstructor{⊕I}_i~t : \grR\gamma \vdash A_0 \oplus A_1}
+    \end{prooftree}
+    \qquad
+    \begin{prooftree}
+      \hypo{p : \grR \leq \grP + \grQ}
+      \infer[no rule]1{s : \grP\gamma \vdash A \oplus B}
+      \hypo{t : \grQ\gamma, \gr1A &\vdash C}
+      \infer[no rule]1{u : \grQ\gamma, \gr1B &\vdash C}
+      \infer2{\AgdaInductiveConstructor{⊕E}~p~s~t~u : \grR\gamma \vdash C}
+    \end{prooftree}
+  \end{displaymath}
+  \begin{displaymath}
+    \begin{prooftree}
+      \hypo{p : \grR \leq \gr r\grP}
+      \hypo{t : \grP\gamma \vdash A}
+      \infer2{\AgdaInductiveConstructor{!I}~p~t : \grR\gamma \vdash \oc_{\gr r} A}
+    \end{prooftree}
+    \qquad
+    \begin{prooftree}
+      \hypo{p : \grR \leq \grP + \grQ}
+      \hypo{s : \grP\gamma \vdash \oc_{\gr r} A}
+      \infer[no rule]1{t : \grQ\gamma, \gr rA \vdash C}
+      \infer2{\AgdaInductiveConstructor{!E}~p~s~t : \grR\gamma \vdash C}
+    \end{prooftree}
+  \end{displaymath}
+  \caption{A fragment of \name{}}\label{fig:lr}
+\end{figure}
+
+\figref{fig:lr} presents a prototypical example of a system that our
+framework can represent.
+
+As a prototypical example of the kind of system that our framework can
+handle, we
+
+To motivate the way our framework represents
+
+
+
+
+
+
 Need to introduce:
 \begin{enumerate}
 \item Intrinsically typed syntax
@@ -14,59 +91,6 @@ rules present in these systems. We take a fragment of Wood and Atkey's
 \name{} calculus, enough to show the key details, presented in
 Figure \ref{fig:lr}.
 
-\newcommand{\constr}[1]{\mathsf{#1}}
-
-\begin{figure}
-  \begin{displaymath}
-    \begin{prooftree}
-      \hypo{\grR \leq \bra x}
-      \hypo{\gamma_x = A}
-      \infer2{\constr{var} : \grR\gamma \vdash A}
-    \end{prooftree}
-  \end{displaymath}
-  \begin{displaymath}
-    \begin{prooftree}
-      \hypo{t : \grR\gamma, \gr1A \vdash B}
-      \infer1{\constr{lolliI} : \grR\gamma \vdash A \multimap B}
-    \end{prooftree}
-    \qquad
-    \begin{prooftree}
-      \hypo{\grR \leq \grP + \grQ}
-      \hypo{s : \grP\gamma &\vdash A \multimap B}
-      \infer[no rule]1{t : \grQ\gamma &\vdash A \phantom{{} \multimap B}}
-      \infer2{\constr{lolliE} : \grR\gamma \vdash B}
-    \end{prooftree}
-  \end{displaymath}
-  \begin{displaymath}
-    \begin{prooftree}
-      \hypo{\grR\gamma \vdash A_i}
-      \infer1[$\oplus$-I$_i$]{\grR\gamma \vdash A_0 \oplus A_1}
-    \end{prooftree}
-    \qquad
-    \begin{prooftree}
-      \hypo{\grR \leq \grP + \grQ}
-      \infer[no rule]1{\grP\gamma \vdash A \oplus B}
-      \hypo{\grQ\gamma, \gr1A &\vdash C}
-      \infer[no rule]1{\grQ\gamma, \gr1B &\vdash C}
-      \infer2[$\oplus$-E]{\grR\gamma \vdash C}
-    \end{prooftree}
-  \end{displaymath}
-  \begin{displaymath}
-    \begin{prooftree}
-      \hypo{\grR \leq \gr r\grP}
-      \hypo{\grP\gamma \vdash A}
-      \infer2[$\oc_{\gr r}$-I]{\grR\gamma \vdash \oc_{\gr r} A}
-    \end{prooftree}
-    \qquad
-    \begin{prooftree}
-      \hypo{\grR \leq \grP + \grQ}
-      \hypo{\grP\gamma \vdash \oc_{\gr r} A}
-      \infer[no rule]1{\grQ\gamma, \gr rA \vdash C}
-      \infer2[$\oc_{\gr r}$-E]{\grR\gamma \vdash C}
-    \end{prooftree}
-  \end{displaymath}
-  \caption{A fragment of \name{}}\label{fig:lr}
-\end{figure}
 
 In common with other mechanisations of syntax using dependent types,
 we use a
@@ -85,17 +109,9 @@ annotations, the rules are
 
 The key features we wish to describe from this
 
-The $\constr{var}$ rule constructs variables,
-
-Nevertheless, there are several features of this system that are non
-standard. In the $\constr{var}$ rule,
-
-There are two key features
+The $\AgdaInductiveConstructor{var}$ rule constructs variables,
 
 
-
-first make a number of key observations on an exemplar syntax that
-will guide us.
 
 In systems with Linear types, a crucial distinction is made between
 multiplicative and additive typing rules that does not arise in
