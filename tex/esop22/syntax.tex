@@ -194,8 +194,11 @@ terms, coterms, and commands.
 Read logically, terms and coterms are seen to, respectively, prove and refute
 propositions (types), while commands exhibit contradictions.
 This means that the abstract \AgdaBound{Ty} in the generic framework is
-instantiated to \AgdaDatatype{Conc} as below, with \AgdaDatatype{Ty} not being
-exposed directly to the generic framework.
+instantiated to \AgdaDatatype{Conc} (for \emph{conclusion}) as below, with
+\AgdaDatatype{Ty} not being exposed directly to the generic framework.
+For now, we just consider multiplicative disjunction $\parr$ (\emph{par}) and
+negation/duality, beside an uninterpreted base type.
+These are enough to exhibit classical behaviour.
 
 \begin{minipage}[t]{0.5\textwidth}
   \centering
@@ -206,7 +209,24 @@ exposed directly to the generic framework.
   \ExecuteMetaData[\MuMuTildetex]{Conc}
 \end{minipage}
 
+With \AgdaBound{Ty} instantiated as \AgdaDatatype{Conc}, all terms are assigned
+\AgdaDatatype{Conc} type, as are all the variables.
+No variables are given \AgdaInductiveConstructor{com} type, similar to how in
+the bidirectional typing syntax of \citet[p.~25]{AACMM20}, no variables are
+given \AgdaInductiveConstructor{Check} type.
+How to observe this invariant is covered in the latter paper, so we will not
+repeat it here (having not yet seen how to write traverals on terms).
+
+The syntax comprises a \emph{cut} between a term and a coterm of the same type,
+the eponymous $\mu$ and $\tilde\mu$ constructs for proof by contradiction, and
+then term and coterm (introduction and elimination) forms for negation and
+\emph{par}.
+
 \ExecuteMetaData[\MuMuTildetex]{MMT}
+
+With a collection of pattern synonyms and the machinery from
+\cref{sec:usage-elaborator}, we can write an example term: a function which
+flips the disjuncts of a \emph{par}.
 
 \ExecuteMetaData[\MuMuTildeTermtex]{patterns}
 \ExecuteMetaData[\MuMuTildeTermtex]{myComm}
