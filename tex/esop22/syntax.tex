@@ -167,6 +167,7 @@ relatedness proofs between usage contexts --- observing, for example, that two
 usage contexts sum together to make a third, or that a usage context used for
 a variable is a basis vector.
 We give a method of automating these proofs in \cref{sec:usage-elaborator}.
+\todo{To be clear, we don't actually write this.}
 
 \ExecuteMetaData[\HeavyItex]{lR-term}
 
@@ -174,3 +175,38 @@ A layer of syntax supports the following functorial action.
 {\color{red}(Maybe this has to go later, because it talks about linear maps.)}
 
 \ExecuteMetaData[\Maptex]{map-s-type}
+
+\subsection{Other syntaxes}
+
+We can encode a usage-annotated version of System $L$/the
+$\mu\tilde\mu$-calculus~\cite{CH00} --- a syntax for classical logic --- in
+such a way that contexts capture the undistinguished parts of the sequent.
+As such, the generic substitution lemma we get in \cref{sec:kits} is the form
+of substitution required in standard $\mu\tilde\mu$-calculus metatheory.
+Though the $\mu\tilde\mu$-calculus is originally described as a sequent
+calculus~\cite{CH00}, we use the techniques of
+\citet[p.~12]{herbelin-hab} and \citet{LC06} to present it as a natural
+deduction system, thus giving a notion of \emph{variable} to the system.
+
+Unlike the single judgement form of \name{} and standard simply typed
+$\lambda$-calculi, the $\mu\tilde\mu$-calculus has three judgement forms:
+terms, coterms, and commands.
+Read logically, terms and coterms are seen to, respectively, prove and refute
+propositions (types), while commands exhibit contradictions.
+This means that the abstract \AgdaBound{Ty} in the generic framework is
+instantiated to \AgdaDatatype{Conc} as below, with \AgdaDatatype{Ty} not being
+exposed directly to the generic framework.
+
+\begin{minipage}[t]{0.5\textwidth}
+  \centering
+  \ExecuteMetaData[\MuMuTildetex]{Ty}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+  \centering
+  \ExecuteMetaData[\MuMuTildetex]{Conc}
+\end{minipage}
+
+\ExecuteMetaData[\MuMuTildetex]{MMT}
+
+\ExecuteMetaData[\MuMuTildeTermtex]{patterns}
+\ExecuteMetaData[\MuMuTildeTermtex]{myComm}

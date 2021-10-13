@@ -1,4 +1,4 @@
-\subsection{Renaming and substitution}
+\subsection{Renaming and substitution}\label{sec:kits}
 
 In an unpublished note, \citet{McBride05} gives a parametrised traversal
 yielding homomorphisms of syntax.
@@ -51,6 +51,7 @@ that terms are renameable, is a corollary of \AgdaFunction{Ren-Kit}.
 
 \subsection{A denotational semantics}
 
+\todo{Introduction}
 To abbreviate this section, we use a simplified syntax compared to \name{}.
 We allow for an arbitrary family of base types \AgdaBound{BaseTy}, and a single
 type former \mbox{\ExecuteMetaData[\WReltex]{rAToB}}, equivalent to
@@ -66,6 +67,7 @@ In the term syntax, $\lambda$-abstraction now binds a variable with annotation
 
 In this subsection, we take the usage annotations to be the 4-element variance
 posemiring.
+\todo{This works for any semiring.}
 We establish the property that all terms are monotonic in their free variables.
 This monotonicity can be covariant or contravariant (or neither or both)
 depending on the annotation of each free variable.
@@ -91,6 +93,7 @@ relatedness from \AgdaBound{R} to \AgdaBound{S}.
 
 \ExecuteMetaData[\WReltex]{WRelMor}
 
+\todo{Define big intersection.}
 When the poset of worlds forms a (relational) commutative monoid, such worldly
 relations support a symmetric monoidal closed structure.
 We reuse the bunched connectives \AgdaRecord{$I^*$}, \AgdaRecord{$\sep$}, and
@@ -101,6 +104,7 @@ We reuse the bunched connectives \AgdaRecord{$I^*$}, \AgdaRecord{$\sep$}, and
 \ExecuteMetaData[\WReltex]{lollyR}
 
 The final piece of sematics we need is a \emph{bang} operator.
+\todo{No instead}
 Instead of requiring extra algebraic structure on the worlds, we allow the
 semantic \emph{bang} to be an arbitrary annotation-indexed functor on worldly
 relations.
