@@ -20,45 +20,6 @@ set, where both operations are monotonic.
   \end{itemize}
 \end{definition}
 
-We also make use, particularly in the mechanisation, of an alternative
-definition based on relations.
-
-\begin{definition}
-  A \emph{relational posemiring} is a tuple
-  $(\Ann, \leq, {{-}\leq}0, {{-}\leq}[{-}+{-}],
-  {{-}\leq}1, {{-}\leq}[{-}*{-}])$
-  such that the following laws hold (with free variables universally
-  quantified).
-  \begin{itemize}
-    \item $x' \leq x \to {x \leq}0 \to {x' \leq}0$
-    \item $x' \leq x \to y \leq y' \to z \leq z' \to
-      {x \leq}[y+z] \to {x' \leq}[y'+z']$
-    \item $x' \leq x \to {x \leq}1 \to {x' \leq}1$
-    \item $x' \leq x \to y \leq y' \to z \leq z' \to
-      {x \leq}[y*z] \to {x' \leq}[y'*z']$
-    \item $\plr{\exists y.~{y \leq}0 \land {x \leq}[y+z]}
-      \leftrightarrow x \leq z$
-    \item $\plr{\exists z.~{x \leq}[y+z] \land {z \leq}0}
-      \leftrightarrow x \leq y$
-    \item $\plr{\exists wx.~{wx \leq}[w+x] \land {z \leq}[wx+y]}$
-      $\leftrightarrow$
-
-      $\plr{\exists xy.~{z \leq}[w+xy] \land {xy \leq}[x+y]}$
-    \item $\exists x.~{x \leq}0 \land \forall x'.~{x' \leq}0 \to x' \leq x$
-    \item $\vdots$
-    %\item $x \leq x' \to y \leq y' \to x + y \leq x' + y'$
-    %\item $x \leq x' \to y \leq y' \to x * y \leq x' * y'$
-    %\item $0 + x = x \land x + 0 = x$
-    %\item $(x + y) + z = x + (y + z)$
-    %\item $x + y = y + x$
-    %\item $1 * x = x \land x * 1 = x$
-    %\item $(x * y) * z = x * (y * z)$
-    %\item $0 * x = 0 \land x * 0 = 0$
-    %\item $(x + y) * z = x * z + y * z$
-    %\item $x * (y + z) = x * y + x * z$
-  \end{itemize}
-\end{definition}
-
 An element of a chosen posemiring $\Ann$ describes the usage restrictions on
 a variable.
 Therefore, a \emph{vector} of elements from $\Ann$ describes the usage
@@ -66,6 +27,45 @@ restrictions of a whole context's worth of variables.
 From the posemiring operations of $\Ann$, we derive the standard vector
 operations of zero, addition, and multiplication by a scalar.
 We can also form the standard basis vectors at any given dimension.
+
+Vectors of a given length form a \emph{module} over the posemiring $\Ann$,
+analogously to how vectors over a field form a vector space.
+
+\begin{definition}
+  A \emph{(left) module over a posemiring}, given a posemiring $\Ann$, is a
+  partially ordered commutative monoid $(M, 0_M, +_M)$ with, for each
+  $r \in \Ann$, a pomonoid morphism $r \cdot \plr{-} : M \to M$, such that the
+  collection of these respects the posemiring structure on $r$.
+  Specifically:
+  \begin{itemize}
+    \item $r \leq r' \to u \leq u' \to r \cdot u \leq r' \cdot u'$
+    \item $r \cdot 0_M = 0_M$
+    \item $r \cdot \plr{u +_M v} = r \cdot u +_M r \cdot v$
+    \item $0 \cdot u = 0_M$
+    \item $\plr{r + s} \cdot u = r \cdot u +_M s \cdot u$
+    \item $1 \cdot u = u$
+    \item $\plr{r * s} \cdot u = r \cdot \plr{s \cdot u}$
+  \end{itemize}
+\end{definition}
+
+We care to define modules so as to define \emph{module morphisms}, also known
+as \emph{linear maps}, which we use extensively when relating two contexts (as
+we do, for example, in simultaneous substitution).
+For the sake of mechanisation, we choose to define module morphisms
+\emph{relationally} rather than \emph{functionally}, giving a somewhat
+unfamiliar-looking definition that is equivalent to the usual functional
+definition.
+The main advantage of this relational approach is that proofs of relatedness
+for typical linear maps compose and decompose via data constructors and
+pattern matching.
+% I'm not sure this is true:
+%An auxiliary advantage is that with relations rather than functions, we can
+%much more often take advantage of judgemental injectivity, thus making
+%unification-based solving of implicits more effective.
+%For example, if \AgdaBound{R} is a free variable of relation type, then
+%\AgdaInductiveConstructor{refl} serves as a proof of
+%\ExecuteMetaData[\Snippetstex]{Rxy-R}{}, solving the underscores as
+%\AgdaBound{x} and \AgdaBound{y}, respectively.
 
 \begin{figure}
   \begin{align*}

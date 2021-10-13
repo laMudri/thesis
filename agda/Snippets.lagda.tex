@@ -9,6 +9,7 @@ module Snippets (Ty : Set) (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
 open import Generic.Linear.Everything Ty poSemiring
 
 open import Function.Extra
+open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 open import Size
 
 s0 : ∀ {v c} (𝓥 : OpenFam v) (𝓒 : OpenFam c) → ExtOpenFam _
@@ -47,3 +48,14 @@ _ = λ Γ Θ →
   Γ ++ᶜ Θ
 \end{code}
 %</GT>
+\begin{code}
+_ : ∀ {a b r} {A : Set a} {B : Set b} (R : A → B → Set r) x y →
+\end{code}
+%<*Rxy-R>
+\begin{code}[inline]
+  R x y ≡ R _ _
+\end{code}
+%</Rxy-R>
+\begin{code}
+_ = λ R x y → ≡.refl
+\end{code}
