@@ -65,9 +65,9 @@ In the term syntax, $\lambda$-abstraction now binds a variable with annotation
 
 \ExecuteMetaData[\WReltex]{AnnArr}
 
-In this subsection, we take the usage annotations to be the 4-element variance
-posemiring.
-\todo{This works for any semiring.}
+As a running example, we take the usage annotations to be the 4-element
+variance posemiring.
+\todo{Define earlier}
 We establish the property that all terms are monotonic in their free variables.
 This monotonicity can be covariant or contravariant (or neither or both)
 depending on the annotation of each free variable.
@@ -75,39 +75,42 @@ This provides an additional example to those of \citet{AbelBernardy2020}.
 \todo{Cite before here.}
 
 We will take semantics of this system into
-\emph{worldly relations}~\cite{AbelBernardy2020}.
-A worldly relation over a poset of worlds \AgdaBound{W} is a set over which
+\emph{world-indexed relations}~\cite{AbelBernardy2020}.
+A world-indexed relation over a poset of worlds \AgdaBound{W} is a set over
+which
 we have a \AgdaBound{W}-indexed binary relation satisfying a presheaf-like
 property with respect to the order on \AgdaBound{W}.
 
 \ExecuteMetaData[\WReltex]{WRel}
 
 \begin{example}
-  When \AgdaBound{W} is the 1-element set, a worldly relation is just a set
-  equipped with a binary relation.
+  When \AgdaBound{W} is the 1-element set, a world-indexed relation is just a
+  set equipped with a binary relation.
 \end{example}
 
-Morphisms between worldly relations \AgdaBound{R} and \AgdaBound{S} consist of
-a mapping between the underlying sets such that that mapping preserves
-relatedness from \AgdaBound{R} to \AgdaBound{S}.
+Morphisms between world-indexed relations \AgdaBound{R} and \AgdaBound{S}
+consist of a mapping between the underlying sets such that that mapping
+preserves relatedness from \AgdaBound{R} to \AgdaBound{S}.
 
 \ExecuteMetaData[\WReltex]{WRelMor}
 
 \todo{Define big intersection.}
-When the poset of worlds forms a (relational) commutative monoid, such worldly
-relations support a symmetric monoidal closed structure.
-We reuse the bunched connectives \AgdaRecord{$I^*$}, \AgdaRecord{$\sep$}, and
+When the poset of worlds forms a (relational) commutative monoid, such
+world-indexed relations support a symmetric monoidal closed structure, with
+objects denoted \AgdaFunction{I$^R$},
+\AgdaFunction{\AgdaUnderscore{}$\otimes^R$\AgdaUnderscore{}}, and
+\AgdaFunction{\AgdaUnderscore{}$\multimap^R$\AgdaUnderscore{}},.
+These reuse the bunched connectives \AgdaRecord{$I^*$}, \AgdaRecord{$\sep$}, and
 \AgdaRecord{$\wand$}, now over worlds rather than contexts.
 
-\ExecuteMetaData[\WReltex]{IR}
-\ExecuteMetaData[\WReltex]{tensorR}
-\ExecuteMetaData[\WReltex]{lollyR}
+%\ExecuteMetaData[\WReltex]{IR}
+%\ExecuteMetaData[\WReltex]{tensorR}
+%\ExecuteMetaData[\WReltex]{lollyR}
 
 The final piece of sematics we need is a \emph{bang} operator.
-\todo{No instead}
-Instead of requiring extra algebraic structure on the worlds, we allow the
-semantic \emph{bang} to be an arbitrary annotation-indexed functor on worldly
-relations.
+We allow the
+semantic \emph{bang} to be an arbitrary annotation-indexed functor on
+world-indexed relations.
 This functor must respect all of the structure on the indices, making it a
 graded comonad over multiplication, as well as being lax monoidal at any
 particular index \AgdaBound{r}.
@@ -126,8 +129,8 @@ particular index \AgdaBound{r}.
   \ExecuteMetaData[\Monotonicitytex]{BangR}
 \end{example}
 
-To associate semantics to syntax, we start as standard by associating worldly
-relations to types.
+To associate semantics to syntax, we start as standard by associating
+world-indexed relations to types.
 We also extend the semantics of types to contexts, using \AgdaFunction{I$^R$},
 \AgdaFunction{$\otimes^R$}, and \AgdaField{!$^R$} to interpret the empty
 context, concatenation, and usage annotations on singletons, respectively.
@@ -280,6 +283,10 @@ We choose the \AgdaBound{$\V$} of our semantics to be (unannotated) variables.
 For the \AgdaBound{$\C$}, we consider \emph{functions} from candidate usage
 vectors \AgdaBound{R} to the list of elaborated derivations with usage
 annotations given by \AgdaBound{R}.
+The protocol this encodes is that the user will provide an unannotated term
+together with a candidate usage context \AgdaBound{R}, and usage elaboration
+returns a list of possible ways the term could be annotated such that the
+conclusion has usage context \AgdaBound{R}.
 The module name \AgdaModule{U} refers to the fact that we are taking the
 ambient posemiring to be $\mathbf0$ in \AgdaFunction{OpenFam}.
 The effect on \AgdaFunction{OpenFam} is that the usage annotations of any
@@ -289,16 +296,36 @@ contexts we consider are uninformative (hence the \AgdaSymbol{\_} on the left).
 
 To traverse the unannotated terms, we produce a \AgdaRecord{Semantics} over the
 unannotated system \AgdaFunction{uSystem}\AgdaSpace{}\AgdaBound{sys}.
-We already know that variables are renameable.
+To write it, we make use of idiom brackets
+\AgdaSymbol{(|}\AgdaSpace{}\AgdaSymbol{$\ldots$}\AgdaSpace{}\AgdaSymbol{|)},
+which have the effect of replacing top-level spines of applications by
+(\AgdaDatatype{List}-)applicative applications.
+Field by field, we already know that variables are renameable.
 To interpret a variable, we consider all the possible proofs that such a
-variable could be well annotated, and package them up as a variable term.
+variable could be well annotated, and package them up as a variable term via
+the applicative machinery.
+Finally, for compound terms, we first reify the unannotated subterms, and then
+combine the subterms via a \AgdaFunction{lemma}.
 
 \ExecuteMetaData[\UsageChecktex]{elab-sem}
+
+The \AgdaFunction{lemma} essentially goes through the shape of the premises,
+combining the collections of subterms in the natural way.
+For example, at each
+\AgdaInductiveConstructor{\AgdaUnderscore{}$\dottimes$\AgdaUnderscore{}},
+we take the Cartesian product of the possibilities of each half, and at each
+\AgdaInductiveConstructor{\AgdaUnderscore{}$\sep$\AgdaUnderscore{}},
+we non-deterministically split the usage annotations coming in, and then take
+the Cartesian product.
+When it comes to newly bound variables, the \emph{syntax description} tells us
+their annotations, so there is no further non-determinism introduced here.
 
 \ExecuteMetaData[\UsageChecktex]{lemma-type}
 
 To actually use \AgdaFunction{elab-sem} on terms, we take the associated
 \AgdaFunction{semantics} and pass it the identity environment (an identity
 \emph{renaming} in this case, because $\V$ is a family of variables).
+In the previous examples, we have used \AgdaFunction{elab-unique}, which further
+checks statically that exactly one derivation is returned.
 The candidate usage vector \AgdaBound{R} will be empty for closed terms, and
 otherwise we have to supply the intended usage annotations.

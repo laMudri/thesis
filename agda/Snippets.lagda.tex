@@ -8,6 +8,8 @@ module Snippets (Ty : Set) (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
 
 open import Generic.Linear.Everything Ty poSemiring
 
+open import Data.LTree
+open import Data.LTree.Vector
 open import Function.Extra
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 open import Size
@@ -59,3 +61,12 @@ _ : ∀ {a b r} {A : Set a} {B : Set b} (R : A → B → Set r) x y →
 \begin{code}
 _ = λ R x y → ≡.refl
 \end{code}
+\begin{code}
+_ : ∀ {ℓ s t} → LinFuncRel s t ℓ → Vector Ann s → Vector Ann t → _
+_ = λ Ψ P Q →
+\end{code}
+%<*Psi-rel-P-Q>
+\begin{code}[inline]
+  Ψ .rel P Q
+\end{code}
+%</Psi-rel-P-Q>

@@ -9,14 +9,17 @@ set, where both operations are monotonic.
   \begin{itemize}
     \item $x \leq x' \to y \leq y' \to x + y \leq x' + y'$
     \item $x \leq x' \to y \leq y' \to x * y \leq x' * y'$
-    \item $0 + x = x \land x + 0 = x$
-    \item $(x + y) + z = x + (y + z)$
-    \item $x + y = y + x$
-    \item $1 * x = x \land x * 1 = x$
-    \item $(x * y) * z = x * (y * z)$
-    \item $0 * x = 0 \land x * 0 = 0$
-    \item $(x + y) * z = x * z + y * z$
-    \item $x * (y + z) = x * y + x * z$
+    \item $0 + x = x
+      \land x + 0 = x
+      \land (x + y) + z = x + (y + z)
+      \land x + y = y + x$
+    \item $1 * x = x
+      \land x * 1 = x
+      \land (x * y) * z = x * (y * z)$
+    \item $0 * x = 0
+      \land (x + y) * z = x * z + y * z$
+    \item $x * 0 = 0
+      \land x * (y + z) = x * y + x * z$
   \end{itemize}
 \end{definition}
 
@@ -39,12 +42,12 @@ analogously to how vectors over a field form a vector space.
   Specifically:
   \begin{itemize}
     \item $r \leq r' \to u \leq u' \to r \cdot u \leq r' \cdot u'$
-    \item $r \cdot 0_M = 0_M$
-    \item $r \cdot \plr{u +_M v} = r \cdot u +_M r \cdot v$
-    \item $0 \cdot u = 0_M$
-    \item $\plr{r + s} \cdot u = r \cdot u +_M s \cdot u$
-    \item $1 \cdot u = u$
-    \item $\plr{r * s} \cdot u = r \cdot \plr{s \cdot u}$
+    \item $r \cdot 0_M = 0_M
+      \land r \cdot \plr{u +_M v} = r \cdot u +_M r \cdot v$
+    \item $0 \cdot u = 0_M
+      \land \plr{r + s} \cdot u = r \cdot u +_M s \cdot u$
+    \item $1 \cdot u = u
+      \land \plr{r * s} \cdot u = r \cdot \plr{s \cdot u}$
   \end{itemize}
 \end{definition}
 
@@ -67,6 +70,33 @@ pattern matching.
 %\ExecuteMetaData[\Snippetstex]{Rxy-R}{}, solving the underscores as
 %\AgdaBound{x} and \AgdaBound{y}, respectively.
 
+\begin{definition}
+  A \emph{(relational) linear map} $\Psi$ between modules $M$ and $N$ over a
+  posemiring $\Ann$ is a relation $\sim$ on the underlying sets of $M$ and $N$
+  satisfying the following laws.
+  \begin{itemize}
+    \item $u \leq u' \to v' \leq v \to u \sim v \to u' \sim v'$
+    \item $\forall v.~\plr{\exists u.~u \leq 0 \land u \sim v} \to v \leq 0$
+    \item $\forall u_0,u_1,v.~\plr{\exists u.~u \leq u_0 + u_1 \land u \sim v}
+      \to {}$\\$\plr{\exists v_0,v_1.~u_0 \sim v_0
+      \land u_1 \sim v_1 \land v \leq v_0 + v_1}$
+    \item $\forall r,u',v.~\plr{\exists u.~u \leq ru' \land u \sim v} \to
+      \plr{\exists v'.~u' \sim v' \land v \leq rv'}$
+    \item
+      $\forall u.~\exists v.~u \sim v \land \forall v'.~u \sim v' \to v' \leq v$
+  \end{itemize}
+\end{definition}
+
+Intuitively, $Q \sim P$, where $P$ and $Q$ are row vectors, is equivalent to
+$P \leq Q\Psi$, where $\Psi$ is the matrix representing the linear map and on
+the right is a vector-matrix multiplication.
+It is important that we think of \emph{row} vectors and
+\emph{right}-multiplication by a matrix because, without commutativity of the
+underlying posemiring, we can only expect $\plr{rQ}\Psi = r\plr{Q\Psi}$ and
+not $\Psi\plr{rQ} = r\plr{\Psi Q}$.
+In \cref{sec:env}, we use the matrix notation for convenience, while in the
+Agda code we see \ExecuteMetaData[\Snippetstex]{Psi-rel-P-Q}.
+
 \begin{figure}
   \begin{align*}
     \dot1\,\grR &\coloneqq 1 \\
@@ -84,7 +114,7 @@ pattern matching.
   \label{fig:bunched}
 \end{figure}
 
-Operations like renaming and substitution are essentially translations from one
-context to another.
-When faced with two vector spaces arranged in this way, a natural thing to
-consider is the \emph{linear maps} from one space to the other.
+%Operations like renaming and substitution are essentially translations from one
+%context to another.
+%When faced with two vector spaces arranged in this way, a natural thing to
+%consider is the \emph{linear maps} from one space to the other.

@@ -1,0 +1,177 @@
+%thm:env-rules
+\begin{proof}
+  There are 6 cases to check.
+  Throughout, we write $\Gamma$ as $\grP\gamma$ and $\Delta$ as $\grQ\delta$
+  when convenient.
+  \begin{description}
+    \item[$I(\to)$]
+      Let $\gr\Psi$ be the unique linear map out of the zero space.
+      By assumption and definition, $\grP \leq \gr0 = \grQ\gr\Psi$.
+      There are no variables to act upon.
+    \item[$I(\gets)$]
+      $\grQ\gr\Psi$ is an empty sum, so if $\grP \leq \grQ\gr\Psi$ then
+      $\grP \leq \gr0$.
+    \item[$\sep(\to)$]
+      Let the given environments be $\rho_l : \grPl\gamma \env\V \grQl\delta$
+      and $\rho_r : \grPr\gamma \env\V \grQr\delta$, with
+      $\grP \leq \grPl + \grPr$.
+      Define $\gr\Psi \coloneqq [\rho_l.\gr\Psi, \rho_r.\gr\Psi]$, using the
+      coproduct structure of the concatenated vector space.
+      We have $\grP \leq \grPl + \grPr \leq
+      \grQl\plr{\rho_l.\gr\Psi} + \grQr\plr{\rho_r.\gr\Psi} =
+      \begin{pmatrix} \grQl & \grQr \end{pmatrix}\gr\Psi$.
+      To act on variables, we are given $\grPprime \leq
+      \begin{pmatrix} \gr{\grQ'_l} & \gr{\grQ'_r} \end{pmatrix}\gr\Psi$ and
+      $\gr{\grQ'_l}\delta_l, \gr{\grQ'_r}\delta_r \sqni A$.
+      Without loss of generality, let us have $\gr{\grQ'_l}\delta_l \sqni A$
+      and $\gr{\grQ'_r} \leq \gr0$.
+      Thus, $\grPprime \leq
+      \gr{\grQ'_l}\plr{\rho_l.\gr\Psi} + \gr{\grQ'_r}\plr{\rho_r.\gr\Psi} \leq
+      \gr{\grQ'_l}\plr{\rho_l.\gr\Psi}$,
+      and we can act on the variable using $\rho_l$.
+    \item[$\sep(\gets)$]
+      Let the unnamed context be $\Gamma$, also written $\grP\gamma$.
+      The linear map
+      $\gr\Psi : \Ann^{\size{\Delta_l} + \size{\Delta_r}} \to \Ann^{\size\Gamma}$
+      splits into
+      $\gr\Psi_{\gr l} : \Ann^{\size{\Delta_l}} \to \Ann^{\size\Gamma}
+      \coloneqq \alr{\id, 0}; \gr\Psi$ and
+      $\gr\Psi_{\gr r} : \Ann^{\size{\Delta_r}} \to \Ann^{\size\Gamma}
+      \coloneqq \alr{0, \id}; \gr\Psi$, using the product structure of
+      the concatenated vector space.
+      Let $\grPl \coloneqq \grQl\gr\Psi_{\gr l}$ and
+      $\grPr \coloneqq \grQr\gr\Psi_{\gr r}$, by definition satisfying the
+      required constraints.
+      For the action on variables, let us consider the left environment (with
+      the right environment following symmetrically).
+      We are given $\gr{\grP'_l} \leq \gr{\grQ'_l}\gr\Psi_{\gr l}$ and
+      $\gr{\grQ'_l}\delta_l \sqni A$.
+      From these, we get
+      $\gr{\grP'_l} \leq \gr{\grQ'_l}\gr\Psi_{\gr l} =
+      \begin{pmatrix} \gr{\grQ'_l} & \gr0 \end{pmatrix}\gr\Psi$ and
+      $\gr{\grQ'_l}\delta_l, \gr0\delta_r \sqni A$.
+      We can therefore act using the original environment.
+    \item[$\cdot(\to)$]
+      Let $\grP$ and $\grPprime$ be such that $\grP \leq \gr r\grPprime$ and let
+      $v : \V\,\grPprime\gamma\,A$.
+      Let $\gr\Psi : \Ann \to \Ann^{\size\gamma}
+      \coloneqq \gr r\gr' \mapsto \gr r\gr'\grPprime$.
+      By definition and the previous assumption, we have
+      $\grP \leq \gr r\gr\Psi$.
+      When acting on a variable, we have $\grP\gr{''} \leq \gr r\gr'\gr\Psi$
+      and $\gr r\gr'A \sqni A'$.
+      The latter tells us that $A = A'$ and $\gr r\gr' \leq \gr1$.
+      Thus, $\grP\gr{''} \leq \grPprime$.
+      Therefore, by subusaging, we may produce a value of type
+      $\V\,\grPprime\gamma\,A$, which we can take to be $v$.
+    \item[$\cdot(\gets)$]
+      Let us have an environment of type $\grP\gamma \env\V \gr rA$.
+      We want to use its action on variables to yield a value.
+      To do this, we let $\grPprime \coloneqq \gr1\gr\Psi$, and use this
+      equation, together with the fact that we have a variable of type
+      $\gr1A \sqni A$, to get a value of type $\V\,\grPprime\gamma\,A$.
+      Furthermore, we derive $\grP \leq \gr r\gr\Psi = \gr r\grPprime$, as
+      required.
+  \end{description}
+\end{proof}
+
+%thm:lr-env-zero
+\begin{proof}
+  $\grP \leq \grQ\gr\Psi \leq \gr0\gr\Psi = \gr0$, by environment
+  compatibility and monotonicity and linearity of $\gr\Psi$.
+\end{proof}
+
+%thm:lr-env-add
+\begin{proof}
+  Let $\grPl \coloneqq \grQl\gr\Psi$ and $\grPr \coloneqq \grQr\gr\Psi$.
+  Then, $\grP \leq \grQ\gr\Psi \leq \plr{\grQl + \grQr}\gr\Psi =
+  \grQl\gr\Psi + \grQr\gr\Psi = \grPl + \grPr$, satisfying the first condition.
+  Because clearly $\grPl \leq \grQl\gr\Psi$ and $\grPr \leq \grQr\gr\Psi$,
+  \cref{thm:env-resize} on the original environment gives us the required
+  pair of new environments.
+\end{proof}
+
+%thm:lr-env-scale
+\begin{proof}
+  Let $\grPprime \coloneqq \grQprime\gr\Psi$.
+  Then, $\grP \leq \grQ\gr\Psi \leq \plr{\gr r\grQprime}\gr\Psi =
+  \gr r\plr{\grQprime\gr\Psi} = \gr r\grPprime$, satisfying the first condition.
+  Because clearly $\grPprime \leq \grQprime\gr\Psi$,
+  \cref{thm:env-resize} on the original environment gives us the required
+  new environment.
+\end{proof}
+
+%thm:lr-bind
+\begin{proof}
+  Let $\grP\gamma \coloneqq \Gamma$, $\grQ\delta \coloneqq \Delta$, and
+  $\grR\theta \coloneqq \Theta$.
+  Let the new linear map $\gr\Psi\gr' : \Ann^{\size\Delta + \size\Theta} \to
+  \Ann^{\size\Gamma + \size\Theta}$ be $\gr\Psi \oplus \gr I$.
+  That is, in block matrix notation,
+  $\begin{pmatrix} \gr\Psi & \gr0 \\ \gr0 & \gr I \end{pmatrix}$.
+  Checking that this linear map fits, we have
+  $\begin{pmatrix}\grP & \grR\end{pmatrix}
+  \leq \begin{pmatrix}\grQ\gr\Psi & \grR\gr I\end{pmatrix}
+  = \begin{pmatrix}\grQ & \grR\end{pmatrix}\plr{\gr\Psi \oplus \gr I}$.
+  For the action on variables, we are given vectors $\grPprime$,
+  $\grR\gr'_\grP$, $\grQprime$, and $\grR\gr'_\grQ$ such that
+  $\begin{pmatrix} \grPprime & \grR\gr'_\grP \end{pmatrix} \leq
+  \begin{pmatrix} \grQprime & \grR\gr'_\grQ \end{pmatrix}
+  \plr{\gr\Psi \oplus \gr I}$ and we have a variable of type
+  $\grQprime\delta, \grR\gr'_\grQ\theta \sqni A$ for some type $A$.
+  The constraint on the new vectors reduces to $\grPprime \leq \grQprime\gr\Psi$
+  and $\grR\gr'_\grP \leq \grR\gr'_\grQ$.
+  From the variable we either have a variable $x$ in $\delta$ with
+  $\grQprime \leq \langle x \rvert$ and $\grR\gr'_\grQ \leq \gr0$, or a
+  variable $y$ in $\theta$ with $\grQprime \leq \gr0$ and
+  $\grR\gr'_\grQ \leq \langle y \rvert$.
+  In the former case, the action of the original environment on $x$ gives us a
+  $\V$-value in $\grPprime\gamma$, and the $\gr0$-weakening principle
+  $\swarrow^k$, noting that $\grR\gr'_\grP \leq \grR\gr'_\grQ \leq \gr0$, gives
+  us a $\V$-value in $\grPprime\gamma, \grR\gr'_\grP\theta$.
+  In the latter case, we have that
+  $\begin{pmatrix} \grPprime & \grR\gr'_\grP \end{pmatrix}
+  \leq \begin{pmatrix} \grQprime\gr\Psi & \grR\gr'_\grQ \end{pmatrix}
+  \leq \begin{pmatrix} \gr0\gr\Psi & \langle y \rvert \end{pmatrix}
+  = \begin{pmatrix} \gr0 & \langle y \rvert \end{pmatrix}
+  = \left\langle {\searrow}y \right\rvert$, so $y$ also serves as a
+  usage-checked variable in $\grPprime\gamma, \grR\gr'_\grP\theta$.
+  From this usage-checked variable, we get a $\V$-value in the same context
+  using $\mathrm{vr}$.
+\end{proof}
+
+%thm:env-id
+\begin{proof}
+  Let $\gr\Psi$ be the identity map, which clearly satisfies
+  $\grP \leq \grP\gr\Psi$.
+  When acting on a variable, the inequality $\grPprime \leq \grQprime\gr\Psi$
+  means that $\grPprime \leq \grQprime$, so the variable of type
+  $\grQprime\gamma \sqni A$ can be coerced to have type
+  $\grPprime\gamma \sqni A$.
+  From this point, $\mathrm{vr}$ gives us a value of type
+  $\V\,\grPprime\gamma\,A$, as required.
+\end{proof}
+
+\begin{lemma}\label{thm:env-comp-lemma}
+  Given an environment $\rho : \Gamma \env\U \Delta$ for which we have, for any
+  $\grPprime$ and $\grQprime$ such that
+  $\grPprime \leq \grQprime\plr{\rho.\gr\Psi}$, we have a function
+  $\mathrm{lift}_\rho :
+  \forallb{\V\,\grQprime\delta \dotto \W\,\grPprime\gamma}$,
+  we can map environments of type $\Delta \env\V \Theta$ into environments of
+  type $\Gamma \env\W \Theta$.
+\end{lemma}
+\begin{proof}
+  Let $\rho$ be as in the statement, and let $\sigma : \Delta \env\V \Theta$.
+  For the environment we are constructing, let
+  $\gr\Psi \coloneqq \sigma.\gr\Psi; \rho.\gr\Psi$, noting that
+  $\grP \leq \grQ\plr{\rho.\gr\Psi} \leq
+  \plr{\grR\plr{\sigma.\gr\Psi}}\plr{\rho.\gr\Psi}$.
+  For the action on variables, we are given $\grPprime \leq \grRprime\gr\Psi$
+  with $\grRprime\theta \sqni A$.
+  We can immediately apply the action of $\sigma$, giving us a value of type
+  $\V\,\plr{\grRprime\plr{\sigma.\gr\Psi}}\,A$.
+  We note that
+  $\grPprime \leq \plr{\grRprime\plr{\sigma.\gr\Psi}}\plr{\rho.\gr\Psi}$, and
+  apply $\mathrm{lift}_\rho$ to get the desired value.
+\end{proof}

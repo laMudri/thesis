@@ -51,15 +51,17 @@
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
-\author{James Wood\inst{1}\orcidID{0000-0002-8080-3350} \and
-Robert Atkey\inst{1}\orcidID{0000-0002-4414-5047}}
+\author{Anonymous authors}
+%\author{James Wood\inst{1}\orcidID{0000-0002-8080-3350} \and
+%  Robert Atkey\inst{1}\orcidID{0000-0002-4414-5047}}
 %
-\authorrunning{J. Wood, R. Atkey}
+\authorrunning{Anon.}
+%\authorrunning{J. Wood, R. Atkey}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
-\institute{University of Strathclyde, Glasgow, UK
-\email{\{james.wood.100,robert.atkey\}@strath.ac.uk}}
+%\institute{University of Strathclyde, Glasgow, UK
+%\email{\{james.wood.100,robert.atkey\}@strath.ac.uk}}
 %
 \maketitle              % typeset the header of the contribution
 %
@@ -81,18 +83,20 @@ Robert Atkey\inst{1}\orcidID{0000-0002-4414-5047}}
   The metasyntax for the premises of a typing rule is related to bunched logic,
   featuring both sharing and separating conjunction, roughly corresponding to
   the additive and multiplicative features of linear logic.
-  The bunched flavour is carried over into the semantics, together with the use
-  of basic linear algebra constructs.
-  For example, \emph{environments} are presented equivalently as values
-  accumulated via separating conjunction, and as functions from variables to
-  values supported by linear maps.
-  Producing a generic semantic traversal has us combine environments with a
-  separating implication, producing a Kripke function space of the form
-  $\Box(A \wand B)$.
-  From the generic semantic traversal, we derive totally generic renaming and
-  substitution operations, a specific denotational semantics, and a
-  syntax-generic \emph{usage elaborator} which greatly facilitates writing
-  concrete terms.
+  We use the uniformity of syntaxes to derive type system-generic renaming,
+  substitution, and a form of linearity checking.
+  %The bunched flavour is carried over into the semantics, together with the use
+  %of basic linear algebra constructs.
+  %For example, \emph{environments} are presented equivalently as values
+  %accumulated via separating conjunction, and as functions from variables to
+  %values supported by linear maps.
+  %Producing a generic semantic traversal has us combine environments with a
+  %separating implication, producing a Kripke function space of the form
+  %$\Box(A \wand B)$.
+  %From the generic semantic traversal, we derive totally generic renaming and
+  %substitution operations, a specific denotational semantics, and a
+  %syntax-generic \emph{usage elaborator} which greatly facilitates writing
+  %concrete terms.
 
 \keywords{First keyword  \and Second keyword \and Another keyword.}
 \end{abstract}
@@ -190,6 +194,7 @@ Robert Atkey\inst{1}\orcidID{0000-0002-4414-5047}}
 \input{examples}
 
 \section{Conclusions}\label{sec:conc}
+\input{conc}
 %
 % ---- Bibliography ----
 %

@@ -176,8 +176,9 @@ A layer of syntax supports the following functorial action.
 
 \ExecuteMetaData[\Maptex]{map-s-type}
 
-\subsection{Other syntaxes}
+\subsection{Other syntaxes and syntactic forms}
 
+\paragraph{$\mu\tilde\mu$}
 We can encode a usage-annotated version of System $L$/the
 $\mu\tilde\mu$-calculus~\cite{CH00} --- a syntax for classical logic --- in
 such a way that contexts capture the undistinguished parts of the sequent.
@@ -224,9 +225,32 @@ then term and coterm (introduction and elimination) forms for negation and
 
 \ExecuteMetaData[\MuMuTildetex]{MMT}
 
-With a collection of pattern synonyms and the machinery from
-\cref{sec:usage-elaborator}, we can write an example term: a function which
-flips the disjuncts of a \emph{par}.
+%With a collection of pattern synonyms and the machinery from
+%\cref{sec:usage-elaborator}, we can write an example term: a function which
+%flips the disjuncts of a \emph{par}.
 
-\ExecuteMetaData[\MuMuTildeTermtex]{patterns}
-\ExecuteMetaData[\MuMuTildeTermtex]{myComm}
+%\ExecuteMetaData[\MuMuTildeTermtex]{patterns}
+%\ExecuteMetaData[\MuMuTildeTermtex]{myComm}
+
+\paragraph{Duplicability}
+There is one more bunched combinator we have experimented with adding to the
+framework:
+
+\[
+  \plr{\Box T}\,\grR \coloneqq \Sigma\grRprime.~\plr{\grRprime \leq \grR}
+  \times \plr{\grRprime \leq \gr0}
+  \times \plr{\grRprime \leq \grRprime + \grRprime}
+  \times T\,\grRprime
+\]
+
+The idea of $\plr{\Box T}\,\grR$ is to assert that $\grR$, or some refinement
+of it, can be both discarded and duplicated indefinitely, and in the
+refinement we have a $T$.
+We use this combinator to introduce subterms that are used an unknown number of
+times, for example the continuations of the eliminator of an inductive type,
+or other fixed points.
+We can also use it in linear/non-linear style systems~\cite{Benton94} to make
+sure linear variables are not available in the intuitionistic fragment.
+
+Adding the $\Box$ combinator is the only thing we have found that requires our
+linear maps be functional rather than merely relational.

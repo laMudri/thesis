@@ -6,13 +6,28 @@ the main difference having come already in the syntax and environments.
 
 \subsection{Renameability}
 
-{\color{red}(Maybe this goes in the Environment section.)}
-We saw in \cref{sec:env} that our notion of \emph{environment} specialises to
-\emph{simultaneous renaming} by setting $\V$ to be $\sqni$.
+\todo{Maybe this goes in the Environment section.}
+We saw in \cref{sec:env} that our notion of environment specialises to
+simultaneous renaming by setting $\V$ to be $\sqni$.
+This is encoded below as
+\AgdaFunction{\AgdaUnderscore{}$\Rightarrow^r$\AgdaUnderscore{}}.
 
 \ExecuteMetaData[\Renamingtex]{Ren}
+
+In a setting where new variables can be bound in the middle of a derivation,
+it is important that the values we carry around while traversing a term can
+handle the existence of variables that appear but they do not use.
+We call any such notion of value \emph{renameable}.
+The cofree renameable \AgdaFunction{OpenType} on an \AgdaFunction{OpenType}
+\AgdaBound{T} is \AgdaFunction{$\Box^r$}\AgdaSpace{}\AgdaBound{T}, with
+\AgdaBound{T} then being \AgdaFunction{Renameable} if it forms a
+\AgdaFunction{$\Box^r$}-coalgebra.
+
 \ExecuteMetaData[\Renamingtex]{Boxr}
 \ExecuteMetaData[\Renamingtex]{Renameable}
+
+A renameable notion of value gives rise to a renameable notion of environment,
+essentially by renaming each contained value in an appropriate way.
 
 \begin{lemma}[\AgdaFunction{ren\textasciicircum{}Env}]\label{thm:env-ren}
   If $\plr{-} \sdtstile{}\V A$ is renameable for all $A$, then so is
