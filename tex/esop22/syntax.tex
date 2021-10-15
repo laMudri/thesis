@@ -56,19 +56,14 @@ associate the label set with the rules.
 \paragraph{\figref{fig:lr-comb} as a \AgdaRecord{System}.}
 
 As an example, we transcribe the system defined in
-\figref{fig:lr-comb} into a description.  We first give the set of
-types as a data type (together with a base type
-\AgdaInductiveConstructor{$\iota$}). We assume that there is a
+\figref{fig:lr-comb} into a description.  We give the set of types of
+this system as a data type \AgdaDatatype{Ty} (together with a base
+type \AgdaInductiveConstructor{$\iota$}). We assume that there is a
 posemiring \AgdaInductiveConstructor{Ann} in scope for the
-annotations.
-
-\ExecuteMetaData[\PaperExamplestex]{Ty}
-
-%Then, we give the set of labels.
-There is one label for each instantiation of a logical rule, but the
-labels contain no further information about subterms or restrictions
-on the context. This will be provided when we associate labels with
-\AgdaRecord{Rule}s in a \AgdaRecord{System}.
+annotations.There is one label for each instantiation of a logical
+rule, but the labels contain no further information about subterms or
+restrictions on the context. This will be provided when we associate
+labels with \AgdaRecord{Rule}s in a \AgdaRecord{System}.
 
 \noindent
 \begin{minipage}[t]{0.5\textwidth}

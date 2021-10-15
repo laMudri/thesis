@@ -108,22 +108,22 @@ substructural systems:
   by $\gr r$ of the resources of the premise.
 \end{enumerate}
 
-\begin{figure}
-  \begin{align*}
-    \dot1\,\grR &\coloneqq 1 \\
-    (T \dottimes U)\,\grR &\coloneqq T\,\grR \times U\,\grR \\
-    % (T \dotto U)\,\grR &\coloneqq T\,\grR \to U\,\grR \\
-    I^*\,\grR &\coloneqq \grR \leq \gr0 \\
-    (T \sep U)\,\grR &\coloneqq \Sigma \grP,\grQ.~\plr{\grR \leq \grP + \grQ}
-                       \times T\,\grP \times U\,\grQ \\
-    (\gr r \cdot T)\,\grR &\coloneqq \Sigma \grP.~\plr{\grR \leq \gr r\grP}
-                       \times T\,\grP \\
-    % (T \wand U)\,\grP &\coloneqq \Pi \grQ,\grR.~\plr{\grR \leq \grP + \grQ}
-    %                    \to T\,\grQ \to U\,\grR
-  \end{align*}
-  \caption{The bunched connectives for combining premises.}
-  \label{fig:bunched}
-\end{figure}
+% \begin{figure}
+%   \begin{align*}
+%     \dot1\,\grR &\coloneqq 1 \\
+%     (T \dottimes U)\,\grR &\coloneqq T\,\grR \times U\,\grR \\
+%     % (T \dotto U)\,\grR &\coloneqq T\,\grR \to U\,\grR \\
+%     I^*\,\grR &\coloneqq \grR \leq \gr0 \\
+%     (T \sep U)\,\grR &\coloneqq \Sigma \grP,\grQ.~\plr{\grR \leq \grP + \grQ}
+%                        \times T\,\grP \times U\,\grQ \\
+%     (\gr r \cdot T)\,\grR &\coloneqq \Sigma \grP.~\plr{\grR \leq \gr r\grP}
+%                        \times T\,\grP \\
+%     % (T \wand U)\,\grP &\coloneqq \Pi \grQ,\grR.~\plr{\grR \leq \grP + \grQ}
+%     %                    \to T\,\grQ \to U\,\grR
+%   \end{align*}
+%   \caption{The bunched connectives for combining premises.}
+%   \label{fig:bunched}
+% \end{figure}
 
 These observations indicate a way to regularise and streamline the
 presentation of this system. Instead of treating each premise and the
@@ -141,8 +141,20 @@ resources are distributed between premises, we make use the separating
 Bunched Implications \cite{oHP99}, instantiated for typing rules. To
 handle the \AgdaInductiveConstructor{!I} rule, we will need a
 \emph{scaling} modality, $\gr r \cdot -$. The semantics of the bunched
-connectives we will use are given in \figref{fig:bunched}. An
-important point to note is that bunched combinators induce
+connectives we will use are:
+  \begin{align*}
+    \dot1\,\grR &\coloneqq 1 \\
+    (T \dottimes U)\,\grR &\coloneqq T\,\grR \times U\,\grR \\
+    % (T \dotto U)\,\grR &\coloneqq T\,\grR \to U\,\grR \\
+    I^*\,\grR &\coloneqq \grR \leq \gr0 \\
+    (T \sep U)\,\grR &\coloneqq \Sigma \grP,\grQ.~\plr{\grR \leq \grP + \grQ}
+                       \times T\,\grP \times U\,\grQ \\
+    (\gr r \cdot T)\,\grR &\coloneqq \Sigma \grP.~\plr{\grR \leq \gr r\grP}
+                       \times T\,\grP \\
+    % (T \wand U)\,\grP &\coloneqq \Pi \grQ,\grR.~\plr{\grR \leq \grP + \grQ}
+    %                    \to T\,\grQ \to U\,\grR
+  \end{align*}
+An important point to note is that bunched combinators induce
 \emph{linear} combinations of substructures, in the sense of the
 linear algebra of posemirings described in the previous section.
 
