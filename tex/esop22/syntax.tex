@@ -1,14 +1,12 @@
-\subsection{A prototypical type system}
-
-\subsection{Descriptions}
-
 We capture the form of rules exemplified previously\todo{Previously?} via
 \emph{descriptions} of rules.
 The key to making these descriptions work is that they only allow syntactic
 forms that preserve environments.
 These forms are: absence and multiplicity of subterms with the same usage
 annotations, absence and multiplicity of subterms with summed usage annotations,
-scaling of a subterm, and variable binding.
+scaling of a subterm, and variable binding.\todo{Switching to Agda}
+
+\paragraph{Premises, Rules, and Systems.}
 
 A type \AgdaRecord{System} is made up of multiple \AgdaRecord{Rule}s.
 Each \AgdaRecord{Rule} comprises a tree of \AgdaDatatype{Premises} and a type
@@ -25,6 +23,8 @@ connectives, and are interpreted directly as such.
 \ExecuteMetaData[\Syntaxtex]{Premises}
 \ExecuteMetaData[\Syntaxtex]{Rule}
 \ExecuteMetaData[\Syntaxtex]{System}
+
+\paragraph{\figref{fig:lr-comb} as a \AgdaRecord{System}.}
 
 As an example, we transcribe the system defined in \cref{fig:lr-comb} into a
 description.
@@ -46,6 +46,8 @@ type system.
 {\color{red}(Looks like \cref{fig:lr-comb})}
 
 \ExecuteMetaData[\PaperExamplestex]{lR}
+
+\paragraph{Terms of a \AgdaRecord{System}.}
 
 The next thing we want to do is to build terms in the described type system.
 The following definitions are useful for talking about types indexed over
@@ -128,9 +130,9 @@ We will see how to automate these proofs in \cref{sec:usage-elaborator}.
 
 %\ExecuteMetaData[\HeavyItex]{lR-term}
 
-A layer of syntax supports the following functorial action.
+% A layer of syntax supports the following functorial action.
 
-\ExecuteMetaData[\Maptex]{map-s-type}
+% \ExecuteMetaData[\Maptex]{map-s-type}
 
 \subsection{Other syntaxes and syntactic forms}
 
