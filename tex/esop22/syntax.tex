@@ -1,42 +1,74 @@
-We capture the form of rules exemplified previously\todo{Previously?} via
-\emph{descriptions} of rules.
-The key to making these descriptions work is that they only allow syntactic
-forms that preserve environments.
-These forms are: absence and multiplicity of subterms with the same usage
-annotations, absence and multiplicity of subterms with summed usage annotations,
-scaling of a subterm, and variable binding.\todo{Switching to Agda}
+We take the insights of the previous section and use them to build a
+generic framework for posemiring-annotated substructural systems in
+Agda. We will first show \emph{descriptions} of systems, which are
+comprised of rules that have premises combined using the bunched
+combinators. We then show how to construct the Agda data type of
+intrinsically well scoped, typed, and resourced terms for any given
+system of our framework. We use the prototypical system from
+\figref{fig:comb-lr} as a running example. \secref{sec:other-syntaxes}
+presents further examples that our framework can express.
 
-\paragraph{Premises, Rules, and Systems.}
+We now start to use Agda notation for record and data type
+declarations, to emphasise that our framework has been implemented.
+
+\subsection{Descriptions of Systems}
+
+% We capture the form of rules exemplified previously\todo{Previously?} via
+% \emph{descriptions} of rules.
+% The key to making these descriptions work is that they only allow syntactic
+% forms that preserve environments.
+% These forms are: absence and multiplicity of subterms with the same usage
+% annotations, absence and multiplicity of subterms with summed usage annotations,
+% scaling of a subterm, and variable binding.\todo{Switching to Agda}
+
+\paragraph{\AgdaDatatype{Premises}, \AgdaRecord{Rule}s, and \AgdaRecord{System}s.}
 
 A type \AgdaRecord{System} is made up of multiple \AgdaRecord{Rule}s.
-Each \AgdaRecord{Rule} comprises a tree of \AgdaDatatype{Premises} and a type
-of conclusion.
+Each \AgdaRecord{Rule} comprises a tree of \AgdaDatatype{Premises} and
+a type of conclusion. We assume that there is a
+$\AgdaBound{Ty} : \AgdaPrimitiveType{Set}$ of types for the system in
+scope.
 
-A single premise is introduced by the
-\AgdaInductiveConstructor{$\langle$\_`$\vdash$\_$\rangle$} constructor.
-This allows binding of some variables \AgdaBound{$\Delta$} (with specified
-types and usage annotations) and the specification of a conclusion type
-\AgdaBound{A}.
-The rest of the constructors are descriptions for the first-order bunched
-connectives, and are interpreted directly as such.
+The \AgdaDatatype{Premise} data type describes premises of rules,
+using the bunched combinators from the previous section. A single
+premise is introduced by the
+\AgdaInductiveConstructor{$\langle$\_`$\vdash$\_$\rangle$}
+constructor.  This allows binding of additional variables
+\AgdaBound{$\Delta$} (with specified types and usage annotations) and
+the specification of a conclusion type \AgdaBound{A} for this premise.
+The remaining constructors are descriptions for the first-order
+bunched connectives, and will be interpreted directly as such, below.
 
 \ExecuteMetaData[\Syntaxtex]{Premises}
-\begin{minipage}[t]{0.5\textwidth}
-  \ExecuteMetaData[\Syntaxtex]{Rule}
-\end{minipage}
-\begin{minipage}[t]{0.5\textwidth}
-  \ExecuteMetaData[\Syntaxtex]{System}
-\end{minipage}
+
+A \AgdaRecord{Rule} is a pair of some \AgdaDatatype{Premises} and a
+conclusion. We use an infix arrow as a suggestive notation for rules.
+
+\ExecuteMetaData[\Syntaxtex]{Rule}
+
+Finally, a \AgdaRecord{System} consists of a set of rule labels (i.e.,
+constructor names), and for each label a decsription of the
+corresponding rule. We use $\rhd$ as infix notation for systems to
+associate the label set with the rules.
+
+\ExecuteMetaData[\Syntaxtex]{System}
 
 \paragraph{\figref{fig:lr-comb} as a \AgdaRecord{System}.}
 
-As an example, we transcribe the system defined in \cref{fig:lr-comb} into a
-description.
-We first give the set of types in a standard way (together with base type
-\AgdaInductiveConstructor{$\iota$}).
-Then, we give the set of labels.
-There is one label for each instantiation of a logical rule, but the labels
-contain no further information about subterms or restrictions on the context.
+As an example, we transcribe the system defined in
+\figref{fig:lr-comb} into a description.  We first give the set of
+types as a data type (together with a base type
+\AgdaInductiveConstructor{$\iota$}). We assume that there is a
+posemiring \AgdaInductiveConstructor{Ann} in scope for the
+annotations.
+
+\ExecuteMetaData[\PaperExamplestex]{Ty}
+
+%Then, we give the set of labels.
+There is one label for each instantiation of a logical rule, but the
+labels contain no further information about subterms or restrictions
+on the context. This will be provided when we associate labels with
+\AgdaRecord{Rule}s in a \AgdaRecord{System}.
 
 \noindent
 \begin{minipage}[t]{0.5\textwidth}
@@ -47,13 +79,17 @@ contain no further information about subterms or restrictions on the context.
   \ExecuteMetaData[\PaperExamplestex]{qlR}
 \end{minipage}
 
-Finally, we specify, for each label, the rest of the information about that
-rule {\color{red}(premises and conclusion)}.
-We do not have a variable rule, because the variable rule is implicit to any
-type system.
-{\color{red}(Looks like \cref{fig:lr-comb})}
+To build a system, we associate with each label a rule:
 
 \ExecuteMetaData[\PaperExamplestex]{lR}
+
+Compared to \figref{fig:lr-comb}, modulo the Agda notation, we can see
+that the fundamental structure has been preserved: the rules match
+one-to-one, and the bunched premises are the same. A major difference
+is that we do not include a counterpart to the
+\AgdaInductiveConstructor{var} rule in a
+\AgdaRecord{System}. Variables are common to all the systems
+representable in our framework.
 
 \paragraph{Terms of a \AgdaRecord{System}.}
 
@@ -64,25 +100,29 @@ respectively.
 
 \ExecuteMetaData[\Syntaxtex]{OpenFam}
 
-To specify the meaning of descriptions, we assume some
-\ExecuteMetaData[\Interpretationtex]{X}, over which we form one layer of syntax.
-The first argument to \AgdaBound{X} is the new variables bound by this layer
-of syntax, as exemplified in the first clause of
-\AgdaFunction{$\llbracket$\_$\rrbracket$p}.
-The second argument is the context containing the variables being carried over
-from the previous layer.
-Notice that this is not, in general, the same as the context from the previous
-layer, because the usage annotations may have been changed by connectives like
-\AgdaInductiveConstructor{\_`$*$\_} and \AgdaInductiveConstructor{\_`$\cdot$\_}.
-The third argument is the type of subterm required.
+To specify the meaning of descriptions, we assume some \AgdaBound{X} : \AgdaFunction{ExtOpenFam},
+% \ExecuteMetaData[\Interpretationtex]{X},
+over which we form one layer of syntax, using the function
+\AgdaFunction{$\llbracket$\_$\rrbracket$p} that interprets
+\AgdaDatatype{Premises} defined below.  The first argument to
+\AgdaBound{X} is the new variables bound by this layer of syntax, as
+exemplified in the first clause of
+\AgdaFunction{$\llbracket$\_$\rrbracket$p}.  The second argument is
+the context containing the variables being carried over from the
+previous layer.  Notice that this is not, in general, the same as the
+context from the previous layer, because the usage annotations may
+have been changed by connectives like
+\AgdaInductiveConstructor{\_`$*$\_} and
+\AgdaInductiveConstructor{\_`$\cdot$\_}.  The third argument is the
+type of subterm required.
 
 With the first clause of \AgdaFunction{$\llbracket$\_$\rrbracket$p} explained,
-the rest are simply interpretations into bunched combinators.
+the rest are simply interpretations of premises into bunched combinators.
 
 \ExecuteMetaData[\Interpretationtex]{semp}
 
-The interpretation of a \AgdaRecord{Rule} is to check that the rule targets
-the desired type and then interpret the rules premises \AgdaBound{ps}.
+The interpretation of a \AgdaRecord{Rule} checks that the rule targets
+the desired type and then interprets the rule's premises \AgdaBound{ps}.
 Notice that the interpretation of the premises is independent of the conclusion
 of the rule, which accounts for the difference in type between
 \AgdaFunction{$\llbracket$\_$\rrbracket$p} and
@@ -99,20 +139,21 @@ conclusion.
 
 The most obvious way to make such an \AgdaBound{X} is to use some existing
 \AgdaFunction{OpenFam} on an extended context.
-This is what \AgdaFunction{Scope} does --- take the new variables
+We defined \AgdaFunction{Scope} to do this: take the new variables
 \AgdaBound{$\Delta$}, concatenate them onto the existing context
 \AgdaBound{$\Gamma$}, and pass the extended context onto the judgement
 \AgdaBound{T}.
 
 \ExecuteMetaData[\Syntaxtex]{Scope}
 
-{\color{red}(Forward ref: for now, we could have inlined \texttt{Scope}.)}
+%{\color{red}(Forward ref: for now, we could have inlined \texttt{Scope}.)}
 
-It is this method we use to deal with new variables in syntax.
-Terms resemble the free monad over a layer-of-syntax functor, though that
-picture is complicated by variable binding.
-A term is either a variable or a use of a logical rule together with terms
-for each of the required subterms.
+We use \AgdaFunction{Scope} to deal with new variables in syntax.
+Terms resemble the free monad over a layer-of-syntax functor, though
+that picture is complicated by variable binding.  A term is either a
+variable or a use of a logical rule together with terms for each of
+the required subterms. The \AgdaFunction{Size} argument is where we
+use sized types to convince Agda that this type is strictly positive.
 
 \ExecuteMetaData[\Termtex]{Term}
 
@@ -142,9 +183,9 @@ We will see how to automate these proofs in \cref{sec:usage-elaborator}.
 
 % \ExecuteMetaData[\Maptex]{map-s-type}
 
-\subsection{Other syntaxes and syntactic forms}
+\subsection{Other syntaxes and syntactic forms}\label{sec:other-syntaxes}
 
-\paragraph{$\mu\tilde\mu$}
+\paragraph{The system $\mu\tilde\mu$.}
 We can encode a usage-annotated version of System $L$/the
 $\mu\tilde\mu$-calculus~\cite{CH00} --- a syntax for classical logic --- in
 such a way that contexts capture the undistinguished parts of the sequent.
