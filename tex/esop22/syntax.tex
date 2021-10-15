@@ -48,6 +48,9 @@ type system.
 \ExecuteMetaData[\PaperExamplestex]{lR}
 
 The next thing we want to do is to build terms in the described type system.
+The following definitions are useful for talking about types indexed over
+contexts, judgement forms, and judgement forms admitting newly bound variables,
+respectively.
 
 \ExecuteMetaData[\Syntaxtex]{OpenFam}
 
@@ -103,25 +106,29 @@ for each of the required subterms.
 
 \ExecuteMetaData[\Termtex]{Term}
 
-Here is an example term, using the \AgdaFunction{$\lambda$R} system.
-First, for ease of writing, we introduce pattern synonyms for each of the
-typing rules we use.
+Terms defined like this are still quite difficult to write, mainly because of
+frequently changing usage contexts and the need for proofs that they all match
+up.
+We will see how to automate these proofs in \cref{sec:usage-elaborator}.
 
-\ExecuteMetaData[\PaperExamplestex]{patterns}
+%Here is an example term, using the \AgdaFunction{$\lambda$R} system.
+%First, for ease of writing, we introduce pattern synonyms for each of the
+%typing rules we use.
 
-Our example term is a function that flips a tagged union wrapped in an
-arbitrarily annotated \emph{bang}.
-Much of the effort in writing such a term goes into writing the various
-relatedness proofs between usage contexts --- observing, for example, that two
-usage contexts sum together to make a third, or that a usage context used for
-a variable is a basis vector.
-We give a method of automating these proofs in \cref{sec:usage-elaborator}.
-\todo{To be clear, we don't actually write this.}
+%\ExecuteMetaData[\PaperExamplestex]{patterns}
 
-\ExecuteMetaData[\HeavyItex]{lR-term}
+%Our example term is a function that flips a tagged union wrapped in an
+%arbitrarily annotated \emph{bang}.
+%Much of the effort in writing such a term goes into writing the various
+%relatedness proofs between usage contexts --- observing, for example, that two
+%usage contexts sum together to make a third, or that a usage context used for
+%a variable is a basis vector.
+%We give a method of automating these proofs in \cref{sec:usage-elaborator}.
+%\todo{To be clear, we don't actually write this.}
+
+%\ExecuteMetaData[\HeavyItex]{lR-term}
 
 A layer of syntax supports the following functorial action.
-{\color{red}(Maybe this has to go later, because it talks about linear maps.)}
 
 \ExecuteMetaData[\Maptex]{map-s-type}
 

@@ -51,7 +51,15 @@ that terms are renameable, is a corollary of \AgdaFunction{Ren-Kit}.
 
 \subsection{A denotational semantics}
 
-\todo{Introduction}
+To justify the name \emph{semantics}, we give an example traversal that is a
+denotational semantics in the usual sense.
+The semantics we take is a refinement of that of \citet{AbelBernardy2020},
+which gives a way to extract parametricity theorems from substructurally typed
+programs.
+Example theorems are that all linear terms act as permutations on some fixed
+set of resources, and all monotonically typed terms are really monotonic in the
+way the typing suggests they are.
+
 To abbreviate this section, we use a simplified syntax compared to \name{}.
 We allow for an arbitrary family of base types \AgdaBound{BaseTy}, and a single
 type former \mbox{\ExecuteMetaData[\WReltex]{rAToB}}, equivalent to
@@ -66,16 +74,14 @@ In the term syntax, $\lambda$-abstraction now binds a variable with annotation
 \ExecuteMetaData[\WReltex]{AnnArr}
 
 As a running example, we take the usage annotations to be the 4-element
-variance posemiring.
-\todo{Define earlier}
+variance posemiring (\cref{thm:variance}).
 We establish the property that all terms are monotonic in their free variables.
 This monotonicity can be covariant or contravariant (or neither or both)
 depending on the annotation of each free variable.
-This provides an additional example to those of \citet{AbelBernardy2020}.
-\todo{Cite before here.}
+This provides an additional example to those of \citeauthor{AbelBernardy2020}.
 
 We will take semantics of this system into
-\emph{world-indexed relations}~\cite{AbelBernardy2020}.
+\emph{world-indexed relations}~\cite{AbelBernardy2020,context-constrained}.
 A world-indexed relation over a poset of worlds \AgdaBound{W} is a set over
 which
 we have a \AgdaBound{W}-indexed binary relation satisfying a presheaf-like
@@ -191,18 +197,24 @@ semantics and give the identity renaming as the starting environment.
     &\mathnormal{minus} \coloneqq \lambda x.~\lambda y.~p\,x\,(n\,y)
   \end{align*}
 
-  We observe that the set component of this term's semantics is just the
-  expected Agda function when the two free variables are given appropriate
-  interpretations.
+  After feeding in Agda's addition and negation functions as the
+  interpretations of the free variables (noting that they are both monotonic
+  in the required way), we get the following free theorem.
 
-  \ExecuteMetaData[\Monotonicitytex]{minus-set}
+  \ExecuteMetaData[\Monotonicitytex]{thm-type}
 
-  Furthermore, the relational component of the semantics yields the free
-  theorem that the Agda subtraction so defined is monotonic in the expected way.
-  This relies on library proofs that addition and negation are suitably
-  monotonic.
+  %We observe that the set component of this term's semantics is just the
+  %expected Agda function when the two free variables are given appropriate
+  %interpretations.
 
-  \ExecuteMetaData[\Monotonicitytex]{thm}
+  %\ExecuteMetaData[\Monotonicitytex]{minus-set}
+
+  %Furthermore, the relational component of the semantics yields the free
+  %theorem that the Agda subtraction so defined is monotonic in the expected way.
+  %This relies on library proofs that addition and negation are suitably
+  %monotonic.
+
+  %\ExecuteMetaData[\Monotonicitytex]{thm}
 \end{example}
 
 \subsection{A usage elaborator}\label{sec:usage-elaborator}
@@ -228,7 +240,7 @@ avoiding repetition and facilitating the prototyping of new type systems.
 
 The type of syntax descriptions depends on the type of usage annotations because
 of variable binding.
-For example, in the $\oc_{\gr r}$-E rule of \cref{fig:lr-comb}, the right
+For example, in the $\oc{\gr r}$-E rule of \cref{fig:lr-comb}, the right
 premise binds a new variable with annotation $\gr r$, where $\gr r$ is drawn
 from the ambient posemiring.
 The scaling combinator also makes direct reference to the posemiring.
@@ -325,6 +337,7 @@ their annotations, so there is no further non-determinism introduced here.
 To actually use \AgdaFunction{elab-sem} on terms, we take the associated
 \AgdaFunction{semantics} and pass it the identity environment (an identity
 \emph{renaming} in this case, because $\V$ is a family of variables).
+\todo{Previous examples are now deleted.}
 In the previous examples, we have used \AgdaFunction{elab-unique}, which further
 checks statically that exactly one derivation is returned.
 The candidate usage vector \AgdaBound{R} will be empty for closed terms, and

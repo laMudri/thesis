@@ -4,24 +4,54 @@ A posemiring is a (not necessarily commutative) semiring on a partially ordered
 set, where both operations are monotonic.
 
 \begin{definition}
-  A \emph{posemiring} is a tuple $(\Ann, \leq, 0, +, 1, *)$ such that the
-  following laws hold (universally quantified in all the variables).
-  \begin{itemize}
-    \item $x \leq x' \to y \leq y' \to x + y \leq x' + y'$
-    \item $x \leq x' \to y \leq y' \to x * y \leq x' * y'$
-    \item $0 + x = x
-      \land x + 0 = x
-      \land (x + y) + z = x + (y + z)
-      \land x + y = y + x$
-    \item $1 * x = x
-      \land x * 1 = x
-      \land (x * y) * z = x * (y * z)$
-    \item $0 * x = 0
-      \land (x + y) * z = x * z + y * z$
-    \item $x * 0 = 0
-      \land x * (y + z) = x * y + x * z$
-  \end{itemize}
+  A \emph{posemiring} is a tuple $(\Ann, \leq, 0, +, 1, *)$ such that
+  $(\Ann, \leq)$ is a partially ordered set, $(\Ann, 0, +)$ is a commutative
+  monoid, $(\Ann, 1, *)$ is a monoid, $+$ and $*$ are monotonic, and $*$
+  distributes over $0$ and $+$ in the usual way on both sides.
+  %the
+  %following laws hold (universally quantified in all the variables).
+  %\begin{itemize}
+  %  \item $x \leq x' \to y \leq y' \to x + y \leq x' + y'$
+  %  \item $x \leq x' \to y \leq y' \to x * y \leq x' * y'$
+  %  \item $0 + x = x
+  %    \land x + 0 = x
+  %    \land (x + y) + z = x + (y + z)
+  %    \land x + y = y + x$
+  %  \item $1 * x = x
+  %    \land x * 1 = x
+  %    \land (x * y) * z = x * (y * z)$
+  %  \item $0 * x = 0
+  %    \land (x + y) * z = x * z + y * z$
+  %  \item $x * 0 = 0
+  %    \land x * (y + z) = x * y + x * z$
+  %\end{itemize}
 \end{definition}
+
+\begin{example}[Zero-one-many]\label{thm:linearity}
+  The poset $\{0 > \omega < 1\}$ forms a posemiring under normal numeric
+  addition (with $1 + 1 = 1 + \omega = \omega + \omega = \omega$) and
+  multiplication (with $\omega * \omega = \omega$).
+  This gives us a way to mark whether variables are unused ($0$), used linearly
+  ($1$), or used unrestrictedly ($\omega$) in the current (sub)term.
+  The ordering says that unrestricted-use variables can also remain unused or
+  be used linearly.
+\end{example}
+
+\begin{example}[Variance]\label{thm:variance}
+  The set
+  $\{{\sim\sim}, {\uparrow\uparrow}, {\downarrow\downarrow}, {\wn\wn}\}$,
+  with ${\sim\sim}$ at the bottom and ${\wn\wn}$ at the top of the order, forms
+  a posemiring with addition being \emph{meet}, $0$ being \emph{top}
+  (${\wn\wn}$), $1$ being ${\uparrow\uparrow}$, and multiplication being
+  commutative and determined by
+  ${\downarrow\downarrow} * {\downarrow\downarrow} = {\uparrow\uparrow}$ and
+  ${\sim\sim} * {\downarrow\downarrow} = {\sim\sim} * {\sim\sim} = {\sim\sim}$.
+  This gives us a way to track the variance with which variables are used, in
+  the aim of all terms being monotonic in their free variables.
+  ${\uparrow\uparrow}$ stands for covariance, ${\downarrow\downarrow}$ for
+  contravariance, ${\sim\sim}$ for invariance, and ${\wn\wn}$ for a variable
+  with no guarantees, in which we must be constant.
+\end{example}
 
 An element of a chosen posemiring $\Ann$ describes the usage restrictions on
 a variable.

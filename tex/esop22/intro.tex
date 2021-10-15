@@ -1,12 +1,12 @@
-\begin{itemize}
-  \item Review standard linear algebra constructions in the posemiring setting.
-  \item Give a general definition of simple type systems with usage annotations
-    based on connectives from bunched logic and constructions from linear
-    algebra.
-  \item Give some novel examples of such systems.
-  \item Derive admissibility of renaming and substitution for all such systems.
-  \item Give a usage checker generic in syntax.
-\end{itemize}
+%\begin{itemize}
+%  \item Review standard linear algebra constructions in the posemiring setting.
+%  \item Give a general definition of simple type systems with usage annotations
+%    based on connectives from bunched logic and constructions from linear
+%    algebra.
+%  \item Give some novel examples of such systems.
+%  \item Derive admissibility of renaming and substitution for all such systems.
+%  \item Give a usage checker generic in syntax.
+%\end{itemize}
 
 In this paper, we concern the metatheory of a class of substructural type
 systems related to linear logic~\cite{girard87linear}.
@@ -58,3 +58,21 @@ For this system, they derive the strong result of cut elimination.
 Meanwhile, we leave syntax design to the user, and consequently can only
 guarantee substitution (which we can only get because of our commitment to
 natural deduction).
+
+This paper proceeds as follows.
+In \cref{sec:algebra}, we review and fix conventions pertaining to partially
+ordered semirings and vectors over them.
+In \cref{sec:bunched-rules}, we introduce an informal meta-syntax allowing us
+to state substructural typing rules succinctly and without explicit reference
+to contexts.
+In \cref{sec:syntax}, we mechanise that meta-syntax, giving a type of
+\emph{descriptions} of type systems, and interpreting those descriptions as
+types of intrinsically typed terms.
+In \cref{sec:env}, we discuss usage-aware environments: a generalisation of
+the structures used in simultaneous renaming and substitution proofs.
+We use environments in \cref{sec:semantics} to state an alternative
+elimination principle for terms, and give examples of such eliminations in
+\cref{sec:examples}.
+The examples are syntax-generic renaming and substitution, a specific
+denotational semantics, and a syntax-generic usage elaborator.
+Finally, we conclude and discuss future work in \cref{sec:conc}

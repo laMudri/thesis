@@ -49,12 +49,12 @@ argument to access the pre-existing variables.\todo{left and right
     \begin{prooftree}
       \hypo{p : \grR \leq \gr r\grP}
       \hypo{t : \grP\gamma \vdash A}
-      \infer2{\AgdaInductiveConstructor{!I}~p~t : \grR\gamma \vdash \oc_{\gr r} A}
+      \infer2{\AgdaInductiveConstructor{!I}~p~t : \grR\gamma \vdash \oc{\gr r} A}
     \end{prooftree}
     \qquad
     \begin{prooftree}
       \hypo{p : \grR \leq \grP + \grQ}
-      \hypo{s : \grP\gamma \vdash \oc_{\gr r} A}
+      \hypo{s : \grP\gamma \vdash \oc{\gr r} A}
       \infer[no rule]1{t : \grQ\gamma, \gr rA \vdash C}
       \infer2{\AgdaInductiveConstructor{!E}~p~s~t : \grR\gamma \vdash C}
     \end{prooftree}
