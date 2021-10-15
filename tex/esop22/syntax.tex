@@ -21,8 +21,12 @@ The rest of the constructors are descriptions for the first-order bunched
 connectives, and are interpreted directly as such.
 
 \ExecuteMetaData[\Syntaxtex]{Premises}
-\ExecuteMetaData[\Syntaxtex]{Rule}
-\ExecuteMetaData[\Syntaxtex]{System}
+\begin{minipage}[t]{0.5\textwidth}
+  \ExecuteMetaData[\Syntaxtex]{Rule}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+  \ExecuteMetaData[\Syntaxtex]{System}
+\end{minipage}
 
 \paragraph{\figref{fig:lr-comb} as a \AgdaRecord{System}.}
 
@@ -30,14 +34,18 @@ As an example, we transcribe the system defined in \cref{fig:lr-comb} into a
 description.
 We first give the set of types in a standard way (together with base type
 \AgdaInductiveConstructor{$\iota$}).
-
-\ExecuteMetaData[\PaperExamplestex]{Ty}
-
-%Then, we give the set of labels.
+Then, we give the set of labels.
 There is one label for each instantiation of a logical rule, but the labels
 contain no further information about subterms or restrictions on the context.
 
-\ExecuteMetaData[\PaperExamplestex]{qlR}
+\noindent
+\begin{minipage}[t]{0.5\textwidth}
+  \ExecuteMetaData[\PaperExamplestex]{Ty}
+  \ExecuteMetaData[\PaperExamplestex]{Side}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+  \ExecuteMetaData[\PaperExamplestex]{qlR}
+\end{minipage}
 
 Finally, we specify, for each label, the rest of the information about that
 rule {\color{red}(premises and conclusion)}.
@@ -159,12 +167,11 @@ For now, we just consider multiplicative disjunction $\parr$ (\emph{par}) and
 negation/duality, beside an uninterpreted base type.
 These are enough to exhibit classical behaviour.
 
+\noindent
 \begin{minipage}[t]{0.5\textwidth}
-  \centering
   \ExecuteMetaData[\MuMuTildetex]{Ty}
 \end{minipage}
 \begin{minipage}[t]{0.5\textwidth}
-  \centering
   \ExecuteMetaData[\MuMuTildetex]{Conc}
 \end{minipage}
 
