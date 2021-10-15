@@ -1,56 +1,5 @@
 \subsection{A prototypical type system}
 
-\begin{figure}
-  \begin{displaymath}
-    \begin{prooftree}[comb]
-      \hypo{\sqni A}
-      \infer1[Var]{\vdash A}
-    \end{prooftree}
-    \qquad
-    \begin{prooftree}[comb]
-      \hypo{\gr1A \vdash B}
-      \infer1[$\multimap$-I]{\vdash A \multimap B}
-    \end{prooftree}
-    \qquad
-    \begin{prooftree}[comb]
-      \hypo{\vdash A \multimap B}
-      \hypo{\sep}
-      \hypo{\vdash A}
-      \infer3[$\multimap$-E]{\vdash B}
-    \end{prooftree}
-  \end{displaymath}
-  \begin{displaymath}
-    \begin{prooftree}[comb]
-      \hypo{\vdash A_i}
-      \infer1[$\oplus$-I$_i$]{\vdash A_0 \oplus A_1}
-    \end{prooftree}
-    \qquad
-    \begin{prooftree}[comb]
-      \hypo{\vdash A \oplus B}
-      \hypo{\sep}
-      \hypo{(\gr1A \vdash C}
-      \hypo{\dottimes}
-      \hypo{\gr1B \vdash C)}
-      \infer5[$\oplus$-E]{\vdash C}
-    \end{prooftree}
-  \end{displaymath}
-  \begin{displaymath}
-    \begin{prooftree}[comb]
-      \hypo{\gr r \cdot \plr{\vdash A}}
-      \infer1[$\oc_{\gr r}$-I]{\vdash \oc_{\gr r} A}
-    \end{prooftree}
-    \qquad
-    \begin{prooftree}[comb]
-      \hypo{\vdash \oc_{\gr r} A}
-      \hypo{\sep}
-      \hypo{\gr rA \vdash C}
-      \infer3[$\oc_{\gr r}$-E]{\vdash C}
-    \end{prooftree}
-  \end{displaymath}
-  \caption{\cref{fig:lr} restated in terms of bunched combinators}
-  \label{fig:lr-comb}
-\end{figure}
-
 \subsection{Descriptions}
 
 We capture the form of rules exemplified previously\todo{Previously?} via

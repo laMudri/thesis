@@ -41,6 +41,7 @@
 \def\Snippetstex{../../agda/processed-latex/Snippets.tex}
 
 \newcommand{\figref}[1]{Figure \ref{#1}}
+\newcommand{\secref}[1]{Section \ref{#1}}
 
 \begin{document}
 %
@@ -103,74 +104,74 @@
 %
 %
 %
-\begin{enumerate}
-\item (Section 1)
-  \begin{enumerate}
-  \item   Motivate intrinsically typed syntax (in Agda)
-    \begin{enumerate}
-    \item Show the ``GADT'' for well scoped syntax
-    \item Show the well typed version
-    \end{enumerate}
-  \item Motivate adding posemiring annotations
-    \begin{enumerate}
-    \item Pointing to the existing work (Brunel et al., Ghica and Smith, Granule, previous of ours, Bernardy and Abel)
-    \item The fact that we can encode lots of other systems (DILL, PD, monotonicity, information flow, differential privacy)
-    \end{enumerate}
-  \end{enumerate}
-\item (Section 2) Background / notation fixing for:
-  \begin{enumerate}
-  \item Partially ordered semirings
-  \item Vectors
-  \item Linear maps and linear relations (as a generalisation of $P \leq Q\Psi$ which is easier to work with)
-  \end{enumerate}
-\item (Section 3) Bunched Typing Rules
-  \begin{enumerate}
-  \item Introduces $\lambda\mathcal{R}$
-  \item Rephrases the typing rules in terms of bunches (as well as implicit contexts)
-  \end{enumerate}
-\item (Section 4) Universe of Generic Usage-annotated syntax
-  \begin{enumerate}
-  \item Premises
-  \item Rules
-  \item Systems
-  \item Example(s)
-  \item Intepretation as Terms
-  \item Examples of Terms; using pattern synonyms (point out that proofs of usage accounting are painful)
-  \end{enumerate}
-\item (Section 5) Example Syntaxes
-  \begin{enumerate}
-  \item $\lambda\mathcal{R}$ (incl DILL, PD, differential privacy, monotonicity)
-  \item Inductive types with a well resourced fold
-  \item Bernardy-Abel style
-  \item First-order (circuitry)
-  \item LNL
-  \item $\lambda\mu\tilde{\mu}$
-  \end{enumerate}
-\item (Section 6) Environments
-  \begin{enumerate}
-  \item Motivate in terms of renaming and substitution for simple types (where it is just a function)
-  \item Motivate the general idea of using linear relations (i.e. transformations + weakening)
-    \begin{enumerate}
-    \item Key idea / slogan : environment = change of basis
-    \end{enumerate}
-  \item Definition of environments
-  \item Examples
-  \item Properties, incl. preservation of linear operations
-  \end{enumerate}
-\item (Section 7) Semantics, or How to apply an Environment to a Term
-  \begin{enumerate}
-  \item Renameability
-  \item $\mathsf{semantics}$
-  \end{enumerate}
-\item (Section 8) Examples of Semantics
-  \begin{enumerate}
-  \item Renaming and Substitution (term-valued)
-  \item Denotational Semantics (relational world-indexed (\texttt{Generic/Linear/Example/WRel.agda}))
-  \item Usage Elaborator
-  \end{enumerate}
-\item (Section 9) Related Work
-\item (Section 10) Conclusion
-\end{enumerate}
+% \begin{enumerate}
+% \item (Section 1)
+%   \begin{enumerate}
+%   \item   Motivate intrinsically typed syntax (in Agda)
+%     \begin{enumerate}
+%     \item Show the ``GADT'' for well scoped syntax
+%     \item Show the well typed version
+%     \end{enumerate}
+%   \item Motivate adding posemiring annotations
+%     \begin{enumerate}
+%     \item Pointing to the existing work (Brunel et al., Ghica and Smith, Granule, previous of ours, Bernardy and Abel)
+%     \item The fact that we can encode lots of other systems (DILL, PD, monotonicity, information flow, differential privacy)
+%     \end{enumerate}
+%   \end{enumerate}
+% \item (Section 2) Background / notation fixing for:
+%   \begin{enumerate}
+%   \item Partially ordered semirings
+%   \item Vectors
+%   \item Linear maps and linear relations (as a generalisation of $P \leq Q\Psi$ which is easier to work with)
+%   \end{enumerate}
+% \item (Section 3) Bunched Typing Rules
+%   \begin{enumerate}
+%   \item Introduces $\lambda\mathcal{R}$
+%   \item Rephrases the typing rules in terms of bunches (as well as implicit contexts)
+%   \end{enumerate}
+% \item (Section 4) Universe of Generic Usage-annotated syntax
+%   \begin{enumerate}
+%   \item Premises
+%   \item Rules
+%   \item Systems
+%   \item Example(s)
+%   \item Intepretation as Terms
+%   \item Examples of Terms; using pattern synonyms (point out that proofs of usage accounting are painful)
+%   \end{enumerate}
+% \item (Section 5) Example Syntaxes
+%   \begin{enumerate}
+%   \item $\lambda\mathcal{R}$ (incl DILL, PD, differential privacy, monotonicity)
+%   \item Inductive types with a well resourced fold
+%   \item Bernardy-Abel style
+%   \item First-order (circuitry)
+%   \item LNL
+%   \item $\lambda\mu\tilde{\mu}$
+%   \end{enumerate}
+% \item (Section 6) Environments
+%   \begin{enumerate}
+%   \item Motivate in terms of renaming and substitution for simple types (where it is just a function)
+%   \item Motivate the general idea of using linear relations (i.e. transformations + weakening)
+%     \begin{enumerate}
+%     \item Key idea / slogan : environment = change of basis
+%     \end{enumerate}
+%   \item Definition of environments
+%   \item Examples
+%   \item Properties, incl. preservation of linear operations
+%   \end{enumerate}
+% \item (Section 7) Semantics, or How to apply an Environment to a Term
+%   \begin{enumerate}
+%   \item Renameability
+%   \item $\mathsf{semantics}$
+%   \end{enumerate}
+% \item (Section 8) Examples of Semantics
+%   \begin{enumerate}
+%   \item Renaming and Substitution (term-valued)
+%   \item Denotational Semantics (relational world-indexed (\texttt{Generic/Linear/Example/WRel.agda}))
+%   \item Usage Elaborator
+%   \end{enumerate}
+% \item (Section 9) Related Work
+% \item (Section 10) Conclusion
+% \end{enumerate}
 
 \section{Introduction}\label{sec:intro}
 \input{intro}

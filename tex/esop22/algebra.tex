@@ -97,23 +97,6 @@ not $\Psi\plr{rQ} = r\plr{\Psi Q}$.
 In \cref{sec:env}, we use the matrix notation for convenience, while in the
 Agda code we see \ExecuteMetaData[\Snippetstex]{Psi-rel-P-Q}.
 
-\begin{figure}
-  \begin{align*}
-    \dot1\,\grR &\coloneqq 1 \\
-    (T \dottimes U)\,\grR &\coloneqq T\,\grR \times U\,\grR \\
-    (T \dotto U)\,\grR &\coloneqq T\,\grR \to U\,\grR \\
-    I^*\,\grR &\coloneqq \grR \leq \gr0 \\
-    (T \sep U)\,\grR &\coloneqq \Sigma \grP,\grQ.~\plr{\grR \leq \grP + \grQ}
-                       \times T\,\grP \times U\,\grQ \\
-    (\gr r \cdot T)\,\grR &\coloneqq \Sigma \grP.~\plr{\grR \leq \gr r\grP}
-                       \times T\,\grP \\
-    (T \wand U)\,\grP &\coloneqq \Pi \grQ,\grR.~\plr{\grR \leq \grP + \grQ}
-                       \to T\,\grQ \to U\,\grR
-  \end{align*}
-  \caption{The bunched connectives}
-  \label{fig:bunched}
-\end{figure}
-
 %Operations like renaming and substitution are essentially translations from one
 %context to another.
 %When faced with two vector spaces arranged in this way, a natural thing to
