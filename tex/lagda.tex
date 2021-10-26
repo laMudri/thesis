@@ -4,10 +4,13 @@
 \newunicodechar{ρ}{\ensuremath{\mathnormal\rho}}
 \newunicodechar{→}{\ensuremath{\mathnormal\to}}
 \newunicodechar{∀}{\ensuremath{\mathnormal\forall}}
+\newunicodechar{∃}{\ensuremath{\mathnormal\exists}}
 \newunicodechar{ι}{\ensuremath{\mathnormal\iota}}
 \newunicodechar{·}{\ensuremath{\mathnormal\cdot}}
 \newunicodechar{⊸}{\ensuremath{\mathnormal\multimap}}
 \newunicodechar{⊕}{\ensuremath{\mathnormal\oplus}}
+\newunicodechar{⊗}{\ensuremath{\mathnormal\otimes}}
+\newunicodechar{⅋}{\ensuremath{\mathnormal\parr}}
 \newunicodechar{─}{\textrm{---}}
 \newunicodechar{│}{\ensuremath{\mid}}
 \newunicodechar{ᶜ}{\ensuremath{\mathnormal{^c}}}
@@ -17,24 +20,30 @@
 \newunicodechar{ₘ}{\ensuremath{\mathnormal{_m}}}
 \newunicodechar{ₙ}{\ensuremath{\mathnormal{_n}}}
 \newunicodechar{ᵣ}{\ensuremath{\mathnormal{_r}}}
+\newunicodechar{ʳ}{\ensuremath{\mathnormal{^r}}}
 \newunicodechar{ˢ}{\ensuremath{\mathnormal{^s}}}
 \newunicodechar{ᵗ}{\ensuremath{\mathnormal{^t}}}
 \newunicodechar{ᵛ}{\ensuremath{\mathnormal{^v}}}
+\newunicodechar{ʷ}{\ensuremath{\mathnormal{^w}}}
 \newunicodechar{ᴹ}{\ensuremath{\mathnormal{^M}}}
+\newunicodechar{ᴿ}{\ensuremath{\mathnormal{^R}}}
 \newunicodechar{↙}{\ensuremath{\mathnormal\swarrow}}
 \newunicodechar{↘}{\ensuremath{\mathnormal\searrow}}
 \newunicodechar{⊢}{\ensuremath{\mathnormal\vdash}}
-\newunicodechar{∧}{\ensuremath{\mathnormal\wedge}}
+\newunicodechar{⊨}{\ensuremath{\mathnormal\vDash}}
+\newunicodechar{⇒}{\ensuremath{\mathnormal{\Longrightarrow}}}
 \newunicodechar{⟦}{\ensuremath{\mathnormal\llbracket}}
 \newunicodechar{⟧}{\ensuremath{\mathnormal\rrbracket}}
-\newunicodechar{∩}{\ensuremath{\mathnormal\cap}}
 \newunicodechar{✴}{\ensuremath{\mathnormal*}}
 \newunicodechar{ℓ}{\ensuremath{\mathnormal\ell}}
+\newunicodechar{α}{\ensuremath{\mathnormal\alpha}}
 \newunicodechar{Γ}{\ensuremath{\mathnormal\Gamma}}
 \newunicodechar{γ}{\ensuremath{\mathnormal\gamma}}
 \newunicodechar{Δ}{\ensuremath{\mathnormal\Delta}}
 \newunicodechar{δ}{\ensuremath{\mathnormal\delta}}
+\newunicodechar{ε}{\ensuremath{\mathnormal\epsilon}}
 \newunicodechar{Θ}{\ensuremath{\mathnormal\Theta}}
+\newunicodechar{μ}{\ensuremath{\mathnormal\mu}}
 \newunicodechar{Σ}{\ensuremath{\mathnormal\Sigma}}
 \newunicodechar{σ}{\ensuremath{\mathnormal\sigma}}
 \newunicodechar{∈}{\ensuremath{\mathnormal\in}}
@@ -43,10 +52,8 @@
 \newunicodechar{≡}{\ensuremath{\mathnormal\equiv}}
 \newunicodechar{⊤}{\ensuremath{\mathnormal\top}}
 \newunicodechar{⊥}{\ensuremath{\mathnormal\bot}}
-\newunicodechar{⇒}{\ensuremath{\mathnormal\Rightarrow}}
 \newunicodechar{▹}{\ensuremath{\mathnormal\triangleright}}
 \newunicodechar{₁}{\ensuremath{\mathnormal{_1}}}
-\newunicodechar{ℑ}{\ensuremath{\mathfrak I}}
 \newunicodechar{□}{\ensuremath{\mathnormal\Box}}
 \newunicodechar{○}{\ensuremath{\mathnormal\bigcirc}}
 \newunicodechar{𝓒}{\ensuremath{\C}}
@@ -55,9 +62,51 @@
 \newunicodechar{≤}{\ensuremath{\mathnormal\leq}}
 \newunicodechar{◇}{\ensuremath{\mathnormal\diamond}}
 \newunicodechar{ℕ}{\ensuremath{\mathbb N}}
+\newunicodechar{ℤ}{\ensuremath{\mathbb Z}}
 \newunicodechar{⁺}{\ensuremath{\mathnormal{^+}}}
+\newunicodechar{⁻}{\ensuremath{\mathnormal{^-}}}
+\newunicodechar{⊔}{\ensuremath{\mathnormal\sqcup}}
+\newunicodechar{⇒}{\ensuremath{\mathnormal\Rightarrow}}
+\newunicodechar{Ψ}{\ensuremath{\mathnormal\Psi}}
+\newunicodechar{⋯}{\ensuremath{\mathnormal\cdots}}
+\newunicodechar{∞}{\ensuremath{\mathnormal\infty}}
+\newunicodechar{≈}{\ensuremath{\mathnormal\approx}}
+\newunicodechar{⟨}{\ensuremath{\mathnormal\langle}}
+\newunicodechar{⟩}{\ensuremath{\mathnormal\rangle}}
+\newunicodechar{∣}{\ensuremath{\mathnormal\vert}}
+\newunicodechar{⋂}{\ensuremath{\mathnormal\bigcap}}
+\newunicodechar{∙}{\ensuremath{\mathnormal\bullet}}
+\newunicodechar{∼}{\ensuremath{\mathnormal\sim}}
 
-\def\prefix{../agda/latex}
+% Characters that are different from what appears in the source code
+%\newunicodechar{∋}{\ensuremath{\mathnormal\sqni}}
+\newunicodechar{ℑ}{\ensuremath{\mathnormal{I^*}}}
+\newunicodechar{⇛}{\ensuremath{\mathnormal{\Longrightarrow}}}
+\newunicodechar{∩}{\ensuremath{\mathnormal\dottimes}}
+\newunicodechar{∧}{\ensuremath{\mathnormal\dottimes}}
+\newunicodechar{⒈}{\ensuremath{\mathnormal{\dot1}}}
+\newunicodechar{⇴}{\ensuremath{\mathnormal\dotto}}
+\newunicodechar{⇥}{\ensuremath{\mathnormal\wand}}
+
+% Files
+\def\genericlr{../generic-lr/src/processed-latex}
+\def\Syntaxtex{\genericlr/Generic/Linear/Syntax.tex}
+\def\Interpretationtex{\genericlr/Generic/Linear/Syntax/Interpretation.tex}
+\def\Maptex{\genericlr/Generic/Linear/Syntax/Interpretation/Map.tex}
+\def\Termtex{\genericlr/Generic/Linear/Syntax/Term.tex}
+\def\Semanticstex{\genericlr/Generic/Linear/Semantics.tex}
+\def\Syntactictex{\genericlr/Generic/Linear/Semantics/Syntactic.tex}
+\def\Renamingtex{\genericlr/Generic/Linear/Renaming.tex}
+\def\PaperExamplestex{\genericlr/Generic/Linear/Example/PaperExamples.tex}
+\def\HeavyItex{\genericlr/Generic/Linear/Example/PaperExamples/HeavyI.tex}
+\def\UsageChecktex{\genericlr/Generic/Linear/Example/UsageCheck.tex}
+\def\WReltex{\genericlr/Generic/Linear/Example/WRel.tex}
+\def\Monotonicitytex{\genericlr/Generic/Linear/Example/WRel/Monotonicity.tex}
+\def\MuMuTildetex{\genericlr/Generic/Linear/Example/MuMuTilde.tex}
+\def\MuMuTildeTermtex{\genericlr/Generic/Linear/Example/MuMuTilde/Term.tex}
+\def\Snippetstex{../agda/processed-latex/Snippets.tex}
+
+\def\prefix{../agda/processed-latex}
 \CatchFileBetweenTags{\Ctx}{\prefix/SimpleKits.tex}{Ctx}
 \CatchFileBetweenTags{\Var}{\prefix/SimpleKits.tex}{Var}
 \CatchFileBetweenTags{\Term}{\prefix/SimpleKits.tex}{Term}
@@ -86,7 +135,7 @@
 \CatchFileBetweenTags{\GA}{\prefix/SimpleKits.tex}{GA}
 \CatchFileBetweenTags{\DA}{\prefix/SimpleKits.tex}{DA}
 
-\def\prefix{../generic-lr/src/latex}
+\def\prefix{../generic-lr/src/processed-latex}
 
 \CatchFileBetweenTags{\exItypes}%
 {\prefix/Generic/Linear/Example/PaperExamples.tex}{exItypes}

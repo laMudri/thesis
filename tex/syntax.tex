@@ -1,0 +1,257 @@
+We take the insights of the previous section and use them to build a
+generic framework for posemiring-annotated substructural systems in
+Agda. We will first show \emph{descriptions} of systems, which are
+comprised of rules that have premises combined using the bunched
+combinators. We then show how to construct the Agda data type of
+intrinsically well scoped, typed, and resourced terms for any given
+system of our framework. We use the prototypical system from
+\cref{fig:lr-comb} as a running example. \cref{sec:other-syntaxes}
+presents further examples that our framework can express.
+
+We now start to use Agda notation for record and data type
+declarations, to emphasise that our framework has been implemented.
+
+\subsection{Descriptions of Systems}
+
+% We capture the form of rules exemplified previously\todo{Previously?} via
+% \emph{descriptions} of rules.
+% The key to making these descriptions work is that they only allow syntactic
+% forms that preserve environments.
+% These forms are: absence and multiplicity of subterms with the same usage
+% annotations, absence and multiplicity of subterms with summed usage annotations,
+% scaling of a subterm, and variable binding.\todo{Switching to Agda}
+
+\paragraph{\AgdaDatatype{Premises}, \AgdaRecord{Rule}s, and \AgdaRecord{System}s.}
+
+A type \AgdaRecord{System} is made up of multiple \AgdaRecord{Rule}s.
+Each \AgdaRecord{Rule} comprises a tree of \AgdaDatatype{Premises} and
+a type of conclusion. We assume that there is a
+$\AgdaBound{Ty} : \AgdaPrimitiveType{Set}$ of types for the system in
+scope.
+
+The \AgdaDatatype{Premise} data type describes premises of rules,
+using the bunched combinators from the previous section. A single
+premise is introduced by the
+\AgdaInductiveConstructor{$\langle$\_`$\vdash$\_$\rangle$}
+constructor.  This allows binding of additional variables
+\AgdaBound{$\Delta$} (with specified types and usage annotations) and
+the specification of a conclusion type \AgdaBound{A} for this premise.
+The remaining constructors are descriptions for the first-order
+bunched connectives, and will be interpreted directly as such, below.
+
+\ExecuteMetaData[\Syntaxtex]{Premises}
+
+A \AgdaRecord{Rule} is a pair of some \AgdaDatatype{Premises} and a
+conclusion. We use an infix arrow as a suggestive notation for rules.
+
+\ExecuteMetaData[\Syntaxtex]{Rule}
+
+Finally, a \AgdaRecord{System} consists of a set of rule labels (i.e.,
+constructor names), and for each label a decsription of the
+corresponding rule. We use $\rhd$ as infix notation for systems to
+associate the label set with the rules.
+
+\ExecuteMetaData[\Syntaxtex]{System}
+
+\paragraph{\cref{fig:lr-comb} as a \AgdaRecord{System}.}
+
+As an example, we transcribe the system defined in
+\cref{fig:lr-comb} into a description.  We give the set of types of
+this system as a data type \AgdaDatatype{Ty} (together with a base
+type \AgdaInductiveConstructor{$\iota$}). We assume that there is a
+posemiring \AgdaInductiveConstructor{Ann} in scope for the
+annotations.There is one label for each instantiation of a logical
+rule, but the labels contain no further information about subterms or
+restrictions on the context. This will be provided when we associate
+labels with \AgdaRecord{Rule}s in a \AgdaRecord{System}.
+
+\noindent
+\begin{minipage}[t]{0.5\textwidth}
+  \ExecuteMetaData[\PaperExamplestex]{Ty}
+  \ExecuteMetaData[\PaperExamplestex]{Side}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+  \ExecuteMetaData[\PaperExamplestex]{qlR}
+\end{minipage}
+
+To build a system, we associate with each label a rule:
+
+\ExecuteMetaData[\PaperExamplestex]{lR}
+
+Compared to \cref{fig:lr-comb}, modulo the Agda notation, we can see
+that the fundamental structure has been preserved: the rules match
+one-to-one, and the bunched premises are the same. A major difference
+is that we do not include a counterpart to the
+\AgdaInductiveConstructor{var} rule in a
+\AgdaRecord{System}. Variables are common to all the systems
+representable in our framework.
+
+\paragraph{Terms of a \AgdaRecord{System}.}
+
+The next thing we want to do is to build terms in the described type system.
+The following definitions are useful for talking about types indexed over
+contexts, judgement forms, and judgement forms admitting newly bound variables,
+respectively.
+
+\ExecuteMetaData[\Syntaxtex]{OpenFam}
+
+To specify the meaning of descriptions, we assume some \AgdaBound{X} : \AgdaFunction{ExtOpenFam},
+% \ExecuteMetaData[\Interpretationtex]{X},
+over which we form one layer of syntax, using the function
+\AgdaFunction{$\llbracket$\_$\rrbracket$p} that interprets
+\AgdaDatatype{Premises} defined below.  The first argument to
+\AgdaBound{X} is the new variables bound by this layer of syntax, as
+exemplified in the first clause of
+\AgdaFunction{$\llbracket$\_$\rrbracket$p}.  The second argument is
+the context containing the variables being carried over from the
+previous layer.  Notice that this is not, in general, the same as the
+context from the previous layer, because the usage annotations may
+have been changed by connectives like
+\AgdaInductiveConstructor{\_`$*$\_} and
+\AgdaInductiveConstructor{\_`$\cdot$\_}.  The third argument is the
+type of subterm required.
+
+With the first clause of \AgdaFunction{$\llbracket$\_$\rrbracket$p} explained,
+the rest are simply interpretations of premises into bunched combinators.
+
+\ExecuteMetaData[\Interpretationtex]{semp}
+
+The interpretation of a \AgdaRecord{Rule} checks that the rule targets
+the desired type and then interprets the rule's premises \AgdaBound{ps}.
+Notice that the interpretation of the premises is independent of the conclusion
+of the rule, which accounts for the difference in type between
+\AgdaFunction{$\llbracket$\_$\rrbracket$p} and
+\AgdaFunction{$\llbracket$\_$\rrbracket$r}.
+
+\ExecuteMetaData[\Interpretationtex]{semr}
+
+The interpretation of a \AgdaRecord{System} is to choose a rule label
+\AgdaBound{l} from \AgdaBound{L} and interpret the corresponding rule
+\AgdaBound{rs}\AgdaSpace{}\AgdaBound{l} in the same context and for the same
+conclusion.
+
+\ExecuteMetaData[\Interpretationtex]{sems}
+
+The most obvious way to make such an \AgdaBound{X} is to use some existing
+\AgdaFunction{OpenFam} on an extended context.
+We defined \AgdaFunction{Scope} to do this: take the new variables
+\AgdaBound{$\Delta$}, concatenate them onto the existing context
+\AgdaBound{$\Gamma$}, and pass the extended context onto the judgement
+\AgdaBound{T}.
+
+\ExecuteMetaData[\Syntaxtex]{Scope}
+
+%{\color{red}(Forward ref: for now, we could have inlined \texttt{Scope}.)}
+
+We use \AgdaFunction{Scope} to deal with new variables in syntax.
+Terms resemble the free monad over a layer-of-syntax functor, though
+that picture is complicated by variable binding.  A term is either a
+variable or a use of a logical rule together with terms for each of
+the required subterms. The \AgdaFunction{Size} argument is where we
+use sized types to convince Agda that this type is strictly positive.
+
+\ExecuteMetaData[\Termtex]{Term}
+
+Terms defined like this are still quite difficult to write, mainly because of
+frequently changing usage contexts and the need for proofs that they all match
+up.
+We will see how to automate these proofs in \cref{sec:usage-elaborator}.
+
+%Here is an example term, using the \AgdaFunction{$\lambda$R} system.
+%First, for ease of writing, we introduce pattern synonyms for each of the
+%typing rules we use.
+
+%\ExecuteMetaData[\PaperExamplestex]{patterns}
+
+%Our example term is a function that flips a tagged union wrapped in an
+%arbitrarily annotated \emph{bang}.
+%Much of the effort in writing such a term goes into writing the various
+%relatedness proofs between usage contexts --- observing, for example, that two
+%usage contexts sum together to make a third, or that a usage context used for
+%a variable is a basis vector.
+%We give a method of automating these proofs in \cref{sec:usage-elaborator}.
+%\todo{To be clear, we don't actually write this.}
+
+%\ExecuteMetaData[\HeavyItex]{lR-term}
+
+% A layer of syntax supports the following functorial action.
+
+% \ExecuteMetaData[\Maptex]{map-s-type}
+
+\subsection{Other syntaxes and syntactic forms}\label{sec:other-syntaxes}
+
+\paragraph{The system $\mu\tilde\mu$.}
+We can encode a usage-annotated version of System $L$/the
+$\mu\tilde\mu$-calculus~\cite{CH00} --- a syntax for classical logic --- in
+such a way that contexts capture the undistinguished parts of the sequent.
+As such, the generic substitution lemma we get in \cref{sec:kits} is the form
+of substitution required in standard $\mu\tilde\mu$-calculus metatheory.
+Though the $\mu\tilde\mu$-calculus is originally described as a sequent
+calculus~\cite{CH00}, we use the techniques of
+\citet[p.~12]{herbelin-hab} and \citet{LC06} to present it as a natural
+deduction system, thus giving a notion of \emph{variable} to the system.
+
+Unlike the single judgement form of \name{} and standard simply typed
+$\lambda$-calculi, the $\mu\tilde\mu$-calculus has three judgement forms:
+terms, coterms, and commands.
+Read logically, terms and coterms are seen to, respectively, prove and refute
+propositions (types), while commands exhibit contradictions.
+This means that the abstract \AgdaBound{Ty} in the generic framework is
+instantiated to \AgdaDatatype{Conc} (for \emph{conclusion}) as below, with
+\AgdaDatatype{Ty} not being exposed directly to the generic framework.
+For now, we just consider multiplicative disjunction $\parr$ (\emph{par}) and
+negation/duality, beside an uninterpreted base type.
+These are enough to exhibit classical behaviour.
+
+\noindent
+\begin{minipage}[t]{0.5\textwidth}
+  \ExecuteMetaData[\MuMuTildetex]{Ty}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+  \ExecuteMetaData[\MuMuTildetex]{Conc}
+\end{minipage}
+
+With \AgdaBound{Ty} instantiated as \AgdaDatatype{Conc}, all terms are assigned
+\AgdaDatatype{Conc} type, as are all the variables.
+No variables are given \AgdaInductiveConstructor{com} type, similar to how in
+the bidirectional typing syntax of \citet[p.~25]{AACMM20}, no variables are
+given \AgdaInductiveConstructor{Check} type.
+How to observe this invariant is covered in the latter paper, so we will not
+repeat it here (having not yet seen how to write traverals on terms).
+
+The syntax comprises a \emph{cut} between a term and a coterm of the same type,
+the eponymous $\mu$ and $\tilde\mu$ constructs for proof by contradiction, and
+then term and coterm (introduction and elimination) forms for negation and
+\emph{par}.
+
+\ExecuteMetaData[\MuMuTildetex]{MMT}
+
+%With a collection of pattern synonyms and the machinery from
+%\cref{sec:usage-elaborator}, we can write an example term: a function which
+%flips the disjuncts of a \emph{par}.
+
+%\ExecuteMetaData[\MuMuTildeTermtex]{patterns}
+%\ExecuteMetaData[\MuMuTildeTermtex]{myComm}
+
+\paragraph{Duplicability}
+There is one more bunched combinator we have experimented with adding to the
+framework:
+
+\[
+  \plr{\Box T}\,\grR \coloneqq \Sigma\grRprime.~\plr{\grRprime \leq \grR}
+  \times \plr{\grRprime \leq \gr0}
+  \times \plr{\grRprime \leq \grRprime + \grRprime}
+  \times T\,\grRprime
+\]
+
+The idea of $\plr{\Box T}\,\grR$ is to assert that $\grR$, or some refinement
+of it, can be both discarded and duplicated indefinitely, and in the
+refinement we have a $T$.
+We use this combinator to introduce subterms that are used an unknown number of
+times, for example the continuations of the eliminator of an inductive type,
+or other fixed points.
+We can also use it in linear/non-linear style systems~\cite{Benton94} to make
+sure linear variables are not available in the intuitionistic fragment.
+
+Adding the $\Box$ combinator is the only thing we have found that requires our
+linear maps be functional rather than merely relational.
