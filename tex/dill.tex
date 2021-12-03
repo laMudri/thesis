@@ -1,0 +1,34 @@
+Dual intuitionistic linear logic is a syntax for intuitionistic linear logic
+introduced by \citep{Barber1997}.
+Its key feature is sequents with \emph{dual contexts} --- splitting assumptions
+into \emph{linear} assumptions and \emph{intuitionistic} assumptions.
+The idea of the intuitionistic assumptions is that they will behave like the
+variables of simply typed $\lambda$-calculus, in contrast to the linear
+assumptions, which behave as in the linear calculus we saw in \autoref{sec:ill}.
+For example, an intuitionistic assumption of $A$ in an instance of the
+$\otimes$-introduction rule is automatically copied to both premises.
+In contrast, an assumption of $\oc A$ in the purely linear calculus must first
+be contracted into two assumptions, with one going to each premise.
+
+The high-level purpose of intuitionistic assumptions is to universally
+characterise the connective $\oc$.
+That is to say, the existence of intuitionistic assumptions, differentiated from
+linear assumptions, gives rise to $\oc$ in the same way that the existence of
+multiple (linear) assumptions gives rise to $\otimes$.
+We informally express the latter as ``$\otimes$ is the internalisation of
+context concatenation (comma)'', and we can similarly express the former as
+``$\oc$ is the internalisation of intuitionistic assumptions''.
+
+%\begin{align*}
+%  \begin{proof}
+%    \hypo{\Gamma_0 \vdash \oc A}
+%    \hypo{\Gamma_1, \mathbf{int}~A \vdash C}
+%    \infer2{\Gamma_0 \cupdot \Gamma_1 \vdash C}
+%  \end{proof}
+%  &
+%  \begin{proof}
+%    \hypo{\Gamma_0 \vdash A \otimes B}
+%    \hypo{\Gamma_1, \mathbf{lin}~A, \mathbf{lin}~B \vdash C}
+%    \infer2{\Gamma_0 \cupdot \Gamma_1 \vdash C}
+%  \end{proof}
+%\end{align*}
