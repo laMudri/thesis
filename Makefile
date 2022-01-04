@@ -8,7 +8,7 @@ lagda2tex-names = $(subst .lagda.tex,.tex,$(subst $(1)/,$(1)/latex/,$(2)))
 lagda-outputs = $(call lagda2tex-names,agda,$(agda-lagda-modules)) $(call lagda2tex-names,generic-lr/src,$(generic-lr-lagda-modules))
 lagda-processed-outputs = $(subst /latex/,/processed-latex/,$(lagda-outputs))
 
-.PHONY: thesis cpp lagda
+.PHONY: thesis cpp esop lagda
 
 tex/thesis.pdf: tex/*.tex tex/quantitative.bib lagda
 	cd tex; latexmk -pdf -halt-on-error thesis.tex
@@ -17,6 +17,10 @@ thesis: tex/thesis.pdf
 tex/cpp21/quant-framework.pdf: tex/cpp21/*.tex tex/macros.tex tex/quantitative.bib lagda
 	cd tex/cpp21; latexmk -pdf -halt-on-error quant-framework.tex
 cpp: tex/cpp21/quant-framework.pdf
+
+tex/esop22/quant-framework.pdf: tex/esop22/*.tex tex/macros.tex tex/quantitative.bib lagda
+	cd tex/esop22; latexmk -pdf -halt-on-error quant-framework.tex
+esop: tex/esop22/quant-framework.pdf
 
 define lagda2tex
 $(1)/processed-latex/%.tex: $(1)/latex/%.tex

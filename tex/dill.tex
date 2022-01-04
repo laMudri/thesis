@@ -1,5 +1,5 @@
 Dual intuitionistic linear logic is a syntax for intuitionistic linear logic
-introduced by \citep{Barber1997}.
+introduced by \citet{Barber1996}.
 Its key feature is sequents with \emph{dual contexts} --- splitting assumptions
 into \emph{linear} assumptions and \emph{intuitionistic} assumptions.
 The idea of the intuitionistic assumptions is that they will behave like the
@@ -19,16 +19,47 @@ We informally express the latter as ``$\otimes$ is the internalisation of
 context concatenation (comma)'', and we can similarly express the former as
 ``$\oc$ is the internalisation of intuitionistic assumptions''.
 
-%\begin{align*}
-%  \begin{proof}
-%    \hypo{\Gamma_0 \vdash \oc A}
-%    \hypo{\Gamma_1, \mathbf{int}~A \vdash C}
-%    \infer2{\Gamma_0 \cupdot \Gamma_1 \vdash C}
-%  \end{proof}
-%  &
-%  \begin{proof}
-%    \hypo{\Gamma_0 \vdash A \otimes B}
-%    \hypo{\Gamma_1, \mathbf{lin}~A, \mathbf{lin}~B \vdash C}
-%    \infer2{\Gamma_0 \cupdot \Gamma_1 \vdash C}
-%  \end{proof}
-%\end{align*}
+The rules witnessing the characterisations of $\otimes$ and $\oc$ are listed
+below.
+In particular, these are elimination rules, as found in the intro-elim system
+given by \citeauthor{Barber1996}.
+I take $\uplus$ to be a partial function, with $\Gamma_0 \uplus \Gamma_1$
+defined only when $\Gamma_0$ and $\Gamma_1$ have the same intuitionistic
+entries (these being the same intuitionistic entries as in
+$\Gamma_0 \uplus \Gamma_1$).
+Linear assumptions are accumulated by $\uplus$.
+The use of $\uplus$ in these two rules separates the eliminand from the
+eliminator/continuation, rather than having anything particular to do with
+the connectives $\otimes$ and $\oc$.
+
+\[
+  \begin{matrix}
+    \begin{prooftree}
+      \hypo{\Gamma_0 \vdash A \otimes B}
+      \hypo{\Gamma_1, \mathbf{lin}\,A, \mathbf{lin}\,B \vdash C}
+      \infer2[$\otimes$-E]{\Gamma_0 \uplus \Gamma_1 \vdash C}
+    \end{prooftree}
+    &&
+    \begin{prooftree}
+      \hypo{\Gamma_0 \vdash \oc A}
+      \hypo{\Gamma_1, \mathbf{int}\,A \vdash C}
+      \infer2[$\oc$-E]{\Gamma_0 \uplus \Gamma_1 \vdash C}
+    \end{prooftree}
+  \end{matrix}
+\]
+
+The introduction rule for $\oc$ follows the pattern of Promotion, allowing us
+to conclude $\oc A$ from $A$ only when that proof of $A$ does not use linear
+assumptions.
+Now that the distinction between linear and intuitionistic assumptions is part
+of the structure of the \emph{sequent}, we do not check the \emph{types} of any
+assumptions in this rule.
+I write $\mathbf{int}\,\Gamma$, where $\Gamma = A_1, \ldots, A_n$, for the
+context $\mathbf{int}\,A_1, \ldots, \mathbf{int}\,A_n$.
+
+\[
+  \begin{prooftree}
+    \hypo{\mathbf{int}\,\Gamma \vdash A}
+    \infer1[$\oc$-I]{\mathbf{int}\,\Gamma \vdash \oc A}
+  \end{prooftree}
+\]
