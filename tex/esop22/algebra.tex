@@ -2,29 +2,16 @@ The basic algebraic structure we concern ourselves with is \emph{partially
 ordered semirings}, or \emph{posemirings} for short.
 A posemiring is a (not necessarily commutative) semiring on a partially ordered
 set, where both operations are monotonic.
+As in many similar formalisms, posemiring elements represent usage restrictions,
+with addition collecting restrictions from multiple uses, multiplication
+handling usage under a modality, and the order giving subsumption of
+restrictions, comparable to subtyping.
 
 \begin{definition}
   A \emph{posemiring} is a tuple $(\Ann, \leq, 0, +, 1, *)$ such that
   $(\Ann, \leq)$ is a partially ordered set, $(\Ann, 0, +)$ is a commutative
   monoid, $(\Ann, 1, *)$ is a monoid, $+$ and $*$ are monotonic, and $*$
   distributes over $0$ and $+$ in the usual way on both sides.
-  %the
-  %following laws hold (universally quantified in all the variables).
-  %\begin{itemize}
-  %  \item $x \leq x' \to y \leq y' \to x + y \leq x' + y'$
-  %  \item $x \leq x' \to y \leq y' \to x * y \leq x' * y'$
-  %  \item $0 + x = x
-  %    \land x + 0 = x
-  %    \land (x + y) + z = x + (y + z)
-  %    \land x + y = y + x$
-  %  \item $1 * x = x
-  %    \land x * 1 = x
-  %    \land (x * y) * z = x * (y * z)$
-  %  \item $0 * x = 0
-  %    \land (x + y) * z = x * z + y * z$
-  %  \item $x * 0 = 0
-  %    \land x * (y + z) = x * y + x * z$
-  %\end{itemize}
 \end{definition}
 
 \begin{example}[Zero-one-many]\label{thm:linearity}
@@ -60,6 +47,7 @@ restrictions of a whole context's worth of variables.
 From the posemiring operations of $\Ann$, we derive the standard vector
 operations of zero, addition, and multiplication by a scalar.
 We can also form the standard basis vectors at any given dimension.
+From the order on $\Ann$, we get a pointwise order on vectors.
 
 Vectors of a given length form a \emph{module} over the posemiring $\Ann$,
 analogously to how vectors over a field form a vector space.
@@ -69,15 +57,15 @@ analogously to how vectors over a field form a vector space.
   partially ordered commutative monoid $(M, 0_M, +_M)$ with, for each
   $r \in \Ann$, a pomonoid morphism $r \cdot \plr{-} : M \to M$, such that the
   collection of these respects the posemiring structure on $r$.
-  Specifically:
+  Specifically, for all instantiations of the variables:
   \begin{itemize}
-    \item $r \leq r' \to u \leq u' \to r \cdot u \leq r' \cdot u'$
-    \item $r \cdot 0_M = 0_M
-      \land r \cdot \plr{u +_M v} = r \cdot u +_M r \cdot v$
-    \item $0 \cdot u = 0_M
-      \land \plr{r + s} \cdot u = r \cdot u +_M s \cdot u$
-    \item $1 \cdot u = u
-      \land \plr{r * s} \cdot u = r \cdot \plr{s \cdot u}$
+      \item If $r \leq r'$ and $u \leq u'$, then $r \cdot u \leq r' \cdot u'$.
+    \item $r \cdot 0_M = 0_M$ and
+      $r \cdot \plr{u +_M v} = r \cdot u +_M r \cdot v$.
+    \item $0 \cdot u = 0_M$ and
+      $\plr{r + s} \cdot u = r \cdot u +_M s \cdot u$.
+    \item $1 \cdot u = u$ and
+      $\plr{r * s} \cdot u = r \cdot \plr{s \cdot u}$.
   \end{itemize}
 \end{definition}
 
@@ -103,9 +91,10 @@ pattern matching.
 \begin{definition}
   A \emph{(relational) linear map} $\Psi$ between modules $M$ and $N$ over a
   posemiring $\Ann$ is a relation $\sim$ on the underlying sets of $M$ and $N$
-  satisfying the following laws.
+  satisfying the following laws (with $\to$ standing for implication and
+  quantifiers binding most loosely).
   \begin{itemize}
-    \item $u \leq u' \to v' \leq v \to u \sim v \to u' \sim v'$
+    \item $\forall u,u',v,v'.~u \leq u' \to v' \leq v \to u \sim v \to u' \sim v'$
     \item $\forall v.~\plr{\exists u.~u \leq 0 \land u \sim v} \to v \leq 0$
     \item $\forall u_0,u_1,v.~\plr{\exists u.~u \leq u_0 + u_1 \land u \sim v}
       \to {}$\\$\plr{\exists v_0,v_1.~u_0 \sim v_0

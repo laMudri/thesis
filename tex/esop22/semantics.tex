@@ -54,15 +54,21 @@ $\C$-computation.
 
 \ExecuteMetaData[\Semanticstex]{Kripke}
 
+Just as $\dotto$ is the internal hom for $\dottimes$, we introduce $\wand$ as
+the internal hom for $\sep$, with \AgdaFunction{$\wand^c$} acting on open types
+analogously to \AgdaFunction{$\sep^c$}.
+It is given by $\plr{T \wand U}\,\grP \coloneqq
+\Pi\grQ,\grR.~\plr{\grR \leq \grP + \grQ} \to T\,\grQ \to U\,\grR$.
+
+For understanding the meaning of the type family, \AgdaFunction{Wrap} can be
+ignored.
 \AgdaFunction{Wrap} is a device that turns any type family into an equivalent
 type family that is judgementally injective in its indices.
 It turns the type family into a parametrised record with a single field
 \AgdaField{get} whose type is the type in the body of the $\lambda$-abstraction.
-For understanding the meaning of the type family, \AgdaFunction{Wrap} can be
-ignored.
 If $\Delta$ is of the form $\gr{s_1}B_1, \ldots, \gr{s_n}B_n$, then
 \ExecuteMetaData[\Snippetstex]{KripkeVCDGA}\ is equivalent to
-\ExecuteMetaData[\Snippetstex]{KripkeExpanded}.
+\ExecuteMetaData[\Snippetstex]{KripkeExpanded}\ by Currying.
 That is to say, the Kripke function is expecting a value for each newly bound
 variable, at the multiplicity of its annotation, together with the resources
 supporting each of those values.
@@ -70,6 +76,18 @@ The need for \AgdaFunction{$\Box^r$} is exemplified by the following construct
 \AgdaFunction{reify}, where we weaken \AgdaBound{$\Gamma$} by a $\gr0$ed-out
 version of \AgdaBound{$\Delta$}.
 The \AgdaBound{$\Delta$} then gets filled in by the $\V$-values.
+
+At this point we introduce a minor generalisation to \AgdaFunction{OpenFam}
+and \AgdaFunction{ExtOpenFam}:
+\AgdaBound{I}\AgdaSpace{}\AgdaFunction{---OpenFam} and
+\AgdaBound{I}\AgdaSpace{}\AgdaFunction{---ExtOpenFam}.
+We obtain the definition of \AgdaBound{I}\AgdaSpace{}\AgdaFunction{---OpenFam}
+by replacing the textual occurrence of \AgdaBound{Ty} by the parameter
+\AgdaBound{I}.
+This means that \AgdaBound{A} in the definition of \AgdaFunction{Kripke} has
+type \AgdaBound{I}, rather than specifically \AgdaBound{Ty}.
+We use this generality later in \AgdaFunction{extend}, setting \AgdaBound{I}
+to \AgdaDatatype{Ctx}.
 
 When \AgdaBound{$\V$} supports identity environments (as per \cref{thm:env-id}),
 we can coerce a \AgdaFunction{Kripke} function into just a

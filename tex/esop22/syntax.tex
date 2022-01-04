@@ -113,6 +113,12 @@ type of subterm required.
 
 With the first clause of \AgdaFunction{$\llbracket$\_$\rrbracket$p} explained,
 the rest are simply interpretations of premises into bunched combinators.
+The superscript \AgdaFunction{$^c$} on the bunched connectives denotes that
+they have been lifted from predicates on usage vectors to predicates on
+contexts, with the type component of the context shared throughout.
+Additive connectives \AgdaFunction{$\dot1$} and \AgdaFunction{$\dottimes$} are
+already polymorphic (not relying on anything specific about usage vectors), so
+do not need a \AgdaFunction{$^c$} variant.
 
 \ExecuteMetaData[\Interpretationtex]{semp}
 
@@ -148,9 +154,25 @@ Terms resemble the free monad over a layer-of-syntax functor, though
 that picture is complicated by variable binding.  A term is either a
 variable or a use of a logical rule together with terms for each of
 the required subterms. The \AgdaFunction{Size} argument is where we
-use sized types to convince Agda that this type is strictly positive.
+use sized types to record that subterms are smaller than the
+surrounding term.
 
 \ExecuteMetaData[\Termtex]{Term}
+
+This definition uses \AgdaFunction{$\dotto$}, which, analogously to
+\AgdaFunction{$\dottimes$}, is an index-preserving version of the function
+space.
+We take \AgdaFunction{$\dotto$} to handle $n$ many indices --- in this
+case two (the context and the type).
+Informally,
+\AgdaFunction{$\forall[$}\AgdaSpace{}\AgdaBound{T}\AgdaSpace{}\AgdaFunction{]}
+stands for
+\AgdaSymbol{$\forall$}\AgdaSpace{}\AgdaSymbol{\{}%
+\AgdaBound{x$_1$}\AgdaSpace{}\AgdaSymbol{$\ldots$}\AgdaSpace{}\AgdaBound{x$_n$}%
+\AgdaSymbol{\}}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaBound{T}%
+\AgdaSpace{}%
+\AgdaBound{x$_1$}\AgdaSpace{}\AgdaSymbol{$\ldots$}\AgdaSpace{}\AgdaBound{x$_n$},
+where \AgdaBound{T} is a type family with $n$ many indices.
 
 Terms defined like this are still quite difficult to write, mainly because of
 frequently changing usage contexts and the need for proofs that they all match

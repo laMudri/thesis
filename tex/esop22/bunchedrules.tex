@@ -1,14 +1,14 @@
 We now let $\Ann$ be an arbitrary posemiring. Our framework represents
-well typed and $\Ann$-resourced terms \emph{intrinsically}. Intrinsic
-typing means that we represent well typed and $\Ann$-resourced terms
+well typed and $\Ann$-usaged terms \emph{intrinsically}. Intrinsic
+typing means that we represent well typed and $\Ann$-usaged terms
 (and \emph{only} those) as inhabitants of an inductive family
-$\grR\gamma \vdash A$ indexed by resource contexts $\grR$, type
-contexts $\gamma$, and types $A$. We represent typing contexts as
-trees with types at the leaves, and resource contexts as functions
+$\grR\gamma \vdash A$ indexed by usage context $\grR$, type
+context $\gamma$, and type $A$. We represent typing contexts as
+trees with types at the leaves, and usage contexts as functions
 that assign elements of $\Ann$ to members of the context. Using trees
 instead of lists for typing contexts has the advantage that extension
 of a context by multiple variables does not lead to complex counting
-argument to access the pre-existing variables.\todo{left and right
+arguments to access the pre-existing variables.\todo{left and right
   constructors for paths}
 
 \begin{figure}
@@ -59,7 +59,7 @@ argument to access the pre-existing variables.\todo{left and right
       \infer2{\AgdaInductiveConstructor{!E}~p~s~t : \grR\gamma \vdash C}
     \end{prooftree}
   \end{displaymath}
-  \caption{A prototypical posemiring-resourced system}\label{fig:lr}
+  \caption{A prototypical posemiring-usaged system}\label{fig:lr}
 \end{figure}
 
 \figref{fig:lr} presents a prototypical example of a system that our
@@ -127,20 +127,23 @@ substructural systems:
 
 These observations indicate a way to regularise and streamline the
 presentation of this system. Instead of treating each premise and the
-conclusion as having potentially unrelated typing and resource
-conflicts, we make use of combinators for combining premises that will
-relate their resource and typing contexts to the conclusion by
-construction. To handle binders, which introduce variables, we make
+conclusion as having potentially unrelated typing and usage
+constraints, we make use of combinators for combining premises that will
+relate their usage and typing contexts to the conclusion by
+construction.
+Similar combinators have appeared for the same purpose in the work of
+\citet{RPKV20}, including the internal homs we introduce later.
+To handle binders, which introduce variables, we make
 use of a combinator that adds a variable with a given $Ann$-annotation
 to an ambient context, without having to explicitly mention the parts
 of the context that have not changed. This technique is already
 present in some paper presentations of type systems, and is used as a
-simplifying technique by Allais et al.~\cite{AACMM20}. To manage how
-resources are distributed between premises, we make use the separating
-($*$) and sharing ($\dot{\times}$) conjunction connectives from
-Bunched Implications \cite{oHP99}, instantiated for typing rules. To
-handle the \AgdaInductiveConstructor{!I} rule, we will need a
-\emph{scaling} modality, $\gr r \cdot -$. The semantics of the bunched
+simplifying technique by Allais et al.~\cite{AACMM20}.
+To manage how usage annotations are distributed between premises, we use the
+separating ($*$) and sharing ($\dot{\times}$) conjunction connectives from
+Bunched Implications~\cite{oHP99}.
+To handle the \AgdaInductiveConstructor{!I} rule, we will need a
+\emph{scaling} modality, $\gr r \cdot {-}$. The semantics of the bunched
 connectives we will use are:
   \begin{align*}
     \dot1\,\grR &\coloneqq 1 \\
@@ -216,7 +219,7 @@ in the rules \AgdaInductiveConstructor{⊸I},
 \AgdaInductiveConstructor{⊕E} and \AgdaInductiveConstructor{!E}. Thus,
 in the \AgdaInductiveConstructor{var} rule, the context is completely
 supressed. The \AgdaInductiveConstructor{⊸I} just has to state that a
-new variable with resource annotation $\gr1$ is added to the
+new variable with usage annotation $\gr1$ is added to the
 context. The \AgdaInductiveConstructor{⊸E} rule uses the separating
 conjunction ($*$) to combine the premises, indicating that the
 resources required by the two premises are added together for the
@@ -228,10 +231,10 @@ the sharing conjunction, because they must use the same resources.
 
 Bunched combinators, along with supression of unchanged typing
 contexts, leads to a more streamlined presentation of the system
-without the clutter of explicit resource context
+without the clutter of explicit usage context
 inequalities. However, the larger advantage for us is that systems are
 constructed using these combinators \emph{automatically} admit
-renaming, substitution, and other scope-, type-, and resource-safe
+renaming, substitution, and other scope-, type-, and usage-safe
 traversals. If we were to allow arbitrary modification of the context
 in premises, this would not always be possible, since there would be
 no guarantee that a substitution (for instance) could be ``pushed'' up

@@ -176,7 +176,7 @@ semantics and give the identity renaming as the starting environment.
 
 \ExecuteMetaData[\WReltex]{wrel}
 
-\begin{example}
+\begin{example}\label{thm:minus}
   We can make a subtraction function from primitive addition and negation on
   integers.
   Subtraction is covariant in its first argument and contravariant in its
@@ -337,8 +337,20 @@ their annotations, so there is no further non-determinism introduced here.
 To actually use \AgdaFunction{elab-sem} on terms, we take the associated
 \AgdaFunction{semantics} and pass it the identity environment (an identity
 \emph{renaming} in this case, because $\V$ is a family of variables).
-\todo{Previous examples are now deleted.}
-In the previous examples, we have used \AgdaFunction{elab-unique}, which further
+We use \AgdaFunction{elab-unique}, which further
 checks statically that exactly one derivation is returned.
 The candidate usage vector \AgdaBound{R} will be empty for closed terms, and
 otherwise we have to supply the intended usage annotations.
+
+The example below is the term from \cref{thm:minus}.
+We have instantiated the usage elaborator so that \AgdaField{0\#$^{-1}$},
+\AgdaField{+$^{-1}$}, and \AgdaField{*$^{-1}$} are always singletons (i.e.,
+deterministic), and \AgdaField{1\#$^{-1}$} is a singleton whenever it can be
+(and empty for $\downarrow\downarrow$ and $\wn\wn$).
+The notation \AgdaFunction{\#}\AgdaSpace{}\AgdaBound{i} turns statically known
+natural number \AgdaBound{i} into the corresponding variable pointer, with
+\AgdaNumber{0} being the leftmost.
+In other words, we can write variables using de Bruijn levels.
+The definition \AgdaFunction{\#0} is a workaround for an Agda bug.
+
+\ExecuteMetaData[\Monotonicitytex]{minus}
