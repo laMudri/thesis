@@ -131,8 +131,8 @@ conclusion as having potentially unrelated typing and usage
 constraints, we make use of combinators for combining premises that will
 relate their usage and typing contexts to the conclusion by
 construction.
-Similar combinators have appeared for the same purpose in the work of
-\citet{RPKV20}, including the internal homs we introduce later.
+This idea comes from the work of \citet{RPKV20}, including the $\dotto$ and
+$\wand$ connectives we introduce later.
 To handle binders, which introduce variables, we make
 use of a combinator that adds a variable with a given $Ann$-annotation
 to an ambient context, without having to explicitly mention the parts
@@ -164,48 +164,48 @@ linear algebra of posemirings described in the previous section.
 \begin{figure}
   \begin{displaymath}
     \begin{prooftree}[comb]
-      \hypo{x :~\sqni A}
-      \infer1{\AgdaInductiveConstructor{var}~x :~\vdash A}
+      \hypo{x : {} \sqni A}
+      \infer1{\AgdaInductiveConstructor{var}~x : {} \vdash A}
     \end{prooftree}
     \qquad
     \begin{prooftree}[comb]
       \hypo{t : \gr1A \vdash B}
-      \infer1{\AgdaInductiveConstructor{⊸I}~t~ \mathord: \mathord\vdash A \multimap B}
+      \infer1{\AgdaInductiveConstructor{⊸I}~t : {} \vdash A \multimap B}
     \end{prooftree}
     \qquad
     \begin{prooftree}[comb]
-      \hypo{(t :~\vdash A \multimap B)}
+      \hypo{(t : {} \vdash A \multimap B)}
       \hypo{\sep}
-      \hypo{(s :~\vdash A)}
-      \infer3{\AgdaInductiveConstructor{⊸E}~t~s :~\vdash B}
+      \hypo{(s : {} \vdash A)}
+      \infer3{\AgdaInductiveConstructor{⊸E}~t~s : {} \vdash B}
     \end{prooftree}
   \end{displaymath}
   \begin{displaymath}
     \begin{prooftree}[comb]
-      \hypo{(t :~\vdash A_i)}
-      \infer1{\AgdaInductiveConstructor{⊕I}_i~t : \vdash A_0 \oplus A_1}
+      \hypo{t : {} \vdash A_i}
+      \infer1{\AgdaInductiveConstructor{⊕I}_i~t : {} \vdash A_0 \oplus A_1}
     \end{prooftree}
     \qquad
     \begin{prooftree}[comb]
-      \hypo{(s : \vdash A \oplus B)}
+      \hypo{(s : {} \vdash A \oplus B)}
       \hypo{\sep}
       \hypo{((t : \gr1A \vdash C)}
       \hypo{\dottimes}
       \hypo{(u : \gr1B \vdash C))}
-      \infer5{\AgdaInductiveConstructor{⊕E}~s~t~u : \vdash C}
+      \infer5{\AgdaInductiveConstructor{⊕E}~s~t~u : {} \vdash C}
     \end{prooftree}
   \end{displaymath}
   \begin{displaymath}
     \begin{prooftree}[comb]
       \hypo{t : \gr r \cdot \plr{\vdash A}}
-      \infer1{\AgdaInductiveConstructor{!I}~t : \vdash \oc_{\gr r} A}
+      \infer1{\AgdaInductiveConstructor{!I}~t : {} \vdash \oc_{\gr r} A}
     \end{prooftree}
     \qquad
     \begin{prooftree}[comb]
-      \hypo{(s : \vdash \oc_{\gr r} A)}
+      \hypo{(s : {} \vdash \oc_{\gr r} A)}
       \hypo{\sep}
       \hypo{(t : \gr rA \vdash C)}
-      \infer3{\AgdaInductiveConstructor{!E}~s~t : \vdash C}
+      \infer3{\AgdaInductiveConstructor{!E}~s~t : {} \vdash C}
     \end{prooftree}
   \end{displaymath}
   \caption{The prototypical system of \figref{fig:lr} restated in terms of bunched combinators.}
