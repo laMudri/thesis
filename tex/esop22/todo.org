@@ -29,3 +29,4 @@
 - Add a note saying that the elaborator is a proof of concept, and one
   could obviously do much better with specific knowledge of the system
   in question.
+* TODO Update the bibliography to point to Wood/Atkey in the Linearity proceedings
