@@ -121,6 +121,49 @@ Similar phenomena would appear in, say, a call-by-value language where
 variables are values (not computations), or a polarised language where
 variables always have a polarity matching their type.
 
+\subsection{A layer of syntax is functorial}
+
+A basic property of the universe of syntaxes we described in \cref{sec:syntax}
+is that every syntax supports a functorial action on subterms.
+The type of \AgdaFunction{map-s} says that to map a function \AgdaBound{f}
+over a layer of syntax, there must be a linear map \AgdaBound{F} relating the
+domain and codomain usage contexts, and \AgdaBound{f} should be usable
+wherever the domain and codomain usage contexts are similarly related by
+\AgdaBound{F}.
+This generality is needed because usage contexts typically will change between
+a term and its immediate subterms, but there will be a linear combination of
+usage contexts for the subterms that make the original usage contexts.
+\AgdaBound{X} and \AgdaBound{Y} are \AgdaFunction{ExtOpenFam}s, with
+\AgdaBound{$\Theta$} being the context extension for a subterm (i.e., the
+variables newly bound in that subterm).
+Unlike usage annotations, types are preserved throughout a term (including
+\AgdaBound{$\gamma$}, \AgdaBound{$\delta$}, and the implicit type of the term).
+
+\ExecuteMetaData[\Maptex]{map-s-type}
+
+The heart of \AgdaFunction{map-s} is \AgdaFunction{map-p}, which recursively
+works through the structure \AgdaBound{ps} of premises of the rule applied,
+acting on each subterm it finds.
+Here, particularly in the clauses for \AgdaInductiveConstructor{`$\sep$} and
+\AgdaInductiveConstructor{`$\cdot$}, we see why it is not enough for the
+function on subterms to apply at usage contexts \AgdaBound{P} and \AgdaBound{Q}
+--- rather, it also needs to apply at any similarly related \AgdaBound{P$'$}
+and \AgdaBound{Q$'$}.
+In the case of \AgdaInductiveConstructor{`$\sep$}, we have that
+$\grP \leq \grP_M + \grP_N$, with \AgdaBound{M} and \AgdaBound{N} being
+collections of subterms in usage contexts $\grP_M$ and $\grP_N$, respectively.
+Linearity of \AgdaBound{F} yields $\grQ_M$ and $\grQ_N$ such that
+$\grQ \leq \grQ_M + \grQ_N$ and we use \AgdaBound{map-p} recursively at
+$(\grP_M, \grQ_M)$ and $(\grP_N, \grQ_N)$ on \AgdaBound{M} and \AgdaBound{N}.
+The cases for \AgdaInductiveConstructor{`$\cdot$} and
+\AgdaInductiveConstructor{`$I^*$} are similar, each using a different aspect
+of linearity.
+In contrast, the cases for \AgdaInductiveConstructor{`$\dot1$} and
+\AgdaInductiveConstructor{`$\dot\times$}, which exist in fully structural
+systems, do not involve any changes in the usage contexts.
+
+\ExecuteMetaData[\Maptex]{map-p}
+
 \subsection{Semantic traversal}
 
 The aim of this subsection is to give an alternative recursion principle for
