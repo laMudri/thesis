@@ -1,0 +1,31 @@
+* TODO Pass through Section 1
+- Fix the first sentence
+- Provide some intuitive explanation
+- Explain what a "Traversal" can do intuitively
+* TODO Pass through Section 2
+- Explain the orientation of $<=$
+- Delete "the usual way"
+- Order on vectors is the pointwise ordering
+* TODO Improve explanation of intrinsic typing in Section 3
+- Explain the tree representation of contexts ("elided isos" per reviewer A)
+- Fix spacing in Fig 2
+* TODO Section 4
+- Make sure all the code is explained
+- omit "open X public"
+* TODO Section 5
+- Explain what V is in the intro; it is an OpenFam
+- Find ways to shorten? Maybe put stuff in an appendix
+- Remove lemmas 3, 4, 5 and possibly 5.3 (IdentityEnv ==> renaming to V-env; for reify)
+* TODO Section 6
+- Move explanation of I-Open* to before Kripke, to explain why Kripke is used
+- Fix the {{IdentityEnv V}} instance argument
+- Explain map-s between 6.1 and 6.2
+- Move the reify stuff into Section 7
+* TODO Section 7
+- Reorder: substitution, then checker, then den.sem.
+- Move bulk of den.sem. to appendix
+- Fix line breaks in Kit defn
+- Spell out the final definition of renaming and substitution
+- Add a note saying that the elaborator is a proof of concept, and one
+  could obviously do much better with specific knowledge of the system
+  in question.
