@@ -25,7 +25,7 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
   open import Generic.Linear.Algebra poSemiring
   open import Generic.Linear.Syntax Ty Ann
   open import Generic.Linear.Syntax.Interpretation Ty rawPoSemiring
-  open import Generic.Linear.Variable Ty rawPoSemiring
+  open import Generic.Linear.Variable Ty rawPoSemiring hiding (_↙ᵛ_; _↘ᵛ_)
   open import Generic.Linear.Environment Ty poSemiring
   open import Generic.Linear.Environment.Properties Ty poSemiring
   open import Generic.Linear.Environment.Categorical Ty poSemiring
@@ -53,18 +53,18 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
         ↘- P ≤[_+*_] -↙
       (λ Pᵣ → [ 𝓥 ] ctx Pᵣ γ ⇒ᵉ Δᵣ)
     env-+ (ρ , sp) =
-      let sumsₗ ↘, sp′ ,↙ sumsᵣ = ρ .asLinRel .linRel .rel-+ₘ (sp , ρ .sums) in
-      record { [_]_⇒ᵉ_ ρ; sums = sumsₗ }
+      let fit-hereₗ ↘, sp′ ,↙ fit-hereᵣ = ρ .Ψ .rel-+ₘ (sp , ρ .fit-here) in
+      record { [_]_⇒ᵉ_ ρ; fit-here = fit-hereₗ }
         ↘, sp′ ,↙
-      record { [_]_⇒ᵉ_ ρ; sums = sumsᵣ }
+      record { [_]_⇒ᵉ_ ρ; fit-here = fit-hereᵣ }
 
     env-* : ∀ {s t γ δ P Q′ r} →
       let Γ = ctx {s} P γ; Δ′ = ctx {t} Q′ δ in
       (λ Q → [ 𝓥 ] Γ ⇒ᵉ ctx Q δ) ◇ _≤[ r *ₗ Q′ ] →
       P ≤[ r *ₗ_] ◇ (λ P′ → [ 𝓥 ] ctx P′ γ ⇒ᵉ Δ′)
     env-* (ρ , sp) =
-      let sp′ , sums′ = ρ .asLinRel .linRel .rel-*ₘ (sp , ρ .sums) in
-      sp′ , record { [_]_⇒ᵉ_ ρ; sums = sums′ }
+      let fit-here′ , sp′ = ρ .Ψ .rel-*ₘ (sp , ρ .fit-here) in
+      sp′ , record { [_]_⇒ᵉ_ ρ; fit-here = fit-here′ }
 \end{code}
 
 %<*Kit>
@@ -85,28 +85,39 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
 
 \begin{code}
     open Equivalence
+    private module Vᶠᴿ {s} = FRelLeftSemimodule (Vᶠᴿ s)
+    open Vᶠᴿ
 \end{code}
 
 %<*bindEnv>
 \begin{code}
     bindEnv : ∀ {Γ Δ Θ} → [ 𝓥 ] Γ ⇒ᵉ Δ → [ 𝓥 ] Γ ++ᶜ Θ ⇒ᵉ Δ ++ᶜ Θ
-    bindEnv ρ .M = [ [ ρ .M │ 0ᴹ ] ─ [ 0ᴹ │ 1ᴹ ] ]
-    bindEnv ρ .asLinRel = ρ .asLinRel ⊕AsLinRel idAsLinRel
-    bindEnv ρ .sums = ρ .sums , ≤*-refl
-    bindEnv ρ .lookup (ll , rr) (lvar (↙ i) q b) =
-      let bl , br = un++ₙ b in
-      ↙ᵏ (≤*-trans rr br) (ρ .lookup ll (lvar i q bl))
-    bindEnv ρ .lookup (ll , rr) (lvar (↘ i) q b) =
-      let bl , br = un++ₙ b in
-      let bl′ = 0*→≤* (ρ .asLinRel .linRel .rel-0ₘ (≤*→0* bl , ll)) in
-      vr (lvar (↘ i) q (bl′ ++ₙ ≤*-trans rr br))
+    bindEnv ρ .Ψ = [ [ ρ .Ψ │ 0ᴿ ]ᴿ ─ [ 0ᴿ │ 1ᴿ ]ᴿ ]ᴿ
+    bindEnv ρ .fit-here = _↘,_,↙_
+      {left = _ ++ _} {right = _ ++ _}
+      (ρ .fit-here , 0*-triv)
+      (+*-identity↘ _ ++ₙ +*-identity↙ _)
+      (0*-triv , ≤*-refl)
+    bindEnv ρ .lookup ((ul , ur) ↘, sp+ ,↙ (dl , dr)) (lvar i q b)
+      with un++ₙ sp+ | un++ₙ b
+    bindEnv ρ .lookup ((ul , ur) ↘, sp+ ,↙ (dl , dr)) (lvar (↙ i) q b)
+      | sp+l , sp+r | bl , br = ↙ᵏ
+      (≤*-trans (+ₘ-identityˡ→ (ur , sp+r)) (≤*-trans dr br))
+      (ρ .lookup (ρ .Ψ .rel-≤ₘ ≤*-refl (+ₘ-identityʳ→ (sp+l , dl)) ul)
+        (lvar i q bl))
+    bindEnv ρ .lookup ((ul , ur) ↘, sp+ ,↙ (dl , dr)) (lvar (↘ i) q b)
+      | sp+l , sp+r | bl , br = vr (lvar (↘ i) q
+      (≤*-trans (+ₘ-identityʳ→ (sp+l , dl))
+        (0*→≤* (ρ .Ψ .rel-0ₘ (≤*→0* bl , ul)))
+      ++ₙ
+      ≤*-trans (+ₘ-identityˡ→ (ur , sp+r)) (≤*-trans dr br)))
 \end{code}
 %</bindEnv>
 
 %<*trav>
 \begin{code}
     trav : ∀ {Γ Δ A} → [ 𝓥 ] Γ ⇒ᵉ Δ → Δ ⊢ A → Γ ⊢ A
-    trav ρ (var x) = tm (ρ .lookup (ρ .sums) x)
+    trav ρ (var x) = tm (ρ .lookup (ρ .fit-here) x)
     trav ρ (!-I (⟨ sp* ⟩· M)) =
       let sp*′ , ρ′ = env-* (ρ , sp*) in
       !-I (⟨ sp*′ ⟩· (trav ρ′ M))
@@ -147,9 +158,8 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
 %<*dlv-env>
 \begin{code}
   ↙^Env : {𝓥 : Ctx → Ty → Set} → Weakening 𝓥 → Weakening [ 𝓥 ]_⇒ᵉ_
-  ↙^Env ↙^𝓥 R0 ρ .M = [ ρ .M │ 0ᴹ ]
-  ↙^Env ↙^𝓥 R0 ρ .asLinRel = [ ρ .asLinRel │ 0AsLinRel ]AsLinRel
-  ↙^Env ↙^𝓥 R0 ρ .sums = ρ .sums , ≤*→0* R0
+  ↙^Env ↙^𝓥 R0 ρ .Ψ = [ ρ .Ψ │ 0ᴿ ]ᴿ
+  ↙^Env ↙^𝓥 R0 ρ .fit-here = ρ .fit-here , ≤*→0* R0
   ↙^Env ↙^𝓥 R0 ρ .lookup (r , sp0) v = ↙^𝓥 (0*→≤* sp0) (ρ .lookup r v)
 
   ↙ᵛ-env :

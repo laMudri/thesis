@@ -1,4 +1,4 @@
-The basic algebraic structure we concern ourselves with is \emph{partially
+The basic algebraic structure we deal with is \emph{partially
 ordered semirings}, or \emph{posemirings} for short.
 A posemiring is a (not necessarily commutative) semiring on a partially ordered
 set, where both operations are monotonic.
@@ -11,7 +11,7 @@ restrictions, comparable to subtyping.
   A \emph{posemiring} is a tuple $(\Ann, \leq, 0, +, 1, *)$ such that
   $(\Ann, \leq)$ is a partially ordered set, $(\Ann, 0, +)$ is a commutative
   monoid, $(\Ann, 1, *)$ is a monoid, $+$ and $*$ are monotonic, and $*$
-  distributes over $0$ and $+$ in the usual way on both sides.
+  distributes over $0$ and $+$ on both sides.
 \end{definition}
 
 \begin{example}[Zero-one-many]\label{thm:linearity}
@@ -51,6 +51,7 @@ From the order on $\Ann$, we get a pointwise order on vectors.
 
 Vectors of a given length form a \emph{module} over the posemiring $\Ann$,
 analogously to how vectors over a field form a vector space.
+The partial order on such vectors is pointwise.
 
 \begin{definition}
   A \emph{(left) module over a posemiring}, given a posemiring $\Ann$, is a

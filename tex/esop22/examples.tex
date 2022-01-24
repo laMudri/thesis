@@ -3,7 +3,8 @@ TODO: introductory paragraph
 \subsection{Renaming and substitution}\label{sec:kits}
 
 In an unpublished note, \citet{McBride05} gives a parametrised traversal
-yielding homomorphisms of syntax.
+yielding homomorphisms of syntax, the canonical examples of which are
+simultaneous renaming and simultaneous substitution.
 The parameters are collected in the record \AgdaRecord{Kit}.
 We make a minor change to the original presentation, where instead of our
 \AgdaField{ren\textasciicircum{}$\V$} field, \citeauthor{McBride05} has the
@@ -11,7 +12,7 @@ field \AgdaField{wk} allowing only context extensions.
 As for the other two fields, \AgdaField{vr} allows us to map variables to
 $\V$-values, so as to put newly bound variables in environments; and
 \AgdaField{tm} allows us to extract terms from $\V$-values, as required when
-we use the environment to evaluate a free variable.
+we use the environment to handle a free variable.
 
 \ExecuteMetaData[\Syntactictex]{Kit}
 
@@ -35,8 +36,8 @@ Meanwhile, the action on variables is relatively unconstrained: we look up the
 variable in the environment to get a $\V$-value, then transform that $\V$-value
 into a term using \AgdaField{tm}.
 
-The idea of renaming is that variables replace variables, whereas with
-substitution, terms replace variables.
+The idea of simultaneous renaming is that variables replace variables, whereas
+with simultaneous substitution, terms replace variables.
 This translates to environments for renaming containing $\sqni$-values
 (variables), and environments for substitution containing $\vdash$-values
 (terms).
