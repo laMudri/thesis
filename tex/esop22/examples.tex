@@ -1,23 +1,49 @@
 TODO: introductory paragraph
 
-\bob{Reification dumped here for now} When \AgdaBound{$\V$} supports identity environments (as per \cref{thm:env-id}),
-we can coerce a \AgdaFunction{Kripke} function into just a
-\AgdaBound{$\C$}-value in an extended context.
-To show this, we instantiate the Kripke function with the renaming
-$\swarrow^r : \Gamma, \gr0\delta \env\sqni \Gamma$ to extend the scope, and
-pass it an argument environment
-$\plr{\id^\V; \searrow^r} : \gr0\gamma, \Delta \env\V \Delta$ to fill in the
-extended part.
-Post-composition of a renaming onto an environment comes from
-\cref{thm:env-postren}.
+\bob{Reification dumped here for now}
+When \AgdaBound{$\V$} supports identity environments (as per \cref{thm:env-id}),
+we can simplify our obligations in giving a \AgdaRecord{Semanitics} by coercing
+\AgdaFunction{Kripke} functions into just
+\AgdaBound{$\C$}-values in an extended context.
 
-\ExecuteMetaData[\Syntactictex]{reify}
+%To show this, we instantiate the Kripke function with the renaming
+%$\swarrow^r : \Gamma, \gr0\delta \env\sqni \Gamma$ to extend the scope, and
+%pass it an argument environment
+%$\plr{\id^\V; \searrow^r} : \gr0\gamma, \Delta \env\V \Delta$ to fill in the
+%extended part.
+%Post-composition of a renaming onto an environment comes from
+%\cref{thm:env-postren}.
 
-We tend to use \AgdaFunction{reify} whenever \AgdaBound{$\V$} supports
-identity environments.
-In this paper, all examples support identity environments.
+%\ExecuteMetaData[\Syntactictex]{reify}
+
+\begin{lemma}[\AgdaFunction{reify}]\label{thm:reify}
+  If $\V$ is an open family such that there is a function
+  $v : \forallb{{\sqni} \dotto \V}$, we get a function of type
+  $\forallb{\mathrm{Kripke}\,\V\,\C \dotto \mathrm{Scope}\,\C}$ for any $\C$.
+\end{lemma}
+\begin{proof}
+  Let $b : \mathrm{Kripke}\,\V\,\C\,\Delta\,\Gamma\,A$.
+  That is, $b$ is a Kripke function yielding $\C$-computations, and we want to
+  apply it so as to get a $\C\,\plr{\Gamma, \Delta}\,A$.
+  Let $\grP\gamma = \Gamma$ and $\grQ\delta = \Delta$.
+  The $\Box^r$ in the type of $b$ allows us to rename $\Gamma$ to
+  $\Gamma, \gr0\delta$.
+  Then we give the $\wand$-function an argument in context
+  $\gr0\gamma, \Delta$, noting that
+  $\plr{\Gamma, \gr0\delta} + \plr{\gr0\gamma, \Delta} = \plr{\Gamma, \Delta}$,
+  as we wanted from the result.
+  The argument needs type $\gr0\gamma, \Delta \env\V \Delta$.
+  We produce this through the composition
+  $\gr0\gamma, \Delta \env\V \gr0\gamma, \Delta \env{\sqni} \Delta$,
+  using the instance of composition mentioned in \cref{thm:env-postren}.
+  The $\V$-environment follows from $v$ and \cref{thm:env-id}, while the
+  renaming is the complement to that used on $\Box^r$.
+\end{proof}
+
+All of the $\V$s used in examples in this paper support identity environments.
 However, \citet[p.~27]{AACMM21} give some important examples that do not
-support identity environments, and thus cannot use \AgdaFunction{reify}.
+support identity environments, and thus cannot use \AgdaFunction{reify}
+(\cref{thm:reify}).
 The feature that causes the lack of support for identity environments is that
 a semantics can make use of the fact that only variables of particular kinds
 are bound by the syntax.
