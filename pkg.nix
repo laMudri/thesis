@@ -1,4 +1,4 @@
-{ stdenv, texlive }:
+{ stdenv, texlive, ghostscript }:
 let
   tex-env = texlive.combine {
     inherit (texlive) scheme-small latexmk beamer stmaryrd mathpartir rsfs
@@ -8,12 +8,12 @@ let
       multirow enumitem changepage draftwatermark everypage
       titling todonotes ebproof cleveref cm-super turnstile
       acmart xstring totpages hyperxmp comment preprint
-      collection-fontsrecommended collection-fontsextra;
+      collection-fontsrecommended collection-fontsextra epstopdf;
   };
 in stdenv.mkDerivation {
   name = "thesis";
   src = ./.;
-  buildInputs = [ tex-env ];
+  buildInputs = [ tex-env ghostscript ];
   buildPhase = ''
     latexmk tex/thesis.tex
   '';
