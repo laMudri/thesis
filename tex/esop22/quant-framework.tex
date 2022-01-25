@@ -4,6 +4,7 @@
 %
 \documentclass[runningheads]{llncs}
 
+\usepackage[paperheight=235mm, paperwidth=155mm,textwidth=12.2cm,textheight=19.3cm]{geometry}
 \usepackage[conor]{agda}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -19,6 +20,9 @@
 %\usepackage{todonotes}
 \usepackage{turnstile}
 \usepackage{mathpartir}
+
+\usepackage{bbding}
+\usepackage{graphicx}
 
 \input{../macros.tex}
 \input{lagda.tex}
@@ -42,6 +46,15 @@
 \def\MuMuTildeTermtex{\genericlr/Generic/Linear/Example/MuMuTilde/Term.tex}
 \def\Snippetstex{../../agda/processed-latex/Snippets.tex}
 
+% \makeatletter
+% \RequirePackage[bookmarks,dvips,unicode,colorlinks=true]{hyperref}%
+%   \def\@citecolor{blue}%
+%   \def\@urlcolor{blue}%
+%   \def\@linkcolor{blue}%
+% \def\UrlFont{\rmfamily}
+% \def\orcidID#1{\smash{\href{http://orcid.org/#1}{\protect\raisebox{-1.25pt}{\protect\includegraphics{orcid_color.eps}}}}}
+% \makeatother
+
 \newcommand{\figref}[1]{Figure \ref{#1}}
 \newcommand{\secref}[1]{Section \ref{#1}}
 \newcommand{\defref}[1]{Definition \ref{#1}}
@@ -51,14 +64,14 @@
 \begin{document}
 %
 \title{A Framework for Substructural Type Systems
-  \thanks{James Wood is supported by an EPSRC Studentship.}}
+  \thanks{James Wood is supported by an EPSRC Studentship. Robert Atkey is supported by EPSRC grant FIXME.}}
 %
 %\titlerunning{Abbreviated paper title}
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
-\author{James Wood\inst{1}\orcidID{0000-0002-8080-3350} \and
-  Robert Atkey\inst{1}\orcidID{0000-0002-4414-5047}}
+\author{James Wood\inst{1}(\Envelope)\orcidID{0000-0002-8080-3350} \and \\
+  Robert Atkey\inst{1}(\Envelope)\orcidID{0000-0002-4414-5047}}
 %
 \authorrunning{J. Wood, R. Atkey}
 % First names are abbreviated in the running head.
@@ -200,6 +213,7 @@
 
 \section{Conclusions}\label{sec:conc}
 \input{conc}
+
 %
 % ---- Bibliography ----
 %
@@ -208,4 +222,13 @@
 %
 \bibliographystyle{splncs04nat}
 \bibliography{quant-framework}
+
+\vfill
+
+{\small\medskip\noindent{\bf Open Access} This chapter is licensed under the terms of the Creative Commons\break Attribution 4.0 International License (\url{http://creativecommons.org/licenses/by/4.0/}), which permits use, sharing, adaptation, distribution and reproduction in any medium or format, as long as you give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons license and indicate if changes were made.}
+
+{\small \spaceskip .28em plus .1em minus .1em The images or other third party material in this chapter are included in the chapter's Creative Commons license, unless indicated otherwise in a credit line to the material.~If material is not included in the chapter's Creative Commons license and your intended\break use is not permitted by statutory regulation or exceeds the permitted use, you will need to obtain permission directly from the copyright holder.}
+
+\medskip\noindent\includegraphics{cc_by_4-0.eps}
+
 \end{document}

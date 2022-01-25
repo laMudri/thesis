@@ -31,6 +31,7 @@ $(1)/processed-latex/%.tex: $(1)/latex/%.tex
 	-e 's/`⊤/`⒈/g' \
 	-e 's/─✴/⇥/g' \
 	-e 's/\\AgdaFunction{⇒}/\\AgdaFunction{⇴}/g' \
+	-e 's/>>/\\ensuremath{\\rangle\\rangle}/g' \
 	$$< >$$@
 
 $(1)/latex/%.tex: $(1)/%.lagda.tex
@@ -43,6 +44,6 @@ lagda: $(lagda-processed-outputs)
 
 .PHONY: clean
 clean:
-	rm $(lagda-outputs)
-	rm $(lagda-processed-outputs)
+	rm -f $(lagda-outputs)
+	rm -f $(lagda-processed-outputs)
 	cd tex; latexmk -C
