@@ -1,56 +1,73 @@
-Our aim with the following traversals is to derive a recursion scheme for
-terms which abstracts over some of the details of variable binding and
-changes to usage annotations.
-We follow the structure given by \citet{AACMM21} closely, with
-the main difference having come already in the syntax and environments.
+Our goal in this section is to define \AgdaFunction{semantics}, a
+recursor that turns a term into a \AgdaBound{$\C$}-value using a
+\AgdaBound{$\V$}-environment, in a type preserving way:\bob{Get rid of
+  ``body'' here}
 
-\subsection{Renameability}
+\ExecuteMetaData[\Semanticstex]{semantics-type}
 
-\todo{Maybe this goes in the Environment section.}
-We saw in \cref{sec:env} that our notion of environment specialises to
-simultaneous renaming by setting $\V$ to be $\sqni$.
-This is encoded below as
-\AgdaFunction{\AgdaUnderscore{}$\Rightarrow^r$\AgdaUnderscore{}}.
+The \AgdaBound{$\V$} and \AgdaBound{$\C$} are \AgdaFunction{OpenFam}s,
+representing the interpretations of variables and terms
+respectively. In \cref{sec:traversal} we will see the data that must
+be provided to make a \AgdaFunction{semantics} for a given
+system. Before that, we must see how to deal with the two complicated
+features of our syntax: the usage annotations (\cref{sec:functorial})
+and variable binding (\cref{sec:kripke}). \todo{fwd ref to where these are used}
 
-\ExecuteMetaData[\Renamingtex]{Ren}
+\subsection{A layer of syntax is functorial}\label{sec:functorial}
 
-In a setting where new variables can be bound in the middle of a derivation,
-it is important that the values we carry around while traversing a term can
-handle the existence of variables that appear but they do not use.
-We call any such notion of value \emph{renameable}.
-The cofree renameable \AgdaFunction{OpenType} on an \AgdaFunction{OpenType}
-\AgdaBound{T} is \AgdaFunction{$\Box^r$}\AgdaSpace{}\AgdaBound{T}, with
-\AgdaBound{T} then being \AgdaFunction{Renameable} if it forms a
-\AgdaFunction{$\Box^r$}-coalgebra.
+A basic property of the universe of syntaxes we described in \cref{sec:syntax}
+is that every syntax supports a functorial action on subterms, realised by the function \AgdaFunction{map-s}.
+Its says that to map a function \AgdaBound{f}
+over a layer of syntax, there must be a linear map \AgdaBound{F} relating the
+domain and codomain usage contexts, and \AgdaBound{f} should be usable
+wherever the domain and codomain usage contexts are similarly related by
+\AgdaBound{F}.
 
-\ExecuteMetaData[\Renamingtex]{Boxr}
-\ExecuteMetaData[\Renamingtex]{Renameable}
 
-A renameable notion of value gives rise to a renameable notion of environment,
-essentially by renaming each contained value in an appropriate way.
+This generality is needed because usage contexts change between
+a term and its immediate subterms, but there will be a linear combination of
+the subterms' usage contexts for the subterms that make the original usage contexts.
+\AgdaBound{X} and \AgdaBound{Y} are \AgdaFunction{ExtOpenFam}s, with
+\AgdaBound{$\Theta$} being the context extension for a subterm (i.e., the
+variables newly bound in that subterm).
+Unlike usage annotations, types are preserved throughout a term (including
+\AgdaBound{$\gamma$}, \AgdaBound{$\delta$}, and the implicit type of the term).
 
-\begin{lemma}[\AgdaFunction{ren\textasciicircum{}Env}]\label{thm:env-ren}
-  If $\plr{-} \sdtstile{}\V A$ is renameable for all $A$, then so is
-  $\plr{-} \env\V \Delta$ for all $\Delta$.
-\end{lemma}
-\begin{proof}
-  For renameable $\V$, we can implement $\mathrm{lift}$ as in
-  \cref{thm:env-comp} with $\U \coloneqq {\sqni}$ and
-  $\V \coloneqq \W \coloneqq \V$.
-  Renaming the environment then becomes an instance of environment composition.
-\end{proof}
+\ExecuteMetaData[\Maptex]{map-s-type}
 
-\subsection{The Kripke function space}
+The heart of \AgdaFunction{map-s} is \AgdaFunction{map-p}, which recursively
+works through the structure \AgdaBound{ps} of premises of the rule applied,
+acting on each subterm it finds.
+Here, particularly in the clauses for \AgdaInductiveConstructor{`$\sep$} and
+\AgdaInductiveConstructor{`$\cdot$}, we see why it is not enough for the
+function on subterms to apply at usage contexts \AgdaBound{P} and \AgdaBound{Q}
+--- rather, it also needs to apply at any similarly related \AgdaBound{P$'$}
+and \AgdaBound{Q$'$}.
+In the case of \AgdaInductiveConstructor{`$\sep$}, we have that
+$\grP \leq \grP_M + \grP_N$, with \AgdaBound{M} and \AgdaBound{N} being
+collections of subterms in usage contexts $\grP_M$ and $\grP_N$, respectively.
+Linearity of \AgdaBound{F} yields $\grQ_M$ and $\grQ_N$ such that
+$\grQ \leq \grQ_M + \grQ_N$ and we use \AgdaBound{map-p} recursively at
+$(\grP_M, \grQ_M)$ and $(\grP_N, \grQ_N)$ on \AgdaBound{M} and \AgdaBound{N}.
+The cases for \AgdaInductiveConstructor{`$\cdot$} and
+\AgdaInductiveConstructor{`$I^*$} are similar, each using a different aspect
+of linearity.
+In contrast, the cases for \AgdaInductiveConstructor{`$\dot1$} and
+\AgdaInductiveConstructor{`$\dot\times$}, which exist in fully structural
+systems, do not involve any changes in the usage contexts.
 
-Earlier, when talking about syntax, we saw \AgdaFunction{Scope} as a simple way
-to let an open family admit context extensions.
-However, a key component of our generic semantic traversal is to make use of
-the open family \AgdaBound{$\V$} of \emph{values}, which are the sort of thing
-we store in an environment.
-The definition \AgdaFunction{Kripke} gives an alternative to
-\AgdaFunction{Scope} which interprets the newly bound variables via a
-requirement of $\V$-values rather than extra assumptions for the
-$\C$-computation.
+\ExecuteMetaData[\Maptex]{map-p}
+
+\subsection{The Kripke function space}\label{sec:kripke}
+
+In \secref{sec:terms}, we defined \AgdaFunction{Scope} to let a
+judgement-indexed family admit context extensions. However, a key
+component of our generic semantic traversal is to make use of the open
+family \AgdaBound{$\V$} of \emph{values}, which are the sort of thing
+we store in an environment.  The definition \AgdaFunction{Kripke}
+gives an alternative to \AgdaFunction{Scope} which interprets the
+newly bound variables via a requirement of $\V$-values rather than
+extra assumptions for the $\C$-computation.
 
 \ExecuteMetaData[\Semanticstex]{Kripke}
 
@@ -89,82 +106,44 @@ type \AgdaBound{I}, rather than specifically \AgdaBound{Ty}.
 We use this generality later in \AgdaFunction{extend}, setting \AgdaBound{I}
 to \AgdaDatatype{Ctx}.
 
-When \AgdaBound{$\V$} supports identity environments (as per \cref{thm:env-id}),
-we can coerce a \AgdaFunction{Kripke} function into just a
-\AgdaBound{$\C$}-value in an extended context.
-To show this, we instantiate the Kripke function with the renaming
-$\swarrow^r : \Gamma, \gr0\delta \env\sqni \Gamma$ to extend the scope, and
-pass it an argument environment
-$\plr{\id^\V; \searrow^r} : \gr0\gamma, \Delta \env\V \Delta$ to fill in the
-extended part.
-Post-composition of a renaming onto an environment comes from
-\cref{thm:env-postren}.
+\subsection{Renameability}
 
-\ExecuteMetaData[\Syntactictex]{reify}
+\todo{Maybe this goes in the Environment section.}
+We saw in \cref{sec:env} that our notion of environment specialises to
+simultaneous renaming by setting $\V$ to be $\sqni$.
+This is encoded below as
+\AgdaFunction{\AgdaUnderscore{}$\Rightarrow^r$\AgdaUnderscore{}}.
 
-We tend to use \AgdaFunction{reify} whenever \AgdaBound{$\V$} supports
-identity environments.
-In this paper, all examples support identity environments.
-However, \citet[p.~27]{AACMM21} give some important examples that do not
-support identity environments, and thus cannot use \AgdaFunction{reify}.
-The feature that causes the lack of support for identity environments is that
-a semantics can make use of the fact that only variables of particular kinds
-are bound by the syntax.
-In the examples of \citeauthor{AACMM21}, a bidirectionally typed language only
-binds variables that synthesise their type, as opposed to those whose type is
-checked.
-The semantics of type-checking and elaboration rely on variables synthesising
-their type, so \AgdaBound{$\V$} is chosen to cover only those variables.
-Instead of using \AgdaFunction{reify}, we must observe that each syntactic form
-only binds such synthesising variables.
-Similar phenomena would appear in, say, a call-by-value language where
-variables are values (not computations), or a polarised language where
-variables always have a polarity matching their type.
+\ExecuteMetaData[\Renamingtex]{Ren}
 
-\subsection{A layer of syntax is functorial}
+In a setting where new variables can be bound in the middle of a derivation,
+it is important that the values we carry around while traversing a term can
+handle the existence of variables that appear but they do not use.
+We call any such notion of value \emph{renameable}.
+The cofree renameable \AgdaFunction{OpenType} on an \AgdaFunction{OpenType}
+\AgdaBound{T} is \AgdaFunction{$\Box^r$}\AgdaSpace{}\AgdaBound{T}, with
+\AgdaBound{T} then being \AgdaFunction{Renameable} if it forms a
+\AgdaFunction{$\Box^r$}-coalgebra.
 
-A basic property of the universe of syntaxes we described in \cref{sec:syntax}
-is that every syntax supports a functorial action on subterms.
-The type of \AgdaFunction{map-s} says that to map a function \AgdaBound{f}
-over a layer of syntax, there must be a linear map \AgdaBound{F} relating the
-domain and codomain usage contexts, and \AgdaBound{f} should be usable
-wherever the domain and codomain usage contexts are similarly related by
-\AgdaBound{F}.
-This generality is needed because usage contexts typically will change between
-a term and its immediate subterms, but there will be a linear combination of
-usage contexts for the subterms that make the original usage contexts.
-\AgdaBound{X} and \AgdaBound{Y} are \AgdaFunction{ExtOpenFam}s, with
-\AgdaBound{$\Theta$} being the context extension for a subterm (i.e., the
-variables newly bound in that subterm).
-Unlike usage annotations, types are preserved throughout a term (including
-\AgdaBound{$\gamma$}, \AgdaBound{$\delta$}, and the implicit type of the term).
+\ExecuteMetaData[\Renamingtex]{Boxr}
+\ExecuteMetaData[\Renamingtex]{Renameable}
 
-\ExecuteMetaData[\Maptex]{map-s-type}
+A renameable notion of value gives rise to a renameable notion of environment,
+essentially by renaming each contained value in an appropriate way.
 
-The heart of \AgdaFunction{map-s} is \AgdaFunction{map-p}, which recursively
-works through the structure \AgdaBound{ps} of premises of the rule applied,
-acting on each subterm it finds.
-Here, particularly in the clauses for \AgdaInductiveConstructor{`$\sep$} and
-\AgdaInductiveConstructor{`$\cdot$}, we see why it is not enough for the
-function on subterms to apply at usage contexts \AgdaBound{P} and \AgdaBound{Q}
---- rather, it also needs to apply at any similarly related \AgdaBound{P$'$}
-and \AgdaBound{Q$'$}.
-In the case of \AgdaInductiveConstructor{`$\sep$}, we have that
-$\grP \leq \grP_M + \grP_N$, with \AgdaBound{M} and \AgdaBound{N} being
-collections of subterms in usage contexts $\grP_M$ and $\grP_N$, respectively.
-Linearity of \AgdaBound{F} yields $\grQ_M$ and $\grQ_N$ such that
-$\grQ \leq \grQ_M + \grQ_N$ and we use \AgdaBound{map-p} recursively at
-$(\grP_M, \grQ_M)$ and $(\grP_N, \grQ_N)$ on \AgdaBound{M} and \AgdaBound{N}.
-The cases for \AgdaInductiveConstructor{`$\cdot$} and
-\AgdaInductiveConstructor{`$I^*$} are similar, each using a different aspect
-of linearity.
-In contrast, the cases for \AgdaInductiveConstructor{`$\dot1$} and
-\AgdaInductiveConstructor{`$\dot\times$}, which exist in fully structural
-systems, do not involve any changes in the usage contexts.
+\begin{lemma}[\AgdaFunction{ren\textasciicircum{}Env}]\label{thm:env-ren}
+  If $\plr{-} \sdtstile{}\V A$ is renameable for all $A$, then so is
+  $\plr{-} \env\V \Delta$ for all $\Delta$.
+\end{lemma}
+\bob{Proof probably isn't needed}
+\begin{proof}
+  For renameable $\V$, we can implement $\mathrm{lift}$ as in
+  \cref{thm:env-comp} with $\U \coloneqq {\sqni}$ and
+  $\V \coloneqq \W \coloneqq \V$.
+  Renaming the environment then becomes an instance of environment composition.
+\end{proof}
 
-\ExecuteMetaData[\Maptex]{map-p}
-
-\subsection{Semantic traversal}
+\subsection{Semantic traversal}\label{sec:traversal}
 
 The aim of this subsection is to give an alternative recursion principle for
 terms that incorporates some of the environment-handling seen in the
