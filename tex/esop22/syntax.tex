@@ -21,23 +21,23 @@ declarations, to emphasise that our framework has been implemented.
 % annotations, absence and multiplicity of subterms with summed usage annotations,
 % scaling of a subterm, and variable binding.\todo{Switching to Agda}
 
-\paragraph{\AgdaDatatype{Premises}, \AgdaRecord{Rule}s, and \AgdaRecord{System}s.}
+% \paragraph{\AgdaDatatype{Premises}, \AgdaRecord{Rule}s, and \AgdaRecord{System}s.}
 
 A type \AgdaRecord{System} is made up of multiple \AgdaRecord{Rule}s.
-Each \AgdaRecord{Rule} comprises a tree of \AgdaDatatype{Premises} and
-a type of conclusion. We assume that there is a
+Each \AgdaRecord{Rule} comprises a \AgdaDatatype{Premises} and
+a conclusion type. We assume that there is a
 $\AgdaBound{Ty} : \AgdaPrimitiveType{Set}$ of types for the system in
 scope.
 
 The \AgdaDatatype{Premise} data type describes premises of rules,
-using the bunched combinators from the previous section. A single
+using the bunched combinators from \cref{sec:bunched-rules}. A single
 premise is introduced by the
 \AgdaInductiveConstructor{$\langle$\_`$\vdash$\_$\rangle$}
 constructor.  This allows binding of additional variables
 \AgdaBound{$\Delta$} (with specified types and usage annotations) and
 the specification of a conclusion type \AgdaBound{A} for this premise.
-The remaining constructors are descriptions for the first-order
-bunched connectives, and will be interpreted directly as such, below.
+The remaining constructors are descriptions for the
+bunched connectives. %, and will be interpreted directly as such, below.
 
 \ExecuteMetaData[\Syntaxtex]{Premises}
 
@@ -53,7 +53,7 @@ associate the label set with the rules.
 
 \ExecuteMetaData[\Syntaxtex]{System}
 
-\paragraph{\figref{fig:lr-comb} as a \AgdaRecord{System}.}
+% \paragraph{\figref{fig:lr-comb} as a \AgdaRecord{System}.}
 
 As an example, we transcribe the system defined in
 \figref{fig:lr-comb} into a description.  We give the set of types of
@@ -111,8 +111,8 @@ have been changed by connectives like
 \AgdaInductiveConstructor{\_`$\cdot$\_}.  The third argument is the
 type of subterm required.
 
-With the first clause of \AgdaFunction{$\llbracket$\_$\rrbracket$p} explained,
-the rest are simply interpretations of premises into bunched combinators.
+The remainder of the clauses of \AgdaFunction{$\llbracket$\_$\rrbracket$p}
+are the interpretation into bunched combinators.
 The superscript \AgdaFunction{$^c$} on the bunched connectives denotes that
 they have been lifted from predicates on usage vectors to predicates on
 contexts, with the type component of the context shared throughout.
@@ -123,11 +123,12 @@ do not need a \AgdaFunction{$^c$} variant.
 \ExecuteMetaData[\Interpretationtex]{semp}
 
 The interpretation of a \AgdaRecord{Rule} checks that the rule targets
-the desired type and then interprets the rule's premises \AgdaBound{ps}.
-Notice that the interpretation of the premises is independent of the conclusion
-of the rule, which accounts for the difference in type between
-\AgdaFunction{$\llbracket$\_$\rrbracket$p} and
-\AgdaFunction{$\llbracket$\_$\rrbracket$r}.
+the desired type and then interprets the rule's premises
+\AgdaBound{ps}.  Notice that the interpretation of the premises is
+independent of the conclusion of the rule, which accounts for the use
+of \AgdaFunction{OpenType} in
+\AgdaFunction{$\llbracket$\_$\rrbracket$p} versus
+\AgdaFunction{OpenFam} in \AgdaFunction{$\llbracket$\_$\rrbracket$r}.
 
 \ExecuteMetaData[\Interpretationtex]{semr}
 
@@ -153,9 +154,9 @@ We use \AgdaFunction{Scope} to deal with new variables in syntax.
 Terms resemble the free monad over a layer-of-syntax functor, though
 that picture is complicated by variable binding.  A term is either a
 variable or a use of a logical rule together with terms for each of
-the required subterms. The \AgdaFunction{Size} argument is where we
-use sized types to record that subterms are smaller than the
-surrounding term.
+the required subterms. The \AgdaFunction{Size} argument is a use of
+Agda's sized types to record that subterms are smaller than the
+surrounding term for the termination checker.
 
 \ExecuteMetaData[\Termtex]{Term}
 
@@ -164,7 +165,7 @@ This definition uses \AgdaFunction{$\dotto$}, which, analogously to
 space.
 We take \AgdaFunction{$\dotto$} to handle $n$ many indices --- in this
 case two (the context and the type).
-Informally,
+The notation
 \AgdaFunction{$\forall[$}\AgdaSpace{}\AgdaBound{T}\AgdaSpace{}\AgdaFunction{]}
 stands for
 \AgdaSymbol{$\forall$}\AgdaSpace{}\AgdaSymbol{\{}%
@@ -174,9 +175,8 @@ stands for
 \AgdaBound{x$_1$}\AgdaSpace{}\AgdaSymbol{$\ldots$}\AgdaSpace{}\AgdaBound{x$_n$},
 where \AgdaBound{T} is a type family with $n$ many indices.
 
-Terms defined like this are still quite difficult to write, mainly because of
-frequently changing usage contexts and the need for proofs that they all match
-up.
+Terms defined like this are difficult to write by hand, due to the
+need for proofs that the usage contexts are handled correctly for the rules used.
 We will see a way of automating these proofs in \cref{sec:usage-elaborator}.
 
 %Here is an example term, using the \AgdaFunction{$\lambda$R} system.
