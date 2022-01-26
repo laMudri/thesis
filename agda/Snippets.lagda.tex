@@ -10,6 +10,7 @@ open import Generic.Linear.Everything Ty poSemiring
 
 open import Data.LTree
 open import Data.LTree.Vector
+open import Data.Product
 open import Function.Extra
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 open import Size
@@ -70,3 +71,20 @@ _ = λ Ψ P Q →
   Ψ .rel P Q
 \end{code}
 %</Psi-rel-P-Q>
+\begin{code}
+s3 : ∀ {v} (𝓥 : OpenFam v) (Γ Δ : Ctx) _ → _
+s3 𝓥 Γ Δ A =
+\end{code}
+%<*GvDashA>
+\begin{code}[inline]
+  [ 𝓥 ] Γ ⊨ A
+\end{code}
+%</GvDashA>
+\begin{code}
+  ,′
+\end{code}
+%<*GenvD>
+\begin{code}[inline]
+  [ 𝓥 ] Γ ⇒ᵉ Δ
+\end{code}
+%</GenvD>
