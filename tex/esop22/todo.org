@@ -4,7 +4,6 @@
 * TODO Pass through Section 2
 - Explain the orientation of $<=$
 * TODO Improve explanation of intrinsic typing in Section 3
-- Explain the tree representation of contexts ("elided isos" per reviewer A)
 - Fix spacing in Fig 2 (this is now at least consistent, but possibly misleading)
 * TODO Section 4
 - Make sure all the code is explained
@@ -15,8 +14,6 @@
 * TODO Section 6
 - Move explanation of I-Open* to before Kripke, to explain why Kripke is used
 - Fix the {{IdentityEnv V}} instance argument
-- Explain map-s between 6.1 and 6.2
-- Move the reify stuff into Section 7
 * TODO Section 7
 - Move bulk of den.sem. to appendix
 - Spell out the final definition of renaming and substitution

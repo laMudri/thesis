@@ -3,13 +3,18 @@ well typed and $\Ann$-usaged terms \emph{intrinsically}. Intrinsic
 typing means that we represent well typed and $\Ann$-usaged terms
 (and \emph{only} those) as inhabitants of an inductive family
 $\grR\gamma \vdash A$ indexed by usage context $\grR$, type
-context $\gamma$, and type $A$. We represent typing contexts as
-trees with types at the leaves, and usage contexts as functions
-that assign elements of $\Ann$ to members of the context. Using trees
+context $\gamma$, and type $A$.
+We represent the shape of a context as a nullary-binary tree, with typing and
+usage contexts being functions that assign types and elements of $\Ann$,
+respectively, to leaves of the tree.
+Using trees
 instead of lists for typing contexts has the advantage that extension
 of a context by multiple variables does not lead to complex counting
-arguments to access the pre-existing variables.\todo{left and right
-  constructors for paths}
+arguments to access the pre-existing variables, because context extension is
+(judgementally) injective.
+However, these precise details will eventually become irrelevant, as we will be
+able to use simultaneous renaming to smooth over any structural differences
+between contexts.
 
 \begin{figure}
   \begin{displaymath}
@@ -62,18 +67,23 @@ arguments to access the pre-existing variables.\todo{left and right
   \caption{A prototypical posemiring-usaged system}\label{fig:lr}
 \end{figure}
 
-\figref{fig:lr} presents a prototypical example of a system that our
+\Cref{fig:lr} presents a prototypical example of a system that our
 framework can represent, which is a subsystem of the \name{} system of
-\cite{WA20}. Each rule is given as a constructor: the premises are
+\citet{WA20}. Each rule is given as a constructor: the premises are
 named $p$, $s$, $t$, etc., and the conclusion is a constructor applied
-to those variables. Variables are represented intrinsically as members
+to those metalanguage variables.
+Object language variables are represented intrinsically as members
 of the type $\grR\gamma \sqni A$, which is a proof that the type $A$
 appears in the typing context, $i : \gamma \ni A$, together with a
 proof that $\grR \leq \langle i \rvert$.  Expanding the vector
 notation, the latter condition says that the selected variable $i$
 must have a usage annotation $\leq \gr1$ in $\grR$, while all other
-variables must have a usage annotation $\leq \gr0$. The
-\AgdaInductiveConstructor{var} rule imports variables into terms.
+variables must have a usage annotation $\leq \gr0$.
+We use the constructors \AgdaInductiveConstructor{$\swarrow$} and
+\AgdaInductiveConstructor{$\searrow$} to describe a path down the
+nullary-binary tree, terminated by the word
+\AgdaInductiveConstructor{here}.
+The \AgdaInductiveConstructor{var} rule imports variables into terms.
 
 The remaining rules are the introduction and elimination rules for
 three type constructors: \AgdaInductiveConstructor{⊸I} and
@@ -82,7 +92,7 @@ the bound variable is annotated with $\gr 1$ for ``use once'';
 \AgdaInductiveConstructor{⊕I} and \AgdaInductiveConstructor{⊕E} for
 sum types $A \oplus B$; and \AgdaInductiveConstructor{!I} and
 \AgdaInductiveConstructor{!E} for a $\Ann$-annotated exponential
-modality $\oc_{\gr r} A$.
+modality $\oc{\gr r} A$.
 
 There are two key observations to make about this system, which will
 guide the way we build our generic framework for $\Ann$-annotated
@@ -94,18 +104,18 @@ substructural systems:
   variables (\AgdaInductiveConstructor{⊸I},
   \AgdaInductiveConstructor{⊕E}, \AgdaInductiveConstructor{!E}).
 \item Rules with multiple typing premises must describe how the
-  resources of the conclusion (always denoted $\grR$) are distributed
+  usages of the conclusion (always denoted $\grR$) are distributed
   across the premises. In the \AgdaInductiveConstructor{⊸E} rule, the
-  resources are separated into two parts $\grP$ and $\grQ$ for the
+  usages are separated into two parts $\grP$ and $\grQ$ for the
   premises. This is an example of a \emph{multiplicative} rule in the
   terminology of Linear Logic \cite{girard87linear}. In the
   \AgdaInductiveConstructor{⊕E} we see an example of an
-  \emph{additive} rule, where the resource context $\grQ$ is shared
+  \emph{additive} rule, where the usage context $\grQ$ is shared
   between the premises $t$ and $u$\footnote{There is an unfortunate
     clash of terminology here: multiplicative rules \emph{add} their
-    resources, while additive rules \emph{share} their
-    resources.}. The \AgdaInductiveConstructor{!I} rule uses scaling
-  by $\gr r$ of the resources of the premise.
+    usage contexts, while additive rules \emph{share} their
+    usage contexts.}. The \AgdaInductiveConstructor{!I} rule uses scaling
+  by $\gr r$ of the usages of the premise.
 \end{enumerate}
 
 % \begin{figure}
@@ -132,13 +142,13 @@ constraints, we make use of combinators for combining premises that will
 relate their usage and typing contexts to the conclusion by
 construction.
 This idea comes from the work of \citet{RPKV20}, including the $\dotto$ and
-$\wand$ connectives we introduce later.
+$\wand$ connectives we use later.
 To handle binders, which introduce variables, we make
-use of a combinator that adds a variable with a given $Ann$-annotation
+use of a combinator that adds a variable with a given $\Ann$-annotation
 to an ambient context, without having to explicitly mention the parts
 of the context that have not changed. This technique is already
-present in some paper presentations of type systems, and is used as a
-simplifying technique by Allais et al.~\cite{AACMM21}.
+present in some paper presentations of type systems, and is formalised by
+\citet{AACMM21}.
 To manage how usage annotations are distributed between premises, we use the
 separating ($*$) and sharing ($\dot{\times}$) conjunction connectives from
 Bunched Implications~\cite{oHP99}.
@@ -152,12 +162,14 @@ connectives we will use in this paper are:
     I^*\,\grR &\coloneqq \grR \leq \gr0 \\
     (T \sep U)\,\grR &\coloneqq \Sigma \grP,\grQ.~\plr{\grR \leq \grP + \grQ}
                        \times T\,\grP \times U\,\grQ \\
-    (\gr r \cdot T)\,\grR &\coloneqq \Sigma \grP.~\plr{\grR \leq \gr r\grP}
-                       \times T\,\grP \\
     (T \wand U)\,\grP &\coloneqq \Pi \grQ,\grR.~\plr{\grR \leq \grP + \grQ}
-                        \to T\,\grQ \to U\,\grR
+                        \to T\,\grQ \to U\,\grR \\
+    (\gr r \cdot T)\,\grR &\coloneqq \Sigma \grP.~\plr{\grR \leq \gr r\grP}
+                       \times T\,\grP.
   \end{align*}
-where the function connectives $\dotto$ and $\wand$ are not used in typing rules, but are used in the rest of the framework.
+The function connectives $\dotto$ and $\wand$ are not used in typing rules, but
+are used in the rest of the framework (though one can interpret the horizontal
+line in a typing rule as $\dotto$ plus universal quantification).
 An important point to note is that bunched combinators induce
 \emph{linear} combinations of substructures, in the sense of the
 linear algebra of posemirings described in the previous section.
@@ -209,26 +221,26 @@ linear algebra of posemirings described in the previous section.
       \infer3{\AgdaInductiveConstructor{!E}~s~t : {} \vdash C}
     \end{prooftree}
   \end{displaymath}
-  \caption{The prototypical system of \figref{fig:lr} restated in terms of bunched combinators.}
+  \caption{The prototypical system of \cref{fig:lr} restated in terms of bunched combinators.}
   \label{fig:lr-comb}
 \end{figure}
 
-\figref{fig:lr-comb} shows our prototypical system restated with
+\Cref{fig:lr-comb} shows our prototypical system restated with
 implicit contexts and the bunched combinators. The inductive family is
 now denoted $\vdash A$, only mentioning context extensions, as we do
 in the rules \AgdaInductiveConstructor{⊸I},
 \AgdaInductiveConstructor{⊕E} and \AgdaInductiveConstructor{!E}. Thus,
 in the \AgdaInductiveConstructor{var} rule, the context is completely
-supressed. The \AgdaInductiveConstructor{⊸I} just has to state that a
-new variable with usage annotation $\gr1$ is added to the
+supressed. The \AgdaInductiveConstructor{⊸I} rule just has to state that a
+new variable with usage annotation $\gr1$ and type $A$ is added to the
 context. The \AgdaInductiveConstructor{⊸E} rule uses the separating
 conjunction ($*$) to combine the premises, indicating that the
-resources required by the two premises are added together for the
+usages of the two premises are added together for the
 conclusion. The \AgdaInductiveConstructor{⊕E} rule demonstrates the
 sharing conjunction $\dot\times$: the scrutinee term $s$ and the
 clause terms $t, u$ are combined by separating conjunction, because
-their resources must be combined, but the clause terms are combined by
-the sharing conjunction, because they must use the same resources.
+their usages must be combined, but the clause terms are combined by
+the sharing conjunction, because they have the same usage context.
 
 Bunched combinators, along with supression of unchanged typing
 contexts, leads to a more streamlined presentation of the system
@@ -237,11 +249,11 @@ inequalities. However, the larger advantage for us is that systems are
 constructed using these combinators \emph{automatically} admit
 renaming, substitution, and other scope-, type-, and usage-safe
 traversals. If we were to allow arbitrary modification of the context
-in premises, this would not always be possible, since there would be
+in premises, these results would not be possible, since there would be
 no guarantee that a substitution (for instance) could be ``pushed'' up
-from a conclusion to the premises. As we will see in \secref{sec:env},
+from a conclusion to the premises. As we will see in \cref{sec:env},
 our generic notion of environment (e.g., a simultaneous substitution)
-is essentially a linear transformation, and so automatically commutes
+is based around linear transformations, and so automatically commutes
 with the linear combinations of premises induced by the bunched
 connectives. This is the key to our generic results for all of the
 systems describable in our framework.
