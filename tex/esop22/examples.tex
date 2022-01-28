@@ -23,10 +23,10 @@ we can simplify our obligations in giving a \AgdaRecord{Semanitics} by coercing
 \end{lemma}
 \begin{proof}
   Let $b : \mathrm{Kripke}\,\V\,\C\,\Delta\,\Gamma\,A$.
-  That is, $b$ is a Kripke function yielding $\C$-computations, and we want to
-  apply it so as to get a $\C\,\plr{\Gamma, \Delta}\,A$.
+  That is, $b$ is a Kripke function yielding $\C$-computations
+  We want to apply $b$ so as to get a $\C\,\plr{\Gamma, \Delta}\,A$.
   Let $\grP\gamma = \Gamma$ and $\grQ\delta = \Delta$.
-  The $\Box^r$ in the type of $b$ allows us to rename $\Gamma$ to
+  The $\Box^r$ in the type of $b$ allows us to reverse-rename $\Gamma$ to
   $\Gamma, \gr0\delta$.
   Then we give the $\wand$-function an argument in context
   $\gr0\gamma, \Delta$, noting that
