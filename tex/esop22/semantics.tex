@@ -90,7 +90,7 @@ provide semantic interpretations for all the additional variables:
 
 % Kripke V C is given the extension \Theta
 
-% In \secref{sec:terms}, we defined \AgdaFunction{Scope} to let a
+% In \cref{sec:terms}, we defined \AgdaFunction{Scope} to let a
 % judgement-indexed family admit context extensions. However, a key
 % component of our generic semantic traversal is to make use of the open
 % family \AgdaBound{$\V$} of \emph{values}, which are the sort of thing
@@ -123,8 +123,8 @@ variables, not shared with them. The use of the
 \AgdaFunction{$\Box^r$} modality ensures that we can still use it in
 the presence of additional variables introduced by weakening.
 
-\AgdaFunction{Kripke} is functorial in the $\C$ argument, as witnessed
-by the \AgdaFunction{mapKC} function, which is essentially
+\AgdaFunction{Kripke} is functorial in the \AgdaBound{$\C$} argument,
+as witnessed by the \AgdaFunction{mapKC} function, which is essentially
 post-composition:
 
 \ExecuteMetaData[\Semanticstex]{mapKC}

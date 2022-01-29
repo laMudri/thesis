@@ -9,7 +9,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{catchfilebetweentags}
-\usepackage{cleveref}
+\usepackage[noabbrev,nameinlink]{cleveref}
 \usepackage{cmll}
 \usepackage{ebproof}
 \usepackage{mathrsfs}
@@ -55,11 +55,10 @@
 % \def\orcidID#1{\smash{\href{http://orcid.org/#1}{\protect\raisebox{-1.25pt}{\protect\includegraphics{orcid_color.eps}}}}}
 % \makeatother
 
-\newcommand{\figref}[1]{Figure \ref{#1}}
-\newcommand{\secref}[1]{Section \ref{#1}}
-\newcommand{\defref}[1]{Definition \ref{#1}}
-
 \newcommand{\bob}[1]{\textbf{#1}}
+
+\newenvironment{proofsketch}{%
+  \renewcommand{\proofname}{Proof sketch}\proof}{\endproof}
 
 \begin{document}
 %
@@ -233,6 +232,8 @@
 
 \appendix
 
+\section{A term written without the usage elaborator}\label{sec:explicit-term}
+
 {\bf TODO: explain and format properly.}
 \AgdaInductiveConstructor{!E$'$} and \AgdaInductiveConstructor{!I$'$} are
 variants on \AgdaInductiveConstructor{!E} and \AgdaInductiveConstructor{!I}
@@ -242,5 +243,18 @@ On concrete posemirings, unification is particularly poor at inferring these
 usage contexts from the proofs because addition and multiplication are no longer
 (judgementally) injective.
 \ExecuteMetaData[\HeavyItex]{cojoin-explicit}
+
+\section{Omitted pieces of the denotational semantics}\label{sec:den-sem-extras}
+
+\ExecuteMetaData[\WReltex]{WRel}
+
+\ExecuteMetaData[\WReltex]{IR}
+\ExecuteMetaData[\WReltex]{tensorR}
+\ExecuteMetaData[\WReltex]{lollyR}
+
+\todo{Define big intersection.}
+\ExecuteMetaData[\WReltex]{WRelMor}
+
+\ExecuteMetaData[\WReltex]{Bang}
 
 \end{document}

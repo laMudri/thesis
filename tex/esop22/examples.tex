@@ -1,8 +1,16 @@
-TODO: introductory paragraph
+In this section, we provide three example uses of semantic traversals: generic
+renaming and substitution, a usage elaborator, and a denotational semantics.
+The reader is also encouraged to see the far greater range of examples in the
+work of \citet{AACMM21}, which should adapt to our usage-annotated setting.
+Renaming and substitution are essential results, while the latter two examples
+focus on usage annotations.
 
-\bob{Reification dumped here for now}
-When \AgdaBound{$\V$} supports identity environments (as per \cref{thm:env-id}),
-we can simplify our obligations in giving a \AgdaRecord{Semanitics} by coercing
+A result we will use throughout this section is \emph{reification}.
+When we have an index-preserving mapping from usage-checked variables to
+$\V$-environments, we can construct environments of the form
+$\Gamma \env\V \Gamma$ (identity environments) for all $\Gamma$.
+This lets us write the \AgdaFunction{reify} function, which  simplifies our
+obligations in giving a \AgdaRecord{Semanitics} by coercing
 \AgdaFunction{Kripke} functions into just
 \AgdaBound{$\C$}-values in an extended context.
 
@@ -33,11 +41,9 @@ we can simplify our obligations in giving a \AgdaRecord{Semanitics} by coercing
   $\plr{\Gamma, \gr0\delta} + \plr{\gr0\gamma, \Delta} = \plr{\Gamma, \Delta}$,
   as we wanted from the result.
   The argument needs type $\gr0\gamma, \Delta \env\V \Delta$.
-  We produce this through the composition
-  $\gr0\gamma, \Delta \env\V \gr0\gamma, \Delta \env{\sqni} \Delta$,
-  using the instance of composition mentioned in \cref{thm:env-postren}.
-  The $\V$-environment follows from $v$ and \cref{thm:env-id}, while the
-  renaming is the complement to that used on $\Box^r$.
+  We produce this via \cref{thm:env-postren} from an environment
+  $\rho : \gr0\gamma, \Delta \env\V \gr0\gamma, \Delta$ created using $v$
+  and a renaming which is the complement to that used on $\Box^r$.
 \end{proof}
 
 All of the $\V$s used in examples in this paper support identity environments.
@@ -301,25 +307,23 @@ This provides an additional example to those of \citeauthor{AbelBernardy2020}.
 
 We will take semantics of this system into
 \emph{world-indexed relations}~\cite{AbelBernardy2020,context-constrained}.
-A world-indexed relation over a poset of worlds \AgdaBound{W} is a set over
-which
+A world-indexed relation (\AgdaRecord{WRel}) over a poset of worlds
+\AgdaBound{W} is a set over which
 we have a \AgdaBound{W}-indexed binary relation satisfying a presheaf-like
 property with respect to the order on \AgdaBound{W}.
-
-\ExecuteMetaData[\WReltex]{WRel}
+The rendered Agda code for world-indexed relations and constructions on them
+can be found in \cref{sec:den-sem-extras}.
 
 \begin{example}
   When \AgdaBound{W} is the 1-element set, a world-indexed relation is just a
   set equipped with a binary relation.
 \end{example}
 
-Morphisms between world-indexed relations \AgdaBound{R} and \AgdaBound{S}
-consist of a mapping between the underlying sets such that that mapping
-preserves relatedness from \AgdaBound{R} to \AgdaBound{S}.
+Morphisms (\AgdaRecord{WRelMor}) between world-indexed relations \AgdaBound{R}
+and \AgdaBound{S} consist of a mapping between the underlying sets such that, at
+each fixed world \AgdaBound{w}, the mapping preserves relatedness from
+\AgdaBound{R} to \AgdaBound{S}.
 
-\ExecuteMetaData[\WReltex]{WRelMor}
-
-\todo{Define big intersection.}
 When the poset of worlds forms a (relational) commutative monoid, such
 world-indexed relations support a symmetric monoidal closed structure, with
 objects denoted \AgdaFunction{I$^R$},
@@ -328,10 +332,6 @@ objects denoted \AgdaFunction{I$^R$},
 These reuse the bunched connectives \AgdaRecord{$I^*$}, \AgdaRecord{$\sep$}, and
 \AgdaRecord{$\wand$}, now over worlds rather than contexts.
 
-%\ExecuteMetaData[\WReltex]{IR}
-%\ExecuteMetaData[\WReltex]{tensorR}
-%\ExecuteMetaData[\WReltex]{lollyR}
-
 The final piece of sematics we need is a \emph{bang} operator.
 We allow the
 semantic \emph{bang} to be an arbitrary annotation-indexed functor on
@@ -339,8 +339,7 @@ world-indexed relations.
 This functor must respect all of the structure on the indices, making it a
 graded comonad over multiplication, as well as being lax monoidal at any
 particular index \AgdaBound{r}.
-
-\ExecuteMetaData[\WReltex]{Bang}
+These laws are listed in \cref{sec:den-sem-extras}.
 
 \begin{example}
   With \AgdaBound{W} being the 1-element set and annotations coming from the
@@ -354,28 +353,36 @@ particular index \AgdaBound{r}.
   \ExecuteMetaData[\Monotonicitytex]{BangR}
 \end{example}
 
-To associate semantics to syntax, we start as standard by associating
-world-indexed relations to types.
-We also extend the semantics of types to contexts, using \AgdaFunction{I$^R$},
-\AgdaFunction{$\otimes^R$}, and \AgdaField{!$^R$} to interpret the empty
-context, concatenation, and usage annotations on singletons, respectively.
+%To associate semantics to syntax, we start as standard by associating
+%world-indexed relations to types.
+%We also extend the semantics of types to contexts, using \AgdaFunction{I$^R$},
+%\AgdaFunction{$\otimes^R$}, and \AgdaField{!$^R$} to interpret the empty
+%context, concatenation, and usage annotations on singletons, respectively.
+%
+%\ExecuteMetaData[\WReltex]{sem}
+%
+%The semantics of a term is then to be a morphism from the interpretation of the
+%context to the interpretation of the term's type.
+%
+%\ExecuteMetaData[\WReltex]{sem-vdash}
 
-\ExecuteMetaData[\WReltex]{sem}
-
-The semantics of a term is then to be a morphism from the interpretation of the
-context to the interpretation of the term's type.
-
-\ExecuteMetaData[\WReltex]{sem-vdash}
-
-Variables are given semantics by \AgdaFunction{lookup$^R$} (definition omitted).
+The semantics of a type is given by \AgdaFunction{$\llbracket$\_$\rrbracket$},
+which maps into world-indexed relations.
+The function type is interpreted using \AgdaFunction{$\multimap^R$} and
+\AgdaField{!$^R$}.
+Contexts are interpreted by \AgdaFunction{$\llbracket$\_$\rrbracket^c$}, using
+\AgdaFunction{$\otimes^R$} and \AgdaFunction{I$^R$}.
+Terms are interpreted as morphisms by the open family
+\AgdaFunction{$\llbracket$\_$\vdash$\_$\rrbracket$}.
+Variables are interpreted by \AgdaFunction{lookup$^R$} (definition omitted).
 
 \ExecuteMetaData[\WReltex]{lookupR-type}
 
-Now, we give a \AgdaRecord{Semantics}.
+Now we give a \AgdaRecord{Semantics}.
 The choice of \AgdaBound{$\V$} as
 \AgdaRecord{\AgdaUnderscore{}$\sqni$\AgdaUnderscore{}} is somewhat arbitrary,
 given that a standard denotational semantics would not use intermediate
-environments in the same sense as renaming and substitution, but allows us to
+environments in the same sense as renaming and substitution, but it allows us to
 reuse the standard facts that variables support renaming and identity
 environments.
 With this choice of \AgdaBound{$\V$} and \AgdaBound{$\C$}, we interpret
@@ -390,10 +397,13 @@ the interpretation of the function \AgdaBound{m$'$}.
 
 \ExecuteMetaData[\WReltex]{Wrel}
 
-In order to map open terms to interpretations, we take the action of the
-semantics and give the identity renaming as the starting environment.
-
-\ExecuteMetaData[\WReltex]{wrel}
+Then, the semantics of terms is given by the function
+\AgdaFunction{semantics}\AgdaSpace{}\AgdaFunction{Wrel}\AgdaSpace{}%
+\AgdaFunction{1$^r$}, where \AgdaFunction{1$^r$} is the identity renaming.
+%In order to map open terms to interpretations, we take the action of the
+%semantics and give the identity renaming as the starting environment.
+%
+%\ExecuteMetaData[\WReltex]{wrel}
 
 \begin{example}\label{thm:minus}
   We can make a subtraction function from primitive addition and negation on
