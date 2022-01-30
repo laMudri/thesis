@@ -9,6 +9,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{catchfilebetweentags}
+\usepackage{hyperref}
 \usepackage[noabbrev,nameinlink]{cleveref}
 \usepackage{cmll}
 \usepackage{ebproof}
@@ -59,6 +60,8 @@
 
 \newenvironment{proofsketch}{%
   \renewcommand{\proofname}{Proof sketch}\proof}{\endproof}
+
+\def\orcidID#1{\smash{\href{http://orcid.org/#1}{\protect\raisebox{-1.25pt}{\protect\includegraphics{orcid_color.eps}}}}}
 
 \begin{document}
 %
@@ -151,7 +154,7 @@
 %   \item Rules
 %   \item Systems
 %   \item Example(s)
-%   \item Intepretation as Terms
+%   \item Interpretation as Terms
 %   \item Examples of Terms; using pattern synonyms (point out that proofs of usage accounting are painful)
 %   \end{enumerate}
 % \item (Section 5) Example Syntaxes
@@ -234,14 +237,15 @@
 
 \section{A term written without the usage elaborator}\label{sec:explicit-term}
 
-{\bf TODO: explain and format properly.}
+Below is a fully witten-out version of the example term at the end of
+\cref{sec:usage-elaborator}.
 \AgdaInductiveConstructor{!E$'$} and \AgdaInductiveConstructor{!I$'$} are
 variants on \AgdaInductiveConstructor{!E} and \AgdaInductiveConstructor{!I}
 with some of the usage contexts given explicitly (as well as the proofs that the
 usage contexts are correctly related).
-On concrete posemirings, unification is particularly poor at inferring these
-usage contexts from the proofs because addition and multiplication are no longer
-(judgementally) injective.
+On concrete posemirings (as in this example), unification is particularly poor
+at inferring these usage contexts from the proofs because addition and
+multiplication are no longer (judgementally) injective.
 \ExecuteMetaData[\HeavyItex]{cojoin-explicit}
 
 \section{Omitted pieces of the denotational semantics}\label{sec:den-sem-extras}

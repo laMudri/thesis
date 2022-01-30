@@ -78,13 +78,13 @@ replacing the textual occurrence of \AgdaBound{Ty} by the parameter
 \AgdaBound{I}.
 
 The definition \AgdaFunction{Kripke}\,$\V$\,$\C$\,$\Delta$ is a kind
-of function space that describes a $\C$ value parameterised by
+of function space that describes a $\C$ value parametrised by
 $\Delta$-many additional $\V$s (all correctly typed and usage
 annotated). It is used to describe how to go under binders in a
 Higher-Order Abstract Syntax style---to go under a binder we must
 provide semantic interpretations for all the additional variables:
 
-% When going under binders during a recursion, the context will be extended by some $\Theta$. This means that the current environemnt must be extended with $\Theta$s-worth of $\V$s
+% When going under binders during a recursion, the context will be extended by some $\Theta$. This means that the current environment must be extended with $\Theta$s-worth of $\V$s
 
 % we need the ability to say that
 
@@ -144,7 +144,7 @@ post-composition:
 
 We can now state the data required to implement a traversal assigning
 semantics to terms. For open families $\V$ and $\C$, interpreting
-variables and terms respectively, we assume that $\V$ is renamable,
+variables and terms respectively, we assume that $\V$ is renameable,
 that $\V$ is embeddable in $\C$, and that we have an algebra for a
 layer of syntax, where bound variables are handled using the Kripke
 function space:
@@ -181,7 +181,7 @@ To deal with a variable \AgdaBound{v}, we look it
 up in the environment \AgdaBound{$\rho$}, then use the
 \AgdaField{$\sem{\text{var}}$} field to map the resulting
 \AgdaBound{$\V$}-value to a \AgdaBound{$\C$}-value.
-To deal with a structure of subtems \AgdaBound{M}, we use the functoriality of
+To deal with a structure of subterms \AgdaBound{M}, we use the functoriality of
 the syntactic structure to consider each subterm separately.
 On a subterm, we apply \AgdaFunction{body}, which amounts to a recursive call
 to \AgdaFunction{semantics} with an extended environment.
@@ -194,7 +194,7 @@ For \AgdaFunction{body}, we are given a subterm \AgdaBound{M}, to
 which we want to apply \AgdaFunction{semantics}.  To do so, we need an
 extended version of the initial environment \AgdaBound{$\rho$}. We
 express this as the generation of a Kripke function that produces the
-extended enviroment given interpretations of the fresh variables. We
+extended environment given interpretations of the fresh variables. We
 take \AgdaBound{$\rho$}, which is an environment covering
 \AgdaBound{$\Delta$}, and \AgdaBound{$\sigma$}, which is an
 environment covering \AgdaBound{$\Theta$}, and glue them together
