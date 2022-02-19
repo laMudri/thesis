@@ -9,13 +9,12 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{catchfilebetweentags}
-\usepackage{hyperref}
-\usepackage[noabbrev,nameinlink]{cleveref}
+%\usepackage{hyperref}
 \usepackage{cmll}
 \usepackage{ebproof}
 \usepackage{mathrsfs}
 \usepackage{mathtools}
-\usepackage[numbers,sort&compress]{natbib}
+\usepackage[numbers,sort&compress,sectionbib]{natbib}
 \usepackage{newunicodechar}
 \usepackage{stmaryrd}
 %\usepackage{todonotes}
@@ -47,21 +46,34 @@
 \def\MuMuTildeTermtex{\genericlr/Generic/Linear/Example/MuMuTilde/Term.tex}
 \def\Snippetstex{../../agda/processed-latex/Snippets.tex}
 
-% \makeatletter
-% \RequirePackage[bookmarks,dvips,unicode,colorlinks=true]{hyperref}%
-%   \def\@citecolor{blue}%
-%   \def\@urlcolor{blue}%
-%   \def\@linkcolor{blue}%
-% \def\UrlFont{\rmfamily}
-% \def\orcidID#1{\smash{\href{http://orcid.org/#1}{\protect\raisebox{-1.25pt}{\protect\includegraphics{orcid_color.eps}}}}}
-% \makeatother
+\makeatletter
+\RequirePackage[bookmarks,unicode,colorlinks=true]{hyperref}%
+  \def\@citecolor{blue}%
+  \def\@urlcolor{blue}%
+  \def\@linkcolor{blue}%
+\def\UrlFont{\rmfamily}
+\def\orcidID#1{\smash{\href{http://orcid.org/#1}{\protect\raisebox{-1.25pt}{\protect\includegraphics{orcid_color.eps}}}}}
+\makeatother
+
+\usepackage[noabbrev,nameinlink]{cleveref}
+
+% ,dvips
 
 \newcommand{\bob}[1]{\textbf{#1}}
 
 \newenvironment{proofsketch}{%
   \renewcommand{\proofname}{Proof sketch}\proof}{\endproof}
 
-\def\orcidID#1{\smash{\href{http://orcid.org/#1}{\protect\raisebox{-1.25pt}{\protect\includegraphics{orcid_color.eps}}}}}
+% \def\orcidID#1{\smash{\href{http://orcid.org/#1}{\protect\raisebox{-1.25pt}{\protect\includegraphics{orcid_color.eps}}}}}
+
+\renewcommand{\refname}{References}
+\makeatletter
+\renewcommand{\bibsection}{%
+   \section*{\refname%
+            \@mkboth{\MakeUppercase{\refname}}{\MakeUppercase{\refname}}%
+   }
+}
+\makeatother
 
 \begin{document}
 %
