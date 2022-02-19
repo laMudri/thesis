@@ -243,36 +243,31 @@ checks statically that exactly one derivation is returned.
 The candidate usage vector \AgdaBound{R} will be \AgdaFunction{[]} for closed
 terms, and otherwise we have to supply the intended usage annotations.
 
-The example below is of a term needed to show that, in the
-$\{\gr0, \gr1, \gr\omega\}$ (linearity) posemiring of \cref{thm:linearity},
-$\oc\gr\omega$ forms a comonad.
-We have instantiated the usage elaborator so that:
-\AgdaField{0\#$^{-1}$} is a singleton on $\gr0$ and $\gr\omega$, and empty on
-$\gr1$;
-\AgdaField{1\#$^{-1}$} is a singleton on $\gr1$ and $\gr\omega$, and empty on
-$\gr0$;
-\AgdaField{+$^{-1}$} gives $\gr0 \mapsto [(\gr0,\gr0)]$,
-$\gr1 \mapsto [(\gr0,\gr1),(\gr1,\gr0)]$, and
-$\gr\omega \mapsto [(\gr\omega,\gr\omega)]$; and
-\AgdaField{*$^{-1}$} gives $(\gr\omega, \gr0) \mapsto [\gr0]$,
-$(\gr\omega, \gr1) \mapsto []$, and
-$(\gr\omega, \gr\omega) \mapsto [\gr\omega]$
-(omitting $(\gr0, \_)$ and $(\gr1, \_)$ cases for brevity).
-Note that we do not consider splitting $\gr\omega$ up as, say,
-$\gr1 + \gr\omega$, because this splitting would introduce more
-non-determinism but not allow any more terms to be typed.
-As such, the only non-determinism comes when we have variables annotated
-$\gr1$ and need to do an additive split, like when we apply the
-\AgdaInductiveConstructor{!E} rule below.
-At this point, the variable can become either $\gr0$-annotated in the left
-subterm and $\gr1$-annotated on the right, or vice-versa.
-We will find that, because the left subterm wants to use that variable, the
-former choice will be rejected.
-The function \AgdaFunction{var\#} is a convenience for converting statically
-known natural numbers, representing de Bruijn \emph{levels}, into variable
-terms.
-
+We can now use the elaborator to automatically infer the usage
+annotations for the example at the end of \cref{sec:terms}. This
+allows us to write:
 \ExecuteMetaData[\PaperExamplestex]{cojoin}
+We have instantiated the usage elaborator so that:
+\AgdaField{0\#$^{-1}$} is a singleton on $\gr0$ and $\gr\omega$, and
+empty on $\gr1$; \AgdaField{1\#$^{-1}$} is a singleton on $\gr1$ and
+$\gr\omega$, and empty on $\gr0$; \AgdaField{+$^{-1}$} gives $\gr0
+\mapsto [(\gr0,\gr0)]$, $\gr1 \mapsto [(\gr0,\gr1),(\gr1,\gr0)]$, and
+$\gr\omega \mapsto [(\gr\omega,\gr\omega)]$; and \AgdaField{*$^{-1}$}
+gives $(\gr\omega, \gr0) \mapsto [\gr0]$, $(\gr\omega, \gr1) \mapsto
+[]$, and $(\gr\omega, \gr\omega) \mapsto [\gr\omega]$ (omitting
+$(\gr0, \_)$ and $(\gr1, \_)$ cases for brevity). Note that we do not
+consider splitting $\gr\omega$ up as, say, $\gr1 + \gr\omega$, because
+this splitting would introduce more non-determinism but not allow any
+more terms to be typed. As such, the only non-determinism comes when
+we have variables annotated $\gr1$ and need to do an additive split,
+like when we apply the \AgdaInductiveConstructor{!E} rule below. At
+this point, the variable can become either $\gr0$-annotated in the
+left subterm and $\gr1$-annotated on the right, or vice-versa. We will
+find that, because the left subterm wants to use that variable, the
+former choice will be rejected. The function \AgdaFunction{var\#} is a
+convenience for converting statically known natural numbers,
+representing de Bruijn \emph{levels}, into variable terms.
+
 
 \subsection{A denotational semantics}
 
@@ -311,8 +306,8 @@ A world-indexed relation (\AgdaRecord{WRel}) over a poset of worlds
 \AgdaBound{W} is a set over which
 we have a \AgdaBound{W}-indexed binary relation satisfying a presheaf-like
 property with respect to the order on \AgdaBound{W}.
-The rendered Agda code for world-indexed relations and constructions on them
-can be found in \cref{sec:den-sem-extras}.
+The Agda code for world-indexed relations and constructions on them
+can be found in \cite{generic-lr}. %\cref{sec:den-sem-extras}.
 
 \begin{example}
   When \AgdaBound{W} is the 1-element set, a world-indexed relation is just a
@@ -339,7 +334,7 @@ world-indexed relations.
 This functor must respect all of the structure on the indices, making it a
 graded comonad over multiplication, as well as being lax monoidal at any
 particular index \AgdaBound{r}.
-These laws are listed in \cref{sec:den-sem-extras}.
+These laws are listed in the \texttt{Generic.Linear.Example.WRel} module in \cite{generic-lr}. %\cref{sec:den-sem-extras}.
 
 \begin{example}
   With \AgdaBound{W} being the 1-element set and annotations coming from the

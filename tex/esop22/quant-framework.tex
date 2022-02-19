@@ -57,8 +57,6 @@
 
 \usepackage[noabbrev,nameinlink]{cleveref}
 
-% ,dvips
-
 \newcommand{\bob}[1]{\textbf{#1}}
 
 \newenvironment{proofsketch}{%
@@ -246,30 +244,30 @@
 
 \medskip\noindent\includegraphics{cc_by_4-0.eps}
 
-\appendix
+% \appendix
 
-\section{A term written without the usage elaborator}\label{sec:explicit-term}
+% \section{A term written without the usage elaborator}\label{sec:explicit-term}
 
-Below is a fully witten-out version of the example term at the end of
-\cref{sec:usage-elaborator}.
-\AgdaInductiveConstructor{!E$'$} and \AgdaInductiveConstructor{!I$'$} are
-variants on \AgdaInductiveConstructor{!E} and \AgdaInductiveConstructor{!I}
-with some of the usage contexts given explicitly (as well as the proofs that the
-usage contexts are correctly related).
-On concrete posemirings (as in this example), unification is particularly poor
-at inferring these usage contexts from the proofs because addition and
-multiplication are no longer (judgementally) injective.
-\ExecuteMetaData[\HeavyItex]{cojoin-explicit}
+% Below is a fully written-out version of the example term at the end of
+% \cref{sec:usage-elaborator}.
+% \AgdaInductiveConstructor{!E$'$} and \AgdaInductiveConstructor{!I$'$} are
+% variants on \AgdaInductiveConstructor{!E} and \AgdaInductiveConstructor{!I}
+% with some of the usage contexts given explicitly (as well as the proofs that the
+% usage contexts are correctly related).
+% On concrete posemirings (as in this example), unification is particularly poor
+% at inferring these usage contexts from the proofs because addition and
+% multiplication are no longer (judgementally) injective.
+% \ExecuteMetaData[\HeavyItex]{cojoin-explicit}
 
-\section{Omitted pieces of the denotational semantics}\label{sec:den-sem-extras}
+% \section{Omitted pieces of the denotational semantics}\label{sec:den-sem-extras}
 
-\ExecuteMetaData[\WReltex]{WRel}
+% \ExecuteMetaData[\WReltex]{WRel}
 
-\ExecuteMetaData[\WReltex]{IR}
-\ExecuteMetaData[\WReltex]{tensorR}
-\ExecuteMetaData[\WReltex]{lollyR}
-\ExecuteMetaData[\WReltex]{WRelMor}
+% \ExecuteMetaData[\WReltex]{IR}
+% \ExecuteMetaData[\WReltex]{tensorR}
+% \ExecuteMetaData[\WReltex]{lollyR}
+% \ExecuteMetaData[\WReltex]{WRelMor}
 
-\ExecuteMetaData[\WReltex]{Bang}
+% \ExecuteMetaData[\WReltex]{Bang}
 
 \end{document}
