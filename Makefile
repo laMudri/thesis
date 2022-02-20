@@ -32,6 +32,8 @@ $(1)/processed-latex/%.tex: $(1)/latex/%.tex
 	-e 's/─✴/⇥/g' \
 	-e 's/\\AgdaFunction{⇒}/\\AgdaFunction{⇴}/g' \
 	-e 's/>>/\\ensuremath{\\rangle\\rangle}/g' \
+	-e 's/(|/\\ensuremath{\\mathbf\\llparenthesis}/g' \
+	-e 's/|)/\\ensuremath{\\mathbf\\rrparenthesis}/g' \
 	$$< >$$@
 
 $(1)/latex/%.tex: $(1)/%.lagda.tex
