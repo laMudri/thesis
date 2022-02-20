@@ -179,15 +179,22 @@ Terms in this data type are difficult to write by hand, due to the
 need for proofs that the usage contexts are handled correctly. For
 example, the following term is needed to show that, in the $\{\gr0,
 \gr1, \gr\omega\}$ (linearity) posemiring of \cref{thm:linearity},
-$\oc\gr\omega$ forms a comonad. \AgdaInductiveConstructor{!E$'$} and
-\AgdaInductiveConstructor{!I$'$} are variants on
-\AgdaInductiveConstructor{!E} and \AgdaInductiveConstructor{!I} with
-some of the usage contexts given explicitly (as well as the proofs
-that the usage contexts are correctly related). On concrete
+$\oc\gr\omega$ forms a comonad.
+Pattern synonyms \AgdaInductiveConstructor{$\multimap$I},
+\AgdaInductiveConstructor{!E$'$}, and
+\AgdaInductiveConstructor{!I$'$} stand for applications of
+\AgdaInductiveConstructor{`con}, with the latter two taking explicit usage
+contexts and proofs.
+On concrete
 posemirings (as in this example), unification is particularly poor at
-inferring these usage contexts from the proofs because addition and
+inferring the usage contexts from the proofs because addition and
 multiplication are no longer (judgementally) injective.
-\ExecuteMetaData[\HeavyItex]{cojoin-explicit} Writing terms like this
+The function \AgdaFunction{var\#} is a way of turning a statically known de
+Bruijn level and a usage proof into an application of \AgdaInductiveConstructor{`var}.
+
+\ExecuteMetaData[\HeavyItex]{cojoin-explicit}
+
+ Writing terms like this
 is clearly unsustainable. We will see a way of automating the
 necessary proofs via a \AgdaRecord{System}-generic elaborator in
 \cref{sec:usage-elaborator}.
