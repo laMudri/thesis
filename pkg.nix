@@ -1,4 +1,4 @@
-{ stdenv, texlive, ghostscript, nix-gitignore }:
+{ stdenv, texlive, ghostscript, nix-gitignore, agda }:
 let
   tex-env = texlive.combine {
     inherit (texlive) scheme-small latexmk beamer stmaryrd mathpartir rsfs
@@ -13,7 +13,9 @@ let
 in stdenv.mkDerivation {
   name = "thesis";
   src = nix-gitignore.gitignoreSource [] ./.;
-  buildInputs = [ tex-env ghostscript ];
+  buildInputs = [ tex-env ghostscript
+                  (agda.withPackages (ps: [ ps.standard-library ]))
+		];
   buildPhase = ''
     latexmk tex/thesis.tex
   '';
