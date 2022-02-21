@@ -1,0 +1,428 @@
+ESOP 2022 Paper #89 Reviews and Comments
+===========================================================================
+Paper #89 A Framework for Substructural Type Systems
+
+
+Review #89A
+===========================================================================
+
+Overall merit
+-------------
+A. Good paper, I will champion it
+
+Confidence
+----------
+X. I am an expert in this area
+
+Paper summary
+-------------
+This paper defines a logical framework for specifying substructral
+simple type systems, which is embedded in Agda, and specifically focuses
+on systems where the typing judgement annotates each variable in the
+context with a resource, in the style following Girard's linear logic
+with subexponentials.  The framework provides some logical connectives
+for specifying inference rules, including a cartesian and separating
+conjunction and scaling.  The framework consists of a definition of the
+syntax of inference rules, along with a very general traversal of the
+syntax, which is instantiated to define syntactic operations (renaming
+and substitution), semantic models (a worlds interpretation), and
+implementation phases (a resource inference mechanism).  The framework
+handles natural deduction systems, and a couple of examples are given
+--- a standard resource-annotated intuitionistic lambda calculus, along
+with a resource-annotated classical logic (which shows the flexibility
+of the framework to represent systems whose structure differs from the
+framework itself).
+
+Strengths
+---------
+Overall, I think the paper is a strong contribution that is very
+deserving of publication in ESOP.  The framework seems very well-suited
+to representing resource-annotated type systems, and should have a large
+number of instances.  The Agda implementation seems like it will be a
+useful library for researchers working on these topics.  The generic
+traversal, which gives weakening, substitution, models, type inference
+as instances, seems very broadly applicable.  The use of a bit of linear
+algebra (vectors and matrix multiplication) to represent substitutions
+between resources in a functional style is quite clever, and seems less
+fiddly than the usual inductive definition.
+
+Weaknesses
+----------
+The general idea of a logical framework embedded in Agda is certainly
+not new, and the the generic follows the same structure as some
+previous work [3]. But it is an important contribution to show that
+this all structure extends to sub-structural type systems, and the
+design here is quite elegant.
+
+Explanation of your recommendation and comments to authors
+----------------------------------------------------------
+Technical comments:
+
+Page 2: It might be worth giving some general guidance about how to
+think about the orientation of <= --- it was quite surprising in Example
+1 that "infinity" is the *bottom* of the order.  I don't think I saw
+this example stated in the paper, but I think this means that if you
+encoded n-linear affine logic (linear logic with weakening), "less than"
+would actually be "greater than" (e.g., so that 2 x : A |- x : A is
+well-typed by weakening away one use of x).
+
+Page 3: In the "An element of a chosen posemiring" paragraph, it would
+help to define <= on vectors (the green scripty P's and Q's that occur
+in the typing rules) --- I assume this means pointwise <= of resources?
+
+Page 4: It would have helped me to have an explicit comment about what
+isomorphisms you're eliding when representing resource vectors (the
+script P and script Q) in different ways.  In Section 2, the notion of
+vector is used informally.  In Section 3, it says that that a context is
+a tree, and a P or Q is a function from positions in the tree (which I
+interpret as tree paths?) to resources.  Later on, in Section 5, the P
+and Q are treated as vectors / functions from size(Delta) to R.  Just
+before Section 3, with the comment about matrix notation, you could also
+explain how you are numbering the leaves of the tree to convert between
+these perspectives, and refer back to this when you switch perspectives.
+At first read, "type checking" Section 5 was difficult for me.
+Additionally, it's not really clear to me why P and Q are roman and
+black at the top of page 4 but scripty and green in Section 3, if you're
+making these conversions implicit.  
+
+Page 5: At the very top, when you say "<= 1" it would be good to refer
+back to a comment suggested above about the orientation of <= --- this
+was confusing to me until I realized it was probably flipped from <= on
+natural numbers.  It would also be good to reminder the reader that
+<= might just be equality (e.g. to model linear logic).
+
+Page 5: "conflicts" -> "contexts"
+
+Page 5, bottom: As far as I understand, the resource 0 doesn't have any
+special status with respect to the preorder <=.  So why does R <= 0 get
+a "connective" in the framework, but not, say, 0 <= R or R <= 1 (all
+1's) or for some other vector etc.?  Would something technical go wrong
+(like Lemma 3/Lemma 4/Lemma 5 on page 14 failing for these connectives),
+or are they just not useful?
+
+Page 7, top: broken ref to Figure 2
+
+Page 9: As far as I can tell, the *c and I*c and r.c used in the
+definition of [[_]]p are not defined defined anywhere.  Presumably these
+are some lifting of the bunched connectives on page 5 to OpenTypes (Ctx
+-> Set), but since page 5 is defined for resource vectors, not contexts,
+I'm not sure exactly what you mean.  And don't you need a xc rather than
+the Agda x for interpreting `x?
+
+Page 12: In Definition 5.1, I found the role of the Q' confusing at
+first.  What I think is happening is that, a priori, it looks like you
+are quantifying over some resources entirely unrelated to P or Q, but
+the backwards-in assumption that comes later constrains it to be a unit
+vector, so quantifying over all Q' is really just a convenience (there
+is only 1 Q' to check for each position in delta).
+
+Page 13: In Lemma 2, there is some Agda creeping in (rho.Psi) that
+hasn't exactly been defined, since you gave Definition 4 in words, not
+as a record type.
+
+Page 14: In Lemma 6, has the \forall[ _ ->dot _ ] notation been defined?
+
+Page 25: It would be good to give some empirical sense for how well this
+resource elaborator works --- what examples is it able to handle, what
+times out, etc.? 
+
+Page 25: The type systems for Amortized Automated Resource Analysis by
+         Hofman, Jost, Hoffmann, etc. have the flavor of these
+         resource-annotated type systems -- can you encode those?
+
+It would also be nice to show that you can encode a system with
+"non-logical" rules, e.g. some of the primitives for
+differential privacy in [18].  Both of the examples in the
+paper deal only with the "logical connectives", but I imagine
+many of the applications of the framework will keep the same
+connectives but add domain-specific primitives.  
+
+Page 25: What are the prospects for extending the framework beyond
+         simple types, e.g. to handle resource polymorphism
+         (quantification over resources) or dependent types?
+
+Questions for authors’ response
+---------------------------------
+Please clarify the "Page 9: As far as I can tell, the *c and I*c and
+r.c used in the definition of [[_]]p are not defined defined
+anywhere. " to help me understand this definition.
+
+
+
+Review #89B
+===========================================================================
+
+Overall merit
+-------------
+C. Weak paper, though I will not fight strongly against it
+
+Confidence
+----------
+Y. I am knowledgeable in this area, but not an expert
+
+Paper summary
+-------------
+This paper develops a framework to assist the mechanisation of (a
+class of) substructural type systems, aiming to provide a similar
+experience to that of mechanising the metatheory of structural type
+systems. The framework focuses on type systems whose substructurality
+is captured by usage indices drawn from a (partially ordered)
+semiring.  The overall approach models such systems in an
+intrinsically typed manner, developing a metasyntax of typing rules,
+leveraging a series of combinators to facilitate the handling of
+resource management and binding.
+To build terms in a type system described by the framework, the
+authors introduce some auxiliary definitions to facilitate talking
+about types indexed over contexts, judgment forms and judgements that
+admit new bound variables, which are then used to give meaning to
+the metasyntax used to represent such systems.
+
+To show the generality of the approach, the authors show how to
+represent a prototypical subsystem of the work of Wood and Atkey [19],
+and a usage-annotated variant of the System L in natural deduction form. 
+
+In terms of reasoning about the metatheory of the represented systems,
+the authors define traversals over their (meta)terms which can be used
+to define operations such as renaming and substitution (which are type
+preserving due to the intrinsically typed nature of the framework) and
+to give denotational semantics.
+
+To facilitate the use of the framework, namely in terms of proof
+obligations, the authors develop an elaborator for usage data.
+
+The framework is fully formalized in Agda.
+
+Strengths
+---------
+- A very general approach to defining substructural type systems based
+  on usages, in principle applying to an entire class of systems.
+- Type-system generic properties can be derived uniformly.
+- Fully mechanised.
+
+Weaknesses
+----------
+- Extremely dense in notation and fairly sparse in giving intuitions
+  of what's going on.
+- Can only really be followed by an expert in this kind of extremely
+  general formalization in Agda.
+- The applicability of the framework in terms of metareasoning
+   beyond the use cases in the paper is not really discussed and
+   the automation/elaborator is not really exercised in the presentation.
+
+Explanation of your recommendation and comments to authors
+----------------------------------------------------------
+I will preface my review by stating that I am knowledgeable in the
+area of substructural type systems and their formalization techniques,
+although not so much in this kind of extremely generic formulation.
+
+Overall I think that the presented work has a lot of potential, and
+generally delivers on its promises. The developed machinery does
+provide a generic way of representing usage-based substructural type
+systems, renaming and substitution, but the presentation is extremely
+opaque and makes very little effort in appealing to any but the most
+expert readers.
+
+Generally speaking, the presentation is mostly fine up to the point
+where building terms of a described system is explained, where the
+authors simply give a series of Agda definitions with minimal
+explanation of what the definitions actually do, only giving very
+vague/high-level intuitions of what the definitions are actually
+doing. The usual Agda abuse of mixfix notation does little to help in
+this regard as well. More effort in making the paper readable by a
+wider audience is simply necessary.
+
+I am fine with the later sections of a paper being of a technical
+nature when the bigger picture is clear, but I expect to read this
+kind of paper and be able to understand (1) how to, in principle, use
+this framework to define a type system and some of its metatheory;
+(2) what kind of metatheoretical reasoning I can expect to derive in
+this way.
+
+In terms of (1), the paper mostly delivers on the first half,
+but the definition of traversals is again a series of Agda definitions
+with extremely dense notation that is not really explained. At the
+very least, I would expect a kind of wrap-up that explains *how* to
+use the machinery and not just very nice looking unicode.
+
+In terms of (2), the authors exercise their semantic traversals by
+giving a renaming, a substitution, denotational semantics and usage
+elaborator traversals. The clarity of these varies a bit, but I
+generally miss a bigger picture explanation here -- what kind of
+"things" can I expect to reasonably define as traversals? Defining a
+traversal in this sense means mapping into Semantics, but the authors
+never even state this. More care is needed to make the paper
+accessible to the audience.
+
+Finally, the authors define an elaborator of usages in section 7.3.,
+effectively presenting a kind of linearity checker / annotater,
+motivated by the fact that actually writing terms in the framework can
+become tedious due to the need for proofs dealing with usage reasoning
+(and the time it takes for Agda to type check these). An elaborator
+for this is great, but how can I use it? I understand space was
+already short, but this section really doesn't work as is, in my opinion.
+
+Concretely, I think some of the examples in the paper
+(e.g. Examples 8-10) could be cut for extra space so that definitions,
+roadmaps and actual explanations can be given in a way that makes the
+paper understandable to a wider audience. This is not just a reviewer
+being capricious -- the work is a mechanized (meta)framework
+that can be used to define and reason about substructural type
+systems. The paper must make it clear *how* people other than
+the authors can do this.
+
+Typos and related issues:
+
+Paper contents overflow to page 26.
+
+p1, line 1: we concern?
+
+p2 par1: odd phrasing, "The way Allais et al. consolidate and codify
+... , we aim to replicate ...". We aim to replicate the way ...
+
+p2, last par before sect 2: missing final .
+
+p7, par1: broken figure ref.
+
+p7, last par: decsription
+
+p13 first par: Each of the rows in the matrix is a basis vector
+because variables can only be formed in contexts with basis
+annotations or less.
+
+Questions for authors’ response
+---------------------------------
+What other kind of meta-theoretical properties
+do the authors see as being made easier to define/show using
+their framework?
+
+The elaborator for usages is seemingly defined in a generic way. How
+does one actually use it?
+
+
+
+Review #89C
+===========================================================================
+
+Overall merit
+-------------
+B. OK paper, but I will not champion it
+
+Confidence
+----------
+Z. I am not an expert; my evaluation is that of an informed outsider
+
+Paper summary
+-------------
+The paper presents a (meta)theoretic technique for generically
+encoding substructural type systems, allowing generic metatheory over
+them.
+
+Strengths
+---------
+Addressing the need to repeat metatheory for similar but different
+systems is a worthwhile goal.
+
+Weaknesses
+----------
+The presentation could be improved to require less background reading,
+perhaps at the cost of shifting some content into the appendix.  The
+discussion of related work is sparse.
+
+Explanation of your recommendation and comments to authors
+----------------------------------------------------------
+The goal of this work is worthwhile, but the paper would benefit from
+changes in structure.  There's a lot going on, which is positive, but
+part of the job of a paper is to convince the reader to stay and read
+deeply.  My main suggestion is to spend more time on the parts that
+may be settled prior work to the authors, but are not settled or even
+known for many readers.  If you can get a reader to believe firmly
+that Figure 1 is just a different way of representing a standard type
+system they already care about, they will stick with the rest of the
+paper.  Basically: Expand section 3, starting with a non-intrinsic
+version of Figure 1; explain how to get from the non-intrinsic system
+to Figure 1; explain how to get to Figure 2.  With the ESOP page limit
+this might require moving some material to the appendix, which is
+never something I enjoy doing as an author, but I think it would be
+worth doing.
+
+My second suggestion is that while the paper cites the work it
+extends, and some related work, it's missing a unified discussion of
+related work.  More importantly, it's missing some work that may be
+related: ambient contexts are used in higher-order abstract syntax (as
+in LF/Twelf and its successors), for example, corresponding to the
+elision of Rγ when we move from the Figure 1 system to the Figure 2
+system.  Adding remarks along the lines of "if you know higher-order
+abstract syntax encodings, then..." doesn't solve everything because
+not everyone is familiar with those, but it's worth considering.  You
+want to get across that the work is new and interesting, maybe a
+little strange if it's not what you're used to, but not completely
+different from what's come before.
+
+Section 1:
+
+"In this paper, we concern": "we consider"?
+
+Missing period in sentence just above Section 2.
+
+Section 2:
+
+In Definition 2, in the first line, I take it that → is implication,
+and so the first line is equivalent to "If r ≤ r' and u ≤ u' then r ·
+u ≤ r' · u' ".  If this were written in words, it would require no
+guessing as to what → means (→ being a rather popular symbol in PL
+papers) and should still fit on one line.  Making the quantifiers
+explicit ("For all r, r', u, u' ", etc.) wouldn't hurt.
+
+Same goes for Definition 3.
+
+Section 3:
+
+In Figure 1, *adding* some conventional notation, such as a rule name
+to the right of the line, would make this easier to follow.  I had
+just enough experience with the intrinsic style to not be totally
+lost.  Additional space around the colons might help too.
+
+The explanation of Figure 1 is sparse.  The subtext I got was "go read
+[19] first".  If I do have to read [19] first to understand this
+paper, maybe say that upfront.  I would like to have more than 13
+lines to understand 7 rules given in a not entirely conventional
+style.
+
+It might ease the reader's job to give the whole system, or at least
+one or two rules, in a non-intrinsic style first.  Then, explain in
+detail how some of the Figure 1 rules correspond to the non-intrinsic
+rules.
+
+Is the "Rγ" notation chosen for a reason, compared to something like
+R; γ?
+
+"we make use the separating": drop "make"
+"supressed" should be "suppressed", same for "supression"
+
+Section 4:
+
+"Figure ??": Figure 2?
+
+"We now start to use Agda notation…to emphasise that our framework has
+been implemented": It would be helpful to explain some of that
+notation, at least in the first part of 4.1.
+
+4.2: mention that "MMT" stands for "mu mu-tilde", e.g., by introducing
+"the μμ~-calculus (pronounced 'mu mu-tilde')"
+
+Section 5:
+
+"When considering values, the fact that P' ≤ Q' Ψ reduces to P' ≤ Q'."
+This was hard to parse.  I think I understood the meaning, but would
+dropping the word "that" be another way to say what the authors mean?
+"...the fact P' ≤ Q' Ψ reduces to P' ≤ Q' ".
+
+References:
+
+[6]  Missing venue.
+
+[8]  Try to find the conference citation rather than "SIGPLAN Not.".
+
+[11]  University name?
+
+[13]  Missing venue.
