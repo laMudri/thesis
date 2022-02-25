@@ -1,7 +1,7 @@
 Our aim with the following traversals is to derive a recursion scheme for
 terms which abstracts over some of the details of variable binding and
 changes to usage annotations.
-We follow the structure given by \citet{AACMM20} closely, with
+We follow the structure given by \citet{AACMM21} closely, with
 the main difference having come already in the syntax and environments.
 
 \subsection{Renameability}
@@ -87,12 +87,12 @@ Post-composition of a renaming onto an environment comes from
 We tend to use \AgdaFunction{reify} whenever \AgdaBound{$\V$} supports
 identity environments.
 In this paper, all examples support identity environments.
-However, \citet[p.~27]{AACMM20} give some important examples that do not
+However, \citet[p.~27]{AACMM21} give some important examples that do not
 support identity environments, and thus cannot use \AgdaFunction{reify}.
 The feature that causes the lack of support for identity environments is that
 a semantics can make use of the fact that only variables of particular kinds
 are bound by the syntax.
-In the examples of \citeauthor{AACMM20}, a bidirectionally typed language only
+In the examples of \citeauthor{AACMM21}, a bidirectionally typed language only
 binds variables that synthesise their type, as opposed to those whose type is
 checked.
 The semantics of type-checking and elaboration rely on variables synthesising
