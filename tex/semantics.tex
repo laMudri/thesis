@@ -1,136 +1,164 @@
-Our aim with the following traversals is to derive a recursion scheme for
-terms which abstracts over some of the details of variable binding and
-changes to usage annotations.
-We follow the structure given by \citet{AACMM21} closely, with
-the main difference having come already in the syntax and environments.
+Given a $\V$-environment $\Gamma \Rightarrow \Delta$, the function
+\AgdaFunction{semantics} we define in this section assigns a
+$\C$-value in context $\Gamma$ to every term in context $\Delta$,
+where $\C$ is an \AgdaFunction{OpenFam} being the carrier of the
+semantic interpretation of terms ($\V$ being the semantic
+interpretation of variables). Before we can define
+\AgdaFunction{semantics}, we need to treat recursion through rules'
+premises (\cref{sec:functorial}) and extension of environments when
+going under variable binders (\cref{sec:kripke}).
 
-\subsection{Renameability}
 
-\todo{Maybe this goes in the Environment section.}
-We saw in \cref{sec:env} that our notion of environment specialises to
-simultaneous renaming by setting $\V$ to be $\sqni$.
-This is encoded below as
-\AgdaFunction{\AgdaUnderscore{}$\Rightarrow^r$\AgdaUnderscore{}}.
+% Our goal in this section is to define \AgdaFunction{semantics}, a
+% recursor that turns a term into a \AgdaBound{$\C$}-value using a
+% \AgdaBound{$\V$}-environment, in a type preserving way:\bob{Get rid of
+%   ``body'' here}
 
-\ExecuteMetaData[\Renamingtex]{Ren}
+% \ExecuteMetaData[\Semanticstex]{semantics-type}
 
-In a setting where new variables can be bound in the middle of a derivation,
-it is important that the values we carry around while traversing a term can
-handle the existence of variables that appear but they do not use.
-We call any such notion of value \emph{renameable}.
-The cofree renameable \AgdaFunction{OpenType} on an \AgdaFunction{OpenType}
-\AgdaBound{T} is \AgdaFunction{$\Box^r$}\AgdaSpace{}\AgdaBound{T}, with
-\AgdaBound{T} then being \AgdaFunction{Renameable} if it forms a
-\AgdaFunction{$\Box^r$}-coalgebra.
+% The \AgdaBound{$\V$} and \AgdaBound{$\C$} are \AgdaFunction{OpenFam}s,
+% representing the interpretations of variables and terms
+% respectively. In \cref{sec:traversal} we will see the data that must
+% be provided to make a \AgdaFunction{semantics} for a given
+% system. Before that, we must see how to deal with the two complicated
+% features of our syntax: the usage annotations (\cref{sec:functorial})
+% and variable binding (\cref{sec:kripke}). \todo{fwd ref to where these are used}
 
-\ExecuteMetaData[\Renamingtex]{Boxr}
-\ExecuteMetaData[\Renamingtex]{Renameable}
+\subsection{A layer of syntax is functorial}\label{sec:functorial}
 
-A renameable notion of value gives rise to a renameable notion of environment,
-essentially by renaming each contained value in an appropriate way.
+A basic property of the universe of syntaxes we described in \cref{sec:syntax}
+is that every syntax supports a functorial action on subterms, realised by the function \AgdaFunction{map-s}.
+Its type says that to map a function \AgdaBound{f}
+over a layer of syntax, there must be a linear map \AgdaBound{F} relating the
+domain and codomain usage contexts, and \AgdaBound{f} should be usable
+wherever the domain and codomain usage contexts are similarly related by
+\AgdaBound{F}.
 
-\begin{lemma}[\AgdaFunction{ren\textasciicircum{}Env}]\label{thm:env-ren}
-  If $\plr{-} \sdtstile{}\V A$ is renameable for all $A$, then so is
-  $\plr{-} \env\V \Delta$ for all $\Delta$.
-\end{lemma}
-\begin{proof}
-  For renameable $\V$, we can implement $\mathrm{lift}$ as in
-  \cref{thm:env-comp} with $\U \coloneqq {\sqni}$ and
-  $\V \coloneqq \W \coloneqq \V$.
-  Renaming the environment then becomes an instance of environment composition.
-\end{proof}
+\ExecuteMetaData[\Maptex]{map-s-type}
 
-\subsection{The Kripke function space}
+This generality is needed because usage contexts change between
+a term and its immediate subterms---they are decomposed according to the bunched connectives used in the rules.
+\AgdaBound{X} and \AgdaBound{Y} are \AgdaFunction{ExtOpenFam}s, with
+\AgdaBound{$\Theta$} being the context extension for a subterm (i.e., the
+variables newly bound in that subterm).
+Unlike usage annotations, types in the contexts \AgdaBound{$\gamma$} and \AgdaBound{$\delta$}, and the conclusion types implicit here, are preserved throughout.
+This is the essence of the usage annotation based approach---we use traditional techniques for variable binding, with the usage annotations layered on top.
 
-Earlier, when talking about syntax, we saw \AgdaFunction{Scope} as a simple way
-to let an open family admit context extensions.
-However, a key component of our generic semantic traversal is to make use of
-the open family \AgdaBound{$\V$} of \emph{values}, which are the sort of thing
-we store in an environment.
-The definition \AgdaFunction{Kripke} gives an alternative to
-\AgdaFunction{Scope} which interprets the newly bound variables via a
-requirement of $\V$-values rather than extra assumptions for the
-$\C$-computation.
+The heart of \AgdaFunction{map-s} is \AgdaFunction{map-p}, which recursively
+works through the structure \AgdaBound{ps} of premises of the rule applied,
+acting on each subterm it finds.
+Here, particularly in the clauses for \AgdaInductiveConstructor{`$\sep$} and
+\AgdaInductiveConstructor{`$\cdot$}, we see why it is not enough for the
+function on subterms to apply at usage contexts \AgdaBound{P} and \AgdaBound{Q}
+--- rather, it also needs to apply at any similarly related \AgdaBound{P$'$}
+and \AgdaBound{Q$'$}.
+In the case of \AgdaInductiveConstructor{`$\sep$}, we have that
+$\grP \leq \grP_M + \grP_N$, with \AgdaBound{M} and \AgdaBound{N} being
+collections of subterms in usage contexts $\grP_M$ and $\grP_N$, respectively.
+Linearity of \AgdaBound{F} yields $\grQ_M$ and $\grQ_N$ such that
+$\grQ \leq \grQ_M + \grQ_N$ and we use \AgdaFunction{map-p} recursively at
+$(\grP_M, \grQ_M)$ and $(\grP_N, \grQ_N)$ on \AgdaBound{M} and \AgdaBound{N}.
+The cases for \AgdaInductiveConstructor{`$\cdot$} and
+\AgdaInductiveConstructor{`$I^*$} are similar, each using a different aspect
+of linearity.
+In contrast, the cases for \AgdaInductiveConstructor{`$\dot1$} and
+\AgdaInductiveConstructor{`$\dot\times$}, which are the only constructors used in fully structural
+systems, do not involve any changes in the usage contexts.
+
+\ExecuteMetaData[\Maptex]{map-p}
+
+\subsection{The Kripke function space}\label{sec:kripke}
+
+At this point we introduce a minor generalisation to
+\AgdaFunction{OpenFam} and \AgdaFunction{ExtOpenFam}:
+\AgdaBound{I}\AgdaSpace{}\AgdaFunction{---OpenFam} and
+\AgdaBound{I}\AgdaSpace{}\AgdaFunction{---ExtOpenFam}.  We obtain the
+definition of \AgdaBound{I}\AgdaSpace{}\AgdaFunction{---OpenFam} by
+replacing the textual occurrence of \AgdaBound{Ty} by the parameter
+\AgdaBound{I}.
+
+The definition \AgdaFunction{Kripke}\,$\V$\,$\C$\,$\Delta$ is a kind
+of function space that describes a $\C$ value parametrised by
+$\Delta$-many additional $\V$s (all correctly typed and usage
+annotated). It is used to describe how to go under binders in a
+Higher-Order Abstract Syntax style---to go under a binder we must
+provide semantic interpretations for all the additional variables:
+
+% When going under binders during a recursion, the context will be extended by some $\Theta$. This means that the current environment must be extended with $\Theta$s-worth of $\V$s
+
+% we need the ability to say that
+
+% Kripke V C is given the extension \Theta
+
+% In \cref{sec:terms}, we defined \AgdaFunction{Scope} to let a
+% judgement-indexed family admit context extensions. However, a key
+% component of our generic semantic traversal is to make use of the open
+% family \AgdaBound{$\V$} of \emph{values}, which are the sort of thing
+% we store in an environment.  The definition \AgdaFunction{Kripke}
+% gives an alternative to \AgdaFunction{Scope} which interprets the
+% newly bound variables via a requirement of $\V$-values rather than
+% extra assumptions for the $\C$-computation.
 
 \ExecuteMetaData[\Semanticstex]{Kripke}
 
-\AgdaFunction{Wrap} is a device that turns any type family into an equivalent
-type family that is judgementally injective in its indices.
-It turns the type family into a parametrised record with a single field
-\AgdaField{get} whose type is the type in the body of the $\lambda$-abstraction.
-For understanding the meaning of the type family, \AgdaFunction{Wrap} can be
-ignored.
+\AgdaFunction{Wrap}
+is a device that turns any type family into an equivalent type family
+that is judgementally injective in its indices, which helps with
+Agda's type inference.
+It turns the type family into a parametrised
+record with a single field \AgdaField{get} whose type is the type in
+the body of the $\lambda$-abstraction.
+For understanding the meaning of
+\AgdaFunction{Kripke}, \AgdaFunction{Wrap} can be ignored.
+
 If $\Delta$ is of the form $\gr{s_1}B_1, \ldots, \gr{s_n}B_n$, then
 \ExecuteMetaData[\Snippetstex]{KripkeVCDGA}\ is equivalent to
-\ExecuteMetaData[\Snippetstex]{KripkeExpanded}.
-That is to say, the Kripke function is expecting a value for each newly bound
-variable, at the multiplicity of its annotation, together with the resources
-supporting each of those values.
-The need for \AgdaFunction{$\Box^r$} is exemplified by the following construct
-\AgdaFunction{reify}, where we weaken \AgdaBound{$\Gamma$} by a $\gr0$ed-out
-version of \AgdaBound{$\Delta$}.
-The \AgdaBound{$\Delta$} then gets filled in by the $\V$-values.
+\ExecuteMetaData[\Snippetstex]{KripkeExpanded}\ by Currying.  That is
+to say, the Kripke function is expecting a value for each newly bound
+variable, at the multiplicity of its annotation, together with the
+resources supporting each of those values. We use the ``magic wand''
+function space here to enforce the invariant that the freshly bound
+variables have usage annotations that are added to the existing
+variables, not shared with them. The use of the
+\AgdaFunction{$\Box^r$} modality ensures that we can still use it in
+the presence of additional variables introduced by weakening.
 
-When \AgdaBound{$\V$} supports identity environments (as per \cref{thm:env-id}),
-we can coerce a \AgdaFunction{Kripke} function into just a
-\AgdaBound{$\C$}-value in an extended context.
-To show this, we instantiate the Kripke function with the renaming
-$\swarrow^r : \Gamma, \gr0\delta \env\sqni \Gamma$ to extend the scope, and
-pass it an argument environment
-$\plr{\id^\V; \searrow^r} : \gr0\gamma, \Delta \env\V \Delta$ to fill in the
-extended part.
-Post-composition of a renaming onto an environment comes from
-\cref{thm:env-postren}.
+\AgdaFunction{Kripke} is functorial in the \AgdaBound{$\C$} argument,
+as witnessed by the \AgdaFunction{mapKC} function, which is essentially
+post-composition:
 
-\ExecuteMetaData[\Syntactictex]{reify}
+\ExecuteMetaData[\Semanticstex]{mapKC}
 
-We tend to use \AgdaFunction{reify} whenever \AgdaBound{$\V$} supports
-identity environments.
-In this paper, all examples support identity environments.
-However, \citet[p.~27]{AACMM21} give some important examples that do not
-support identity environments, and thus cannot use \AgdaFunction{reify}.
-The feature that causes the lack of support for identity environments is that
-a semantics can make use of the fact that only variables of particular kinds
-are bound by the syntax.
-In the examples of \citeauthor{AACMM21}, a bidirectionally typed language only
-binds variables that synthesise their type, as opposed to those whose type is
-checked.
-The semantics of type-checking and elaboration rely on variables synthesising
-their type, so \AgdaBound{$\V$} is chosen to cover only those variables.
-Instead of using \AgdaFunction{reify}, we must observe that each syntactic form
-only binds such synthesising variables.
-Similar phenomena would appear in, say, a call-by-value language where
-variables are values (not computations), or a polarised language where
-variables always have a polarity matching their type.
+% is exemplified by the following construct
+% \AgdaFunction{reify}, where we weaken \AgdaBound{$\Gamma$} by a $\gr0$ed-out
+% version of \AgdaBound{$\Delta$}.
+% The \AgdaBound{$\Delta$} then gets filled in by the $\V$-values.
 
-\subsection{Semantic traversal}
+% \bob{Move this para}
+% This means that \AgdaBound{A} in the definition of \AgdaFunction{Kripke} has
+% type \AgdaBound{I}, rather than specifically \AgdaBound{Ty}.
+% We use this generality later in \AgdaFunction{extend}, setting \AgdaBound{I}
+% to \AgdaDatatype{Ctx}.
 
-The aim of this subsection is to give an alternative recursion principle for
-terms that incorporates some of the environment-handling seen in the
-implementations of renaming and substitution.
-The rest of this section assumes the following: a renameable open family
-\AgdaBound{$\V$} that embeds into the open family \AgdaBound{$\C$}, and an
-algebra for a layer of syntax at \AgdaBound{$\C$}.
+\subsection{Semantic traversal}\label{sec:traversal}
+
+We can now state the data required to implement a traversal assigning
+semantics to terms. For open families $\V$ and $\C$, interpreting
+variables and terms respectively, we assume that $\V$ is renameable,
+that $\V$ is embeddable in $\C$, and that we have an algebra for a
+layer of syntax, where bound variables are handled using the Kripke
+function space:
+
+% The aim of this subsection is to give an alternative recursion principle for
+% terms that incorporates some of the environment-handling seen in the
+% implementations of renaming and substitution.
+% The rest of this section assumes the following: a renameable open family
+% \AgdaBound{$\V$} that embeds into the open family \AgdaBound{$\C$}, and an
+% algebra for a layer of syntax at \AgdaBound{$\C$}.
 
 \ExecuteMetaData[\Semanticstex]{Semantics}
 
 %\ExecuteMetaData[\Semanticstex]{Comp}
-
-Under the assumption that \AgdaBound{$\V$} is renameable, we can decompose
-\cref{thm:lr-bind} as
-\AgdaFunction{reify}\AgdaSpace{}\AgdaOperator{\AgdaFunction{$\circ$}}%
-\AgdaSpace{}\AgdaFunction{extend}, with \AgdaFunction{extend} defined below.
-We can think of \AgdaFunction{extend} as our best effort to extend an
-environment by \AgdaBound{$\Theta$} without access to an identity environment
-at \AgdaBound{$\Theta$}.
-We instead take \AgdaBound{$\rho$}, which is an environment covering
-\AgdaBound{$\Delta$}, and \AgdaBound{$\sigma$}, which is an environment
-covering \AgdaBound{$\Theta$}, and glue them together using
-\cref{thm:env-rules}, after having renamed \AgdaBound{$\rho$} via
-\cref{thm:env-ren} to make it fit the new context \AgdaBound{$\Gamma^+$}
-(intended to be \ExecuteMetaData[\Snippetstex]{GT}).
-
-\ExecuteMetaData[\Semanticstex]{extend}
 
 We mutually define the action \AgdaFunction{semantics} and its lemma
 \AgdaFunction{body}.
@@ -153,7 +181,7 @@ To deal with a variable \AgdaBound{v}, we look it
 up in the environment \AgdaBound{$\rho$}, then use the
 \AgdaField{$\sem{\text{var}}$} field to map the resulting
 \AgdaBound{$\V$}-value to a \AgdaBound{$\C$}-value.
-To deal with a structure of subtems \AgdaBound{M}, we use the functoriality of
+To deal with a structure of subterms \AgdaBound{M}, we use the functoriality of
 the syntactic structure to consider each subterm separately.
 On a subterm, we apply \AgdaFunction{body}, which amounts to a recursive call
 to \AgdaFunction{semantics} with an extended environment.
@@ -162,14 +190,34 @@ environment \AgdaBound{$\rho$} to work in the usage contexts of the subterms.
 
 \ExecuteMetaData[\Semanticstex]{semantics}
 
-For \AgdaFunction{body}, we are given a subterm \AgdaFunction{M}, to which we
-want to apply \AgdaFunction{semantics}.
-To do so, we need an extended version of the initial environment
-\AgdaBound{$\rho$}.
-The best we can achieve without identity environments for \AgdaBound{$\V$} is
-a Kripke function returning an extended environment.
-We use \AgdaFunction{mapK$\C$} to post-compose this function by the
-\AgdaSymbol{$\lambda$}-function taking an extended environment and acting with
-it on \AgdaBound{M}.
+For \AgdaFunction{body}, we are given a subterm \AgdaBound{M}, to
+which we want to apply \AgdaFunction{semantics}.  To do so, we need an
+extended version of the initial environment \AgdaBound{$\rho$}. We
+express this as the generation of a Kripke function that produces the
+extended environment given interpretations of the fresh variables. We
+take \AgdaBound{$\rho$}, which is an environment covering
+\AgdaBound{$\Delta$}, and \AgdaBound{$\sigma$}, which is an
+environment covering \AgdaBound{$\Theta$}, and glue them together
+using the inductive rules for generating environments, after having
+renamed \AgdaBound{$\rho$} via \cref{thm:env-ren} to make it fit the
+new context \AgdaBound{$\Gamma^+$} (intended to be
+\ExecuteMetaData[\Snippetstex]{GT}):
+
+\ExecuteMetaData[\Semanticstex]{extend}
+
+% The best we can achieve without identity environments for \AgdaBound{$\V$} is
+% a Kripke function returning an extended environment.
+To define \AgdaFunction{body}, we use \AgdaFunction{mapK$\C$} to
+post-compose the environment extension by the
+\AgdaSymbol{$\lambda$}-function taking an extended environment and
+acting with it on \AgdaBound{M}.
 
 \ExecuteMetaData[\Semanticstex]{body}
+
+% \todo{FIX} Under the assumption that \AgdaBound{$\V$} is renameable, we can decompose
+% \cref{thm:lr-bind} as
+% \AgdaFunction{reify}\AgdaSpace{}\AgdaOperator{\AgdaFunction{$\circ$}}%
+% \AgdaSpace{}\AgdaFunction{extend}, with \AgdaFunction{extend} defined below.
+% We can think of \AgdaFunction{extend} as our best effort to extend an
+% environment by \AgdaBound{$\Theta$} without access to an identity environment
+% at \AgdaBound{$\Theta$}.
