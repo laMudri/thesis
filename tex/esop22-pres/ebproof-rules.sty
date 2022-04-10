@@ -1,0 +1,43 @@
+%%
+%% This is file `ebproof-rules.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% ebproof-rules.dtx  (with options: `package')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from ebproof-rules.sty.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file ebproof-rules.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+\NeedsTeXFormat{LaTeX2e}
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+\RequirePackage{ebproof}
+\ProvidesExplPackage{ebproof-rules}{2022/03/10}{1.0}{mathpar and rule support for ebproof}
+\cs_set_eq:NN \l__ebproof_rules_standard_par \par
+\NewDocumentCommand\ebrule{o +m}{
+  \group_begin:
+    \cs_set_eq:NN \par \l__ebproof_rules_standard_par
+    \vbox:n{
+      \hbox:n {
+        \begin{prooftree}[#1]
+          #2
+        \end{prooftree}
+      }
+    }
+  \group_end:
+}
+\endinput
+%%
+%% End of file `ebproof-rules.sty'.

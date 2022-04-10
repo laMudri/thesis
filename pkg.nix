@@ -8,7 +8,8 @@ let
       multirow enumitem changepage draftwatermark everypage
       titling todonotes ebproof cleveref cm-super turnstile
       acmart xstring totpages hyperxmp comment preprint
-      collection-fontsrecommended collection-fontsextra epstopdf;
+      collection-fontsrecommended collection-fontsextra epstopdf
+      tikzmark biblatex biber;
   };
 in stdenv.mkDerivation {
   name = "thesis";
