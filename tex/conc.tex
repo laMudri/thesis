@@ -1,1 +1,21 @@
 \chapter{Conclusions}\label{sec:conc}
+
+FIXME: this chapter is directly from the ESOP22 paper.
+
+We have presented a framework for doing metatheory for a class of substructural
+type systems in Agda.
+The framework gives us renaming, substitution, and a usage elaborator for new
+syntaxes for free, which we hope can facilitate prototyping and the
+mechanisation of more interesting semantic results.
+Beside the mechanised framework itself, we believe its methodology --- the use
+of bunched premise combinators --- can guide and simplify the development of
+(potentially unmechanised) substructural type systems.
+
+Our account of substructurality is based on the linear algebraic
+principles described by \citet{WA20}.
+However, these details only really affect the definition of environment,
+in which the use of linear maps is motivated by them being the standard notion
+of morphism between vectors.
+We could imagine that a similar notion of morphism is found for the kind of
+annotations found in \citet{LicataSR17}, allowing a framework to consider
+finer substructural systems.

@@ -1,1 +1,75 @@
 \chapter{Introduction}
+
+FIXME: this chapter is directly from the ESOP22 paper.
+
+In this paper, we treat the metatheory of a class of substructural type
+systems related to linear logic~\cite{girard87linear}.
+This class is variously known as
+\emph{coeffectful}~\cite{PetricekOM14,Granule18},
+\emph{quantitative}~\cite{BrunelGMZ14,Atkey18}, or
+\emph{resource-aware}~\cite{GhicaS14},
+or is given no particular name~\cite{reed10distance,abadi99core},
+and generalises bounded linear logic to track variable usage with semiring
+annotations.
+In all of these systems, we have some ambient semiring $\Ann$, and in the
+judgements of the type system, variables are annotated by elements of $\Ann$
+describing \emph{how} that variable can be used.
+The additive structure of $\Ann$ gives the ability to count, or otherwise
+accumulate, usages of variables in multiple subterms.
+The multiplicative structure gives rise to a form of modality, for example
+allowing multiple or unlimited reuse, or movement between security levels, in
+the type system.
+
+The aspect of such systems we tackle here is their basic metatheory and
+mechanisation thereof.
+
+We build upon both the general structural framework of
+\citet{AACMM21} and the substructural techniques of \citet{WA20}.
+The way \citeauthor{AACMM21} consolidate and codify mechanisation techniques for
+propositional natural deduction systems based on intrinsically typed syntax and
+de Bruijn indices, we aim to replicate for linear-like systems based on
+semiring usage annotations.
+By picking a trivial semiring, our work can subsume that of
+\citeauthor{AACMM21}, except for the many pieces of machinery we have not yet
+ported to this new framework.
+
+Our work complements that of \citet{Granule18} on the Granule programming
+language.
+Where Granule focuses on writing programs \emph{in} the language and running
+them, we focus on metatheoretic reasoning \emph{about} type systems.
+%As such, whereas Granule has a convenient syntax, performant type-checker,
+%interpreter
+
+Our work is similar in scope to that of \citet{LicataSR17}, though we work in
+a natural deduction style rather than a sequent calculus style.
+Where \citeauthor{LicataSR17} are much more agnostic in terms of
+substructurality --- allowing for non-commutative and bunched logics ---
+we are much more agnostic in terms of syntax.
+The system of \citeauthor{LicataSR17} is essentially a single calculus,
+supporting ``product'' ($\mathrm F$) types and ``function'' ($\mathrm U$)
+types, parametrised on a \emph{mode theory} describing its structural rules.
+For this system, they derive the strong result of cut elimination.
+Meanwhile, we leave syntax design to the user, and consequently can only
+guarantee substitution (which we can only get because of our commitment to
+natural deduction).
+
+This paper proceeds as follows.
+In \cref{sec:algebra}, we review and fix conventions pertaining to partially
+ordered semirings and vectors over them.
+In \cref{sec:bunched-rules}, we introduce an informal meta-syntax allowing us
+to state substructural typing rules succinctly and without explicit reference
+to contexts.
+In \cref{sec:syntax}, we mechanise that meta-syntax, giving a type of
+\emph{descriptions} of type systems, and interpreting those descriptions as
+types of intrinsically typed terms.
+In \cref{sec:env}, we discuss usage-aware environments: a generalisation of
+the structures used in simultaneous renaming and substitution proofs.
+We use environments in \cref{sec:semantics} to state an alternative
+elimination principle for terms, and give examples of such eliminations in
+\cref{sec:examples}.
+The examples are syntax-generic renaming and substitution, a specific
+denotational semantics, and a syntax-generic usage elaborator.
+Finally, we conclude and discuss future work in \cref{sec:conc}
+
+The work presented in this paper has been mechanised in Agda,
+with the code available for building upon~\cite{generic-lr}.

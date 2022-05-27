@@ -3,3 +3,290 @@
 Categories, (co)products, monoidal categories, string diagrams (in Rel),
 monoid objects.
 Examples: Set, Rel, partial functions, commutative monoids.
+
+\begin{definition}
+  A \emph{category} is a collection $\obj$ of objects, a family
+  $\hom : \obj \times \obj \to \Set$, for each object $A$ an element
+  $\id : \hom(A,A)$, and for each triple of objects $A, B, C$ a function
+  ${\circ} : \hom(B,C) \times \hom(A,B) \to \hom(A,C)$ such that the following
+  laws hold for any $f : \hom(A,B), g : \hom(B,C), h : \hom(C,D)$.
+  \begin{itemize}
+    \item $\id \circ f = f$
+    \item $f \circ \id = f$
+    \item $(h \circ g) \circ f = h \circ (g \circ f)$
+  \end{itemize}
+  I sometimes write $f; g$ for $g \circ f$.
+\end{definition}
+
+I give a somewhat unusual definition of \emph{monoidal categories} via
+\emph{multicategories}.
+I use this approach to capture the purpose of monoidal categories in many
+examples, particularly in algebra and programming languages: to provide a way to
+encode morphisms of arbitrary arity as unary morphisms by representing $n$-ary
+domains as internal $n$-ary products.
+
+I choose to present multicategories in a style where composition models
+simultaneous substitution rather than single substitution.
+This choice is consistent with the rest of this thesis, which concerns
+simultaneous substitution.
+
+\begin{definition}
+  A \emph{multicategory} is a collection $\obj$ of objects, a family
+  $\hom : \List \obj \times \obj \to \Set$ (with $\hom([A_1, \ldots, A_n], B)$
+  written $\hom(A_1, \ldots, A_n; B)$), for each object $A$ an element
+  $\id : \hom(A; A)$, and for each list of lists $\Psi$, each list $\Gamma$, and
+  each object $A$, a function
+  ${\circ} : \hom(\Gamma; A) \times \plr{\prod_i \hom(\Psi_i; \Gamma_i)} \to
+  \hom\plr{\sum_i \Psi_i; A}$ such that the following laws hold.
+  \begin{itemize}
+    \item $\id \circ f = f$
+    \item $f \circ \plr{\lambda i.~\id} = f$
+    \item $h \circ \plr{\lambda i.~g_i \circ \lambda j.~f_{ij}} =
+      (h \circ \lambda i.~g_i) \circ \lambda ij.~f_{ij}$
+  \end{itemize}
+\end{definition}
+
+\begin{example}
+  The following give rise to multicategories:
+  \begin{itemize}
+    \item Sets and multi-ary functions (functions of the form
+      $A_1 \times \cdots \times A_n \to B$)
+    \item $K$-vector spaces and multilinear maps
+    \item For any simple type theory with sequents of the form
+      $\Gamma \vdash A$, where $\Gamma$ is a list of types and $A$ is a type,
+      types and open terms (up to $\beta\eta$-equivalence) form a multicategory.
+  \end{itemize}
+\end{example}
+
+Related to the multicategory of $K$-vector spaces and multilinear maps is the
+multicategory of commutative monoids and multilinear maps.
+I use the latter later in this chapter\todo{forward reference}, so I will
+develop it fully as an example.
+
+\begin{example}
+  The multicategory of \emph{commutative monoids and multilinear maps} has as
+  objects commutative monoids.
+  A morphism of type $A_1, \ldots, A_n \to B$ is a function
+  $f : A_1 \times \cdots \times A_n \to B$ such that the following laws hold:
+  \begin{itemize}
+    \item $f(x_1, \ldots, 0_{A_i}, \ldots, x_n) = 0_B$
+    \item $f(x_1, \ldots, y +_{A_i} z, \ldots, x_n) =
+      f(x_1, \ldots, y, \ldots, x_n) +_B f(x_1, \ldots, z, \ldots, x_n)$
+  \end{itemize}
+  The identity function of type $A \to A$ serves as the identity
+  (multi)morphism.
+  Composition is given by multi-place composition of functions, which satisfies
+  the above laws because in a composite $g \circ [f_1, \ldots, f_n]$, a
+  commutative monoid operation in the domain of the composite bubbles through
+  one of the $f_i$ to become one operation in position $i$ of the domain of $g$,
+  and then bubbles through $g$.
+  That this identity and composition follow the equational laws follows
+  straightforwardly by considering the underlying functions.
+\end{example}
+
+\begin{definition}
+  A multicategory $\C$ gives rise to its \emph{category of contexts} $\C^*$ as
+  follows:
+  \begin{itemize}
+    \item $\obj(\C^*) \coloneqq \List(\obj\C)$
+    \item $\C^*\plr{\sum_i \Psi_i, \Delta} \coloneqq \prod_i \C(\Psi_i; \Delta_i)$
+      for any $\Psi : \List(\List(\obj\C))$
+    \item $\id^* : \Gamma \to^* \Gamma \coloneqq \overline\id$
+    \item $(\sigma : \Delta \to^* \Theta) \circ^* (\rho : \Gamma \to^* \Delta) :
+      (\Gamma \to^* \Theta) \coloneqq \lambda i.~\sigma_i \circ \lambda j.~\rho_{ij}$
+      \todo{Still wrong}
+  \end{itemize}
+\end{definition}
+
+\begin{definition}
+  Each multicategory $\C$ \emph{restricts} to a category $\C^1$, where
+  $\C^1(A, B) \coloneqq \C(A; B)$ and identity and composition are as in $\C$.
+\end{definition}
+
+\begin{definition}\label{def:tensor-product}
+  A \emph{tensor product} in a multicategory $\C$ of objects $A$ and $B$ is an
+  object $A \otimes B$ and a map ${\otimes} : A, B \to A \otimes B$ such that
+  any morphism $f : \Gamma, A, B, \Delta \to C$ uniquely factors as:
+
+  \begin{tikzcd}
+    \Gamma, A, B, \Delta \arrow[d,"f"']
+    \arrow[r,"{\overline\id, \otimes, \overline\id}"]
+    & \Gamma, A \otimes B, \Delta
+    \arrow[dl,dashed,"f^{\Gamma, A \otimes B, \Delta}"] \\
+    C
+  \end{tikzcd}
+
+  When it is clear from context which two objects are being multiplied, I will
+  write just $f^{\otimes}$ for the unique morphism.
+\end{definition}
+
+\begin{definition}\label{def:tensor-unit}
+  A \emph{tensor unit} in a multicategory $\C$ is an object $I$ and a map
+  $I : {\cdot} \to I$ such that any morphism
+  $f : \Gamma, \Delta \to C$ uniquely factors as:
+
+  \begin{tikzcd}
+    \Gamma, \Delta \arrow[d,"f"']
+    \arrow[r,"{\overline\id, I, \overline\id}"]
+    & \Gamma, I, \Delta \arrow[dl,dashed,"f^{\Gamma, I, \Delta}"] \\
+    C
+  \end{tikzcd}
+
+  When it is clear from context where the $I$ is being introduced, I will
+  write just $f^I$ for the unique morphism.
+\end{definition}
+
+\begin{lemma}\label{thm:tensor-product-terms}
+  For each morphism $f : \Gamma \to A$ and $g : \Delta \to B$, we have a
+  morphism $(f, g) : \Gamma, \Delta \to A \otimes B$ such that we have, for any
+  $h : \Gamma', A, B, \Delta' \to C$, that
+  $h^{\otimes} \circ [\overline\id, (f, g), \overline\id] =
+  h \circ [\overline\id, f, g, \overline\id]$, and that
+  $\id = (\id, \id)^{\otimes} : A \otimes B \to A \otimes B$.
+\end{lemma}
+\begin{proof}
+  The composite $(\otimes) \circ [f, g]$ has the required type.
+
+  To prove the first equation, note that
+  \begin{align*}
+    h^{\otimes} \circ [\overline\id, (f, g), \overline\id]
+    &= h^{\otimes} \circ [\overline\id, {\otimes} \circ [f, g], \overline\id] \\
+    &= h^{\otimes} \circ [\overline\id, {\otimes}, \overline\id]
+    \circ [\overline\id, f, g, \overline\id].
+  \end{align*}
+  Then, we have that
+  $h^{\otimes} \circ [\overline\id, {\otimes}, \overline\id] = h$
+  by the defining diagram of the tensor product (\cref{def:tensor-product}).
+
+  To prove the second equation, note that the diagram below commutes.
+  Because this is an instance of the diagram in \cref{def:tensor-product},
+  uniqueness gives us the desired equation.
+
+  \begin{tikzcd}
+    A, B \arrow[d,"{\otimes}"'] \arrow[r,"{\otimes}"]
+    & A \otimes B \arrow[dl,"\id"] \\
+    A \otimes B
+  \end{tikzcd}
+\end{proof}
+
+\begin{lemma}\label{thm:tensor-unit-terms}
+  For any $h : \Gamma', \Delta' \to C$, we have that
+  $h^I \circ [\overline\id, I, \overline\id] =
+  h \circ [\overline\id, \overline\id]$
+  and $\id = I^I : I \to I$.
+\end{lemma}
+\begin{proof}
+  The first equation is just the commuting diagram of \cref{def:tensor-unit},
+  modulo composition with identity morphisms.
+  For the second equation, note that the diagram below commutes.
+  Because this is an instance of the diagram in \cref{def:tensor-unit},
+  uniqueness gives us the desired equation.
+
+  \begin{tikzcd}
+    {\cdot} \arrow[d,"I"'] \arrow[r,"I"]
+    & I \arrow[dl,"\id"] \\
+    I
+  \end{tikzcd}
+\end{proof}
+
+\begin{lemma}
+  In a multicategory $\C$ with all tensor products, $\otimes$ induces a
+  bifunctor ${\otimes} : \C, \C \to \C$.
+\end{lemma}
+\begin{proof}
+  The action on objects is given by $\otimes$.
+  The action on morphisms $f : A \to A'$ and $g : B \to B'$ is given by
+  $(f, g)^{\otimes}$.
+  Preservation of identity is already proved in \cref{thm:tensor-product-terms},
+  and preservation of composition is left as an exercise.
+\end{proof}
+
+\begin{lemma}
+  For any tensor product and tensor unit, we have the following natural
+  isomorphisms:
+  \begin{itemize}
+    \item $I \otimes A \cong A$
+    \item $A \otimes I \cong A$
+    \item $(A \otimes B) \otimes C \cong A \otimes (B \otimes C)$
+  \end{itemize}
+\end{lemma}
+
+\begin{definition}\label{def:monoidal-category}
+  A \emph{monoidal category} is a multicategory equipped with a tensor product
+  and tensor unit.
+  %A \emph{monoidal category} is a category $\C = (\obj, \hom, \id, \circ)$ with
+  %functors $I : 1 \to \C$ and ${\otimes} : \C \times \C \to \C$ together with
+  %the following natural isomorphisms:
+  %\begin{itemize}
+  %  \item $\lambda : (I \otimes {-}) \simeq {-}$
+  %  \item $\rho : ({-} \otimes I) \simeq {-}$
+  %  \item $\alpha :
+  %    (({-} \otimes {-}) \otimes {-}) \simeq ({-} \otimes ({-} \otimes {-}))$
+  %\end{itemize}
+  %such that the following coherence conditions hold:
+  %\begin{itemize}
+  %  \item
+  %    \begin{tikzcd}
+  %      (A \otimes I) \otimes B \arrow[dr,"\rho_A \otimes B"'] \arrow[rr,"\alpha_{A,I,B}"]
+  %      && A \otimes (I \otimes B) \arrow[dl,"A \otimes \lambda_B"] \\
+  %      & A \otimes B
+  %    \end{tikzcd}
+  %  \item
+  %    \begin{tikzcd}
+  %      & (A \otimes B) \otimes (C \otimes D)
+  %      \arrow[dr,"\alpha_{A,B,C \otimes D}"] &
+  %      \\
+  %      ((A \otimes B) \otimes C) \otimes D
+  %      \arrow[ur,"\alpha_{A \otimes B,C,D}"]
+  %      \arrow[d,"\alpha_{A,B,C} \otimes D"]
+  %      &&
+  %      A \otimes (B \otimes (C \otimes D))
+  %      \\
+  %      (A \otimes (B \otimes C)) \otimes D
+  %      \arrow[rr,"\alpha_{A,B \otimes C,D}"]
+  %      &&
+  %      A \otimes ((B \otimes C) \otimes D)
+  %      \arrow[u,"A \otimes \alpha_{B,C,D}"]
+  %    \end{tikzcd}
+  %\end{itemize}
+\end{definition}
+
+\begin{remark}
+  We can talk about monoidal products on a category $\C$ by finding a
+  multicategory which restricts to $\C$ and constructing tensor products in it.
+\end{remark}
+
+\begin{definition}
+  A \emph{monoid} in a multicategory is an object $M$ and multimorphisms
+  $\eta : {\cdot} \to M$ and $\mu : M, M \to M$ such that the following
+  equations hold:
+  \begin{itemize}
+    \item $[\eta, \id]; \mu = \id : M \to M$
+    \item $[\id, \eta]; \mu = \id : M \to M$
+    \item $[\mu, \id]; \mu = [\id, \mu]; \mu : M, M, M \to M$
+  \end{itemize}
+\end{definition}
+
+\begin{definition}
+  TODO: \emph{symmetric monoidal category}
+\end{definition}
+
+\begin{definition}
+  TODO: \emph{commutative monoid in a symmetric monoidal category}
+\end{definition}
+
+Algebra
+
+\begin{definition}
+  A \emph{semiring} is a monoid in the multicategory of commutative monoids and
+  multilinear maps.
+  Unpacked, this means that we have a set $\mathscr R$ together with elements
+  $0$ and $1$ and binary operators $+$ and $\cdot$ (with $\cdot$ usually written
+  as juxtaposition) such that the following hold for all
+  $x, y, z \in \mathscr R$.
+  \begin{itemize}
+    \item $0 + x = x$; $x + 0 = x$; $(x + y) + z = x + (y + z)$; $x + y = y + x$
+    \item $1x = x$; $x1 = x$; $(xy)z = x(yz)$
+    \item $0x = 0$; $x0 = 0$; $(x + y)z = xz + yz$; $x(y + z) = xy + xz$
+  \end{itemize}
+\end{definition}

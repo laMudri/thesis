@@ -1,139 +1,150 @@
+Linear logic is a good starting point for our investigations into usage
+restrictions because it is well known, well understood, and exhibits most of the
+difficulties we will come across.
+Linear logic's lack of general weakening and contraction will be a typical
+feature of the calculi we will see, and the exponential modality $\oc$ (bang)
+will be the prototype for a range of modalities I will consider.
+
 \subsection{Motivation of linearity}
 
-In LJ, two distinct, but equiderivable, canonical definitions of $\wedge$ can
-be given.
-
-In the first approach, $\wedge^-$ is conceived to be a
-\emph{categorial product}.
-Such a product is constructed by providing two maps in from the same antecedents
-$\Gamma$.
-It is used by projecting out one of the sides.
-
-\begin{mathpar}
-  \inferrule*[right=$\wedge^-$-r]
-  {\Gamma \vdash A \\ \Gamma \vdash B}
-  {\Gamma \vdash A \wedge^- B}
-
-  \and
-
-  \inferrule*[right=$\wedge^-$-l$_0$]
-  {\Gamma, A \vdash C}
-  {\Gamma, A \wedge^- B \vdash C}
-
-  \and
-
-  \inferrule*[right=$\wedge^-$-l$_1$]
-  {\Gamma, B \vdash C}
-  {\Gamma, A \wedge^- B \vdash C}
-\end{mathpar}
-
-In the second approach, $\wedge^+$ is conceived to be a \emph{tensor product}.
-Intuitively, $\wedge^+$ internalises the comma of context concatenation.
-Such a product is used by giving access to both sides simultaneously.
-It is constructed by constructing both sides and combining the antecedents
-required by each side.
-
-\begin{mathpar}
-  \inferrule*[right=$\wedge^+$-r]
-  {\Gamma \vdash A \\ \Delta \vdash B}
-  {\Gamma, \Delta \vdash A \wedge^+ B}
-
-  \and
-
-  \inferrule*[right=$\wedge^+$-l]
-  {\Gamma, A, B \vdash C}
-  {\Gamma, A \wedge^+ B \vdash C}
-\end{mathpar}
-
-When we prove the logical equivalence of these two formulations, we notice that
-the structural rules of weakening and contraction are essential.
-When we remove weakening and contraction, $\wedge^-$ and $\wedge^+$ become
-logically distinct connectives, which we notate $\&$ and $\otimes$,
-respectively.
-
-\begin{mathpar}
-  \inferrule*[right=$\wedge^-$-r]
-  {%
-    \inferrule*[right=Weak$^*$,fraction={\cdot\cdots\cdot}]
-    {\Gamma \vdash A}
-    {\Gamma, \Delta \vdash A}
-    \\
-    \inferrule*[Right=Weak$^*$,fraction={\cdot\cdots\cdot}]
-    {\Delta \vdash B}
-    {\Gamma, \Delta \vdash B}
-  }
-  {\Gamma, \Delta \vdash A \wedge^- B}
-
-  \and
-
-  \inferrule*[right=Contr]
-  {%
-    \inferrule*[Right=$\wedge^-$-l$_0$]
-    {%
-      \inferrule*[Right=$\wedge^-$-l$_1$]
-      {\Gamma, A, B \vdash C}
-      {\Gamma, A, A \wedge^- B \vdash C}
-    }
-    {\Gamma, A \wedge^- B, A \wedge^- B \vdash C}
-  }
-  {\Gamma, A \wedge^- B \vdash C}
-\end{mathpar}
-
-\begin{mathpar}
-  \inferrule*[right=Contr$^*$,fraction={\cdot\cdots\cdot}]
-  {%
-    \mprset{defaultfraction}
-    \inferrule*[Right=$\wedge^+$-r]
-    {\Gamma \vdash A \\ \Gamma \vdash B}
-    {\Gamma, \Gamma \vdash A \wedge^+ B}
-  }
-  {\Gamma \vdash A \wedge^+ B}
-
-  \and
-
-  \inferrule*[right=$\wedge^+$-l]
-  {%
-    \inferrule*[Right=Weak]
-    {\Gamma, A \vdash C}
-    {\Gamma, A, B \vdash C}
-  }
-  {\Gamma, A \wedge^+ B \vdash C}
-
-  \and
-
-  \inferrule*[right=$\wedge^+$-l]
-  {%
-    \inferrule*[Right=Weak]
-    {\Gamma, B \vdash C}
-    {\Gamma, A, B \vdash C}
-  }
-  {\Gamma, A \wedge^+ B \vdash C}
-\end{mathpar}
+%In LJ, two distinct, but equiderivable, canonical definitions of $\wedge$ can
+%be given.
+%
+%In the first approach, $\wedge^-$ is conceived to be a
+%\emph{categorial product}.
+%Such a product is constructed by providing two maps in from the same antecedents
+%$\Gamma$.
+%It is used by projecting out one of the sides.
+%
+%\begin{mathpar}
+%  \inferrule*[right=$\wedge^-$-r]
+%  {\Gamma \vdash A \\ \Gamma \vdash B}
+%  {\Gamma \vdash A \wedge^- B}
+%
+%  \and
+%
+%  \inferrule*[right=$\wedge^-$-l$_0$]
+%  {\Gamma, A \vdash C}
+%  {\Gamma, A \wedge^- B \vdash C}
+%
+%  \and
+%
+%  \inferrule*[right=$\wedge^-$-l$_1$]
+%  {\Gamma, B \vdash C}
+%  {\Gamma, A \wedge^- B \vdash C}
+%\end{mathpar}
+%
+%In the second approach, $\wedge^+$ is conceived to be a \emph{tensor product}.
+%Intuitively, $\wedge^+$ internalises the comma of context concatenation.
+%Such a product is used by giving access to both sides simultaneously.
+%It is constructed by constructing both sides and combining the antecedents
+%required by each side.
+%
+%\begin{mathpar}
+%  \inferrule*[right=$\wedge^+$-r]
+%  {\Gamma \vdash A \\ \Delta \vdash B}
+%  {\Gamma, \Delta \vdash A \wedge^+ B}
+%
+%  \and
+%
+%  \inferrule*[right=$\wedge^+$-l]
+%  {\Gamma, A, B \vdash C}
+%  {\Gamma, A \wedge^+ B \vdash C}
+%\end{mathpar}
+%
+%When we prove the logical equivalence of these two formulations, we notice that
+%the structural rules of weakening and contraction are essential.
+%When we remove weakening and contraction, $\wedge^-$ and $\wedge^+$ become
+%logically distinct connectives, which we notate $\&$ and $\otimes$,
+%respectively.
+%
+%\begin{mathpar}
+%  \inferrule*[right=$\wedge^-$-r]
+%  {%
+%    \inferrule*[right=Weak$^*$,fraction={\cdot\cdots\cdot}]
+%    {\Gamma \vdash A}
+%    {\Gamma, \Delta \vdash A}
+%    \\
+%    \inferrule*[Right=Weak$^*$,fraction={\cdot\cdots\cdot}]
+%    {\Delta \vdash B}
+%    {\Gamma, \Delta \vdash B}
+%  }
+%  {\Gamma, \Delta \vdash A \wedge^- B}
+%
+%  \and
+%
+%  \inferrule*[right=Contr]
+%  {%
+%    \inferrule*[Right=$\wedge^-$-l$_0$]
+%    {%
+%      \inferrule*[Right=$\wedge^-$-l$_1$]
+%      {\Gamma, A, B \vdash C}
+%      {\Gamma, A, A \wedge^- B \vdash C}
+%    }
+%    {\Gamma, A \wedge^- B, A \wedge^- B \vdash C}
+%  }
+%  {\Gamma, A \wedge^- B \vdash C}
+%\end{mathpar}
+%
+%\begin{mathpar}
+%  \inferrule*[right=Contr$^*$,fraction={\cdot\cdots\cdot}]
+%  {%
+%    \mprset{defaultfraction}
+%    \inferrule*[Right=$\wedge^+$-r]
+%    {\Gamma \vdash A \\ \Gamma \vdash B}
+%    {\Gamma, \Gamma \vdash A \wedge^+ B}
+%  }
+%  {\Gamma \vdash A \wedge^+ B}
+%
+%  \and
+%
+%  \inferrule*[right=$\wedge^+$-l]
+%  {%
+%    \inferrule*[Right=Weak]
+%    {\Gamma, A \vdash C}
+%    {\Gamma, A, B \vdash C}
+%  }
+%  {\Gamma, A \wedge^+ B \vdash C}
+%
+%  \and
+%
+%  \inferrule*[right=$\wedge^+$-l]
+%  {%
+%    \inferrule*[Right=Weak]
+%    {\Gamma, B \vdash C}
+%    {\Gamma, A, B \vdash C}
+%  }
+%  {\Gamma, A \wedge^+ B \vdash C}
+%\end{mathpar}
 
 \subsection{The $\oc$-modality}
 
 \begin{mathpar}
-  \inferrule*[right=Promotion]
-  {\oc\Gamma \vdash A}
-  {\oc\Gamma \vdash \oc A}
+  \ebrule{%
+    \hypo{\oc\Gamma \vdash A}
+    \infer1[Promotion]{\oc\Gamma \vdash \oc A}
+  }
 
   \and
 
-  \inferrule*[right=Dereliction]
-  {\Gamma, A \vdash B}
-  {\Gamma, \oc A \vdash B}
+  \ebrule{%
+    \hypo{\Gamma, A \vdash B}
+    \infer1[Dereliction]{\Gamma, \oc A \vdash B}
+  }
 
   \and
 
-  \inferrule*[right=Weakening]
-  {\Gamma \vdash B}
-  {\Gamma, \oc A \vdash B}
+  \ebrule{%
+    \hypo{\Gamma \vdash B}
+    \infer1[Weakening]{\Gamma, \oc A \vdash B}
+  }
 
   \and
 
-  \inferrule*[right=Contraction]
-  {\Gamma, \oc A, \oc A \vdash B}
-  {\Gamma, \oc A \vdash B}
+  \ebrule{%
+    \hypo{\Gamma, \oc A, \oc A \vdash B}
+    \infer1[Contraction]{\Gamma, \oc A \vdash B}
+  }
 \end{mathpar}
 
 In the intuitionistic linear logic sequent calculus ILL, $\oc A$ is defined
@@ -166,26 +177,18 @@ In contrast, the normal form proof of $\oc P \vdash \oc P$ starts with the
 right rule, as it needs to have everything on the left be of the form $\oc X$.
 
 \begin{mathpar}
-  \inferrule*[right=$\otimes$-l]
-  {%
-    \inferrule*[Right=$\otimes$-r]
-    {%
-      \inferrule*[right=Id]{ }{P \vdash P} \\
-      \inferrule*[Right=Id]{ }{Q \vdash Q}
-    }
-    {P, Q \vdash P \otimes Q}
+  \ebrule{%
+    \infer0[Id]{P \vdash P}
+    \infer0[Id]{Q \vdash Q}
+    \infer2[$\otimes$-r]{P, Q \vdash P \otimes Q}
+    \infer1[$\otimes$-l]{P \otimes Q \vdash P \otimes Q}
   }
-  {P \otimes Q \vdash P \otimes Q}
 
   \and
 
-  \inferrule*[right=Pro]
-  {%
-    \inferrule*[Right=Der]
-    {%
-      \inferrule*[Right=Id]{ }{P \vdash P}
-    }
-    {\oc P \vdash P}
+  \ebrule{%
+    \infer0[Id]{P \vdash P}
+    \infer1[Der]{\oc P \vdash P}
+    \infer1[Pro]{\oc P \vdash \oc P}
   }
-  {\oc P \vdash \oc P}
 \end{mathpar}

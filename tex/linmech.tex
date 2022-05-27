@@ -1,0 +1,190 @@
+In this section, I give an overview of techniques which have been used in
+previous work to encode linear logic in proof assistants.
+To my knowledge, there have been no other significant attempts to mechanise
+semiring-annotated logics.
+
+\subsection{Typing with leftovers}
+
+Typing with leftovers~\cite{allais17} is a technique developed to capture a
+straightforward approach to linearity checking.
+The idea is to, at any point, consider an input context, a term, and an output
+context.
+The input context contains all of the variables in scope, while the output
+context is the same minus any variables used by the term.
+Checking of adjacent terms, for example in a $\otimes$-introduction, is done by
+threading the context through from the output of the first term to the input of
+the second.
+Bound variables are introduced in the input context of the term in which they
+are bound, and are expected to be absent in the output context of that term.
+\Cref{fig:twl,fig:twl-mult} give rules in this style for the multiplicative
+fragment of intuitionistic linear logic.
+
+\begin{figure}
+  \begin{align*}
+    \Gamma, \Delta, \Theta
+    &\Coloneqq {\cdot} \mid \Gamma, \gr1x : A \mid \Gamma, \gr0x : A \\
+    \mathcal{S} &\Coloneqq \Gamma \vdash M : A \boxtimes \Delta
+  \end{align*}
+  \caption{Typing with leftovers, context and sequent syntax}
+  \label{fig:twl}
+\end{figure}
+
+\begin{figure}
+  \begin{mathpar}
+    \ebrule{%
+      \infer0[Var]{\Gamma, \gr1x : A \vdash x : A \boxtimes \Gamma, \gr0x : A}
+    }
+    \and
+    \ebrule{%
+      \infer0[$I$-I]{\Gamma \vdash {*} : I \boxtimes \Gamma}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash M : I \boxtimes \Delta}
+      \hypo{\Delta \vdash N : C \boxtimes \Theta}
+      \infer2[$I$-E]{\Gamma \vdash \text{let }{*} = M\text{ in }N : C
+        \boxtimes \Theta}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash M : A \boxtimes \Delta}
+      \hypo{\Delta \vdash N : B \boxtimes \Theta}
+      \infer2[$\otimes$-I]{\Gamma \vdash (M, N) : A \otimes B \boxtimes \Theta}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash M : A \otimes B \boxtimes \Delta}
+      \hypo{\Delta, \gr1x : A, \gr1y : B \vdash N : C \boxtimes
+        \Theta, \gr0x : A, \gr0y : B}
+      \infer2[$\otimes$-E]{\Gamma \vdash \text{let }(x, y) = M\text{ in }N : C
+        \boxtimes \Theta}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma, \gr1x : A \vdash M : B \boxtimes \Delta, \gr0x : A}
+      \infer1[$\multimap$-I]{\Gamma \vdash \lambda x.~M : A \multimap B
+        \boxtimes \Delta}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash M : A \multimap B \boxtimes \Delta}
+      \hypo{\Delta \vdash N : A \boxtimes \Theta}
+      \infer2[$\multimap$-E]{\Gamma \vdash M\,N : B \boxtimes \Theta}
+    }
+  \end{mathpar}
+  \caption{Typing with leftovers, multiplicative fragment}
+  \label{fig:twl-mult}
+\end{figure}
+
+The original paper extends the logic covered to binary additives --- $\with$ and
+$\oplus$ --- with rules that check that terms agree on output contexts, as seen
+in \cref{fig:twl-add}.
+However, it is less clear how to handle nullary additives --- $\top$ and $0$ ---
+as we would have 0 (rather than 2) candidates for the output context.
+At some level, this problem is unavoidable in a system modelling linearity
+checking because any checking strategy will expose the ambiguity in sequents
+like $\gr1x : A \vdash (\{\}, \{\}) : \top \otimes \top$ of whether the variable
+$x$ was used in the left half or the right half.
+As such, we may expect uses of $\top$-introduction (and similarly
+$0$-elimination) to be annotated with which variables they use, in which case we
+get a viable typing with leftovers rule.
+
+\begin{figure}
+  \begin{mathpar}
+    \ebrule{%
+      \hypo{\Gamma \vdash M : A \boxtimes \Delta}
+      \hypo{\Gamma \vdash N : B \boxtimes \Delta}
+      \infer2[$\with$-I]{\Gamma \vdash \{M,N\} : A \with B \boxtimes \Delta}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash M : A \oplus B \boxtimes \Delta}
+      \hypo{\Delta, \gr1x : A \vdash N : C \boxtimes \Theta, \gr0x : A}
+      \hypo{\Delta, \gr1y : B \vdash O : C \boxtimes \Theta, \gr0y : B}
+      \infer3[$\oplus$-E]{\Gamma \vdash
+        \text{case }M\text{ of }\{x.~N; y.~O\} : C \boxtimes \Theta}
+    }
+  \end{mathpar}
+  \caption{Typing with leftovers, a selection of the additive rules}
+  \label{fig:twl-add}
+\end{figure}
+
+The original paper also does not show how to capture the exponential modality
+$\oc$.
+We could perhaps, inspired by DILL, distinguish between linear variables and
+intuitionistic variables.
+This gives rules like those of \cref{fig:twl-exp}.
+The important invariant is that linear and intuitionistic variables stay
+distinct, so any intuitionistic variable in the input context (annotated by
+$\gr\omega$) must be intuitionistic in the output context.
+In the $\oc$-introduction rule, there are several choices we could make, but I
+have chosen to keep all the linear variables in scope but used so as to match
+the general style of variables staying in scope with the $\gr0$ annotation..
+
+\begin{figure}
+  \begin{mathpar}
+    \ebrule{%
+      \infer0[IVar]{\Gamma, \gr\omega x : A \vdash x : A
+        \boxtimes \Gamma, \gr\omega x : A}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gr0\gamma, \gr0\delta, \gr\omega\theta \vdash
+        M : A \boxtimes \gr0\gamma, \gr0\delta, \gr\omega\theta}
+      \infer1[$\oc$-I]{\gr0\gamma, \gr1\delta, \gr\omega\theta \vdash
+        [M] : \oc A \boxtimes \gr0\gamma, \gr1\delta, \gr\omega\theta}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash M : \oc A \boxtimes \Delta}
+      \hypo{\Delta, \gr\omega x : A \vdash N : C
+        \boxtimes \Theta, \gr\omega x : A}
+      \infer2[$\oc$-E]{\Gamma \vdash
+        \text{let }[x] = M\text{ in }N : C \boxtimes \Theta}
+    }
+  \end{mathpar}
+  \caption{Typing with leftovers, a possible way to capture $\oc$}
+  \label{fig:twl-exp}
+\end{figure}
+
+However, this adaptation of the DILL style does not obviously generalise to
+semiring annotations.
+Even for the multiplicative fragment, we seem to be working against the
+direction of addition, instead using a subtraction operation whenever we use a
+variable.
+For exponentials, though, and particularly the $\oc$-introduction rule, what I
+have done seems ad-hoc, not based on any pointwise algebraic operation.
+
+Also, the unusual form of sequents can cause some problems when working with a
+typing with leftovers system.
+For example, a traditional intuitionistic linear logic sequent
+$\Gamma \vdash M : A$ corresponds to many different typing with leftovers
+sequents:
+\begin{itemize}
+  \item $\gr1\Gamma \vdash M : A \boxtimes \gr0\Gamma$
+  \item $\gr1\Gamma, \gr1x : B \vdash M : A \boxtimes \gr0\Gamma, \gr1x : B$
+  \item $\gr1\Gamma, \gr0x : B \vdash M : A \boxtimes \gr0\Gamma, \gr0x : B$
+  \item \&c.
+\end{itemize}
+
+Generally, any variable not used in the term can be added to both the input and
+the output context with the same annotation.
+Many of these variations are likely to appear in various typing derivations,
+depending on what terms surround a given subterm.
+This means that if we want to implement substitution, which involves putting a
+term into an unknown surrounding, we have to navigate these different forms via
+the \emph{framing property}.
+
+The unusal form of sequents also somewhat obscures the denotational semantics of
+a typing with leftovers system.
+Though the $\boxtimes$ notation suggests a semantics into symmetric monoidal
+closed categories where terms are morphisms from one iterated tensor product
+(the input context) to another (the type and output context), the syntax is
+incomplete for this semantics because we cannot produce anything interesting in
+the output context.
+
+\subsection{yalla}
+\begin{itemize}
+  \item Sequent calculus
+  \item Specialised to linear logic
+\end{itemize}

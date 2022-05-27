@@ -32,21 +32,19 @@ The use of $\uplus$ in these two rules separates the eliminand from the
 eliminator/continuation, rather than having anything particular to do with
 the connectives $\otimes$ and $\oc$.
 
-\[
-  \begin{matrix}
-    \begin{prooftree}
-      \hypo{\Gamma_0 \vdash A \otimes B}
-      \hypo{\Gamma_1, \mathbf{lin}\,A, \mathbf{lin}\,B \vdash C}
-      \infer2[$\otimes$-E]{\Gamma_0 \uplus \Gamma_1 \vdash C}
-    \end{prooftree}
-    &&
-    \begin{prooftree}
-      \hypo{\Gamma_0 \vdash \oc A}
-      \hypo{\Gamma_1, \mathbf{int}\,A \vdash C}
-      \infer2[$\oc$-E]{\Gamma_0 \uplus \Gamma_1 \vdash C}
-    \end{prooftree}
-  \end{matrix}
-\]
+\begin{mathpar}
+  \ebrule{%
+    \hypo{\Gamma_0 \vdash A \otimes B}
+    \hypo{\Gamma_1, \mathbf{lin}\,A, \mathbf{lin}\,B \vdash C}
+    \infer2[$\otimes$-E]{\Gamma_0 \uplus \Gamma_1 \vdash C}
+  }
+  \and
+  \ebrule{%
+    \hypo{\Gamma_0 \vdash \oc A}
+    \hypo{\Gamma_1, \mathbf{int}\,A \vdash C}
+    \infer2[$\oc$-E]{\Gamma_0 \uplus \Gamma_1 \vdash C}
+  }
+\end{mathpar}
 
 The introduction rule for $\oc$ follows the pattern of Promotion, allowing us
 to conclude $\oc A$ from $A$ only when that proof of $A$ does not use linear

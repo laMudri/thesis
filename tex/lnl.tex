@@ -15,33 +15,164 @@ $\vdash_{\mathcal L}$ and $\vdash_{\mathcal C}$) connected by modalities $F$ and
 $G$.
 The mode of the conclusion type is the same as the mode of the judgement, so
 only a distinction in the conclusion mode is necessary.
-To achieve this distinction in the types, we have an indexed type family
+To achieve this distinction in the types, I have an indexed type family
 $\mathrm{Ty} : \mathrm{Frag} \to \mathrm{Set}$, and set the framework types to
 be the type $(f : \mathrm{Frag}) \times \mathrm{Ty}\,f$.
 % \AgdaDatatype{Ty}\AgdaSymbol{:}\AgdaDatatype{Frag}\AgdaSymbol{$\to$}
 % \AgdaDatatype{Set}
+I present these judgements in a standard paper style in \cref{fig:lnl-types}.
 
 In L/nL, while linear judgements can have both linear and intuitionistic
 assumptions, intuitionistic judgements can only have intuitionistic assumptions.
-We encode this invariant on intuitionistic judgements using the $\Box$
+I encode this invariant on intuitionistic judgements using the $\Box$
 premise combinator on all intuitionistic conclusions and wherever
-intuitionistic premises occur for linear conclusions.
+intuitionistic premises occur for linear conclusions, as seen in
+\cref{fig:lnl-desc}.
+This scheme means that the rules contain the maximal number of boxes, which is
+convenient when consuming terms.
+For ease of \emph{producing} terms, we would want a ``garbage in; garbage out''
+style with a minimal number of boxes, which could be achieved in two different
+ways:
+\begin{itemize}
+  \item Ensure that $\Gamma, \gr1\,\lin A \vdash \intu X$ is never derivable.
+    This leaves boxes only on rules $1$-I and $G$-I.
+  \item Ensure that, when working bottom-up, we never transition from a linear
+    to an intuitionistic conclusion with linear assumptions present.
+    This leaves boxes only on rules $F$-I and $G$-E.
+\end{itemize}
+It would be interesting to show the equivalence of these three approaches, but
+that is left to future work.
+
+\begin{figure}
+  \begin{align*}
+    A, B, C &\Coloneqq I \mid A \otimes B \mid A \multimap B \mid FX \\
+    X, Y, Z &\Coloneqq 1 \mid X \times Y \mid X \to Y \mid GA \\
+    \mathcal J &\Coloneqq \lin A \mid \intu X
+  \end{align*}
+  \caption{Types and judgement forms of L/nL}
+  \label{fig:lnl-types}
+\end{figure}
+
+\begin{figure}
+  \begin{mathpar}
+    % lin rules
+    \ebrule[comb]{%
+      \hypo{I^*}
+      \infer1[$I$-I]{\vdash \lin I}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\vdash \lin I}
+      \hypo{*}
+      \hypo{\vdash \lin C}
+      \infer3[$I$-E]{\vdash \lin C}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\vdash \lin A}
+      \hypo{*}
+      \hypo{\vdash \lin B}
+      \infer3[$\otimes$-I]{\vdash \lin A \otimes B}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\vdash \lin A \otimes B}
+      \hypo{*}
+      \hypo{\gr1\,\lin A, \gr1\,\lin B \vdash \lin C}
+      \infer3[$\otimes$-E]{\vdash \lin C}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\gr1\,\lin A \vdash \lin B}
+      \infer1[$\multimap$-I]{\vdash \lin A \multimap B}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\vdash \lin A \multimap B}
+      \hypo{*}
+      \hypo{\vdash \lin A}
+      \infer3[$\multimap$-E]{\vdash \lin B}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\Box\plr{\vdash \intu X}}
+      \infer1[$F$-I]{\vdash \lin FX}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\vdash \lin FX}
+      \hypo{*}
+      \hypo{\gr\omega\,\intu X \vdash \lin C}
+      \infer3[$F$-E]{\vdash \lin C}
+    }
+    \and
+    % int rules
+    \ebrule[comb]{%
+      \hypo{\Box\plr{\dot1}}
+      \infer1[$1$-I]{\vdash \intu 1}
+    }
+    \and
+    \text{(no $1$-E)}
+    \and
+    \ebrule[comb]{%
+      \hypo{\Box(\vdash \intu X}
+      \hypo{\dottimes}
+      \hypo{\vdash \intu Y)}
+      \infer3[$\times$-I]{\vdash \intu X \times Y}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\Box\plr{\vdash \intu X \times Y}}
+      \infer1[$\times$-El]{\vdash \intu X}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\Box\plr{\vdash \intu X \times Y}}
+      \infer1[$\times$-Er]{\vdash \intu Y}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\Box\plr{\gr\omega\,\intu A \vdash \intu B}}
+      \infer1[$\to$-I]{\vdash \intu A \to B}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\Box(\vdash \intu A \to B}
+      \hypo{\dottimes}
+      \hypo{\vdash \intu A)}
+      \infer3[$\to$-E]{\vdash \intu B}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\Box\plr{\vdash \lin A}}
+      \infer1[$G$-I]{\vdash \intu GA}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\Box\plr{\vdash \intu GA}}
+      \infer1[$G$-E]{\vdash \lin A}
+    }
+  \end{mathpar}
+  \caption{Description of the logical rules of L/nL}
+  \label{fig:lnl-desc}
+\end{figure}
 
 \begin{proposition}
   We can construct the following translations.
   \begin{align}
-    (\Theta \vdash_{\mathcal C} X) \to (\gr\omega\Theta \vdash X) \\
-    (\Theta; \Gamma \vdash_{\mathcal L} A) \to
-    (\gr\omega\Theta, \gr1\Gamma \vdash A)
+    (\Theta \vdash_{\mathcal C} X) &\to (\gr\omega\Theta \vdash \intu X) \\
+    (\Theta; \Gamma \vdash_{\mathcal L} A) &\to
+    (\gr\omega\Theta, \gr1\Gamma \vdash \lin A)
   \end{align}
 \end{proposition}
 
 \begin{proposition}
   We can construct the following translations, where $\Gamma_{\gr r}$ is the
-  list of types in $\Gamma$ that are annotated $\gr r$.
+  list of types in $\Gamma$ that are annotated $\gr r$.%
+  \todo{I'm not sure the resultant contexts are well formed.}
   \begin{align}
-    (\Gamma \vdash X) \to (\Gamma_{\gr\omega} \vdash_{\mathcal C} X) \\
-    (\Gamma \vdash A) \to
+    (\Gamma \vdash \intu X) &\to (\Gamma_{\gr\omega} \vdash_{\mathcal C} X) \\
+    (\Gamma \vdash \lin A) &\to
     (\Gamma_{\gr\omega}; \Gamma_{\gr1} \vdash_{\mathcal L} A)
   \end{align}
 \end{proposition}
@@ -49,3 +180,72 @@ intuitionistic premises occur for linear conclusions.
 \subsection{Translating between L/nL and $\lambda\gr{\mathcal R}$}
 
 The translations largely follow Benton's originals.
+In this section, I take $\name$ to be the system described in
+\cref{fig:lr-bunched} instantiated to the $\{\gr0 > \gr\omega < \gr1\}$
+posemiring and restricted to the fragment with only connectives $I$, $\otimes$,
+$\multimap$, and $\oc\gr\omega$.
+Notably, this excludes $\oc\gr0$ and $\oc\gr1$.
+I write $\oc\gr\omega$ as just $\oc$, as in traditional linear logic.
+Under these restrictions, Benton's translations of types can be used verbatim
+(\cref{fig:lnl-lr-types}).
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{.49\linewidth}
+    \centering
+    \begin{align*}
+      (-)^\circ : \mathrm{Ty}_{\name} \to \mathrm{Ty}_{\lin} \\
+      \begin{aligned}
+        I^\circ &= I \\
+        \plr{A \otimes B}^\circ &= A^\circ \otimes B^\circ \\
+        \plr{A \multimap B}^\circ &= A^\circ \multimap B^\circ \\
+        \plr{\oc A}^\circ &= GFA^\circ
+      \end{aligned}
+    \end{align*}
+  \end{subfigure}
+  \begin{subfigure}{.49\linewidth}
+    \centering
+    \begin{align*}
+      (-)^* : \mathrm{Ty}_\lnl \to \mathrm{Ty}_{\name} \\
+      \begin{aligned}
+        I^* &= I \\
+        \plr{A \otimes B}^* &= A^* \otimes B^* \\
+        \plr{A \multimap B}^* &= A^* \multimap B^* \\
+        \plr{FX}^* &= \oc X^* \\
+        1^* &= I \\
+        \plr{X \times Y}^* &= \oc X^* \otimes \oc Y^* \\
+        \plr{X \to Y}^* &= \oc X^* \multimap Y^* \\
+        \plr{GA}^* &= A^*
+      \end{aligned}
+    \end{align*}
+  \end{subfigure}
+  \caption{Translation of types between L/nL and $\name$}
+  \label{fig:lnl-lr-types}
+\end{figure}
+
+We extend both $(-)^\circ$ and $(-)^*$ to contexts pointwise on the types.
+For $(-)^\circ$, this means that the translation lands outside what is usually
+expressible in L/nL whenever the context contains annotation $\gr\omega$.
+For example, $\plr{\gr\omega I}^\circ = \plr{\gr\omega\,\lin I}$, and we do not
+see ``$\gr\omega\,\lin$'' in translations from Benton's L/nL.
+This could be fixed by inserting $G$ in such cases.
+As for $(-)^*$, note that we do not insert a $\oc$ on intuitionistic assumptions
+as Benton does.
+Instead, the annotation $\gr\omega$ achieves the same effect for us.
+This discrepancy essentially amounts to the fact that $\name$ is more like DILL
+than Girard's ILL, and Benton's translations act upon the latter.
+
+\begin{theorem}
+  We can translate from $\name$ to the linear fragment of L/nL.
+  \begin{align}
+    (\Gamma \vdash_{\name} A) \to (\Gamma^\circ \vdash_\lnl \lin A^\circ)
+  \end{align}
+\end{theorem}
+
+\begin{theorem}
+  We can translate any L/nL term to a $\name$ term as follows.
+  \begin{align}
+    (\Gamma \vdash_\lnl \intu X) &\to (\Gamma^* \vdash_{\name} X^*) \\
+    (\Gamma \vdash_\lnl \lin A) &\to (\Gamma^* \vdash_{\name} A^*)
+  \end{align}
+\end{theorem}

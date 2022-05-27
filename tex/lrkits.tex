@@ -55,9 +55,9 @@ defunctionalised as a data structure with the same shape as $\Delta$.
   $\Gamma \env\V_R \Delta$ is the notation for the type of recursive
   environments for given $\V$, $\Gamma$, and $\Delta$):
   \begin{itemize}
-    \item There is one environment $\alr{} : \Gamma \env\V {\cdot}$.
+    \item There is one environment $\alr{} : \Gamma \env\V_R {\cdot}$.
     \item For $\rho_l : \Gamma \env\V_R \Delta_l$ and
-      $\rho_r : \Gamma \env\V \Delta_r$, we have an environment
+      $\rho_r : \Gamma \env\V_R \Delta_r$, we have an environment
       $\alr{\rho_l, \rho_r} : \Gamma \env\V_R \Delta_l, \Delta_r$.
     \item For any value $v : \V\,\Gamma\,A$, we have an environment
       $\alr{v} : \Gamma \env\V_R A$.
@@ -133,7 +133,7 @@ target context --- empty, concatenation, and a usage-annotated singleton.
   $\Gamma \env\V_R \Delta$ is the notation for the
   type of recursive environments for given $\V$, $\Gamma$, and $\Delta$):
   \begin{itemize}
-    \item There is one environment $\alr{} : \grP\gamma \env\V {\cdot}$
+    \item There is one environment $\alr{} : \grP\gamma \env\V_R {\cdot}$
       whenever $\grP \leq \gr0$.
     \item For $\rho_l : \grPl\gamma \env\V_R \Delta_l$ and
       $\rho_r : \grPr\gamma \env\V_R \Delta_r$, we have an environment
