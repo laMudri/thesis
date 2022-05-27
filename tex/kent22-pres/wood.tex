@@ -1,0 +1,144 @@
+\documentclass[fleqn]{beamer}
+
+\usetheme{Rochester}
+\setbeamertemplate{navigation symbols}{}
+
+\usepackage[style=alphabetic,maxalphanames=6]{biblatex}
+\bibliography{quantitative}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{cmll}
+\usepackage{ebproof}
+\usepackage{ebproof-rules}
+\usepackage{mathpartir}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+%\usepackage{natbib}
+\usepackage{todonotes}
+\usepackage{turnstile}
+
+\usepackage{tikz}
+\usetikzlibrary{tikzmark,fit}
+
+\input{../macros.tex}
+
+\newcommand\Rel{\mathrm{Rel}}
+
+\title{Beyond semirings?}
+\author{James Wood}
+\institute{University of Strathclyde \and Huawei Technologies R\&D UK}
+\date{Meeting on Graded Types, 17th June 2022}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Introduction}
+\end{frame}
+
+\begin{frame}{Monoidal categories}
+\[
+  \begin{tikzpicture}[baseline]
+    \path
+    (-1,1) node(0) {0}
+    (1,2) node(x) {}
+    (0,0) node(*) {*}
+    (0,-1) node(res) {}
+    ;
+
+    \draw (0) -- (*);
+    \draw (x) to[out=270,in=45] (*);
+    \draw (*) -- (res);
+  \end{tikzpicture}
+  =\quad
+  \begin{tikzpicture}[baseline]
+    \path
+    (0,0) node(0) {0}
+    (0,2) node(x) {}
+    (0,-1) node(res) {}
+    (0,1) node[circle,draw](del) {}
+    ;
+
+    \draw (0) -- (res);
+    \draw (x) -- (del);
+  \end{tikzpicture}
+  \quad=
+  \begin{tikzpicture}[baseline]
+    \path
+    (1,1) node(0) {0}
+    (-1,2) node(x) {}
+    (0,0) node(*) {*}
+    (0,-1) node(res) {}
+    ;
+
+    \draw (0) -- (*);
+    \draw (x) to[out=270,in=135] (*);
+    \draw (*) -- (res);
+  \end{tikzpicture}
+\]
+\end{frame}
+
+\begin{frame}{Examples of monoidal categories}
+  Examples of $(\mathcal C, I, \otimes)$:
+  \begin{itemize}
+    \item $(\Set, 1, \times)$ --- Cartesian structure of $Set$
+    \item $(\Rel, 1, \times)$ --- \emph{Not} the Cartesian structure of $\Rel$
+    \item $(\mathrm{CMon}, \mathbb N, \otimes_{\mathbb N})$ ---
+      commutative monoids under their tensor product
+    \item $(\Set_{\mathrm{part}}, 1, \times)$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Monoids in a monoidal category}
+\end{frame}
+
+%\begin{frame}{Monoids are determined by their multiplication}
+%\end{frame}
+
+\begin{frame}{There's no such thing as a partial semiring}
+  Consider a comonoid
+  $(M, \eta : M \rightharpoonup 1, \mu : M \rightharpoonup M \times M)$ in
+  $\Set_{\mathrm{part}}$.
+
+  We have:
+  \missingfigure{Unit laws}
+
+  By determinism of the comultiplication, we must have $y = z = x$.
+
+  Furthermore, we see that every $x$ is in the counit.
+\end{frame}
+
+\begin{frame}{Monoid with actions}
+  \begin{block}{Definition: monoid with actions}
+    A commutative monoid $M$ together with a set of monoid endomorphisms
+    (\emph{actions}) $A$ closed under identity and composition.
+  \end{block}
+  \only<1>{%
+    Expanding that, we have, for any action $\rho$ and elements $x$ and $y$:
+    \begin{itemize}
+      \item $\rho(0) = 0$
+      \item $\rho(x + y) = \rho(x) + \rho(y)$
+    \end{itemize}
+    Note that this is not the same as a module.
+  }
+  \begin{block}{Example: linearity in $\Rel$}<2>
+    Let $M = (\{0,1,\omega\}, \{0,\omega\}, +)$, where:
+    \begin{itemize}
+      \item $0 + 0 = 0$
+      \item $0 + 1 = 1$
+      \item $1 + 0 = 1$
+      \item $\omega + \omega = \omega$
+    \end{itemize}
+    Let $A = \{1, \omega\}$, where:
+    \begin{itemize}
+      \item $1(x) = x$
+      \item $\omega(x) = x$ when $x \neq 1$
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Conclusions}
+\end{frame}
+
+\end{document}
