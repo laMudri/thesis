@@ -22,8 +22,8 @@ tex/esop22/quant-framework.pdf: tex/esop22/*.tex tex/macros.tex tex/quantitative
 	cd tex/esop22; latexmk -pdf -halt-on-error quant-framework.tex
 esop: tex/esop22/quant-framework.pdf
 
-define lagda2tex
-$(1)/processed-latex/%.tex: $(1)/latex/%.tex
+define lagda2texSimple
+agda/processed-latex/$(1).tex: agda/latex/$(1).tex
 	mkdir -p $$(dir $$@)
 	sed \
 	-e 's/=⇒/⇛/g' \
@@ -35,6 +35,26 @@ $(1)/processed-latex/%.tex: $(1)/latex/%.tex
 	-e 's/(|/\\ensuremath{\\mathbf\\llparenthesis}/g' \
 	-e 's/|)/\\ensuremath{\\mathbf\\rrparenthesis}/g' \
 	$$< >$$@
+endef
+$(eval $(call lagda2texSimple,SimpleKits))
+$(eval $(call lagda2texSimple,SimpleSem))
+
+define lagda2tex
+$(1)/processed-latex/%.tex: $(1)/latex/%.tex
+	#if [ $$< != agda/latex/SimpleKits.tex ] && [ $$< != agda/latex/SimpleSem.tex ]; then \
+	  mkdir -p $$(dir $$@); \
+	  sed \
+	  -e 's/=⇒/⇛/g' \
+	  -e 's/\\AgdaFunction{U}/\\AgdaFunction{⒈}/g' \
+	  -e 's/`⊤/`⒈/g' \
+	  -e 's/─✴/⇥/g' \
+	  -e 's/\\AgdaFunction{⇒}/\\AgdaFunction{⇴}/g' \
+	  -e 's/>>/\\ensuremath{\\rangle\\rangle}/g' \
+	  -e 's/(|/\\ensuremath{\\mathbf\\llparenthesis}/g' \
+	  -e 's/|)/\\ensuremath{\\mathbf\\rrparenthesis}/g' \
+	  -e 's/∋/ヨ/g' \
+	  $$< >$$@; \
+	#fi
 
 $(1)/latex/%.tex: $(1)/%.lagda.tex
 	cd $(1); agda --latex $$(subst $(1)/,,$$<)
