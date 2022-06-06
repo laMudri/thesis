@@ -7,6 +7,41 @@ will be the prototype for a range of modalities I will consider.
 
 \subsection{Motivation of linearity}
 
+While classical linear logic is perhaps better understood, for the sake of this
+thesis I focus on intuitionistic linear logic.
+The syntactic difference between the two is analogous to the difference between
+classical and intuitionistic logic: The latter restricts the former by only
+allowing one formula on the right of a sequent.
+Classical linear logic is not irrelevant to this thesis, and appears as an
+instance of the framework presented in \cref{sec:framework}.
+However, the connection of this work to intuitionistic linear logic is more
+direct, and reflects the basis of existing semiring-annotated calculi on
+(intuitionistic) typed $\lambda$-calculi.
+
+Intuitionistic linear logic is often motivated by its sensitivity to resources.
+The fact that, in intuitionistic (and classical) logic, \emph{any} hypothesis
+can be discarded or duplicated means that propositions cannot be used to model
+things that may be ``possessed'' or ``spent'', despite hypotheses often being
+described as things we ``have''.
+In contrast, linear logic allows propositions to behave like physical objects,
+being moved around but not being created or destroyed (a priori).
+
+Programming applications of linearity include stateful protocols
+\citep{Wadler12}, mutually exclusive capabilities (TODO: cite),
+and mutation (TODO: cite).
+In each of these cases, the act of using up a hypothesis allows us to divide
+time into ``before'' and ``after'', with lack of duplication avoiding confusion
+over which half we are in, and lack of deletion allowing us to know whether the
+corresponding action actually happened.
+For example, when modelling mutation, a variable refers to a single state of a
+mutable value.
+The \texttt{write} operation uses up such a variable, making the old state
+inaccessible, and returns a new linear value to represent the new state of the
+mutable value.
+Such a protocol naturally also supports a \emph{freezing} operation, by which we
+relinquish the ability to mutate the value in return for an immutable reference
+to the value produced.
+
 %In LJ, two distinct, but equiderivable, canonical definitions of $\wedge$ can
 %be given.
 %
@@ -117,7 +152,193 @@ will be the prototype for a range of modalities I will consider.
 %  {\Gamma, A \wedge^+ B \vdash C}
 %\end{mathpar}
 
-\subsection{The $\oc$-modality}
+\subsection{The multiplicative-additive fragment}
+
+The multiplicative-additive fragment of linear logic (MALL) is the fragment
+where all hypotheses are linear (must be used exactly once).
+We will extend MALL with the \emph{exponential} modality in
+\cref{sec:bang-modality}.
+MALL is unable to embed intuitionistic or classical logic (collectively
+known as \emph{structural logics}), as MALL is unable to reflect any of the
+discarding or duplication that can be done in proofs in structural logics.
+
+In short, the syntax of intuitionistic MALL can be described as intuitionistic
+logic with the structural rules of \emph{weakening} and \emph{contraction}
+removed.
+However, without the presence of weakening and contraction, we have to be more
+careful about the rules we state, so as not to accidentally introduce weakening
+and contraction admissibly.
+The lack of these structural rules also allows us to observe a new phenomenon:
+the distinction (at the level of provability) between \emph{additive} and
+\emph{multiplicative} formulations of existing connectives (in particular, in
+the intuitionistic case, the conjunction connective).
+
+I present MALL in \cref{fig:mall} in a sequent calculus style, as it was
+presented by \citet{girard87linear}.
+
+To encode what it means to use a hypothesis \emph{exactly once}, we first need
+to decide what counts as a use.
+The simplest case is that the identity sequent counts as a single use of its
+sole hypothesis, and conversely does not count as a use of any other hypotheses.
+For sequential proofs, created by the \TirName{Cut} rule, if we have a proof of
+$A$ using $\Gamma$, and a proof of $B$ using $\Delta$ and $A$, then we have a
+proof of $B$ transitively using $\Delta$ and $\Gamma$.
+The exchange rule Exch says that use is invariant under permutation.
+
+For the logical connectives, we have genuine choices as to what it means to use
+them.
+Two cases --- disjunction ($\oplus$) and (linear) implication ($\multimap$) ---
+are somewhat intuitive from intuitionistic logic.
+A canonical proof of a disjunction is a tag and a proof of one of the two
+disjuncts.
+This suggests that a proof of a disjunction only uses the same hypotheses as
+the proof of the disjunct we actually choose, with the other disjunct being
+irrelevant.
+Correspondingly, when we use a disjunction hypothesis, we will only actually use
+one of the cases, so each branch should use the same hypotheses.
+For implication, use is sequential like with the \TirName{Cut} rule, and its
+left rule is more or less the only choice that allows use of the surrounding
+hypotheses.
+
+For conjunction, there are two choices: Either the conjuncts \emph{together} use
+all of the hypotheses, or each of the conjuncts \emph{individually} uses all of
+the hypotheses.
+The former choice gives us the tensor-product ($\otimes$), and the latter choice
+gives us the with-product ($\with$).
+These products are equivalent up to provability in structural logics but
+distinct in linear logic.
+
+\begin{figure}
+  \begin{align*}
+    A, B, C &\Coloneqq X \mid I \mid A \otimes B \mid A \multimap B
+              \mid 0 \mid A \oplus B \mid \top \mid A \with B \\
+    \Gamma, \Delta, \Theta &\Coloneqq {\cdot} \mid \Gamma, A
+  \end{align*}
+  \begin{mathpar}
+    \ebrule{%
+      \infer0[Id]{A \vdash A}
+    }
+
+    \and
+
+    \ebrule{%
+      \hypo{\Gamma \vdash A}
+      \hypo{\Delta, A \vdash B}
+      \infer2[Cut]{\Gamma, \Delta \vdash B}
+    }
+
+    \and
+
+    \ebrule{%
+      \hypo{\Gamma, B, A, \Delta \vdash C}
+      \infer1[Exch]{\Gamma, A, B, \Delta \vdash C}
+    }
+
+    \and
+
+    \ebrule{%
+      \hypo{\Gamma \vdash C}
+      \infer1[$I$-L]{\Gamma, I \vdash C}
+    }
+
+    \and
+
+    \ebrule{%
+      \infer0[$I$-R]{{\cdot} \vdash I}
+    }
+
+    \and
+
+    \ebrule{%
+      \hypo{\Gamma, A, B \vdash C}
+      \infer1[$\otimes$-L]{\Gamma, A \otimes B \vdash C}
+    }
+
+    \and
+
+    \ebrule{%
+      \hypo{\Gamma \vdash A}
+      \hypo{\Delta \vdash B}
+      \infer2[$\otimes$-R]{\Gamma, \Delta \vdash A \otimes B}
+    }
+
+    \and
+
+    \ebrule{%
+      \hypo{\Gamma \vdash A}
+      \hypo{\Delta, B \vdash C}
+      \infer2[$\multimap$-L]{\Gamma, \Delta, A \multimap B \vdash C}
+    }
+
+    \and
+
+    \ebrule{%
+      \hypo{\Gamma, A \vdash B}
+      \infer1[$\multimap$-R]{\Gamma \vdash A \multimap B}
+    }
+
+    \and
+
+    \ebrule{%
+      \infer0[$0$-L]{\Gamma, 0 \vdash C}
+    }
+
+    \and
+
+    \text{(no $0$-R)}
+
+    \and
+
+    \ebrule{%
+      \hypo{\Gamma, A \vdash C}
+      \hypo{\Gamma, B \vdash C}
+      \infer2[$\oplus$-L]{\Gamma, A \oplus B \vdash C}
+    }
+
+    \and
+
+    \ebrule{%
+      \hypo{\Gamma \vdash A_i}
+      \infer1[$\oplus$-R$_i$]{\Gamma \vdash A_0 \oplus A_1}
+    }
+
+    \and
+
+    \text{(no $\top$-L)}
+
+    \and
+
+    \ebrule{%
+      \infer0[$\top$-R]{\Gamma \vdash \top}
+    }
+
+    \and
+
+    \ebrule{%
+      \hypo{\Gamma, A_i \vdash C}
+      \infer1[$\with$-L$_i$]{\Gamma, A_0 \with A_1 \vdash C}
+    }
+
+    \and
+
+    \ebrule{%
+      \hypo{\Gamma \vdash A}
+      \hypo{\Gamma \vdash B}
+      \infer2[$\with$-R]{\Gamma \vdash A \with B}
+    }
+  \end{mathpar}
+  \caption{Multiplicative-additive fragment of linear logic}
+  \label{fig:mall}
+\end{figure}
+
+Implication ($\multimap$) and the tensor-product ($\otimes$, $I$) comprise the
+\emph{multiplicative} fragment, while disjunction ($\oplus$, $0$) and the
+with-product ($\with$, $\top$) comprise the \emph{additive} fragment.
+Categorically, the additive fragment corresponds to products and coproducts,
+while the multiplicative fragment corresponds to multicategorical tensor
+products and closure.
+
+\subsection{The $\oc$-modality}\label{sec:bang-modality}
 
 \begin{mathpar}
   \ebrule{%

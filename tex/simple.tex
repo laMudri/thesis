@@ -1,5 +1,21 @@
 \chapter{Mechanisation of simple types}\label{sec:simple}
 
+In this chapter, I review and justify the family of approaches usually used to
+represent simple type systems inside dependently typed proof assistants.
+These approaches were first presented by \citet{AR99}, who showed a way of
+representing well \emph{scoped} terms in a language with polymorphic recursion,
+and extended the representation to well \emph{typed} terms in a language with
+dependent types.
+The representation of terms relies on indexing on both a context --- giving the
+types of all the free variables --- and a type for the term itself.
+A basic operation on terms is \emph{simultaneous substitution}, which replaces
+each variable in the context by a term in another context.
+This simultaneous substitution operation fits the form of composition in a
+multicategory.
+Specifically, in the case of a simple intuitionistic type system, this is the
+composition of a Cartesian multicategory, which allows all of the terms being
+substituted in to share a context.
+
 \section{Term representation}
 \input{terms.tex}
 \section{Renaming and substitution}\label{sec:kits}
