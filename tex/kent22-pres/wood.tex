@@ -35,48 +35,101 @@
 \frame{\titlepage}
 
 \begin{frame}{Introduction}
+  \begin{itemize}
+    \item Why semirings?
+      \begin{itemize}
+        \item Addition $\sim$ accumulation
+        \item Multiplication $\sim$ modality
+        \item Plenty of specific examples in the literature
+      \end{itemize}
+      \pause
+    \item Why not semirings?
+      \begin{itemize}
+        \item Sometimes we don't have modalities, e.g MALL.
+        \item Multiplication by zero ($\Box_0$) can act strangely.
+        \item Functions are backwards to checking fragments in interactive
+          programming with holes.
+      \end{itemize}
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{Monoidal categories}
-\[
-  \begin{tikzpicture}[baseline]
-    \path
-    (-1,1) node(0) {0}
-    (1,2) node(x) {}
-    (0,0) node(*) {*}
-    (0,-1) node(res) {}
-    ;
+  \begin{columns}
+    \pause
+    \begin{column}{.455\linewidth}
+      \begin{tikzpicture}[baseline]
+        \path
+        (-1,2.5) node(x) {}
+        (-1,1.5) node[draw,rectangle](f) {\Large $f$}
+        (-1,0.5) node(fx) {}
+        ;
+        \draw (x) -- node[left] {$A$} (f);
+        \draw (f) -- node[left] {$B$} (fx);
 
-    \draw (0) -- (*);
-    \draw (x) to[out=270,in=45] (*);
-    \draw (*) -- (res);
-  \end{tikzpicture}
-  =\quad
-  \begin{tikzpicture}[baseline]
-    \path
-    (0,0) node(0) {0}
-    (0,2) node(x) {}
-    (0,-1) node(res) {}
-    (0,1) node[circle,draw](del) {}
-    ;
+        \node at (-1,0) {$;$};
 
-    \draw (0) -- (res);
-    \draw (x) -- (del);
-  \end{tikzpicture}
-  \quad=
-  \begin{tikzpicture}[baseline]
-    \path
-    (1,1) node(0) {0}
-    (-1,2) node(x) {}
-    (0,0) node(*) {*}
-    (0,-1) node(res) {}
-    ;
+        \path
+        (-1,-0.5) node(y) {}
+        (-1,-1.5) node[draw,rectangle](g) {\Large $g$}
+        (-1,-2.5) node(gy) {}
+        ;
+        \draw (y) -- node[left] {$B$} (g);
+        \draw (g) -- node[left] {$C$} (gy);
 
-    \draw (0) -- (*);
-    \draw (x) to[out=270,in=135] (*);
-    \draw (*) -- (res);
-  \end{tikzpicture}
-\]
+        \node at (0,0) {$\rightsquigarrow$};
+
+        \path
+        (1,2) node(x') {}
+        (1,1) node[draw,rectangle](f') {\Large $f$}
+        (1,-1) node[draw,rectangle](g') {\Large $g$}
+        (1,-2) node(gfx') {}
+        ;
+        \draw (x') -- node[right] {$A$} (f');
+        \draw (f') -- node[right] {$B$} (g');
+        \draw (g') -- node[right] {$C$} (gfx');
+      \end{tikzpicture}
+    \end{column}
+    \pause
+    \begin{column}{.455\linewidth}
+      \begin{tikzpicture}[baseline]
+        \path
+        (-1,2.5) node(x) {}
+        (-1,1.5) node[draw,rectangle](f) {\Large $f$}
+        (-1,0.5) node(fx) {}
+        ;
+        \draw (x) -- node[left] {$A$} (f);
+        \draw (f) -- node[left] {$B$} (fx);
+
+        \node at (0,1.5) {$\otimes$};
+
+        \path
+        (1,2.5) node(y) {}
+        (1,1.5) node[draw,rectangle](g) {\Large $g$}
+        (1,0.5) node(gy) {}
+        ;
+        \draw (y) -- node[right] {$A'$} (g);
+        \draw (g) -- node[right] {$B'$} (gy);
+
+        \node[rotate=270] at (0,0) {$\rightsquigarrow$};
+
+        \path
+        (-0.5,-0.5) node(x) {}
+        (-0.5,-1.5) node[draw,rectangle](f) {\Large $f$}
+        (-0.5,-2.5) node(fx) {}
+        ;
+        \draw (x) -- node[left] {$A$} (f);
+        \draw (f) -- node[left] {$B$} (fx);
+
+        \path
+        (0.5,-0.5) node(y) {}
+        (0.5,-1.5) node[draw,rectangle](g) {\Large $g$}
+        (0.5,-2.5) node(gy) {}
+        ;
+        \draw (y) -- node[right] {$A'$} (g);
+        \draw (g) -- node[right] {$B'$} (gy);
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Examples of monoidal categories}
@@ -90,11 +143,204 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Monoids in a monoidal category}
+\begin{frame}{Monoids in a monoidal category (identity)}
+  \[
+    \begin{tikzpicture}[baseline]
+      \path
+      (-3.5,1) node(0l) {0}
+      (-1.5,2) node(xl) {}
+      (-2.5,0) node(+l) {+}
+      (-2.5,-1) node(resl) {}
+      ;
+      \path
+      (-3.5,3) node {(0}
+      (-2.5,3) node {+}
+      (-1.5,3) node {x)}
+      ;
+
+      \draw (0l) -- (+l);
+      \draw (xl) to[out=270,in=45] (+l);
+      \draw (+l) -- (resl);
+
+      \node at (-1,0) {=};
+      \node at (-1,3) {=};
+
+      \path
+      (0,2) node(x) {}
+      (0,-1) node(res) {}
+      ;
+      \path
+      (0,3) node {x}
+      ;
+
+      \draw (x) -- (res);
+
+      \node at (1,0) {=};
+      \node at (1,3) {=};
+
+      \path
+      (3.5,1) node(0) {0}
+      (1.5,2) node(x) {}
+      (2.5,0) node(+) {+}
+      (2.5,-1) node(res) {}
+      ;
+      \path
+      (3.5,3) node {0)}
+      (2.5,3) node {+}
+      (1.5,3) node {(x}
+      ;
+
+      \draw (0) -- (+);
+      \draw (x) to[out=270,in=135] (+);
+      \draw (+) -- (res);
+    \end{tikzpicture}
+  \]
 \end{frame}
 
-%\begin{frame}{Monoids are determined by their multiplication}
-%\end{frame}
+\begin{frame}{Monoids in a monoidal category (associativity)}
+  \[
+    \begin{tikzpicture}[baseline]
+      \path
+      (-3,2) node(xl) {}
+      (-2,2) node(yl) {}
+      (-1,2) node(zl) {}
+      (-2.5,1) node(x+y) {+}
+      (-2,0) node(xy+z) {+}
+      (-2,-1) node(resl) {}
+      ;
+      \path
+      (-3,3) node {(x}
+      (-2.5,3) node {+}
+      (-2,3) node {y)}
+      (-1.5,3) node {+}
+      (-1,3) node {z}
+      ;
+
+      \draw (xl) to[out=270,in=135] (x+y);
+      \draw (yl) to[out=270,in=45] (x+y);
+      \draw (x+y) to[out=270,in=135] (xy+z);
+      \draw (zl) to[out=270,in=45] (xy+z);
+      \draw (xy+z) -- (resl);
+
+      \path
+      (0,0) node {=}
+      (0,3) node {=}
+      ;
+
+      \path
+      (3,2) node(zr) {}
+      (2,2) node(yr) {}
+      (1,2) node(xr) {}
+      (2.5,1) node(y+z) {+}
+      (2,0) node(x+yz) {+}
+      (2,-1) node(resr) {}
+      ;
+      \path
+      (3,3) node {z)}
+      (2.5,3) node {+}
+      (2,3) node {(y}
+      (1.5,3) node {+}
+      (1,3) node {x}
+      ;
+
+      \draw (zr) to[out=270,in=45] (y+z);
+      \draw (yr) to[out=270,in=135] (y+z);
+      \draw (y+z) to[out=270,in=45] (x+yz);
+      \draw (xr) to[out=270,in=135] (x+yz);
+      \draw (x+yz) -- (resr);
+    \end{tikzpicture}
+  \]
+\end{frame}
+
+\begin{frame}{Commutative monoids in a symmetric monoidal category}
+  \[
+    \begin{tikzpicture}[baseline]
+      \path
+      (-2,1) node(xl) {}
+      (-1,1) node(yl) {}
+      (-1.5,0) node(+l) {+}
+      (-1.5,-1) node(resl) {}
+      ;
+
+      \draw (xl) to[out=270,in=135] (+l);
+      \draw (yl) to[out=270,in=45] (+l);
+      \draw (+l) to (resl);
+
+      \node at (0,0) {=};
+
+      \path
+      (2,1) node(xr) {}
+      (1,1) node(yr) {}
+      (1.5,0) node(+r) {+}
+      (1.5,-1) node(resr) {}
+      ;
+
+      \draw (xr) to[out=270,in=135] (+r);
+      \draw (yr) to[out=270,in=45] (+r);
+      \draw (+r) to (resr);
+    \end{tikzpicture}
+  \]
+\end{frame}
+
+\begin{frame}{Semirings in a monoidal category}
+  Annihilation requires deletion, and distributivity requires duplication
+  $\sim$ Cartesian category.
+  \[
+    \begin{tikzpicture}[baseline]
+      \path
+      (-3.5,1) node(0l) {0}
+      (-1.5,2) node(xl) {}
+      (-2.5,0) node(*l) {*}
+      (-2.5,-1) node(resl) {}
+      ;
+      \path
+      (-3.5,3) node {(0}
+      (-2.5,3) node {*}
+      (-1.5,3) node {x)}
+      ;
+
+      \draw (0l) -- (*l);
+      \draw (xl) to[out=270,in=45] (*l);
+      \draw (*l) -- (resl);
+
+      \node at (-1,0) {=};
+      \node at (-1,3) {=};
+
+      \path
+      (0,0) node(0) {0}
+      (0,2) node(x) {}
+      (0,-1) node(res) {}
+      (0,1) node[circle,draw](del) {}
+      ;
+
+      \draw (0) -- (res);
+      \draw (x) -- (del);
+
+      \node at (0,3) {0};
+
+      \node at (1,0) {=};
+      \node at (1,3) {=};
+
+      \path
+      (3.5,1) node(0) {0}
+      (1.5,2) node(x) {}
+      (2.5,0) node(*) {*}
+      (2.5,-1) node(res) {}
+      ;
+      \path
+      (3.5,3) node {0)}
+      (2.5,3) node {*}
+      (1.5,3) node {(x}
+      ;
+
+      \draw (0) -- (*);
+      \draw (x) to[out=270,in=135] (*);
+      \draw (*) -- (res);
+    \end{tikzpicture}
+  \]
+  Take the category of \emph{cocommutative comonoids} in our original monoidal
+  category.
+\end{frame}
 
 \begin{frame}{There's no such thing as a partial semiring}
   Consider a comonoid
@@ -102,14 +348,79 @@
   $\Set_{\mathrm{part}}$.
 
   We have:
-  \missingfigure{Unit laws}
+  \[
+    \begin{tikzpicture}[baseline]
+      \path
+      (-3.5,-1) node[circle,draw](0l) {}
+      (-1.5,-2) node(xl) {z}
+      (-2.5,0) node[circle,draw](+l) {}
+      (-2.5,1) node(resl) {x}
+      ;
 
-  By determinism of the comultiplication, we must have $y = z = x$.
+      \draw (0l) -- (+l);
+      \draw (xl) to[out=90,in=325] (+l);
+      \draw (+l) -- (resl);
+
+      \node at (-1,0) {=};
+
+      \path
+      (0,-2) node(x) {x}
+      (0,1) node(res) {x}
+      ;
+
+      \draw (x) -- (res);
+
+      \node at (1,0) {=};
+
+      \path
+      (3.5,-1) node[circle,draw](0) {}
+      (1.5,-2) node(x) {y}
+      (2.5,0) node[circle,draw](+) {}
+      (2.5,1) node(res) {x}
+      ;
+
+      \draw (0) -- (+);
+      \draw (x) to[out=90,in=225] (+);
+      \draw (+) -- (res);
+    \end{tikzpicture}
+  \]
+
+  By determinism of duplicate, we must have $\mathrm{dup}(x) = (x, x)$.
 
   Furthermore, we see that every $x$ is in the counit.
 \end{frame}
 
-\begin{frame}{Monoid with actions}
+\begin{frame}{What can we do?}
+  \begin{itemize}
+    \item Find a different category of partial functions.
+    \item Modify multiplication to avoid general distributivity/annihilation.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{$\Set_{\mathrm{part}}$ is strict}
+  \begin{itemize}
+    \item A \emph{generalised element} of $A$ is a morphism of type $I \to A$.
+    \item Generalised elements of $\Set_{\mathrm{part}}$ include $\bot$, where
+      $\bot({*})\uparrow$.
+    \item $\Set_{\mathrm{part}}$ models \emph{strict} partial functions ---
+      preserve $\bot$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Non-strict partial functions}
+  Inspired by domain theory:
+  \begin{itemize}
+    \item Impose an information ordering $\sqsubseteq$.
+    \item Morphisms are monotone, but don't preserve $\bot$ element.
+    \item E.g, $0 * \bot = 0$.
+    \item In fact, the $\{0,1,\omega\}$ semiring works as-is ($\bot = \omega$).
+      \pause
+    \item Typing derivations should avoid $\bot$.
+    \item How does the information ordering interact with subgrading?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Commutative monoid with actions}
   \begin{block}{Definition: monoid with actions}
     A commutative monoid $M$ together with a set of monoid endomorphisms
     (\emph{actions}) $A$ closed under identity and composition.
@@ -122,23 +433,58 @@
     \end{itemize}
     Note that this is not the same as a module.
   }
-  \begin{block}{Example: linearity in $\Rel$}<2>
-    Let $M = (\{0,1,\omega\}, \{0,\omega\}, +)$, where:
-    \begin{itemize}
-      \item $0 + 0 = 0$
-      \item $0 + 1 = 1$
-      \item $1 + 0 = 1$
-      \item $\omega + \omega = \omega$
-    \end{itemize}
-    Let $A = \{1, \omega\}$, where:
-    \begin{itemize}
-      \item $1(x) = x$
-      \item $\omega(x) = x$ when $x \neq 1$
-    \end{itemize}
-  \end{block}
+  \only<2>{%
+    \begin{block}{Example: linearity in $\Rel$}
+      Let $M = (\{0,1,\omega\}, \{0,\omega\}, +)$, where:
+      % \begin{itemize}
+      %   \item $0 + 0 = 0$
+      %   \item $0 + 1 = 1$
+      %   \item $1 + 0 = 1$
+      %   \item $\omega + \omega = \omega$
+      % \end{itemize}
+      % TODO: sort out indentation issues
+      \begin{columns}
+        \begin{column}{.455\linewidth}
+          \begin{itemize}
+            \item $0 + 1 = 1$
+            \item $1 + 0 = 1$
+          \end{itemize}
+        \end{column}
+        \begin{column}{.455\linewidth}
+          \begin{itemize}
+            \item $0 + 0 = 0$
+            \item $\omega + \omega = \omega$
+          \end{itemize}
+        \end{column}
+      \end{columns}
+      \vspace{1ex}
+      Let $A = \{1, \omega\}$, where:
+      \begin{itemize}
+        \item $1(x) = x$
+        \item $\omega(x) = x$ when $x \neq 1$
+      \end{itemize}
+    \end{block}
+  }
 \end{frame}
 
+%\begin{frame}{Many commutative monoids}
+%  L/nL example with two modes (as in CMTT).
+%
+%  \[
+%    \begin{tikzpicture}
+%      \node(01) at (-1,0) {$\{0,1\}$};
+%      \node(omega) at (1,0) {$\{0,\omega\}$};
+%      \draw[->] (01) -- node[above] {$\omega$} (omega);
+%    \end{tikzpicture}
+%  \]
+%\end{frame}
+
 \begin{frame}{Conclusions}
+  \begin{itemize}
+    \item Sometimes we can't find the right semiring.
+    \item There are several ways to weaken the definition of semiring.
+    \item Which are worth exploring?
+  \end{itemize}
 \end{frame}
 
 \end{document}
