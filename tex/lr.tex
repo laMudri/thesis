@@ -1,5 +1,5 @@
 In this section, I introduce the syntax of the type theory \name{}, which makes
-use of usage annotations.
+use of posemiring usage annotations.
 I use this syntax to write some example programs, which will motivate the
 denotational semantics explored in \cref{sec:wrel}.
 For the rest of this thesis, \name{} will serve as both a prototypical
@@ -249,4 +249,92 @@ counting.
     \item $\vdash \oc\gr2A \multimap A \otimes A$
     \item $\vdash \oc\gr5A \multimap \oc\gr2A \otimes \oc\gr3A$
   \end{itemize}
+\end{example}
+
+\subsection{Other posemirings}\label{sec:example-posemirings}
+
+Now that we have seen the role of usage annotations in $\name$, I will give more
+examples of posemirings for tracking interesting usage patterns.
+
+\begin{example}\label{def:trivial-posemiring}
+  The singleton set gives rise to a posemiring in a unique way.
+  When the usage annotations of $\name$ are taken from this trivial posemiring,
+  we recover a version of intuitionistic simply typed $\lambda$-calculus.
+\end{example}
+
+{\color{red}TODO: cite rntz}
+\begin{example}\label{def:monotonicity-posemiring}
+  The \emph{monotonicity} posemiring is defined over the set of symbols
+  $\{\gr{\wn\wn}, \gr{\uparrow\uparrow}, \gr{\downarrow\downarrow},
+  \gr{\sim\sim}\}$, with $0 \coloneqq \gr{\wn\wn}$,
+  $1 \coloneqq \gr{\uparrow\uparrow}$, and the following operations:
+
+  \makebox[\textwidth][s]{
+    \begin{tabular}{c|cccc}
+      $+$ & $\gr{\wn\wn}$ & $\gr{\uparrow\uparrow}$ & $\gr{\downarrow\downarrow}$ & $\gr{\sim\sim}$ \\ \hline
+      $\gr{\wn\wn}$ & $\gr{\wn\wn}$ & $\gr{\uparrow\uparrow}$ & $\gr{\downarrow\downarrow}$  & $\gr{\sim\sim}$ \\
+      $\gr{\uparrow\uparrow}$ & $\gr{\uparrow\uparrow}$ & $\gr{\uparrow\uparrow}$ & $\gr{\sim\sim}$ & $\gr{\sim\sim}$ \\
+      $\gr{\downarrow\downarrow}$ & $\gr{\downarrow\downarrow}$ & $\gr{\sim\sim}$ & $\gr{\downarrow\downarrow}$ & $\gr{\sim\sim}$ \\
+      $\gr{\sim\sim}$ & $\gr{\sim\sim}$  & $\gr{\sim\sim}$ & $\gr{\sim\sim}$ & $\gr{\sim\sim}$ \\
+    \end{tabular}
+    \begin{tabular}{c|cccc}
+      $*$ & $\gr{\wn\wn}$ & $\gr{\uparrow\uparrow}$ & $\gr{\downarrow\downarrow}$ & $\gr{\sim\sim}$ \\ \hline
+      $\gr{\wn\wn}$ & $\gr{\wn\wn}$ & $\gr{\wn\wn}$ & $\gr{\wn\wn}$  & $\gr{\wn\wn}$ \\
+      $\gr{\uparrow\uparrow}$ & $\gr{\wn\wn}$ & $\gr{\uparrow\uparrow}$ & $\gr{\downarrow\downarrow}$ & $\gr{\sim\sim}$ \\
+      $\gr{\downarrow\downarrow}$ & $\gr{\wn\wn}$ & $\gr{\downarrow\downarrow}$ & $\gr{\uparrow\uparrow}$ & $\gr{\sim\sim}$ \\
+      $\gr{\sim\sim}$ & $\gr{\wn\wn}$  & $\gr{\sim\sim}$ & $\gr{\sim\sim}$ & $\gr{\sim\sim}$ \\
+    \end{tabular}
+    \begin{tikzpicture}[baseline]
+      \node(omega) at (0,-1) {$\gr{\sim\sim}$};
+      \node(0) [above left of=omega] {$\gr{\uparrow\uparrow}$};
+      \node(1) [above right of=omega] {$\gr{\downarrow\downarrow}$};
+      \node(qq) [above right of=0] {$\gr{\wn\wn}$};
+
+      \draw (omega) -- (0);
+      \draw (omega) -- (1);
+      \draw (0) -- (qq);
+      \draw (1) -- (qq);
+    \end{tikzpicture}
+  }
+
+  The idea is that each symbol represents the possible \emph{variance} of an
+  input (free variable) with respect to some partial ordering on a semantic
+  domain of elements.
+  $\gr{\uparrow\uparrow}$ represents covariance (if that input goes up, the
+  output goes up), $\gr{\downarrow\downarrow}$ represents contravariance
+  (if that input goes \emph{down}, the output goes up), $\gr{\sim\sim}$ gives no
+  guarantees (if that input remains constant, the output (trivially) goes up),
+  and $\gr{\wn\wn}$ says that that input is irrelevant (whatever changes are
+  made to that input, the output (trivially) goes up).
+
+  Addition represents an intersection of guarantees.
+  For example, if a variable is used covariantly in one subterm and
+  contravariantly in another, we can only make the trivial guaratee represented
+  by $\gr{\sim\sim}$.
+  Multiplication is mainly interesting for multiplication by
+  $\gr{\downarrow\downarrow}$, which flips the variance on any other annotation.
+  As such, $\oc\gr{\downarrow\downarrow}A$ represents a contravariant $A$.
+\end{example}
+
+\begin{example}\label{def:sensitivity-posemiring}
+  The \emph{sensitivity} posemiring~\citep{reed10distance} is given by
+  $(\mathbb R^+, \geq, \gr0, +, \gr1, \times)$, where $\mathbb R^+$ is the
+  non-negative real numbers extended with $\gr\infty$ (distances), and the rest
+  of the structure comes from the standard operations on real numbers (except
+  that $\gr0 \times \gr\infty = \gr\infty \times \gr0 = \gr0$).
+  Note that the order is reversed, making $\gr\infty$ coercible to any other
+  annotation and anything coercible to $\gr0$.
+
+  This posemiring can be used for sensitivity analysis, where we want to bound
+  the effect of a perturbation on inputs in terms of some semantic notion of
+  distance between values.
+  An annotation $\gr r$ says that if that input is perturbed by at most $r$,
+  then the output will change by at most $1$.
+  An $\gr\infty$-annotated variable gives the very strong guarantee that any
+  change in the input will make a minimal change to the output, while a
+  $\gr0$-annotated variable provides no guarantee at all.
+  Addition forbids general contraction, which would otherwise allow arbitrary
+  finite blow-up of the effect of any non-$\gr0$-annotated variable.
+  However, the ordering, with $\gr0$ at the top, means that we have general
+  weakening, so the resulting sensitivity calculus has an affine flavour.
 \end{example}

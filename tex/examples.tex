@@ -65,7 +65,7 @@ variables are values (not computations), or a polarised language where
 variables always have a polarity matching their type.
 
 
-\subsection{Renaming and substitution}\label{sec:kits}
+\subsection{Renaming and substitution}\label{sec:kit-to-sem}
 
 In an unpublished note, \citet{McBride05} gives a parametrised traversal
 yielding homomorphisms of syntax, the canonical examples of which are
@@ -270,6 +270,14 @@ representing de Bruijn \emph{levels}, into variable terms.
 
 
 \subsection{A denotational semantics}
+
+Standard denotational semantics falls out as a somewhat trivial case of
+\AgdaRecord{Semantics}.
+A lot of work is done in the generic traversal \AgdaFunction{semantics} to
+maintain a $\V$-environment, where $\V$ is a reasonably variable-like semantic
+family.
+
+{\color{red}Old stuff below\ldots}
 
 To justify the name \emph{semantics}, we give an example traversal that is a
 denotational semantics in the usual sense.

@@ -1,5 +1,27 @@
 \chapter{A framework for usage-restricted calculi}\label{sec:framework}
 
+In \cref{sec:semirings}, we saw how to use parametrisation over a partially
+ordered semiring to recreate a range of usage-aware calculi.
+However, $\name$, with its fixed set of type formers and syntactic forms, is a
+long way from capturing the full range of linear-like programming languages
+studied in the literature and required in practice.
+
+In this chapter, I take the framework for typed syntaxes with binding developed
+by \citet{AACMM21} and apply the principles we discovered in
+\cref{sec:semirings} to yield a framework allowing for semiring-based usage
+restrictions on variables.
+Syntactically, I claim that this framework ranges over all finitiary
+variable-based simply typed semiring-annotated calculi, with justification by
+comparison to the framework of \citet{AACMM21} and some novel examples in
+\cref{sec:other-syntaxes}.
+I also derive analogues to some of the semantic results of \citet{AACMM21},
+strengthening them to take advantage of usage restrictions.
+
+The work in this chapter is fully mechanised in Agda, which allows me to be
+precise about the various levels of domain-specific languages which appear.
+I assume that the reader is familiar with the bunched connectives introduced in
+\cref{fig:bunched} and the usage-aware environments of \cref{def:lr-env}.
+
 \section{Syntax}
 
 \input{syntax}
@@ -8,6 +30,6 @@
 
 \input{semantics}
 
-\section{Example semantics}
+\section{Example semantics}\label{sec:example-semantics}
 
 \input{examples}

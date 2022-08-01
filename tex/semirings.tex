@@ -10,35 +10,38 @@ As such, one of the aims of this chapter will be to find a form of weakening
 applicable to variables of any type, while essentially retaining linearity
 (as opposed to affinity).
 
-As explained by McBride~\cite{McBride16}, the first insight is to, instead of
+As explained by \citet{McBride16}, the first insight is to, instead of
 removing variables from the context of certain subterms, add an annotation to
 free variables saying whether they are to be used or not.
 We may use an annotation $\gr0$ on variables that are not to be used, and an
 annotation $\gr1$ on variables that are to be used.
 This convention lets us transcribe the usual $\otimes$-introduction rule
 (left) as a rule with usage annotations (right).
-I use lowercase $\gamma$ and $\delta$ to emphasise that the whole context is
-now a list of types together with their usage annotations.
-\todo{Reword: what's capital $\Gamma$}
-If $\gamma = x_1 : A_1, \ldots, x_m : A_m$, then
-$\gr r\gamma = \gr rx_1 : A_1, \ldots, \gr rx_m : A_m$.
+I use lowercase $\gamma$ and $\delta$ to emphasise that the whole context now
+looks like $\grP\gamma$, where $\grP$ is a list of usage annotations
+$\gr{r_1}, \ldots, \gr{r_m}$ and $\gamma$ is a list of types $A_1, \ldots, A_m$
+of the same length.
+Explicit contexts will usually be written with usage annotations and types
+interspersed, as $\gr{r_1}A_1, \ldots, \gr{r_m}A_m$.
+I use $\gr r\gamma$ to abbreviate $\gr rx_1, \ldots, \gr rx_m$.
 
 \[
-  \begin{prooftree}
+  \ebrule{%
     \hypo{\Gamma \vdash A}
     \hypo{\Delta \vdash B}
     \infer2{\Gamma, \Delta \vdash A \otimes B}
-  \end{prooftree}
+  }
   \quad\rightsquigarrow\quad
-  \begin{prooftree}
+  \ebrule{%
     \hypo{\gr1\gamma, \gr0\delta \vdash A}
     \hypo{\gr0\gamma, \gr1\delta \vdash B}
     \infer2{\gr1\gamma, \gr1\delta \vdash A \otimes B}
-  \end{prooftree}
+  }
 \]
 
 What the existence of $\gr0$ has bought us is that variables never go out of
-scope in subterms; rather, we lose the ability to use certain variables.
+scope in subterms; rather, we lose the ability to use certain variables that
+remain in scope.
 Additionally, we recover a form of weakening: if $\Gamma \vdash A$, then also
 $\Gamma, \gr0\delta \vdash A$, because the resulting term indeed uses no
 variables from $\delta$.
@@ -52,79 +55,158 @@ $\gr\omega$, we can make the following transcription of the DILL
 $\otimes$-introduction rule.
 
 \[
-  \begin{prooftree}
+  \ebrule{%
     \hypo{\Theta; \Gamma \vdash A}
     \hypo{\Theta; \Delta \vdash B}
     \infer2{\Theta; \Gamma, \Delta \vdash A \otimes B}
-  \end{prooftree}
+  }
   \quad\rightsquigarrow\quad
-  \begin{prooftree}
+  \ebrule{%
     \hypo{\gr\omega\theta, \gr1\gamma, \gr0\delta \vdash A}
     \hypo{\gr\omega\theta, \gr0\gamma, \gr1\delta \vdash B}
     \infer2{\gr\omega\theta, \gr1\gamma, \gr1\delta \vdash A \otimes B}
-  \end{prooftree}
+  }
 \]
 
 To conceptualise the criteria on the usage annotations involved in this rule,
 I introduce a formal $+$ operation on usage annotations.
 The rule stated above relies on the facts that $\gr1 + \gr0 = \gr1$,
 $\gr0 + \gr1 = \gr1$, and $\gr\omega + \gr\omega = \gr\omega$.
-The capital calligraphic letters $\grP$, $\grQ$, and $\grR$ stand for all of
-the usage annotations in a given context, with $\grR\gamma$ standing for
-$\grR_1x_1 : \gamma_1, \ldots, \grR_mx_m : \gamma_m$.
-Addition lifts pointwise to these vectors of usage annotations.
+Addition lifts pointwise to vectors of usage annotations (the green capital
+calligraphic $\grP$, $\grQ$, and $\grR$).
 It is worth noting now that, thanks to the fact that $\gr0 + \gr0 = \gr0$, the
-rule on the right now accepts $\gr0$-annotated variables in its conclusion,
-which is essential for weakening to be admissible.
+rule on the right below now accepts $\gr0$-annotated variables in its
+conclusion, which is essential for weakening to be admissible.
 
 \[
-  \begin{prooftree}
+  \ebrule{%
     \hypo{\gr\omega\theta, \gr1\gamma, \gr0\delta \vdash A}
     \hypo{\gr\omega\theta, \gr0\gamma, \gr1\delta \vdash B}
     \infer2{\gr\omega\theta, \gr1\gamma, \gr1\delta \vdash A \otimes B}
-  \end{prooftree}
+  }
   \quad\rightsquigarrow\quad
-  \begin{prooftree}
+  \ebrule{%
     \hypo{\grR = \grP + \grQ}
     \hypo{\grP\gamma \vdash A}
     \hypo{\grQ\gamma \vdash B}
     \infer3{\grR\gamma \vdash A \otimes B}
-  \end{prooftree}
+  }
 \]
 
-Some other transcriptions:
+Some other transcriptions are as follows.
+I unify the variable rules (the one for linear variables and the one for
+intuitionistic variables) by introducing a coercibility ordering $\leq$ on usage
+annotations.
+We have $\gr\omega \leq \gr1$ because an intuitionistic variable can fill the
+demand of a linear variable by dereliction.
+We also have $\gr\omega \leq \gr0$, because intuitionistic variables can be
+weakened away like $\gr0$-annotated variables.
+All together, this means that at the unified variable rule, the variable being
+used must have annotation less than or equal to $\gr1$, and every other variable
+must have annotation less than or equal to $\gr0$.
+Thus the basis vector $\langle x \rvert$ describes the upper bound on the
+current usage context $\grR$.
 
 \[
-  \begin{prooftree}
+  \ebrule{%
     \infer0{\Theta; A \vdash A}
-  \end{prooftree}
+  }
   \quad\rightsquigarrow\quad
-  \begin{prooftree}
+  \ebrule{%
     \infer0{\gr\omega\theta, \gr1A, \gr0\delta \vdash A}
-  \end{prooftree}
+  }
   \quad\rightsquigarrow\quad
-  \begin{prooftree}
+  \ebrule{%
     \hypo{\grR \leq \bra x}
     \hypo{\gamma_x = A}
     \infer2{\grR\gamma \vdash A}
-  \end{prooftree}
+  }
 \]
 
 \[
-  \begin{prooftree}
+  \ebrule{%
     \infer0{\Theta, A; {\cdot} \vdash A}
-  \end{prooftree}
+  }
   \quad\rightsquigarrow\quad
-  \begin{prooftree}
+  \ebrule{%
     \infer0{\gr\omega\theta, \gr\omega A, \gr0\delta \vdash A}
-  \end{prooftree}
+  }
   \quad\rightsquigarrow\quad
-  \begin{prooftree}
+  \ebrule{%
     \hypo{\grR \leq \bra x}
     \hypo{\gamma_x = A}
     \infer2{\grR\gamma \vdash A}
-  \end{prooftree}
+  }
 \]
+
+The final interesting rule form to cover is that found in DILL's
+$\oc$-introduction rule.
+I choose to see DILL's $\oc$-introduction as an $\gr\omega$-ary counterpart to
+$\otimes$-introduction, though with the same premise each time rather than
+$\gr\omega$-many premises.
+This explanation recovers the behaviour that only $\gr\omega$- and
+$\gr0$-annotated variables can appear in the conclusion of $\oc$-introduction,
+and also justifies the designation of multiplication (vector scaling) as the
+algebraic operation controlling the $\oc$-modality.
+
+\[
+  \ebrule{%
+    \hypo{\Theta; {\cdot} \vdash A}
+    \infer1{\Theta; {\cdot} \vdash \oc A}
+  }
+  \quad\rightsquigarrow\quad
+  \ebrule{%
+    \hypo{\gr\omega\theta, \gr0\delta \vdash A}
+    \infer1{\gr\omega\theta, \gr0\delta \vdash \oc A}
+  }
+  \quad\rightsquigarrow\quad
+  \ebrule{%
+    \hypo{\grR \leq \gr\omega\grP}
+    \hypo{\grP\gamma \vdash A}
+    \infer2{\grR\gamma \vdash \oc_{\gr\omega} A}
+  }
+\]
+
+In summary, the structure we have required of the set of usage annotations is
+that they have addition (for $\otimes$-introduction and similar rules),
+multiplication (for $\oc$-introduction), a $1$ (for a variable being used), a
+$0$ (for a variable being discarded), and an ordering (allowing for subsumption
+of usage restrictions).
+Together, these form a \emph{partially ordered semiring} (posemiring), the laws
+of which are both supported by examples and necessary for the syntax to be well
+behaved.
+\todo{Refer back to preliminaries for definition of posemiring}
+For concreteness, I collect together the definition of the
+$\{\gr0, \gr1, \gr\omega\}$ posemiring I have been using so far.
+
+\begin{example}\label{def:lin-semiring}
+  The \emph{$\{\gr0, \gr1, \gr\omega\}$ semiring}, also known as the
+  \emph{linearity semiring}, has the operations given as follows, with
+  $0 \coloneqq \gr0$ and $1 \coloneqq \gr1$:
+
+  \makebox[\textwidth][s]{
+    \begin{tabular}{c|ccc}
+      $+$ & $\gr0$ & $\gr1$ & $\gr\omega$ \\ \hline
+      $\gr0$ & $\gr0$ & $\gr1$ & $\gr\omega$ \\
+      $\gr1$ & $\gr1$ & $\gr\omega$ & $\gr\omega$ \\
+      $\gr\omega$ & $\gr\omega$ & $\gr\omega$ & $\gr\omega$ \\
+    \end{tabular}
+    \begin{tabular}{c|ccc}
+      $*$ & $\gr0$ & $\gr1$ & $\gr\omega$ \\ \hline
+      $\gr0$ & $\gr0$ & $\gr0$ & $\gr0$ \\
+      $\gr1$ & $\gr0$ & $\gr1$ & $\gr\omega$ \\
+      $\gr\omega$ & $\gr0$ & $\gr\omega$ & $\gr\omega$ \\
+    \end{tabular}
+    \begin{tikzpicture}[baseline]
+      \node(omega) at (0,0) {$\gr\omega$};
+      \node(0) [above left of=omega] {$\gr0$};
+      \node(1) [above right of=omega] {$\gr1$};
+
+      \draw (omega) -- (0);
+      \draw (omega) -- (1);
+    \end{tikzpicture}
+  }
+\end{example}
 
 %In \cref{sec:simple}, we saw that the logical rules of simply typed
 %$\lambda$-calculus can be described in terms of three basic premise combinators:
@@ -137,6 +219,7 @@ Some other transcriptions:
 %and $\cdot$ in \cref{sec:lnd}, allowing for the modes of usage exhibited in
 %the introduction rules for $I$, $\otimes$, and $\oc$, respectively.
 
+The rest of this chapter proceeds as follows.
 In \cref{sec:lr}, I define the usage-annotated calculus \name{}, which has
 appeared previously in my work with Atkey~\cite{WA21}, and can be seen as a
 simply typed version of Atkey's dependently typed calculus QTT~\cite{Atkey18}.

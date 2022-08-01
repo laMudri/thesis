@@ -88,13 +88,14 @@ develop it fully as an example.
   A multicategory $\C$ gives rise to its \emph{category of contexts} $\C^*$ as
   follows:
   \begin{itemize}
-    \item $\obj(\C^*) \coloneqq \List(\obj\C)$
+    \item $\obj(\C^*) \coloneqq \List(\obj\C)$.
     \item $\C^*\plr{\sum_i \Psi_i, \Delta} \coloneqq \prod_i \C(\Psi_i; \Delta_i)$
-      for any $\Psi : \List(\List(\obj\C))$
-    \item $\id^* : \Gamma \to^* \Gamma \coloneqq \overline\id$
+      for any $\Psi : \List(\List(\obj\C))$.
+    \item $\id^* : \Gamma \to^* \Gamma \coloneqq \overline\id$.
     \item $(\sigma : \Delta \to^* \Theta) \circ^* (\rho : \Gamma \to^* \Delta) :
-      (\Gamma \to^* \Theta) \coloneqq \lambda i.~\sigma_i \circ \lambda j.~\rho_{ij}$
-      \todo{Still wrong}
+      (\Gamma \to^* \Theta) \coloneqq \lambda i.~\sigma_i \circ \rho|_{\sigma,i}$,
+      where $\rho|_{\sigma,i}$ is the restriction of $\rho$ to those objects
+      in the domain of $\sigma_i$.
   \end{itemize}
 \end{definition}
 

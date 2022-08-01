@@ -1,1 +1,360 @@
-\chapter{Semantics in worldly relations}\label{sec:wrel}
+\chapter{Semantics in world-indexed relations}\label{sec:wrel}
+
+While most of the results in this thesis are syntactic in nature, it is
+important to make sure that our syntaxes can be interpreted in semantically
+interesting ways.
+The family of denotational semantics I chose to focus on is those based around
+\emph{world-indexed relations}.
+Such a semantics allows us to compare runs of a program on two different inputs
+(for example allowing us to prove monotonicity with respect to inputs) in a
+modal or resource-sensitive way (for example allowing us to prove that a program
+is a permutation of its inputs).
+The general semantics is intantiated in ways that make use of the particular
+semiring used in the syntax for usage restriction.
+
+This chapter can be seen as a refinement and development of the work of
+\citet{AbelBernardy2020}.
+The subtly different syntax I use with regards to pattern-matching
+eliminators~\citep{HMWO21} means that I require fewer and arguably more natural
+laws to hold of instantiations of the semantics.
+I also provide additional examples to those given by
+\citeauthor{AbelBernardy2020}.
+
+\section{Semantics in sets}\label{sec:set-sem}
+
+The eventual semantics based on world-indexed relations will offer theorems
+about the behaviour of programs.
+The behaviour we care about is just the extension of the program --- what result
+we get when semantic values are substituted in for the free variables.
+As such, a simple set-based semantics suffices.
+
+The set semantics is the same as one we could give to simply typed
+$\lambda$-calculus.
+Types are interpreted as sets, with function types interpreted as function sets
+and with sum types interpreted as disjoint unions.
+Both kinds of products --- with-products and tensor-products --- are interpreted
+as Cartesian products, while all $\oc\gr r$ modalities are ignored.
+These latter features show us that the set semantics is unaware of usage
+restrictions.
+
+% TODO: maybe figure
+\begin{displaymath}
+  \begin{array}{c@{\hspace{0.5in}}c}
+    \begin{eqns}
+      \sem{\iota} &=& X_\iota \\
+      \sem{\oc\gr rA} &=& \sem{A} \\
+      \sem{I} &=& \{*\} \\
+      \sem{\top} &=& \{*\} \\
+      \sem{0} &=& \{\} \\
+    \end{eqns}
+    &
+    \begin{eqns}
+      \\
+      \sem{A \multimap B} &=& \sem{A} \rightarrow \sem{B} \\
+      \sem{A \otimes B} &=& \sem{A} \times \sem{B} \\
+      \sem{A \with B} &=& \sem{A} \times \sem{B} \\
+      \sem{A \oplus B} &=& \sem{A} \uplus \sem{B} \\
+    \end{eqns}
+  \end{array}
+\end{displaymath}
+
+Contexts are always interpreted as iterated tensor products of their $\oc$-ed
+entries.
+In the case of this set semantics, this makes the interpretation of a context
+just the Cartesian product of its types, ignoring any usage annotations.
+Open terms are interpreted as functions from the interpretation of their context
+to the interpretation of their type.
+
+\section{Example results}
+
+The interesting part of the semantics is to prove properties about the set
+semantics based on the type of the program.
+These ``free theorems'' (in the terminology of \citet{Wadler89}) resemble the
+abstraction theorem for parametric polymorphism of \citet{Reynolds83}, but
+capture properties the abstraction theorem cannot due to the specificity of
+usage-aware typing.
+Before discussing technical details, I give some example results below to give a
+flavour of what we will be proving.
+
+\paragraph{Linearity}
+We should be able to prove, when we instantiate $\name$ with the
+$\{\gr0, \gr1, \gr\omega\}$ linearity semiring, that all programs are
+permutations, given that they cannot delete or duplicate values freely.
+Technically, all programs will be permutations in a designated base type,
+because deletion and duplication is derivable for any types made purely of
+logical type formers.
+To achieve the result, I will assign a ``weight'' to both the context and the
+result type of an open term, corresponding to how many values of base type that
+term or context needs to support it.
+I will then show that all term formers preserve this weight, yielding a
+permutation.
+
+\paragraph{Monotonicity}
+When we instantiate $\name$ with the $\{\gr{\sim\sim}, \gr{\uparrow\uparrow},
+\gr{\downarrow\downarrow}, \gr{\wn\wn}\}$ monotonicity semiring, we expect that
+all programs really are monotonic.
+Precisely, that means that we impose an ordering on the set denoted by a
+designated base type, extend this ordering to all types, then show that passing
+(the denotation of) a term bigger inputs makes it produce bigger outputs.
+To achieve this, we need to be able to relate two runs of a program.
+
+\paragraph{Sensitivity}
+When we instantiate $\name$ with the $\mathbb R^+$ sensitivity semiring, we want
+to show that all programs are non-expansive.
+Similarly to the case for monotonicity, the notion of distance is semantic,
+based on a distinguished base type whose denotation has a notion of distance.
+
+\section{World-indexed relations}
+
+Inspired by modal logic \todo{ref}, our relational semantics assumes a partially
+ordered set of worlds $\mathcal W$.
+The world keeps track of what resources we have allocated to which parts of the
+program.
+Our syntax tracks division of usages between subterms, and correspondingly we
+have a commutative monoid on $\mathcal W$ to model division of resources.
+The monoid structure respects the ordering, i.e., addition of worlds is
+monotonic.
+
+{\color{red}intuitively: the elements of $\mathcal W$ determine the
+  resources that we are talking about, the pre-order determines a
+  notion of ``swappability'', and the monoidal product determines what
+  it means for two resources to be combined.}
+
+\begin{example}[Trivial]\label{def:trivial-worlds}
+  The one element pre-ordered set $\{*\}$, with ${*} \leq {*}$ and
+  ${*} \otimes {*} = {*}$ gives a ``track nothing'' semantics of
+  resources. \todo{fwd ref the where this is used.}
+\end{example}
+
+\newcommand{\append}{\mathop{++}}
+
+\begin{example}[Lists and Permutations]\label{def:permutation-worlds}
+  Let $K$ be some set of values that will be used as keys for sorting.
+  I consider multisets over $K$ with finite support, denoted $\mathcal MK$,
+  where the multiplicity of each element is either a natural number or $\infty$.
+  These multisets represent the keys in scope at any particular point.
+  The order on $\mathcal MK$ is multiset equality, plus the fact that
+  $\lbag k^\infty \rbag \leq \lbag k^n \rbag$ for any finite $n$ (freely
+  extended to respect bag-addition).
+  The monoid structure is given by bag-addition.
+  The elements with multiplicity $\infty$ exist to have a sound interpretation
+  of $\oc\gr\omega$, with $\gr\omega$ coming from the
+  $\{\gr0, \gr1, \gr\omega\}$ semiring.
+  I am more interested in the elements with finite multiplicity, because in that
+  case the ordering corresponds to preservation of keys.
+
+  %Define $\mathcal{P}_K$ to be the pre-ordered set consisting
+  %of lists of elements of $K$, with $l_1 \leq l_2$ exactly when $l_1$
+  %is a permutation of $l_2$. The monoidal product is defined to be
+  %list concatenation: $l_1 \otimes l_2 = l_1 \append l_2$, with the
+  %empty list as the monoidal unit.
+
+  %\todo{explain the interpretation of the base type of keys}
+
+  %\todo{explain how this will be used in the $\{0,1,\omega\}$ example.}
+\end{example}
+
+\begin{example}[Security Principles]\label{def:privacy-worlds}
+  Lattice of sets of names of principles. In terms of resources, this
+  can be thought of as the collection of principles that are ``happy''
+  with this computation. \todo{still need to fully work out this
+    example}
+\end{example}
+
+\begin{example}[Distances]\label{def:sensitivity-worlds}
+  For sensitivity analysis, I take the partially ordered monoid
+  $(\mathbb R^+, \geq, 0, {+})$ of non-negative real numbers under the opposite
+  of the usual order.
+  We want to establish non-expansiveness of terms, which is why the order is
+  reversed.
+  The world represents the maximum permissible amount of deviation allowed in
+  the result when a unit change is made to the inputs.
+\end{example}
+
+\section{Semantics in world-indexed relations}
+
+I give each type former $F$ a semantic counterpart $F^R$.
+Where $F$ is an $n$-ary type former, $F^R$ is an operator taking $n$
+world-indexed relations and producing another world-indexed relation.
+The interpretation of any type is given recursively in the obvious way, with
+each base type interpreted as an arbitrary provided world-indexed relation.
+
+\subsubsection{Interpretation of $\multimap$ and $\otimes$}
+
+Given a preorder of semantic resources
+$(\mathcal{W}, \leq, \otimes, I)$, we have enough structure to
+interpret the function types ($A \multimap B$) and tensor product types
+($A \oplus B$) of \name{}.
+I define the following notations for connectives of world-indexed relations,
+and give interpretations of the type formers in terms of the notations.
+
+\begin{displaymath}
+  \arraycolsep=1.5pt
+  \begin{array}{rllcl}
+    I^R & w & (*,*) &\iff& w \leq I
+    \\
+    \plr{R \otimes^R S} & w & ((a,b),(a',b'))
+    &\iff& \exists x,y.~w = x \otimes y
+           \wedge R~x~(a,a')
+           \wedge S~y~(b,b')
+    \\
+    \plr{R \multimap^R S} & w & (f,f')
+    &\iff& \forall x.~\forall a,a'.~R~x~(a,a')
+           \Rightarrow S~(w \otimes x)~(f~a,f'~a')
+  \end{array}
+\end{displaymath}
+
+%If we assume we are given semantic interpretations
+%$\sem{A}^R : \mathcal{W}^{op} \to \operatorname{Rel}{\sem{A}}$ and
+%respectively for $B$, then we define the interpretations
+%$\sem{A \multimap B}^R$, $\sem{A \otimes B}^R$, and
+%$\sem{I}^R$ as follows:
+
+%\begin{align*}
+%  \sem{I}^R &\coloneqq I^R \\
+%  \sem{A \otimes B}^R &\coloneqq \sem A^R \otimes^R \sem B^R \\
+%  \sem{A \multimap B}^R &\coloneqq \sem A^R \multimap^R \sem B^R
+%\end{align*}
+
+The connective $\otimes^R$ is a form of Day convolution~\citep{Day70}.
+Using the multiset worlds of \cref{def:permutation-worlds}, $R \otimes^R S$ can
+be understood as a pointwise relation on pairs, but where the world (collection
+of keys) at which it is true has to be split up into the $R$ world and the $S$
+world.
+In the implication $R \multimap^R S$, $w$ is the multiset of keys provided by
+the function, $x$ is the multiset of keys supporting the argument, and thus all
+of the keys in $w \uplus x$ are in the result.
+Using the distance worlds of \cref{def:sensitivity-worlds}, we see that the
+sensitivity of a tensor product is the sum of the sensitivities of its two
+halves, and the sensitivity of the result of an application is similarly the sum
+of the sensitivity of the function and the sensitivity of the argument.
+
+\todo{Point out what happens when the monoidal product
+  is actually a join}
+
+\subsubsection{Interpretation of lists}
+
+As mentioned in section XXX, we effectively treat lists as tensored
+together. \todo{spell out what this entails, and relate it to the
+  permutations example}
+
+\subsubsection{Interpretation of $\oc\gr r$}
+
+The choice of interpretation of $\oc\gr r$ links the usage
+annotations present in \name{}'s typing contexts to the semantics.
+
+\begin{example}[Trivial]
+  The identity
+\end{example}
+
+\begin{example}[Linear Types]
+  $0$ is the identifies everything and forces the resource to be $I$;
+  $1$ is the identity; and $\omega$ forces the resource to be
+  duplicable.
+\end{example}
+
+\begin{example}[Monotonicity Annotations]
+  The worlds we use for monotonicity tracking are trivial, so $\oc^R$ is just
+  a transformer of homogeneous binary relations.
+  $\oc^R~\gr{\uparrow\uparrow}$ is the identity transformation, while
+  $\oc^R~\gr{\downarrow\downarrow}~R$ is $R^{\mathrm{op}}$, the flipped version of
+  $R$.
+  $\oc^R~\gr{\wn\wn}~R$ is the total relation, while
+  $\oc^R~\gr{\sim\sim}~R \coloneqq R \cap R^{\mathrm{op}}$.
+\end{example}
+
+\begin{example}[Distances]
+  Merp
+\end{example}
+
+\subsubsection{Interpretation of the additives: $\with$ and $\oplus$}
+
+Copy the clauses from below.
+
+\begin{displaymath}
+  \arraycolsep=1.5pt
+  \begin{array}{rllcl}
+    \sem{\top}^R & w & (*,*) &\iff& \top \\
+    \sem{A \with B}^R & w & ((a,b),(a',b')) &\iff&
+    \sem{A}^R~w~(a,a') \wedge \sem{B}^R~w~(b,b') \\
+    \sem{A \oplus B}^R & w & (\operatorname{inl} a,\operatorname{inl} a')
+                               &\iff& \sem{A}^R~w~(a,a') \\
+    \sem{A \oplus B}^R & w & (\operatorname{inr} b,\operatorname{inr} b')
+                               &\iff& \sem{B}^R~w~(b,b') \\
+  \end{array}
+\end{displaymath}
+
+
+\subsubsection{Assignment of Relations to Types}
+
+Let $\left| X \right|$ be the proposition that the set $X$ is
+inhabited.\todo{don't need this if we're just using a preorder.}
+
+\todo{put these in a figure to summarise them, and merge this
+  section with the one on the fundamental lemma}
+
+\begin{displaymath}
+  \arraycolsep=1.5pt
+  \begin{array}{rllcl}
+    \sem{\iota}^R & w & (c,c') &\iff& R_\iota~w~(c,c') \\
+    \sem{A \multimap B}^R & w & (f,f')
+                               &\iff& \forall x,y.~
+                                 \left| \mathcal W(x, y \otimes w) \right|
+                                 \Rightarrow \\
+    &&&& \forall a,a'.~\sem{A}^R~y~(a,a')
+                                 \Rightarrow \sem{B}^R~x~(f~a,f'~a') \\
+    \sem{\oc\gr rA}^R & w & (a,a') &\iff& \oc\gr r\sem{A}^R~w~(a,a') \\
+    \sem{I}^R & w & (*,*) &\iff& \left|\mathcal W(w, I)\right| \\
+    \sem{A \otimes B}^R & w & ((a,b),(a',b'))
+                               &\iff& \exists x,y.~
+                                 \left| \mathcal W(w, x \otimes y) \right|
+                                 \wedge \sem{A}^R~x~(a,a')
+                                 \wedge \sem{B}^R~y~(b,b') \\
+    \sem{\top}^R & w & (*,*) &\iff& \top \\
+    \sem{A \with B}^R & w & ((a,b),(a',b')) &\iff&
+    \sem{A}^R~w~(a,a') \wedge \sem{B}^R~w~(b,b') \\
+    \sem{A \oplus B}^R & w & (\operatorname{inl} a,\operatorname{inl} a')
+                               &\iff& \sem{A}^R~w~(a,a') \\
+    \sem{A \oplus B}^R & w & (\operatorname{inr} b,\operatorname{inr} b')
+                               &\iff& \sem{B}^R~w~(b,b') \\
+  \end{array}
+\end{displaymath}
+
+A context $\grR\Gamma$ is interpreted as a tensor product of all the
+$\oc^R\gr rA$ for each $\gr rA$ in $\grR\Gamma$.
+\todo{I use $\grR\gamma$ in other places, but this clashes with
+  $\gamma : \sem\Gamma$.}
+
+\begin{displaymath}
+ \begin{eqns}
+   \sem{\cdot}^R~w~(*,*) &=& \mathcal W(w, I) \\
+   \sem{\grR\Gamma, \gr rA}^R~w
+   ~((\gamma,a), (\gamma',a')) &=&
+   \sem{\grR\Gamma}^R \otimes \oc\gr r\sem A^R
+ \end{eqns}
+\end{displaymath}
+
+\subsubsection{Semantic Soundness}
+
+We now give the fundamental semantic soundness result for \name{},
+that states that the set-theoretic interpretation of every term
+(\autoref{sec:set-interp}) preserves the Kripke relational semantics
+of contexts and types described above. The proof of this theorem
+proceeds by induction on the typing derivation, and has been
+formalised in Agda \autoref{sec:agda-formalisation}.
+
+\begin{theorem}
+  If $\grR\Gamma \vdash t : T$, then for all worlds $w$ and
+  context interpretations $\gamma, \gamma' \in \sem{\Gamma}$, we have:
+  \begin{displaymath}
+    \sem{\grR\Gamma}^R w~(\gamma, \gamma') \implies \sem{T}^R w~(\sem{t}\gamma, \sem{t}\gamma')
+  \end{displaymath}
+\end{theorem}
+
+In the very general setting of this section, it is difficult to see
+the significance of this result. In the next section, we will
+specialise to instantiations of \name{} with specific usage
+semirings and specific semantic settings, which will allow us to
+derive concrete semantic results of interest.
+
+\section{Examples}

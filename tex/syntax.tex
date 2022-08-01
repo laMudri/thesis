@@ -1,15 +1,29 @@
-We take the insights of the previous section and use them to build a
-generic framework for posemiring-annotated substructural systems in
-Agda. We will first show \emph{descriptions} of systems, which are
-comprised of rules that have premises combined using the bunched
-combinators. We then show how to construct the Agda data type of
-intrinsically well scoped, typed, and resourced terms for any given
-system of our framework. We use the prototypical system from
-\cref{fig:lr-comb} as a running example. \Cref{sec:other-syntaxes}
-presents further examples that our framework can express.
+The aim of this section is to produce a domain-specific language of
+\emph{syntax descriptions}.
+One may also use the terminology ``universe'' in place of ``domain-specific
+language'', alluding to the \emph{universe pattern} common in dependently typed
+programming~\citep{BDJ03}.
+A syntax description is essentially a concise, high-level representation of a
+type system's syntactic rules.
+The information contained in a syntax description is comparable to what is
+written (informally) in \cref{fig:lr-bunched}.
+The key features allowing these descriptions to capture semiring-annotated
+calculi are the distinction between sharing ($\dottimes$) and separating ($*$)
+conjunction of premises, modal scaling by a semiring element ($\cdot$), and the
+inclusion of semiring annotations on newly bound variables.
 
-We now start to use Agda notation for record and data type
-declarations, to emphasise that our framework has been implemented.
+%We take the insights of the previous section and use them to build a
+%generic framework for posemiring-annotated substructural systems in
+%Agda. We will first show \emph{descriptions} of systems, which are
+%comprised of rules that have premises combined using the bunched
+%combinators. We then show how to construct the Agda data type of
+%intrinsically well scoped, typed, and resourced terms for any given
+%system of our framework. We use the prototypical system from
+%\cref{fig:lr-comb} as a running example. \Cref{sec:other-syntaxes}
+%presents further examples that our framework can express.
+
+%We now start to use Agda notation for record and data type
+%declarations, to emphasise that our framework has been implemented.
 
 \subsection{Descriptions of Systems}
 
@@ -23,6 +37,8 @@ declarations, to emphasise that our framework has been implemented.
 
 % \paragraph{\AgdaDatatype{Premises}, \AgdaRecord{Rule}s, and \AgdaRecord{System}s.}
 
+I introduce syntax descriptions in three layers: \AgdaRecord{System},
+\AgdaRecord{Rule}, and \AgdaRecord{Premises}.
 A type \AgdaRecord{System} is made up of multiple \AgdaRecord{Rule}s.
 Each \AgdaRecord{Rule} comprises a \AgdaDatatype{Premises} and
 a conclusion type. We assume that there is a
@@ -30,7 +46,7 @@ $\AgdaBound{Ty} : \AgdaPrimitiveType{Set}$ of types for the system in
 scope.
 
 The \AgdaDatatype{Premise} data type describes premises of rules,
-using the bunched combinators from \cref{sec:bunched-rules}. A single
+using the bunched combinators from \cref{fig:bunched}. A single
 premise is introduced by the
 \AgdaInductiveConstructor{$\langle$\_`$\vdash$\_$\rangle$}
 constructor.  This allows binding of additional variables
@@ -55,12 +71,14 @@ associate the label set with the rules.
 
 % \paragraph{\Cref{fig:lr-comb} as a \AgdaRecord{System}.}
 
-As an example, we transcribe the system defined in
-\cref{fig:lr-comb} into a description.  We give the set of types of
+As an example, we transcribe a fragment of $\name$ (as defined in
+\cref{fig:lr} and \cref{fig:lr-bunched}) into a description.
+We give the set of types of
 this system as a data type \AgdaDatatype{Ty} (together with a base
 type \AgdaInductiveConstructor{$\iota$}). We assume that there is a
 posemiring \AgdaInductiveConstructor{Ann} in scope for the
-annotations.There is one label for each instantiation of a logical
+annotations.
+There is one label for each instantiation of a logical
 rule, but the labels contain no further information about subterms or
 restrictions on the context. This will be provided when we associate
 labels with \AgdaRecord{Rule}s in a \AgdaRecord{System}.
@@ -78,8 +96,8 @@ To build a system, we associate with each label a rule:
 
 \ExecuteMetaData[\PaperExamplestex]{lR}
 
-Compared to \cref{fig:lr-comb}, modulo the Agda notation, we can see
-that the fundamental structure has been preserved: the rules match
+Compared to \cref{fig:lr-bunched}, modulo the Agda notation, we can see
+that the fundamental structure has been preserved: The rules match
 one-to-one, and the bunched premises are the same. A major difference
 is that we do not include a counterpart to the
 \AgdaInductiveConstructor{var} rule in a
@@ -178,7 +196,7 @@ where \AgdaBound{T} is a type family with $n$ many indices.
 Terms in this data type are difficult to write by hand, due to the
 need for proofs that the usage contexts are handled correctly. For
 example, the following term is needed to show that, in the $\{\gr0,
-\gr1, \gr\omega\}$ (linearity) posemiring of \cref{thm:linearity},
+\gr1, \gr\omega\}$ (linearity) posemiring of \cref{def:lin-semiring},
 $\oc\gr\omega$ forms a comonad.
 Pattern synonyms \AgdaInductiveConstructor{$\multimap$I},
 \AgdaInductiveConstructor{!E$'$}, and
@@ -226,8 +244,8 @@ necessary proofs via a \AgdaRecord{System}-generic elaborator in
 We can encode a usage-annotated version of System $L$/the
 $\mu\tilde\mu$-calculus~\cite{CH00} --- a syntax for classical logic --- in
 such a way that contexts capture the undistinguished parts of the sequent.
-As such, the generic substitution lemma we get in \cref{sec:kits} is the form
-of substitution required in standard $\mu\tilde\mu$-calculus metatheory.
+As such, the generic substitution lemma we get in \cref{sec:kit-to-sem} is the
+form of substitution required in standard $\mu\tilde\mu$-calculus metatheory.
 Though the $\mu\tilde\mu$-calculus is originally described as a sequent
 calculus~\cite{CH00}, we use the techniques of
 \citet[p.~12]{herbelin-hab} and \citet{LC06} to present it as a natural
