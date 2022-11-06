@@ -49,7 +49,7 @@ natural deduction, we can use some new notation to rephrase these requirements.
 We will work in \AgdaRecord{Ctx}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}%
 \AgdaPrimitive{Set} rather than \AgdaPrimitive{Set}.
 One of the basic connectives in this setting is the \emph{pointwise} arrow
-\AgdaFunction{\_$\Rightarrow$\_}, which acts in
+\AgdaFunction{\_$\dotto$\_}, which acts in
 \AgdaRecord{Ctx}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaPrimitive{Set}
 like the non-dependent arrow does in \AgdaPrimitive{Set}.
 Another basic component is the \AgdaFunction{$\forall[\_]$} notation, which
@@ -61,7 +61,7 @@ encapsulating the pattern of considering arbitrary \emph{extensions} of a
 context.
 To facilitate working in this point-free setting, I give infix versions of
 the families \AgdaBound{$\V$} and \AgdaBound{$\C$} (respectively
-\AgdaFunction{\_$\V\vdash$\_} and \AgdaFunction{\_$\C\vdash$\_}).
+\AgdaFunction{\_$\V\vDash$\_} and \AgdaFunction{\_$\C\vDash$\_}).
 The principal use of these aliases is to fill the right argument with a type
 (occuring explicitly), and leave the left argument as \AgdaFunction{\_}, i.e.,
 a context given through the point-free machinery.

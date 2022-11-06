@@ -183,7 +183,39 @@ closed categories where terms are morphisms from one iterated tensor product
 incomplete for this semantics because we cannot produce anything interesting in
 the output context.
 
-\subsection{yalla}
+\subsection{Yalla}
+
+\Citet{laurent18} presents a collection of linear logics in a uniform style, and
+various proofs relating them.
+The logics share varying amounts of definitions and theorems --- for example,
+the main linear logic is parametrised on whether to include mix rules and
+whether to restrict exchange to cyclic permutations, whereas systems like the
+Lambek calculus (with no exchange) and polarised linear logic are defined
+separately from scratch.
+
+The style used in Yalla is to realise sequents as lists of formulas.
+The active formula tends to be forced to be the first formula in such a list,
+with an explicit exchange rule being used to move such formulas into place.
+\Citet{laurent18} explains why explicit permutations are necessary in such a
+system, and why using multisets instead of lists would conflate distinct proofs
+when there are repeated formulas in a sequent.
+The system I will present in the next chapter avoids permutations essentially by
+being a refinemet of the system presented in the previous chapter, which has an
+ordered context and specific references (de Bruijn indices) into it.
+
+Despite making sure to distinguish distinct proofs, the Yalla library does not
+define any equational theories of proofs, so does not prove any results relying
+on these distinctions.
+While the complication of defining an equational theory in the presence of an
+exchange rule is probably largely inevitable, having the exchange rule
+introduces redundancy such that many equivalent proofs are not equal as data
+structures.
+The mechanisations presented in \cref{sec:simple} all sought to reduce this kind
+of redundancy for intuitionistic logic, so that the only non-trivial equations
+in the equational theory are $\beta$- and $\eta$-rules (i.e.\ computationally
+interesting rules).
+I will restore this property of the representation in \cref{sec:semirings}.
+
 \begin{itemize}
   \item Sequent calculus
   \item Specialised to linear logic

@@ -185,9 +185,26 @@
   year = {2018},
   URN = {urn:nbn:de:0030-drops-100490},
   doi = {10.4230/LIPIcs.TYPES.2017.1},
-  annote = {Keywords: Type System, Bidirectional, Linear Logic, Agda}}
+  annote = {Keywords: Type System, Bidirectional, Linear Logic, Agda}
+}
 
-
+@inproceedings{ACMM17,
+  author = {Allais, Guillaume and Chapman, James and McBride, Conor and McKinna, James},
+  title = {Type-and-Scope Safe Programs and Their Proofs},
+  year = {2017},
+  isbn = {9781450347051},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3018610.3018613},
+  doi = {10.1145/3018610.3018613},
+  abstract = {We abstract the common type-and-scope safe structure from computations on λ-terms that deliver, e.g., renaming, substitution, evaluation, CPS-transformation, and printing with a name supply. By exposing this structure, we can prove generic simulation and fusion lemmas relating operations built this way. This work has been fully formalised in Agda.},
+  booktitle = {Proceedings of the 6th ACM SIGPLAN Conference on Certified Programs and Proofs},
+  pages = {195–207},
+  numpages = {13},
+  keywords = {Normalisation by Evaluation, Agda, Generic Programming, Mechanized Meta-Theory, Semantics, Lambda-calculus},
+  location = {Paris, France},
+  series = {CPP 2017}
+}
 
 @article{AACMM21,
   author    = {Guillaume Allais and
@@ -264,17 +281,19 @@
   year=1992}
 
 @unpublished{power99,
- author={James Power and Caroline Webster},
- title={Working with Linear Logic in Coq},
- year = {1999},
- note = {12th International Conference on Theorem Proving in Higher Order Logics (Work-in-progress paper)}}
+  author={James Power and Caroline Webster},
+  title={Working with Linear Logic in Coq},
+  year = {1999},
+  note = {12th International Conference on Theorem Proving in Higher Order Logics (Work-in-progress paper)}
+}
 
 @unpublished{laurent18,
- author={Olivier Laurent},
- title={Preliminary Report on the Yalla Library},
- year = {2018},
- note = {Coq Workshop},
- url = {https://perso.ens-lyon.fr/olivier.laurent/yalla/}}
+  author={Olivier Laurent},
+  title={Preliminary Report on the Yalla Library},
+  year = {2018},
+  note = {Coq Workshop},
+  url = {https://perso.ens-lyon.fr/olivier.laurent/yalla/}
+}
 
 @article{ChaudhuriLR19,
   author    = {Kaustuv Chaudhuri and
@@ -597,4 +616,93 @@ book{Prawitz65,
   timestamp = {Sun, 28 Jul 2019 17:03:41 +0200},
   biburl    = {https://dblp.org/rec/conf/ifip/Reynolds83.bib},
   bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{Autosubst15,
+  author    = {Steven Sch{\"{a}}fer and
+               Tobias Tebbi and
+               Gert Smolka},
+  editor    = {Christian Urban and
+               Xingyuan Zhang},
+  title     = {Autosubst: Reasoning with de Bruijn Terms and Parallel Substitutions},
+  booktitle = {Interactive Theorem Proving - 6th International Conference, {ITP}
+               2015, Nanjing, China, August 24-27, 2015, Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {9236},
+  pages     = {359--374},
+  publisher = {Springer},
+  year      = {2015},
+  url       = {https://doi.org/10.1007/978-3-319-22102-1\_24},
+  doi       = {10.1007/978-3-319-22102-1\_24},
+  timestamp = {Tue, 14 May 2019 10:00:37 +0200},
+  biburl    = {https://dblp.org/rec/conf/itp/SchaferTS15.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{Autosubst17,
+  author = {Kaiser, Jonas and Sch\"{a}fer, Steven and Stark, Kathrin},
+  title = {Autosubst 2: Towards Reasoning with Multi-Sorted de Bruijn Terms and Vector Substitutions},
+  year = {2017},
+  isbn = {9781450353748},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3130261.3130263},
+  doi = {10.1145/3130261.3130263},
+  abstract = {Formalising metatheory in the Coq proof assistant is tedious as native support for reasoning about languages with binders is marginal at best. The Autosubst framework [9] automates working with de Brujin terms: for each annotated inductive type, it generates a corresponding substitution operation and a decision procedure for assumption-free substitution lemmas. A key part of the equational theory are parallel substitutions which combine multiple single-variable substitutions. However, due to its separate treatment of sorts Autosubst lacks support for mutual inductive types. This restriction is removed in our prototype implementation of Autosubst 2: second-order HOAS specifications are translated into potentially mutual inductive term sorts. Again, parallelising substitutions is the key: we introduce vector substitutions to combine the application of multiple parallel substitutions into exactly one instantiation operation for each sort. The resulting equational theory is both simpler and more expressive than that of the original Autosubst framework.},
+  booktitle = {Proceedings of the Workshop on Logical Frameworks and Meta-Languages: Theory and Practice},
+  pages = {10–14},
+  numpages = {5},
+  keywords = {multisorted terms, parallel substitutions, σ-calculus, de Bruijn representation},
+  location = {Oxford, United Kingdom},
+  series = {LFMTP '17}
+}
+
+@inproceedings{Autosubst18,
+  author = {Kaiser, Jonas and Sch\"{a}fer, Steven and Stark, Kathrin},
+  title = {Binder Aware Recursion over Well-Scoped de Bruijn Syntax},
+  year = {2018},
+  isbn = {9781450355865},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3167098},
+  doi = {10.1145/3167098},
+  abstract = {The de Bruijn representation of syntax with binding is commonly used, but flawed when it comes to recursion. As the structural recursion principle associated to an inductive type of expressions is unaware of the binding discipline, each recursive definition requires a separate proof of compatibility with variable instantiation. We solve this problem by extending Allais' notion of syntax traversals to obtain a framework for instantiation-compatible recursion. The framework is general enough to handle multivariate, potentially mutually recursive syntactic systems. With our framework we define variable renaming and instantiation, syntax directed typing and certain unary logical relations for System F. These definitons lead to concise proofs of type preservation, as well as weak and strong normalisation. Our framework is designed to serve as the theoretical foundation of future versions of the Autosubst Coq library. All developments and case studies are formalised in the Coq proof assistant.},
+  booktitle = {Proceedings of the 7th ACM SIGPLAN International Conference on Certified Programs and Proofs},
+  pages = {293–306},
+  numpages = {14},
+  keywords = {parallel substitutions, well-scoped de Bruijn representation, recursion principle, System F},
+  location = {Los Angeles, CA, USA},
+  series = {CPP 2018}
+}
+
+@article{ACCL91,
+  title={Explicit substitutions},
+  volume={1},
+  DOI={10.1017/S0956796800000186},
+  number={4},
+  journal={Journal of Functional Programming},
+  publisher={Cambridge University Press},
+  author={Abadi, M. and Cardelli, L. and Curien, P.-L. and Lévy, J.-J.},
+  year={1991},
+  pages={375–416}
+}
+
+
+@article{FS22,
+  author = {Fiore, Marcelo and Szamozvancev, Dmitrij},
+  title = {Formal Metatheory of Second-Order Abstract Syntax},
+  year = {2022},
+  issue_date = {January 2022},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {6},
+  number = {POPL},
+  url = {https://doi.org/10.1145/3498715},
+  doi = {10.1145/3498715},
+  abstract = {Despite extensive research both on the theoretical and practical fronts, formalising, reasoning about, and implementing languages with variable binding is still a daunting endeavour – repetitive boilerplate and the overly complicated metatheory of capture-avoiding substitution often get in the way of progressing on to the actually interesting properties of a language. Existing developments offer some relief, however at the expense of inconvenient and error-prone term encodings and lack of formal foundations. We present a mathematically-inspired language-formalisation framework implemented in Agda. The system translates the description of a syntax signature with variable-binding operators into an intrinsically-encoded, inductive data type equipped with syntactic operations such as weakening and substitution, along with their correctness properties. The generated metatheory further incorporates metavariables and their associated operation of metasubstitution, which enables second-order equational/rewriting reasoning. The underlying mathematical foundation of the framework – initial algebra semantics – derives compositional interpretations of languages into their models satisfying the semantic substitution lemma by construction.},
+  journal = {Proc. ACM Program. Lang.},
+  month = {jan},
+  articleno = {53},
+  numpages = {29},
+  keywords = {abstract syntax, Agda, category theory, language formalisation}
 }

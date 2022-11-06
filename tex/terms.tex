@@ -100,23 +100,24 @@ injective, so that in cases where multiple new variables are bound in a subterm
 (for example, $\otimes$-elimination), Agda's unification-based solving will
 be more able to infer which variables have just been bound.
 
-\missingfigure{LTree}
+\ExecuteMetaData[\LTreetex]{LTree}
 \Ctx{}
 
-We start with a data type \AgdaDatatype{\_⊢\_} of intrinsically simply typed
-terms.
-Beside base types, the only type former we have is the function type constructor
-\AgdaInductiveConstructor{\_`→\_}.
-Contexts (of type \AgdaRecord{Ctx}) are implemented as the free magma on types
-(\AgdaDatatype{Ty}).
-Context concatenation is \AgdaFunction{\_++ᶜ\_}, and \AgdaFunction{[\_]ᶜ}
-embeds types into contexts.
-Typed variables in a context are given by \AgdaRecord{\_∋\_}.
-A variable in
+Our first data structure involving contexts is that of intrinsically typed
+variables.
+A variable of type
 \AgdaBound{$\Gamma$}\AgdaSpace{}\AgdaRecord{$\ni$}\AgdaSpace{}\AgdaBound{A}
 is given by a path \AgdaField{idx} to a type in \AgdaBound{$\Gamma$}, together
 with a proof \AgdaField{tyq} that this type is equal to \AgdaBound{A}.
-Variables embed into terms via the \AgdaInductiveConstructor{var} constructor.
+Variables embed into terms via the \AgdaInductiveConstructor{var} constructor of
+the family \AgdaDatatype{\_⊢\_} of intrinsically simply typed terms.
+The only other syntactic forms we consider for now are the eliminator and
+constructor of function types \AgdaInductiveConstructor{\_`→\_} ---
+\AgdaInductiveConstructor{app} and \AgdaInductiveConstructor{lam}.
+Application \AgdaInductiveConstructor{app} takes two subterms of the appropriate
+types, while the subterm of $\lambda$-abstraction \AgdaInductiveConstructor{lam}
+is in an extended context \GA{} --- \AgdaBound{$\Gamma$} concatenated with a
+singleton context containing the type \AgdaBound{A}.
 
 \Var{}
 \Term{}

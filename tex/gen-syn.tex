@@ -1,0 +1,115 @@
+We have seen in previous sections a method for defining well typed terms,
+providing them with the basic operations of renaming and substitution, and
+defining type-preserving semantic traversals over those terms.
+However, the Agda code we have seen only deals with one specific kind of terms
+--- simply typed $\lambda$-calculus with a base type and function types.
+The aim of this section is to write some code to which we can pass a
+\emph{description} or \emph{signature} of a syntax and have it produce all of
+the same machinery.
+
+The description of a syntax will closely resemble the logical rules Gentzen gave
+for natural deduction systems NJ and NK, but we give them a revised
+interpretation.
+Where Gentzen intended his rules to be applied schematically, and hypothetical
+proofs to be handled via \emph{discharge} of hypotheses, we will take the rules
+formally to produce a system with explicit contexts and a variable rule.
+However, knowing that this resulting system came from such a description means
+that we can derive variable-handling features, such as substitution, in a
+generic way.
+
+I will present a scheme such that \cref{fig:app-lam} is interpreted as the type
+system we studied in the previous sections (simply typed $\lambda$-caluclus with
+a base type and function types).
+Remember that, while these look like inference rules, I am treating them
+entirely formally, collected together into a \emph{syntax description}.
+The information presented in \cref{fig:app-lam} is essentially all of the
+information needed for the type system sans any details about variables.
+In particular, notice:
+\begin{itemize}
+  \item Contexts, in particular the context of a rule's conclusion, which is
+    shared in all premises in the resulting type system, are elided.
+    The only part of any context I record is the newly bound variables in
+    premises, such as the variable bound by a $\lambda$-abstraction.
+  \item There is no explicit variable rule.
+    It is understood that any $x : A$ in the context of the resulting type
+    system can be used to yield a term with type $A$.
+\end{itemize}
+
+\begin{figure}
+  \begin{mathpar}
+    \ebrule{%
+      \hypo{\vdash A \to B}
+      \hypo{\vdash A}
+      \infer2[app]{\vdash B}
+    }
+    \and
+    \ebrule{%
+      \hypo{A \vdash B}
+      \infer1[lam]{\vdash A \to B}
+    }
+  \end{mathpar}
+  \caption{An example syntax description}
+  \label{fig:app-lam}
+\end{figure}
+
+Such a scheme commits us to a certain approach to variable binding and context
+management, but does not commit us to anything about the meaning of types.
+For example, we do not declare that \TirName{app} and \TirName{lam} are
+``elimination'' and ``introduction'' forms for the function type former.
+This limits our generic results to matters of syntax and variables, but provides
+a platform upon which a future semantic scheme could rest.
+
+\begin{figure}
+  \begin{align*}
+    \text{Premises} && \mathit{ps}, \mathit{qs} &\Coloneqq
+      \Delta \vdash A \mid {} \mid \mathit{ps} \quad \mathit{qs}
+    \\
+    \text{Rule} && r, s &\Coloneqq {\mathit{ps} \over \vdash A}
+  \end{align*}
+  \caption{The grammar of typing rules}
+  \label{fig:simple-syntax}
+\end{figure}
+
+A syntax description is a set of fully instantiated rules.
+In our running example, this set contains a \TirName{app}-rule and a
+\TirName{lam}-rule for each pair of types $A$ and $B$.
+
+To construct the syntax given by a description, we keep
+\AgdaInductiveConstructor{var} as before, and have another constructor
+\AgdaInductiveConstructor{con} for all of the logical rules.
+\AgdaInductiveConstructor{con} takes a rule \AgdaBound{r} with premises
+$\Delta_1 \vdash A_1; \ldots; \Delta_n \vdash A_n$ and conclusion $A$, and the
+remainder of its type is as follows.
+\[
+  \AgdaInductiveConstructor{con}~\AgdaBound{r}~\AgdaSymbol{:}~%
+  \forall\Gamma.~(\Gamma, \Delta_1 \vdash A_1) \times \cdots
+  \times (\Gamma, \Delta_n \vdash A_n) \to \Gamma \vdash A
+\]
+Note that, in this type, $\vdash$ is the type family of terms we are
+inductively constructing, as opposed to the description syntax found in the
+premises.
+
+In our generic version of \AgdaRecord{Semantics}, we keep the
+\AgdaField{ren\textasciicaron$\V$} and \AgdaField{$\llbracket$var$\rrbracket$}
+fields as before, and replace \AgdaField{$\llbracket$app$\rrbracket$} and
+\AgdaField{$\llbracket$lam$\rrbracket$} by a
+\AgdaField{$\llbracket$con$\rrbracket$} field as follows.
+\[
+  \AgdaField{$\llbracket$con$\rrbracket$}~\AgdaBound{r}~\AgdaSymbol{:}~%
+  \forallb{%
+    \Box\plr{{} \env\V \Delta_1 \dotto {} \sdtstile{}\C A_1} \dottimes
+    \cdots \dottimes
+    \Box\plr{{} \env\V \Delta_n \dotto {} \sdtstile{}\C A_n} \dotto
+    {} \sdtstile{}\C A}
+\]
+I use ${} \sdtstile{}\C A$ for the Agda notation
+\AgdaFunction{\_$\C\vDash$}\AgdaSpace{}\AgdaBound{A}, while ${} \env\V \Delta$
+stands for the type family of environments
+\AgdaSymbol{$\lambda$}\AgdaSpace{}\AgdaBound{$\Gamma$}\AgdaSpace{}%
+\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaFunction{Env}\AgdaSpace{}\AgdaBound{$\V$}%
+\AgdaSpace{}\AgdaBound{$\Gamma$}\AgdaSpace{}\AgdaBound{$\Delta$}.
+Environments appear in this definition simply as a way to write a product of
+$\V$-values --- one value for each element of $\Delta$.
+We could make a special case of premises which do not bind any variables, as did
+\citet{AACMM21}, eliding the $\Box$ and empty environment, but I choose not to
+for uniformity and simplicity of presentation.

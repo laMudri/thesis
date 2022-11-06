@@ -1,0 +1,60 @@
+There is a vast literature on formalisations of syntaxes with binding, which I
+cannot possibly do justice to in a reasonably sized thesis chapter.
+Instead, I limit myself to comparisons of the \citet{AACMM21} method I follow in
+this thesis to just its closest related work.
+
+\subsection{Autosubst}
+
+\citet{Autosubst15} present the system \emph{Autosubst}, which provides various
+tools for working with syntaxes with binding in the Coq proof assistant.
+Autosubst is based on similar ideas to those \citeauthor{AACMM21} use:
+de Bruijn-indexed terms with a distinguished variable rule and notion of
+binding, acted upon by simultaneous renaming and substitution.
+
+The simplest differences are essentially matters of choosing the encoding that
+best fits the proof assistant being used.
+Coq users tend to prefer using unindexed types and propositions indexed over
+them --- in this case, a type of unscoped and untyped terms plus a
+``well typed'' predicate --- whereas Agda users prefer to work with only well
+formed data (well scoped and well typed terms).
+The latter approach more readily allows us to show generically that substitution
+preserves scoping and typing, but the former approach, conversely, allows for
+bespoke proofs of such facts.
+For example, one theorem of \citet{Autosubst15} is type preservation for
+$\mathrm{CC}_\omega$, a dependent type system we cannot express using the
+machinery of \citet{AACMM21}.
+In principle, one could use \citeauthor{AACMM21}'s machinery as the basis of a
+similar bespoke proof, but as far as I am aware, this has not been tried.
+
+Another main difference is that Autosubst is presented to the user largely as
+a black-box implementation of substitution and related lemmas, in contrast to
+\citeauthor{AACMM21}'s work exposing the \AgdaRecord{Semantics} bundle to the
+user, and having substitution be just one instance.
+\citet{ACMM17} and \citet{AACMM21} provide many examples of traversals over
+syntax using the same generic environment management as used by substitution.
+However, the focus on substitution in Autosubst has meant that reasoning about
+substitutions has been given more developed support.
+For example, the library provides a tactic \texttt{autosubst} which automates
+many equational proofs involving substitutions based on the $\sigma$-calculus of
+\citet{ACCL91}.
+
+An interesting feature of Autosubst is \emph{heterogeneous substitution}.
+The motivation for heterogeneous substitution is to handle systems like system
+F, where types and terms are syntactically distinct, but both feature binding
+and require a substitution operation.
+Furthermore, binding and substitution of types also affects the syntax of terms,
+thanks to $\Lambda$ terms.
+\citeauthor{AACMM21} provide no direct equivalent to heterogeneous substitution,
+and it is unclear how well their work can handle polymorphic calculi.
+
+\citet{Autosubst18} propose some modifications to Autosubst which, as far as I
+can tell, have not yet been incorporated, but are presented in mechanised form
+for the paper.
+Some of these modifications aim to bring Autosubst into line with
+\citeauthor{AACMM21}'s work, in particular taking semantic traversals as a
+theoretical basis.
+TODO: more.
+
+\subsection{Fiore, Plotkin, Turi}
+
+TODO: cite \citet{FPT99} and \citet{FS22}.

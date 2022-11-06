@@ -1,5 +1,53 @@
 \def\SimpleKits{../agda/processed-latex/SimpleKits.tex}
 
+%Explain:
+%
+%\begin{itemize}
+%  \item Specific uses of renaming/substitution in $\lambda$-calculus semantics.
+%  \item General role of renaming/substitution in abstract algebra/syntax with
+%    binding.
+%\end{itemize}
+
+A basic operation on any syntax with variables is \emph{substitution} --- the
+replacement of variables in a term by terms with the same type as the variables.
+In a sense, this is the defining operation of variables --- a variable is a
+placeholder for a term, or equivalently in logic, a hypothesis is a placeholder
+for an arbitrary proof.
+In a type theory or logic, terms can bind variables, and we will typically have
+operational semantics rules combining a term binding a variable with a term that
+is to be substituted into the place of that variable, like the $\beta$-rule for
+$\lambda$-calculus functions.
+
+While substitution has this extra role in a lot of the syntaxes with binding we
+care about, variable-binding also significantly complicates the substitution
+operation.
+Substitution acts on the free variables of a term, replacing them by terms, but
+binders mean that some subterms have \emph{more} free variables than our
+original term.
+This causes different challenges for different representations of terms.
+For example, with named variables and shadowing, na\"{i}vely defined
+substitution could fall foul of variable capture.
+In our approach, based on de Bruijn indices, the difficulty is that an index $i$
+outside a binder of $n$ variables corresponds to an index $n + i$ inside the
+binder.
+Therefore, when substituting under a binder, we must first increment any free
+variables contained in terms we are substituting in, which is a form of
+\emph{renaming}.
+Renaming replaces each free variable by another free variable, and is a special
+case of substitution.
+We must, however, define renaming before substitution, so as to avoid the
+definition of substitution being circular.
+Renaming avoids a similar circularity because when renaming goes under a binder,
+we only have to increment each variable being renamed in, rather than each
+variable \emph{in each term} being substituted in.
+
+In this section, I formally implement simultaneous renaming and substitution for
+the terms defined in the previous section.
+Simultaneous substitution turns out to have a simple definition, which
+generalises into other algorithms over terms with binders.
+The section concludes with a unified implementation of renaming and
+substitution, leaving further generalisation to the next section.
+
 \subsection{Simultaneous renaming and simultaneous substitution}
 
 A simultaneous renaming from $\Gamma$ to $\Delta$ is a type-preserving map from
