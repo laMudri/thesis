@@ -8,19 +8,23 @@ However, as we saw in \cref{sec:linearity}, there are interesting calculi in
 which general weakening does not hold.
 As such, one of the aims of this chapter will be to find a form of weakening
 applicable to variables of any type, while essentially retaining linearity
-(as opposed to affinity).
+(as opposed to affineness).
 
 As explained by \citet{McBride16}, the first insight is to, instead of
 removing variables from the context of certain subterms, add an annotation to
-free variables saying whether they are to be used or not.
-We may use an annotation $\gr0$ on variables that are not to be used, and an
+free variables saying whether or not they are to be used.
+I use an annotation $\gr0$ on variables that are not to be used, and an
 annotation $\gr1$ on variables that are to be used.
 This convention lets us transcribe the usual $\otimes$-introduction rule
-(left) as a rule with usage annotations (right).
-I use lowercase $\gamma$ and $\delta$ to emphasise that the whole context now
-looks like $\grP\gamma$, where $\grP$ is a list of usage annotations
-$\gr{r_1}, \ldots, \gr{r_m}$ and $\gamma$ is a list of types $A_1, \ldots, A_m$
-of the same length.
+(below left) as a rule with usage annotations (below right).
+In the notation on the right, I let $\Gamma = \grP\gamma$ and
+$\Delta = \grQ\delta$, where $\Gamma$ is a whole context comprising a
+\emph{usage context} $\grP$ and a \emph{typing context} $\gamma$.
+A usage context is a list of usage annotations, so
+$\grP = \gr{r_1}, \ldots, \gr{r_m}$ and a typing context is a list of types, so
+$\gamma = A_1, \ldots, A_m$.
+When combined, the usage context and the typing context will be of the same
+length.
 Explicit contexts will usually be written with usage annotations and types
 interspersed, as $\gr{r_1}A_1, \ldots, \gr{r_m}A_m$.
 I use $\gr r\gamma$ to abbreviate $\gr rx_1, \ldots, \gr rx_m$.
@@ -39,13 +43,13 @@ I use $\gr r\gamma$ to abbreviate $\gr rx_1, \ldots, \gr rx_m$.
   }
 \]
 
-What the existence of $\gr0$ has bought us is that variables never go out of
-scope in subterms; rather, we lose the ability to use certain variables that
-remain in scope.
+The use of $\gr0$ gives us the property that variables never go out of
+scope in subterms; rather, we lose the ability to use certain variables, but
+retain the ability to refer to them metatheoretically.
 Additionally, we recover a form of weakening: if $\Gamma \vdash A$, then also
 $\Gamma, \gr0\delta \vdash A$, because the resulting term indeed uses no
 variables from $\delta$.
-A rigorous proof of weakening for terms will come in \cref{sec:lrsub}.
+I prove the admissibility of weakening for terms will come in \cref{sec:lrsub}.
 
 If we follow the DILL style of variable management, there are not just the two
 states \emph{used} ($\gr1$) and \emph{not used} ($\gr0$), but also
@@ -69,7 +73,7 @@ $\otimes$-introduction rule.
 \]
 
 To conceptualise the criteria on the usage annotations involved in this rule,
-I introduce a formal $+$ operation on usage annotations.
+I introduce an additive structure over usage annotations.
 The rule stated above relies on the facts that $\gr1 + \gr0 = \gr1$,
 $\gr0 + \gr1 = \gr1$, and $\gr\omega + \gr\omega = \gr\omega$.
 Addition lifts pointwise to vectors of usage annotations (the green capital
@@ -104,8 +108,8 @@ weakened away like $\gr0$-annotated variables.
 All together, this means that at the unified variable rule, the variable being
 used must have annotation less than or equal to $\gr1$, and every other variable
 must have annotation less than or equal to $\gr0$.
-Thus the basis vector $\langle x \rvert$ describes the upper bound on the
-current usage context $\grR$.
+I write this requirement as $\grR \leq \langle x \rvert$, where
+$\langle x \rvert$ is the \emph{basis vector} at position $x$.
 
 \[
   \ebrule{%
@@ -139,9 +143,9 @@ current usage context $\grR$.
   }
 \]
 
-The final interesting rule form to cover is that found in DILL's
+The final interesting rule form to cover is found in DILL's
 $\oc$-introduction rule.
-I choose to see DILL's $\oc$-introduction as an $\gr\omega$-ary counterpart to
+DILL's $\oc$-introduction can be though of as an $\gr\omega$-ary counterpart to
 $\otimes$-introduction, though with the same premise each time rather than
 $\gr\omega$-many premises.
 This explanation recovers the behaviour that only $\gr\omega$- and
@@ -170,7 +174,7 @@ algebraic operation controlling the $\oc$-modality.
 In summary, the structure we have required of the set of usage annotations is
 that they have addition (for $\otimes$-introduction and similar rules),
 multiplication (for $\oc$-introduction), a $1$ (for a variable being used), a
-$0$ (for a variable being discarded), and an ordering (allowing for subsumption
+$0$ (for a variable not being used), and an ordering (allowing for subsumption
 of usage restrictions).
 Together, these form a \emph{partially ordered semiring} (posemiring), the laws
 of which are both supported by examples and necessary for the syntax to be well
@@ -232,7 +236,7 @@ The first problem I tackle with this new syntax is proving admissibility of
 substitution.
 I follow the methodology from \cref{sec:kits}, which
 
-\section{A usage-annotated calculus}\label{sec:lr}
+\section{A usage-annotated calculus $\name$}\label{sec:lr}
 \input{lr.tex}
 \section{Bunched connectives}\label{sec:lnd}
 \input{lnd.tex}

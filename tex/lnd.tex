@@ -5,8 +5,8 @@
 %$\Box$, $\cdot$) so that we can do more generic programming (e.g., usage
 %checker).
 
-The typing rules presented in the previous section contain a lot of detail and
-repeated patterns.
+The typing rules of $\name$ presented in \cref{fig:lr} contain a lot of detail
+and repeated patterns.
 For example, nearly half of the rules include the premise
 $\grR \leq \grP + \grQ$.
 Also, the presence of usage annotations, which are often different in different
@@ -16,7 +16,7 @@ around being parametric in the context, so that substitution is agnostic to the
 details of typing rules.
 
 To encapsulate the repeated patterns and facilitate an implicit context style,
-I introduce the \emph{bunched connectives}.
+I introduce the \emph{bunched connectives} for premises.
 These are inspired by bunched logic~\cite{oHP99}, and will not only be used for
 stating the syntax, but will reappear in the semantics.
 The idea is to generalise the space between premises from Gentzen's natural
@@ -44,7 +44,7 @@ The interpretations I use are defined in \cref{fig:bunched}.
   \label{fig:bunched}
 \end{figure}
 
-The simplest connectives are those we've already seen for intuitionistic
+The first three connectives are those we've already seen for intuitionistic
 systems --- $\dot1$, $\dottimes$, and $\dotto$.
 The absence of premises is encoded by $\dot1$, while the space between premises
 sharing a context is encoded by $\dottimes$.
@@ -142,7 +142,7 @@ $A \with (B \oplus C)$, and not a map the other way.
 %expressions $\gr r \cdot (A \dottimes B)$ and $\gr r \cdot A \sep \gr r \cdot B$
 %are generally incomparable.
 We will also see later\todo{Forward reference} that, while
-$(\dottimes, \dotto)$ gives a Cartesian
+$(\dottimes, \dotto)$ gives a Cartesian \todo{wrong}
 closed structure, $\sep$ is monoidally closed, with an internal hom $\wand$.
 Indeed, the Cartesian closed structure is sufficient to give us the interaction
 between $\dotplus$ and $\dottimes$, by the fact that $A \dottimes {-}$ is a
@@ -152,6 +152,9 @@ Instead of the partial commutative monoid (representing heaps) found in
 standard semantics of bunched logic, we have a left semimodule of usage
 contexts, which we are similarly interested in splitting and sharing between
 various subterms.
+\todo{Bunched type system to Agda}
+\todo{Split chapter here. Play around with other systems using bunched
+  connectives. Lists/recursion, annotated arrow, Granule elim, sharing elim.}
 
 \begin{figure}
   \ebproofset{separation=0.75em}

@@ -184,8 +184,8 @@ Like intuitionistic linear logic (ILL), \name{} distinguishes tensor-products
 ($A \otimes B$) from with-products ($A \with B$).
 Whereas in ILL, rules like $\otimes$-introduction involve splitting the
 assumptions between the two subterms, in \name{}, this splitting is done by
-choosing usage annotations which add up to the usage annotations of the
-conclusion.
+choosing usage annotations for the premises which add up to the usage
+annotations of the conclusion.
 For example, we can derive $\vdash A \otimes B \multimap B \otimes A$ as
 follows.
 Notice that the assumption $A \otimes B$ is still present in all subderivations,
@@ -259,7 +259,9 @@ examples of posemirings for tracking interesting usage patterns.
 \begin{example}\label{def:trivial-posemiring}
   The singleton set gives rise to a posemiring in a unique way.
   When the usage annotations of $\name$ are taken from this trivial posemiring,
-  we recover a version of intuitionistic simply typed $\lambda$-calculus.
+  we recover a version of intuitionistic simply typed $\lambda$-calculus
+  featuring redundant connectives $\otimes$ (equivalent to $\with$ in the pure
+  setting) and $\oc{\gr*}$ (where $\oc{\gr*} A \simeq A$).
 \end{example}
 
 {\color{red}TODO: cite rntz}

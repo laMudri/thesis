@@ -15,13 +15,14 @@ Recalling from \cref{sec:kits}, we have the following definition of
 environments for simple types.
 
 \begin{definition}[Simple environment]\label{def:simple-env}
-  A $\V$-\emph{environment} between simply typed contexts $\Gamma$ and $\Delta$
+  For $\V : \mathrm{Ctx} \to \mathrm{Ty} \to \mathrm{Set}$,
+  a $\V$-\emph{environment} between simply typed contexts $\Gamma$ and $\Delta$
   is a function, polymorphic in type $A$, from variables of type $A$ in
   $\Delta$ to inhabitants of $\V\,\Gamma\,A$.
   We write the type of such environments as $\Gamma \env\V \Delta$.
 \end{definition}
 
-The first thing to note is that this definition is inadequate for \name{}.
+This definition is inadequate for \name{}.
 For example, suppose we have a term
 $\plr{M{_\otimes}N} : \grR\gamma \vdash A \otimes B$ and a substitution
 $\sigma : \grR\gamma \env\vdash \grR\gr'\delta$.
@@ -40,7 +41,7 @@ This example suggests that the values of a usage-aware environment should be
 derived in \emph{different} usage contexts, such as in $\gr1A, \gr0B \sqni A$.
 
 To see why this definition of environment works for simply typed
-$\lambda$-calculus but not \name{}, I produce an equivalent definition by
+$\lambda$-calculus but not \name{}, let us look at an equivalent definition by
 recursion on the target context.
 This recursive definition (\cref{def:simple-rec-env}), and particularly the
 case where $\Delta$ is a concatenation, makes it clear how $\Gamma$ is being
@@ -182,7 +183,8 @@ Even when the ordering on annotations is given by a non-equivalence relation
 $\leq$, there is a canonical least choice for all of the intermediate vectors,
 together with a constraint that the entire linear combination of all the leaf
 vectors is less than or equal to the initial usage vector.
-In symbols, we may let $\gr\Psi$ be the collection of leaf vectors, and state
+In symbols, we may let $\gr\Psi$ be the collection of leaf vectors indexed by
+items in $\Delta$, and state
 the constraint as $\grP \leq \sum_{\plr{x : \gr rA} \in \Delta} \gr r\gr\Psi_x$.
 Seeing $\gr\Psi$ instead as a $\size\Delta \times \size\Gamma$ matrix, this
 constraint is $\grP \leq \grQ\gr\Psi$, using vector-matrix multiplication.
@@ -281,7 +283,7 @@ produce a value at each leaf vector.
 
 I find this definition somewhat fiddly because of its reliance on low-level
 concepts like non-usage-checked variables and rows of a matrix.
-We may note that $\gr\Psi_x = \bra x\gr\Psi$, from which point, requiring not
+We note that $\gr\Psi_x = \bra x\gr\Psi$, from which point, requiring not
 just $\V\,\gr\Psi_x\gamma\,A$ but rather $\V\,\plr{\grQprime\gr\Psi}\gamma\,A$
 for any $\grQprime \leq \bra x$ is a minor change (and equivalent if $\V$
 respects subusaging, which is practically always the case).
@@ -295,7 +297,8 @@ to $\V\,\grPprime\gamma\,A$.
 Finally, I choose to switch from matrices and matrix multiplication to
 linear maps and their actions, which are easier to work with.
 All of these changes yield my primary definition of an environment for
-usage-annotated calculi.
+usage-annotated calculi, which will be used for the rest of this chapter and in
+\cref{sec:framework}.
 
 \begin{definition}[Usage-annotated environment]\label{def:lr-env}
   A \emph{$\V$-environment} between annotated contexts $\Gamma$ and $\Delta$
