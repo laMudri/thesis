@@ -1,0 +1,26 @@
+\begin{code}
+module Snippets2 where
+
+open import Data.List
+open import Data.Nat
+open import Relation.Binary.PropositionalEquality as ≡
+  using (_≡_; module ≡-Reasoning)
+
+infixr 2 _↝_
+_↝_ = ≡-Reasoning._≡⟨⟩_
+
+sum-reduction : 6 ≡ 6
+sum-reduction = let open ≡-Reasoning in begin
+\end{code}
+%<*sum-reduction>
+\begin{code}
+  foldr _+_ 0 (1 ∷ 2 ∷ 3 ∷ [])    ↝
+  1 + foldr _+_ 0 (2 ∷ 3 ∷ [])    ↝
+  1 + (2 + foldr _+_ 0 (3 ∷ []))  ↝
+  1 + (2 + (3 + foldr _+_ 0 []))  ↝
+  1 + (2 + (3 + 0))
+\end{code}
+%</sum-reduction>
+\begin{code}
+  ∎
+\end{code}

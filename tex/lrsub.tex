@@ -1,30 +1,34 @@
 \def\LRKits{../agda/processed-latex/LRKits.tex}
 
-In this section, I show that, using the notion of \emph{environment} derived in
+I can now show that, using the notion of \emph{environment} derived in
 \cref{sec:lrkits}, we can replicate the Agda proofs from
-\cref{sec:syntactic-kits} in the usage-aware setting.
+\cref{sec:syntactic-kits} in the usage-aware setting of $\name$.
 From \cref{sec:lenv}, we know that environments are preserved under all
 syntax-forming operations: zero, addition, scaling, and binding.
 What is left is to show how these properties are deployed, and also how to
 go on and prove the admissibility of simultaneous renaming, simultaneous
 substitution, and then single substitution.
 
-There are a few notational changes necessary in the Agda code.
+There are a few notational changes necessary in the Agda code, compared to the
+typeset mathematics above.
 Usage vectors, elsewhere called $\grP$, $\grQ$, and $\grR$ are rendered as
 \AgdaBound{P}, \AgdaBound{Q}, and \AgdaBound{R}, respectively.
+Usage contexts and typing contexts are tied together with the
+\AgdaInductiveConstructor{ctx} constructor, rather than simple juxtaposition.
 Environments, elsewhere notated $\Gamma \env\V \Delta$, are rendered as
 \AgdaRecord{[}\AgdaSpace{}\AgdaBound{$\V$}\AgdaSpace{}\AgdaRecord{]}%
 \AgdaSpace{}\AgdaBound{$\Gamma$}\AgdaSpace{}\AgdaRecord{$\Rightarrow^e$}%
 \AgdaSpace{}\AgdaBound{$\Delta$}.
 
 We start with a slightly modified definition of \AgdaRecord{Kit}.
-We saw in \cref{thm:lr-bind} that in the usage-annotated context, we replace
-general weakening of $\V$-values by weakening by $\gr0$-use variables.
+We saw in \cref{thm:lr-bind} that in the usage-annotated context, we restrict
+weakening of $\V$-values to just $\gr0$-use variables.
 Meanwhile, the function $\mathrm{vr}$, also seen in \cref{thm:lr-bind}, maps
 usage-checked variables to $\V$-values, and the function $\mathrm{tm}$, used
 to coerce $V$-values yielded by the environment into terms, stays the same.
 I state weakening in a slightly different way than previously, so as to help
-unification against a known result type.
+unification against a known result type (avoiding the problem described by
+\citet{McBride12} as \emph{green slime}).
 The type \AgdaFunction{Weakening}\AgdaSpace{}\AgdaBound{$\V$} can be read as
 saying that, for any context $\grP\gamma$ of shape $s + t$, if the right of
 $\grP$ is below $\gr0$, then a value in the left part of $\grP\gamma$ weakens
@@ -51,17 +55,17 @@ I will not explain any of the algebraic manipulations here; see
 
 \ExecuteMetaData[\LRKits]{bindEnv}
 
-Given \AgdaFunction{bindEnv}, along with \AgdaFunction{env-+} and
-\AgdaFunction{env-*}, standing for \cref{thm:lr-env-add} and
-\cref{thm:lr-env-scale}, respectively, we can reproduce the syntactic traversal
-\AgdaFunction{trav}.
-With all these lemmas in place, we can see how writing \AgdaFunction{trav}
-becomes routine --- when processing a rule, we work our way up through the
+Given \AgdaFunction{bindEnv} (\cref{thm:lr-bind}), \AgdaFunction{env-+}
+(\cref{thm:lr-env-add}), and \AgdaFunction{env-*} (\cref{thm:lr-env-scale}),
+we can reproduce the syntactic traversal \AgdaFunction{trav}.
+With all these lemmas in place, writing \AgdaFunction{trav}
+becomes routine.
+When processing a rule, we work our way up through the
 premise connectives, applying \AgdaFunction{env-*} wherever we see a
 \AgdaFunction{$\cdot^c$}, \AgdaFunction{env-+} wherever we see a
 \AgdaFunction{$*^c$}, and \AgdaFunction{bindEnv} wherever we see a
 \AgdaFunction{Bind}.
-We when use whatever environments (with names beginning with
+We then use whatever environments (with names beginning with
 \AgdaBound{$\rho$}) and whatever usage vector splitting facts (with names
 beginning with \AgdaBound{sp}) come out of this process to recursively
 traverse the subterms and recombine the results.
@@ -82,8 +86,8 @@ $\begin{pmatrix} \grP & \grR \end{pmatrix} \leq \bra{{\swarrow}x}$.
 In the intuitionistic case, environments were just functions, so we passed the
 variable weakening function \AgdaFunction{$\swarrow^v$} to the function
 \AgdaFunction{ren} to yield a term weakening function.
-However, a usage-aware environment is a function packed together with some
-extra data.
+However, a usage-aware environment is a function packed together with usage
+distribution data.
 As such, we must make an environment version of \AgdaFunction{$\swarrow^v$}.
 I start with a general lemma \AgdaFunction{$\swarrow$\^{}Env}, stating that if
 $\V$ supports weakening, then so do $\V$-environments (in their domain
@@ -96,8 +100,16 @@ to give the desired weakening environment.
 \ExecuteMetaData[\LRKits]{dlv-env}
 
 This is what we need to instantiate \AgdaFunction{trav} for substitution.
+As a reminder, I also give the type of \AgdaFunction{sub} in rule form.
 
 \ExecuteMetaData[\LRKits]{sub}
+\[
+  \ebrule{%
+    \hypo{\Gamma \env\vdash \Delta}
+    \hypo{\Delta \vdash B}
+    \infer2[sub]{\Gamma \vdash B}
+  }
+\]
 
 Finally, the simultaneous substitution \AgdaFunction{sub} specialises to
 single substitution \AgdaFunction{sub[-]}.
@@ -107,12 +119,12 @@ one $A$ with usages $\grP$, and then assert that the result can handle the
 usages of the original term $\grQ$, plus $\gr r$-many copies of $\grP$.
 
 \[
-  \begin{prooftree}
+  \ebrule{%
     \hypo{\grR \leq \grQ + \gr r\grP}
     \hypo{\grP\gamma \vdash A}
     \hypo{\grQ\gamma, \gr rA \vdash B}
     \infer3[singleSub]{\grR\gamma \vdash B}
-  \end{prooftree}
+  }
 \]
 
 The proof strategy for producing the substitution \AgdaFunction{$\sigma$} is

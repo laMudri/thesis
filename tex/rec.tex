@@ -1,9 +1,71 @@
+The bunched connectives give us a means by which to quickly design and
+experiment with new type systems.
+We will see in \cref{sec:framework} that all such syntaxes are well behaved to
+the extend that they all support the appropriate notion of substitution, which
+again expediates experimentation.
+In this section, I give some example syntactic features that can be covered in
+the bunched connective paradigm.
+
+\subsection{Alternative object-language connectives}
+
+I presented $\name$ as an essentially arbitrary collection of rules, with no
+broader characterisation than that it intuitively seems to capture some notion
+of ``usage'' and that it supports the semantics I give in \cref{sec:wrel}.
+Therefore, in this subsection I give some examples of variant syntaxes others,
+with different use cases, may be interested in.
+In particular, I give a variant of function types where usage annotations go
+``on the arrow'', and a variant of tensor products with a stronger elimination
+rule.
+
+We can produce an annotated function arrow connective by combining parts of the
+rules for the unannotated function arrow $\multimap$ with parts of the rules for
+the modal operator $\oc$.
+
+\begin{mathpar}
+  \ebrule[comb]{%
+    \hypo{\gr rA \vdash B}
+    \infer1[$\gr r\multimap$-I]{\vdash \gr rA \multimap B}
+  }
+  \and
+  \ebrule[comb]{%
+    \hypo{\vdash \gr rA \multimap B}
+    \hypo{\sep}
+    \hypo{\gr r \cdot \plr{\vdash A}}
+    \infer3[$\gr r\multimap$-E]{\vdash B}
+  }
+\end{mathpar}
+
+We can also give an alternative elimination rule for $\otimes$-products inspired
+by Granule~\citep{Granule18,HMWO21}.
+This modified rule allows us to, for example, have a variable
+$\gr rx : A \otimes B$ for any $\gr r$, and pattern-match it into
+$\gr ry : A, \gr rz : B$.
+With the standard $\name$ rule from \cref{fig:lr}, the newly bound variables are
+always given annotation $\gr 1$, and we would only be able to do the match in
+the first place if $\gr r$ were coercible to (i.e.\ less than or equal to)
+$\gr1$.
+The alternative rule below is not compatible with linear logic, because it
+allows us to derive
+$\oc\gr r\plr{A \otimes B} \multimap \oc\gr rA \otimes \oc\gr r B$
+parametric in $\gr r$, $A$, and $B$.
+
+\begin{mathpar}
+  \ebrule[comb]{%
+    \hypo{\gr r \cdot \plr{\vdash A \otimes B}}
+    \hypo{\sep}
+    \hypo{\gr rA, \gr rB \vdash C}
+    \infer3[$\otimes$-E$'$]{\vdash C}
+  }
+\end{mathpar}
+
+\subsection{Recursion}\label{sec:rec}
+
 Based on an intuitive understanding of ``usage'', recursion introduces a new
 phenomenon relative to the forms of programs we have seen so far:
-terms can be used an unbounded number of times.
+Terms can be used an unbounded number of times.
 For example, notice the following reduction in Agda.
 
-\missingfigure{\texttt{foldr \_+\_ 0 (1 :: 2 :: 3 :: []) = 1 + (2 + (3 + 0))}}
+\ExecuteMetaData[\SnippetsTwotex]{sum-reduction}
 
 The function \AgdaFunction{\_+\_} has been copied into 3 different places in
 the running of the program.
@@ -18,16 +80,16 @@ If we were to fix $\Ann$ as the $\{\gr0, \gr1, \gr\omega\}$ posemiring, then
 wrapping the type of the functional argument in $\oc\gr\omega$ would suffice.
 However, we want to remain generic in the choice of semiring.
 
-I propose the following additions to \name{} to support a broad class of
+The following additions to \name{} support a broad class of
 inductive types.
 I define strictly positive functors syntactically, with the only notable
-restriction being not being allowed to use the type variable $X$ in the domain
-of a function type.
+restrictions being not being allowed to use the type variable $X$ in the domain
+of a function type and within a $\oc$-type.
 I then add least fixed points of such strictly positive functors to the syntax
 of types.
 
 \begin{align*}
-  U &\Coloneqq A \multimap (-) \mid \oc\gr r(-) \\
+  U &\Coloneqq A \multimap (-) \\
   {\odot} &\Coloneqq {\otimes} \mid {\oplus} \mid {\with} \\
   F[X], G[X] &\Coloneqq X \mid A \mid U(F[X]) \mid F[X] \odot G[X] \\
   A &\Coloneqq \cdots \mid \mu X.~F[X]
@@ -58,8 +120,7 @@ preserved by all linear operations.
     \hypo{%
       \begin{matrix*}[l]
         \grQ \leq \gr0 \\
-        \grQ \leq \grQ + \grQ \\
-        \forall \gr r.~\grQ \leq \gr r\grQ
+        \grQ \leq \grQ + \grQ
       \end{matrix*}%
     }
     \hypo{\grQ\gamma, \gr1F[C] \vdash C}
@@ -69,17 +130,22 @@ preserved by all linear operations.
 
 \begin{example}\label{thm:list-rules}
   For lists, we can derive the following introduction and elimination rules
-  (with usage constraints omitted for brevity when obvious).
+  (with usage constraints in the application of \TirName{$\mu$-E} in the
+  \TirName{foldr} rule, relating $\grR$ to $\grP$ and $\grQ$ and restricting
+  $\grQ$, omitted to save space).
 
   \begin{align*}
+    \text{nil}\left[
     \begin{prooftree}
       \hypo{\grR \leq \gr0}
-      \infer1[$I$-I]{I}
+      \infer1[$I$-I]{\grR\gamma \vdash I}
       \infer1[$\oplus$-I$_0$]%
       {\grR\gamma \vdash I \oplus \plr{A \otimes \mathrm{List}_A}}
       \infer1[$\mu$-I]{\grR\gamma \vdash \mathrm{List}_A}
     \end{prooftree}
+    \right.
     &&
+    \text{cons}\left[
     \begin{prooftree}
       \hypo{\grR \leq \grP + \grQ}
       \hypo{\grP\gamma \vdash A}
@@ -89,8 +155,10 @@ preserved by all linear operations.
       {\grR\gamma \vdash I \oplus \plr{A \otimes \mathrm{List}_A}}
       \infer1[$\mu$-I]{\grR\gamma \vdash \mathrm{List}_A}
     \end{prooftree}
+    \right.
   \end{align*}
   \begin{displaymath}
+    \text{foldr}\left[
     \begin{prooftree}
       \hypo{\grP\gamma \vdash \mathrm{List}_A}
       \infer0[Var]{\gr0\gamma, \gr1\plr{I \oplus \plr{A \otimes C}}
@@ -101,6 +169,7 @@ preserved by all linear operations.
         \vdash C}
       \infer2[$\mu$-E]{\grR\gamma \vdash C}
     \end{prooftree}
+    \right.
   \end{displaymath}
   \begin{align*}
     \textrm{where }\nabla^n &\coloneqq
@@ -128,14 +197,10 @@ preserved by all linear operations.
 
 Following \cref{sec:lnd}, I want to turn the ad hoc constraints on $\grP$,
 $\grQ$, and $\grR$ into the result of some premise combinators.
-To do this, I introduce a new combinator $\Box^{0{+}{\times}}$ defined below,
+To do this, I introduce a new combinator $\Box^{0{+}}$ defined below,
 along with the resulting implicit-context typing rules.
 
-\begin{align*}
-  \plr{\Box^{0{+}{\times}}\,T}\grR \coloneqq
-  \plr{\grR \leq \gr0} \times \plr{\grR \leq \grR + \grR} \times
-  \plr{\forall \gr r.~\grR \leq \gr r\grR} \times T\,\grR
-\end{align*}
+\ExecuteMetaData[\Bunchedtex]{Box}
 
 \begin{align*}
   \begin{prooftree}[comb]
@@ -146,7 +211,7 @@ along with the resulting implicit-context typing rules.
   \begin{prooftree}[comb]
     \hypo{\vdash \mu X.~F[X]}
     \hypo{\sep}
-    \hypo{\Box^{0{+}{\times}}\plr{\gr1F[C] \vdash C}}
+    \hypo{\Box^{0{+}}\plr{\gr1F[C] \vdash C}}
     \infer3[$\mu$-E]{\vdash C}
   \end{prooftree}
 \end{align*}
@@ -169,9 +234,30 @@ along with the resulting implicit-context typing rules.
     \begin{prooftree}[comb]
       \hypo{\vdash \mathrm{List}_A}
       \hypo{\sep}
-      \hypo{\Box^{0{+}{\times}}
+      \hypo{\Box^{0{+}}
         \plr{\vdash C\hskip0.75em\dottimes\hskip0.75em\gr1A, \gr1C \vdash C}}
       \infer3{\vdash C}
     \end{prooftree}
   \end{align*}
 \end{example}
+
+As suggested by the notation, $\Box^{0{+}}$ may not be particularly canonical in
+terms of what operations the usage context is stable under.
+For example, we could also ask for $\forall \gr r.~\grQ \leq \gr r\grQ$, i.e.\
+that the usage context is stable under any scaling.
+This would allow us to include $\oc\gr r(-)$ in our grammar of strictly positive
+functors.
+In certain semirings, this could give us strange types, like, taking the
+monotonicity semiring, the type
+$\mu X.~I \oplus (\iota \otimes \oc\gr{\downarrow\downarrow} X)$,
+which is the type of lists over the base type $\iota$ where alternating elements
+are treated contravariantly and covariantly.
+This may motivate us to restrict strictly positive functors to allow only a
+subset of usage annotations.
+Separately, in some contexts we may only need to know that $\grQ \leq \gr0$.
+For example, in the linearity semiring, being less than or equal to $\gr0$
+happens to imply closure under addition, because the only annotations less than
+or equal to $\gr0$ are $\gr0$ and $\gr\omega$.
+Also, in semirings for relevant systems, all annotations are stable under
+addition (up to $\leq$ in the appropriate direction), so we need only check for
+being less than or equal to $\gr0$.

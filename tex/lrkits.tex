@@ -1,8 +1,9 @@
-In an effort to stick to the syntactic kits and traversals approach of
+In an effort to reuse the syntactic kits and traversals approach of
 \cref{sec:syntactic-kits}, I will derive the types of simultaneous renaming
 and simultaneous substitution from a generic type of \emph{environments}.
 To get a type of environments suitable for the usage-aware setting, I first
-analyse intuitionistic environments, distilling the slick functional definition
+analyse intuitionistic environments (as introduced in \cref{sec:syntactic-kits}
+definition \AgdaFunction{Env}), distilling the easy-to-use functional definition
 (\cref{def:simple-env}) into a more basic recursive definition
 (\cref{def:simple-rec-env}).
 This recursive definition is easy to make usage-aware (\cref{def:lr-rec-env}),
@@ -56,7 +57,7 @@ defunctionalised as a data structure with the same shape as $\Delta$.
   $\Gamma \env\V_R \Delta$ is the notation for the type of recursive
   environments for given $\V$, $\Gamma$, and $\Delta$):
   \begin{itemize}
-    \item There is one environment $\alr{} : \Gamma \env\V_R {\cdot}$.
+    \item There is an environment $\alr{} : \Gamma \env\V_R {\cdot}$.
     \item For $\rho_l : \Gamma \env\V_R \Delta_l$ and
       $\rho_r : \Gamma \env\V_R \Delta_r$, we have an environment
       $\alr{\rho_l, \rho_r} : \Gamma \env\V_R \Delta_l, \Delta_r$.
@@ -121,8 +122,8 @@ values appearing in a simple environment.
   \end{tikzpicture}
 \end{displaymath}
 
-To account for usage, we must replace the simple copying of $\Gamma$ by
-copying of just the types $\gamma$ and \emph{sharing up} of the usage
+To account for usage, we must replace the simple repetition of $\Gamma$ by
+repetition of just the types $\gamma$ and \emph{redistribution} of the usage
 annotations $\grP$.
 Fortunately, our three basic ways of sharing up usage vectors --- zero,
 addition, and scaling --- apply directly to the three possible shapes of the
@@ -147,9 +148,10 @@ target context --- empty, concatenation, and a usage-annotated singleton.
 \end{definition}
 
 \begin{example}
-  Assume $\Ann$ is the natural numbers with ordering given by $=$ and the usual
-  addition and multiplication.
-  There is an intuitionistic recursive environment
+  Take $\Ann = \plr{\mathbb N, =, 0, +, 1, \times}$, with the equality order
+  chosen to avoid any concerns around subsumption of annotations.
+  Then, there is an intuitionistic recursive environment as follows, where
+  $y\,z$ is the application of $y$ to $z$.
   \[
     \alr{\alr{z},\alr{y\,z}} :
     \plr{x : A, y : B \to C, z : B} \env\vdash_R \plr{B, C}.
@@ -307,6 +309,16 @@ usage-annotated calculi, which will be used for the rest of this chapter and in
   postfix) such that $\grP \leq \grQ\gr\Psi$ and for each $A$, $\grPprime$, and
   $\grQprime$ such that $\grPprime \leq \grQprime\gr\Psi$, a function from
   $\grQprime\delta \sqni A$ to $\V\,\grPprime\gamma\,A$.
+
+  When there are multiple environments in question and $\rho$ is such an
+  environment, I use the notation $\rho.\gr\Psi$ to refer to $\gr\Psi$.
+  For example, $\grP \leq \grQ\plr{\rho.\gr\Psi}$.
+  For the action on variables, I write $\rho(x)$, where
+  $x : \grQprime\delta \sqni A$.
+  The expression ``$\rho(x)$'' alone is ambiguous because of the slack in the
+  usage context $\grPprime$ of the resulting value.
+  Therefore, I will always make sure $\grPprime$ and $\grQprime$ clear when
+  using this notation.
 \end{definition}
 
 The following simple lemma shows that usage-annotated environments are, in a
@@ -316,13 +328,13 @@ ability to accommodate linear decompositions, in a way I will make precise in
 the next section.
 
 \begin{lemma}
-  We can use an environment $\rho : \Gamma \env\V \Delta$ to get from a
+  We can use an environment $\rho : \Gamma \env\V \Delta$ to map a
   usage-checked variable $x : \Delta \sqni A$ to a value of type
   $\V\,\Gamma\,A$.
 \end{lemma}
 \begin{proof}
   Let $\Gamma = \grP\gamma$ and $\Delta = \grQ\delta$.
   Set $\grPprime \coloneqq \grP$ and $\grQprime \coloneqq \grQ$, then
-  $\grPprime \leq \grQprime\gr\Psi$ by the constraint in $\rho$, and we can
-  use the lookup function to map $x$ to a value.
+  $\grP \leq \grQ\gr\Psi$ by the constraint in $\rho$, so we can take
+  the $\V$-value $\rho(x)$.
 \end{proof}

@@ -1,3 +1,5 @@
+I settle on \cref{def:lr-env}, and prove various properties about it.
+
 \begin{lemma}\label{thm:env-resize}
   Given an environment $\rho : \grP\gamma \env\V \grQ\delta$ and a $\grPprime$
   and a $\grQprime$ such that $\grPprime \leq \grQprime\plr{\rho.\gr\Psi}$,
@@ -110,31 +112,29 @@ of the appropriate type.
   \end{description}
 \end{proof}
 
-We could use these three clauses to define what an environment is.
+We could, as in \cref{def:lr-rec-env}, use these three clauses to define what an
+environment is.
 However, I find them difficult to work with, as it is often easier to do
 linear algebraic proofs separately from the rest of an environment.
-For identity and composition, as we are about to see, the original definition
-is easier to use because we can rely on the identity and composition of linear
-maps.
-Concretely, an inductive proof of identity would, for example, involve
-constructing an environment of type
+For example, for identity and composition of environments, as we are about to
+see, our working definition (\cref{def:lr-env})
+is easier to use because we can rely on the closure of linear maps under
+identity and composition.
+Concretely, an inductive construction of, for example, an identity environment
+would involve constructing an environment of type
 $\grP\gamma, \grQ\delta \env\V \grP\gamma, \grQ\delta$ by constructing
 environments of types $\grP\gamma, \gr0\delta \env\V \grP\gamma$ and
 $\gr0\gamma, \grQ\delta \env\V \grQ\delta$.
 These are not identity environments, so we would have to strengthen the
 induction hypothesis.
+Similar strengthening of the induction hypothesis would be required for
+composition.
 
 One of the primary test cases for environments is simultaneous substitution,
-which will look like the following rule.
-The admissibility of substitution will be by induction on the derivation of
-$\Delta \vdash A$, so we will need to be able to adapt any environment we are
-given to work with any possible context of new premises.
-In the simply typed case, the only change to the context we encountered was the
-binding of new variables.
-Now, with usage annotations, we furthermore have linear decompositions of the
-context, necessitating changes to the environment whenever usage annotations
-change.
-I will deal first with linear decompositions.
+which will look like the \TirName{sub} rule below.
+Note that we have taken $\V \coloneqq {\vdash}$ --- i.e.\ that the values
+yielded by the environment are terms, namely the terms to be substituted in for
+the free variables of the derivation of $\Delta \vdash A$.
 
 \begin{displaymath}
   \begin{prooftree}
@@ -144,65 +144,80 @@ I will deal first with linear decompositions.
   \end{prooftree}
 \end{displaymath}
 
+The admissibility of substitution will be by induction on the derivation of
+$\Delta \vdash A$, so we will need to be able to adapt any environment we are
+given to work with any possible context of new premises yielded by the rules of
+\cref{fig:lr-bunched}.
+In the simply typed case, the only change to the context we encountered was the
+binding of new variables.
+With usage annotations, we furthermore have linear decompositions of the
+context, necessitating changes to the environment whenever usage annotations
+change.
+
 There are three kinds of linear decompositions we have to deal with: zero,
 addition, and scaling; corresponding to bunched connectives $I^*$, $\sep$, and
 $\gr r \cdot {}$, respectively.
-In each case, we have a simple preservation lemma, transforming an environment
+In each of these three cases, we have a simple preservation lemma, transforming
+an environment
 of type $\Gamma \env\V \Delta$ and a decomposition of $\Delta$ into a
 decomposition of $\Gamma$ and environments for all of the decomposed fragments
 of $\Gamma$ and $\Delta$.
 
 \begin{lemma}[environments preserve zero]\label{thm:lr-env-zero}
-  Given an environment of type $\grP\gamma \env\V \grQ\delta$ such that
+  Given an environment $\rho : \grP\gamma \env\V \grQ\delta$ such that
   $\grQ \leq \gr 0$, we also have that $\grP \leq \gr 0$.
 \end{lemma}
 \begin{proof}
   $\grP \leq \grQ\gr\Psi \leq \gr0\gr\Psi = \gr0$, by environment
-  compatibility and monotonicity and linearity of $\gr\Psi$.
+  compatibility from $\rho$ and monotonicity and linearity of $\gr\Psi$.
 \end{proof}
 
 \begin{lemma}[environments preserve addition]\label{thm:lr-env-add}
-  Given an environment of type $\grP\gamma \env\V \grQ\delta$ such that
+  Given an environment $\rho : \grP\gamma \env\V \grQ\delta$ such that
   $\grQ \leq \grQl + \grQr$ for some $\grQl$ and $\grQr$, we also have $\grPl$
   and $\grPr$ such that $\grP \leq \grPl + \grPr$ and there are environments
-  of types $\grPl\gamma \env\V \grQl\delta$ and
-  $\grPr\gamma \env\V \grQr\delta$.
+  $\rho_l : \grPl\gamma \env\V \grQl\delta$ and
+  $\rho_r : \grPr\gamma \env\V \grQr\delta$.
 \end{lemma}
 \begin{proof}
   Let $\grPl \coloneqq \grQl\gr\Psi$ and $\grPr \coloneqq \grQr\gr\Psi$.
   Then, $\grP \leq \grQ\gr\Psi \leq \plr{\grQl + \grQr}\gr\Psi =
   \grQl\gr\Psi + \grQr\gr\Psi = \grPl + \grPr$, satisfying the first condition.
   Because clearly $\grPl \leq \grQl\gr\Psi$ and $\grPr \leq \grQr\gr\Psi$,
-  \cref{thm:env-resize} on the original environment gives us the required
-  pair of new environments.
+  applying \cref{thm:env-resize} to $\rho$ gives us the required
+  new environments $\rho_l$ and $\rho_r$.
 \end{proof}
 
 \begin{lemma}[environments preserve scaling]\label{thm:lr-env-scale}
-  Given an environment of type $\grP\gamma \env\V \grQ\delta$ such that
+  Given an environment $\rho : \grP\gamma \env\V \grQ\delta$ such that
   $\grQ \leq \gr r\grQprime$ for some $\grQprime$, we also have a $\grPprime$
-  such that $\grP \leq \gr r\grPprime$ and there is an environment of type
-  $\grPprime\gamma \env\V \grQprime\delta$.
+  such that $\grP \leq \gr r\grPprime$ and there is an environment
+  $\rho' : \grPprime\gamma \env\V \grQprime\delta$.
 \end{lemma}
 \begin{proof}
   Let $\grPprime \coloneqq \grQprime\gr\Psi$.
   Then, $\grP \leq \grQ\gr\Psi \leq \plr{\gr r\grQprime}\gr\Psi =
   \gr r\plr{\grQprime\gr\Psi} = \gr r\grPprime$, satisfying the first condition.
   Because clearly $\grPprime \leq \grQprime\gr\Psi$,
-  \cref{thm:env-resize} on the original environment gives us the required
-  new environment.
+  applying \cref{thm:env-resize} to $\rho$ gives us the required
+  new environment $\rho'$.
 \end{proof}
 
-Finally, I will also take the opportunity to give the bind lemma, allowing
-environments to incorporate newly bound variables.
-In the intuitionistic case, the bind lemma had two requirements on $\V$: $\V$
-admits weakening and we can map variables into $\V$-values.
-With usage annotations, the former is unreasonable, but it turns out that we
-only need weakening by variables whose usage annotation is less than or equal
-to $\gr0$.
-The latter stays as-is, with the note that ``variable'' now means a
-usage-checked variable.
+The final change environments need to preserve is the binding of new free
+variables.
+In \cref{sec:syntactic-kits}, we had the operation \AgdaFunction{bindEnv} for
+this purpose in the intuitionistic setting.
+There, we relied on $\V$ supporting a map from $\ni$-variables and admitting
+weakening.
+In the usage-annotated setting, the former requirement is updated to having a
+map from usage-checked $\sqni$-variables.
+As for the latter requirement, it turns out that we only need $\V$ to admit
+weakening by $\gr0$-annotated variables, which is much more reasonable than
+general weakening.
+\Cref{thm:lr-bind} adapts \AgdaFunction{bindEnv} for the usage-annotated
+setting.
 
-\begin{lemma}[bind]\label{thm:lr-bind}
+\begin{lemma}[\AgdaFunction{bindEnv}]\label{thm:lr-bind}
   Given functions
   ${\swarrow^k} : \forall \Gamma, \grR, \theta.~\grR \leq \gr0 \to
   \forallb{\V\,\Gamma \dotto \V\,\plr{\Gamma, \grR\theta}}$ and
@@ -248,77 +263,120 @@ usage-checked variable.
   using $\mathrm{vr}$.
 \end{proof}
 
-The requirements for identity and composition of environments look a bit like
-the unit and lift of a Kleisli triple.
-\todo{Change from equality to inequality}
+I put together the preceeding pieces to give a syntactic traversal operation over
+$\name$ in the following section.
+For the rest of this section, I observe some more constructions purely on
+environments --- in particular, composition of environments given certain
+assumptions about the families of values.
 
-\begin{lemma}[Identity environment]
-  Given a function $\mathrm{vr} : \forallb{{\sqni} \dotto \V}$, for any
-  $\Gamma$ we have an environment of type $\Gamma \env\V \Gamma$.
-\end{lemma}
-\begin{proof}
-  Let $\gr\Psi$ be the identity map, which clearly satisfies
-  $\grP = \grP\gr\Psi$.
-  When acting on a variable, the equation $\grPprime = \grQprime\gr\Psi$ means
-  that $\grPprime = \grQprime$, so we want, from a variable of type
-  $\grPprime\gamma \sqni A$, a value of type $\V\,\grPprime\gamma\,A$, which
-  we can get from $\mathrm{vr}$.
-\end{proof}
+Following \citet{ACU15}, we expect (intuitionistic) ST$\lambda$C syntax to form
+a relative monad over $\ni$ seen as a functor from the category of contexts
+under renaming to the functor category $\blr{\mathrm{Ty}, \Set}$, where
+$\mathrm{Ty}$ is the discrete category of ST$\lambda$C types.
+Notice that, given $F,G : \blr{\mathrm{Ty}, \Set}$, a morphism from $F$ to $G$
+is a function of type $\forallb{F \dotto G}$ (with naturality being trivial).
+Therefore, we expect a relative monad, given as a Kleisli triple, to have a unit
+$\eta_\Gamma : \forallb{\Gamma \ni \plr{-} \dotto \Gamma \vdash \plr{-}}$
+given by the variable rule, and a Kleisli extension operator
+${^*}_{\Gamma,\Delta} :
+\forallb{\Gamma \ni \plr{-} \dotto \Delta \vdash \plr{-}} \to
+\forallb{\Gamma \vdash \plr{-} \dotto \Delta \vdash \plr{-}}$
+given by substitution.
+Composition of substitutions falls out of this framework as Kleisli composition.
+However, in the usage-aware case, substitution needs not just a mapping of
+variables $f : \forallb{\Gamma \sqni \plr{-} \dotto \Delta \vdash \plr{-}}$,
+but rather an environment $\rho : \Delta \env\vdash \Gamma$, as we have already
+discussed.
+It therefore makes sense for our replacement for the Kleisli extension operator
+to similarly take an environment rather than a simple variable mapping.
 
-\begin{lemma}\label{thm:env-comp-lemma}
-  Given an environment $\rho : \Gamma \env\U \Delta$ for which we have, for any
-  $\grPprime$ and $\grQprime$ such that
-  $\grPprime = \grQprime\plr{\rho.\gr\Psi}$, we have a function
-  $\mathrm{lift}_\rho :
-  \forallb{\V\,\grQprime\delta \dotto \W\,\grPprime\gamma}$,
-  we can map environments of type $\Delta \env\V \Theta$ into environments of
-  type $\Gamma \env\W \Theta$.
-\end{lemma}
-\begin{proof}
-  Let $\rho$ be as in the statement, and let $\sigma : \Delta \env\V \Theta$.
-  For the environment we are constructing, let
-  $\gr\Psi \coloneqq \sigma.\gr\Psi; \rho.\gr\Psi$, noting that
-  $\grP = \grQ\plr{\rho.\gr\Psi} =
-  \plr{\grR\plr{\sigma.\gr\Psi}}\plr{\rho.\gr\Psi}$.
-  For the action on variables, we are given $\grPprime = \grRprime\gr\Psi$ with
-  $\grRprime\theta \sqni A$.
-  We can immediately apply the action of $\sigma$, giving us a value of type
-  $\V\,\plr{\grRprime\plr{\sigma.\gr\Psi}}\,A$.
-  We note that
-  $\grPprime = \plr{\grRprime\plr{\sigma.\gr\Psi}}\plr{\rho.\gr\Psi}$, and
-  apply $\mathrm{lift}_\rho$ to get the desired value.
-\end{proof}
+\Cref{thm:env-comp-lemma} below amounts to deriving a modified notion of Kleisli
+composition from a modified Kleisli extension.
+Additionally, \cref{thm:env-id-lemma} is required to turn a monadic unit into an
+identity environment.
+Both lemmas are stated in terms of general $\U$/$\V$/$\W$-environments, with
+some specific examples (e.g.\ for renaming and substitution) below them.
 
-\begin{corollary}[Composition of environments]
+\begin{lemma}[Identity environment]\label{thm:env-id-lemma}
   Given a function
-  $\mathrm{lift} : \plr{\rho : \grP\gamma \env\U \grQ\delta} \to
-  \forall \grPprime, \grQprime.~\grPprime = \grQprime\plr{\rho.\gr\Psi} \to
-  \forallb{\V\,\grQprime\delta \dotto \W\,\grPprime\gamma}$, then we can
-  compose environments of types $\Gamma \env\U \Delta$ and
-  $\Delta \env\V \Theta$ into an environment of type $\Gamma \env\W \Theta$.
-\end{corollary}
+  \[
+    \mathrm{vr}_{\Gamma'} : \forallb{\Gamma' \sqni \plr{-} \dotto \V\,\Gamma'}
+  \]
+  for any
+  $\Gamma$ we have an environment $\mathrm{id} : \Gamma \env\V \Gamma$.
+\end{lemma}
+\begin{proof}
+  Let $\Gamma = \grP\gamma$.
+  Let $\gr\Psi$ be the identity map, which clearly satisfies
+  $\grP \leq \grP\gr\Psi$.
+  When acting on a variable, the inequality $\grPprime \leq \grQprime\gr\Psi$
+  means that $\grPprime \leq \grQprime$.
+  We are given a variable of type $\grQprime\gamma \sqni A$, which we can
+  coerce to a variable of type $\grPprime\gamma \sqni A$, upon which we apply
+  $\mathrm{vr}$ to get the required value of type $\V\,\grPprime\gamma\,A$.
+\end{proof}
 
-\todo{What do these choices mean?}
+\begin{lemma}[Composition of environments]\label{thm:env-comp-lemma}
+  Given a function
+  \[
+    \mathrm{lift}_{\Gamma', \Delta'} :
+    \Gamma' \env\U \Delta' \to \forallb{\V\,\Delta' \dotto \W\,\Gamma'}
+  \]
+  we can compose environments $\rho : \Gamma \env\U \Delta$ and
+  $\sigma : \Delta \env\V \Theta$ into an environment
+  $\rho \gg \sigma : \Gamma \env\W \Theta$.
+\end{lemma}
+\begin{proof}
+  Let $\Gamma = \grP\gamma$, $\Delta = \grQ\delta$, and $\Theta = \grR\theta$.
+  Take $\gr\Psi$ to be the composition $\plr{\sigma.\gr\Psi}\plr{\rho.\gr\Psi}$,
+  noting that
+  $\grP \leq \grQ\plr{\rho.\gr\Psi} \leq
+  (\grR\plr{\sigma.\gr\Psi})\plr{\rho.\gr\Psi} = \grR\gr\Psi$
+  thanks to the inequalities yielded by $\sigma$ and $\rho$.
+  When acting on a variable, we are given $\grPprime \leq \grRprime\gr\Psi$ and
+  a variable $v : \grRprime\theta \sqni A$, and want a value of type
+  $\W\,\grPprime\gamma\,A$.
+  Let $\grQprime \coloneqq \grRprime\plr{\sigma.\gr\Psi}$, with inequality
+  $\grQprime \leq \grRprime\plr{\sigma.\gr\Psi}$ giving us a value
+  $\sigma(v) : \V\,\grQprime\delta\,A$.
+  We wish to apply $\mathrm{lift}$ to $\sigma(v)$ with
+  $\Gamma' \coloneqq \grPprime\gamma$ and $\Delta' \coloneqq \grQprime\delta$ to
+  complete the construction of the $\W$-value.
+  To do this, we need an environment of type
+  $\grPprime\gamma \env\U \grQprime\delta$, which we can get from $\rho$ using
+  \cref{thm:env-resize}, noting that
+  $\grPprime \leq \grRprime\plr{\sigma.\gr\Psi}\plr{\rho.\gr\Psi} =
+  \grQprime\plr{\rho.\gr\Psi}$.
+\end{proof}
+
 \begin{example}
   We can derive the following instances of environment composition.
-  \begin{itemize}
-    \item If $\U = \V = \W = {\sqni}$, then $\mathrm{lift}$ is given by the
-      action of the renaming $\rho$ on variables.
-      This allows us to derive composition of renamings.
-    \item More generally, if $\V = {\sqni}$ and $\U = \W$, we can still use
-      the action of the environment $\rho$.
-      This means that renamings post-compose with any other sort of environment.
-    \item If $\V = \W = {\vdash}$, then $\mathrm{lift}$ is given by a
-      syntactic traversal.
+  \begin{description}
+    \item[Composition of renamings.]
+      If $\U = \V = \W = {\sqni}$, then we can take
+      $\mathrm{lift}\,\rho\,x \coloneqq \rho(x)$.
+      This allows us to compose two renamings into a single renaming.
+    \item[Post-composition with a renaming.]
+      More generally, if $\V = {\sqni}$ and $\U = \W$, we can still use
+      the action of $\rho$ as $\mathrm{lift}$.
+      This means that we can do a composition
+      $\Gamma \env\U \Delta \env\sqni \Theta$ to get an environment of type
+      $\Gamma \env\U \Theta$.
+    \item[Composition of substitutions.]
+      If $\V = \W = {\vdash}$, then $\mathrm{lift}$ is given by a
+      syntactic traversal (in the sense of \cref{sec:syntactic-kits} and
+      \cref{sec:lrsub}).
       For example, if $\U = {\sqni}$, we need the action of renaming on terms
       to show that a renaming followed by a substitution composes to a
       substitution.
       If $\U = {\vdash}$, then the action of substitution on terms gives us that
       substitutions compose.
-    \item More generally, if $\V = {\vdash}$ and we have a semantics from
+    \item[Composing semantics with substitution.]
+      More generally, if $\V = {\vdash}$ and we have a semantics (in the sense of
+      \cref{sec:gen-sem} and \cref{sec:framework}) from
       $\U$ to $\W$, then $\mathrm{lift}$ can be given by the semantic traversal
       of terms.
-  \end{itemize}
+  \end{description}
 \end{example}
 
 % Concatenation is difficult; save to after I've talked about renamings.

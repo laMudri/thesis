@@ -1,11 +1,15 @@
 In this section, I introduce the syntax of the type theory \name{}, which makes
-use of posemiring usage annotations.
+use of posemiring usage annotations to express the usage restrictions found in
+DILL and other calculi.
 I use this syntax to write some example programs, which will motivate the
 denotational semantics explored in \cref{sec:wrel}.
-For the rest of this thesis, \name{} will serve as both a prototypical
+For the rest of this thesis, particularly
+\cref{sec:semirings,sec:ren-sub-lr,sec:wrel},
+\name{} will serve as both a prototypical
 usage-constrained syntax and a target of semantic analyses.
 
-The calculus \name{} is similar in spirit to intuitionistic linear logic (ILL).
+The calculus \name{} is similar in spirit to intuitionistic linear logic (ILL),
+which we saw in \cref{sec:linearity}.
 The types of \name{}, listed in \cref{fig:lr-types}, are almost identical
 to those of ILL, differing only in the exponential modality $\oc$
 (read ``bang'').
@@ -15,9 +19,6 @@ In particular, I include distinguished tensor- and with-product types
 graded modality $\oc_{\gr r}$.
 The idea of $\oc_{\gr r}$ is to internalise an annotation of $\gr r$ on a
 variable in the context.
-In this position, an assumption of type $\oc_{\gr r} A$ acts like an assumption
-of type $A$ that is to be used according to $\gr r$ rather than the standard
-$\gr1$.
 
 \begin{figure}
   \begin{displaymath}
@@ -146,7 +147,7 @@ $\gr1$.
   \label{fig:lr}
 \end{figure}
 
-I will not cover the operational semantics or equational theory of \name{} in
+I will not cover any operational semantics or equational theory of \name{} in
 this thesis.
 I will discuss a denotational semantics in \cref{sec:wrel}.
 
@@ -155,14 +156,24 @@ The following features are of note.
 \paragraph{Subusaging}
 Several typing rules contain constraints of the form $\grP \leq \grQ$, for
 certain usage vectors $\grP$ and $\grQ$.
-To a first approximation, $\leq$ can simply be read as $=$.
-The point of using $\leq$ rather than $=$ is to allow for \emph{subusaging},
-i.e., subsumption of usage annotations.
+We saw subusaging in the introduction to this chapter in the specific case of
+$\Ann$ being formed from the poset $\{\gr0 > \gr\omega < \gr1\}$.
+This allowed variables annotated $\gr\omega$ (``unrestricted'') to be both
+weakened/discarded (because $\gr\omega \leq \gr0$) and derelicted/used
+(because $\gr\omega \leq \gr1$).
+Subsumption of usage annotations is essential to nearly all interesting choices
+of $\Ann$.
+However, in the toy example of exact usage counting using the set $\mathbb N$ of
+annotations, we set the order to be just equality as a matter of simplicity.
+
 For usage annotations $\gr r$ and $\gr s$, the inequality $\gr r \leq \gr s$
 states that an assumption with annotation $\gr r$ can be used wherever an
 assumption with annotation $\gr s$ is required.
 A mnemonic is that $\gr r$ is less specific than $\gr s$.
-The principle is reflected by the admissible subusaging rule.
+The principle is reflected by the admissible subusaging rule, where the order
+has been lifted from annotations to usage contexts.
+The subusaging rule is a simple corollary of renaming, as given in
+\cref{sec:ren-sub-lr}.
 
 \[
   \begin{prooftree}
@@ -171,13 +182,6 @@ The principle is reflected by the admissible subusaging rule.
     \infer2[Subuse]{\grP\gamma \vdash A}
   \end{prooftree}
 \]
-
-Subusaging is essential to nearly all interesting choices of $\Ann$.
-For example, we can capture intuitionistic linear logic by choosing $\Ann$ to
-be $\{\gr0 > \gr\omega < \gr1\}$.
-This allows variables annotated $\gr\omega$ (``unrestricted'') to be both
-weakened/discarded (because $\gr\omega \leq \gr0$) and derelicted/used
-(because $\gr\omega \leq \gr1$).
 
 \paragraph{Tensor- and with-products}
 Like intuitionistic linear logic (ILL), \name{} distinguishes tensor-products
@@ -236,14 +240,13 @@ choice of $\Ann$, we do not have $\gr0 \leq \gr1$ or $\gr1 \leq \gr1 + \gr1$.
   \end{itemize}
 \end{example}
 
-To get a feeling for \name{}, I will temporarily fix
-$\Ann \coloneqq (\mathbb N, =, 0, +, 1, \times)$.
-That is, the usual semiring of natural numbers with ordering given by equality.
-Under this discipline, the usage constraints enforce a form of exact usage
-counting.
-
 \begin{example}
-  The following judgements hold for the natural number semiring.
+  Let $\Ann \coloneqq (\mathbb N, =, 0, +, 1, \times)$, that is, specialise to
+  the posemiring made of
+  the usual semiring of natural numbers with ordering given by equality.
+  Under this discipline, the usage constraints enforce a form of exact usage
+  counting.
+  The following judgements then hold.
   Derivations are left as an exercise to the reader.
   \begin{itemize}
     \item $\vdash \oc\gr2A \multimap A \otimes A$
@@ -264,12 +267,22 @@ examples of posemirings for tracking interesting usage patterns.
   setting) and $\oc{\gr*}$ (where $\oc{\gr*} A \simeq A$).
 \end{example}
 
-{\color{red}TODO: cite rntz}
 \begin{example}\label{def:monotonicity-posemiring}
   The \emph{monotonicity} posemiring is defined over the set of symbols
   $\{\gr{\wn\wn}, \gr{\uparrow\uparrow}, \gr{\downarrow\downarrow},
-  \gr{\sim\sim}\}$, with $0 \coloneqq \gr{\wn\wn}$,
-  $1 \coloneqq \gr{\uparrow\uparrow}$, and the following operations:
+  \gr{\sim\sim}\}$.
+  The idea is that each symbol represents the possible \emph{variance} of an
+  input (free variable) with respect to some partial ordering on a semantic
+  domain of elements.
+  $\gr{\uparrow\uparrow}$ represents covariance (if that input goes up, the
+  output goes up), $\gr{\downarrow\downarrow}$ represents contravariance
+  (if that input goes \emph{down}, the output goes up), $\gr{\sim\sim}$ gives no
+  guarantees (if that input remains constant, the output (trivially) goes up),
+  and $\gr{\wn\wn}$ says that that input is irrelevant (whatever changes are
+  made to that input, the output (trivially) goes up).
+
+  I take $0 \coloneqq \gr{\wn\wn}$, $1 \coloneqq \gr{\uparrow\uparrow}$,
+  and define the following operations:
 
   \makebox[\textwidth][s]{
     \begin{tabular}{c|cccc}
@@ -299,16 +312,6 @@ examples of posemirings for tracking interesting usage patterns.
     \end{tikzpicture}
   }
 
-  The idea is that each symbol represents the possible \emph{variance} of an
-  input (free variable) with respect to some partial ordering on a semantic
-  domain of elements.
-  $\gr{\uparrow\uparrow}$ represents covariance (if that input goes up, the
-  output goes up), $\gr{\downarrow\downarrow}$ represents contravariance
-  (if that input goes \emph{down}, the output goes up), $\gr{\sim\sim}$ gives no
-  guarantees (if that input remains constant, the output (trivially) goes up),
-  and $\gr{\wn\wn}$ says that that input is irrelevant (whatever changes are
-  made to that input, the output (trivially) goes up).
-
   Addition represents an intersection of guarantees.
   For example, if a variable is used covariantly in one subterm and
   contravariantly in another, we can only make the trivial guaratee represented
@@ -316,6 +319,13 @@ examples of posemirings for tracking interesting usage patterns.
   Multiplication is mainly interesting for multiplication by
   $\gr{\downarrow\downarrow}$, which flips the variance on any other annotation.
   As such, $\oc\gr{\downarrow\downarrow}A$ represents a contravariant $A$.
+  The flipping (involutive) behaviour of $\gr{\downarrow\downarrow}$ lets us
+  notice that $x$ is covariant in
+  a term like $-(-x)$, where $-$ is a constant of type
+  $\oc\gr{\downarrow\downarrow}\mathbb Z \multimap \mathbb Z$.
+
+  A similar, but distinct, collection of modalities for monotonicity is given by
+  \citet{Arntzenius19}.
 \end{example}
 
 \begin{example}\label{def:sensitivity-posemiring}

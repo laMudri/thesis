@@ -1,9 +1,10 @@
 \chapter{Usage restriction via semirings}\label{sec:semirings}
 
-The methods described in \cref{sec:simple} for simply typed $\lambda$-calculus
+The methods described in \cref{sec:simple} for the simply typed
+$\lambda$-calculus
 make crucial use of \emph{weakening} --- the fact that if we have
 $\Gamma \vdash A$, then we also have $\Gamma, \Delta \vdash A$.
-We use this property to update environments as they go under binders.
+We use this property to update environments as we take them under binders.
 However, as we saw in \cref{sec:linearity}, there are interesting calculi in
 which general weakening does not hold.
 As such, one of the aims of this chapter will be to find a form of weakening
@@ -43,6 +44,21 @@ I use $\gr r\gamma$ to abbreviate $\gr rx_1, \ldots, \gr rx_m$.
   }
 \]
 
+The eventual target of all these $\gr0$-annotated variables is the variable
+rule, which I transcribe as follows.
+The $\gr1$ shows us that we can use the variable thus annotated, while the
+$\gr0$s let us discard all of the other variables in $\gamma$.
+
+\[
+  \ebrule{%
+    \infer0{A \vdash A}
+  }
+  \quad\rightsquigarrow\quad
+  \ebrule{%
+    \infer0{\gr0\gamma, \gr1A \vdash A}
+  }
+\]
+
 The use of $\gr0$ gives us the property that variables never go out of
 scope in subterms; rather, we lose the ability to use certain variables, but
 retain the ability to refer to them metatheoretically.
@@ -51,8 +67,9 @@ $\Gamma, \gr0\delta \vdash A$, because the resulting term indeed uses no
 variables from $\delta$.
 I prove the admissibility of weakening for terms will come in \cref{sec:lrsub}.
 
-If we follow the DILL style of variable management, there are not just the two
-states \emph{used} ($\gr1$) and \emph{not used} ($\gr0$), but also
+If we follow the DILL style of variable management explained in \cref{sec:dill},
+there are not just the two
+states \emph{to be used} ($\gr1$) and \emph{not to be used} ($\gr0$), but also
 \emph{usable unrestrictedly}.
 If we assign unrestricted (or \emph{intuitionistic}) variables an annotation
 $\gr\omega$, we can make the following transcription of the DILL
@@ -78,8 +95,9 @@ The rule stated above relies on the facts that $\gr1 + \gr0 = \gr1$,
 $\gr0 + \gr1 = \gr1$, and $\gr\omega + \gr\omega = \gr\omega$.
 Addition lifts pointwise to vectors of usage annotations (the green capital
 calligraphic $\grP$, $\grQ$, and $\grR$).
-It is worth noting now that, thanks to the fact that $\gr0 + \gr0 = \gr0$, the
-rule on the right below now accepts $\gr0$-annotated variables in its
+A beneficial side-effect of the fact that $\gr0 + \gr0 = \gr0$ is that the
+rule on the right below is actually more general, and accepts $\gr0$-annotated
+variables in its
 conclusion, which is essential for weakening to be admissible.
 
 \[
@@ -97,7 +115,8 @@ conclusion, which is essential for weakening to be admissible.
   }
 \]
 
-Some other transcriptions are as follows.
+Some other transcriptions from DILL to the usage annotation style are as
+follows.
 I unify the variable rules (the one for linear variables and the one for
 intuitionistic variables) by introducing a coercibility ordering $\leq$ on usage
 annotations.
@@ -105,7 +124,16 @@ We have $\gr\omega \leq \gr1$ because an intuitionistic variable can fill the
 demand of a linear variable by dereliction.
 We also have $\gr\omega \leq \gr0$, because intuitionistic variables can be
 weakened away like $\gr0$-annotated variables.
-All together, this means that at the unified variable rule, the variable being
+This ordering information is shown in the diagram
+\begin{tikzpicture}[baseline]
+  \node(omega) at (0,0) {$\gr\omega$};
+  \node(0) [above left of=omega] {$\gr0$};
+  \node(1) [above right of=omega] {$\gr1$};
+
+  \draw (omega) -- (0);
+  \draw (omega) -- (1);
+\end{tikzpicture}.
+All together, this means that at the (only) variable rule, the variable being
 used must have annotation less than or equal to $\gr1$, and every other variable
 must have annotation less than or equal to $\gr0$.
 I write this requirement as $\grR \leq \langle x \rvert$, where
@@ -148,9 +176,9 @@ $\oc$-introduction rule.
 DILL's $\oc$-introduction can be though of as an $\gr\omega$-ary counterpart to
 $\otimes$-introduction, though with the same premise each time rather than
 $\gr\omega$-many premises.
-This explanation recovers the behaviour that only $\gr\omega$- and
+This explains why only $\gr\omega$- and
 $\gr0$-annotated variables can appear in the conclusion of $\oc$-introduction,
-and also justifies the designation of multiplication (vector scaling) as the
+and also justifies the choice below of multiplication (vector scaling) as the
 algebraic operation controlling the $\oc$-modality.
 
 \[
@@ -179,13 +207,13 @@ of usage restrictions).
 Together, these form a \emph{partially ordered semiring} (posemiring), the laws
 of which are both supported by examples and necessary for the syntax to be well
 behaved.
-\todo{Refer back to preliminaries for definition of posemiring}
+%\todo{Refer back to preliminaries for definition of posemiring}
 For concreteness, I collect together the definition of the
 $\{\gr0, \gr1, \gr\omega\}$ posemiring I have been using so far.
 
 \begin{example}\label{def:lin-semiring}
-  The \emph{$\{\gr0, \gr1, \gr\omega\}$ semiring}, also known as the
-  \emph{linearity semiring}, has the operations given as follows, with
+  The \emph{$\{\gr0, \gr1, \gr\omega\}$ posemiring}, also known as the
+  \emph{linearity posemiring}, has the operations given as follows, with
   $0 \coloneqq \gr0$ and $1 \coloneqq \gr1$:
 
   \makebox[\textwidth][s]{
@@ -227,26 +255,48 @@ The rest of this chapter proceeds as follows.
 In \cref{sec:lr}, I define the usage-annotated calculus \name{}, which has
 appeared previously in my work with Atkey~\cite{WA21}, and can be seen as a
 simply typed version of Atkey's dependently typed calculus QTT~\cite{Atkey18}.
-The idea of \name{} is to augment simply typed $\lambda$-calculus with
+The idea of \name{} is to augment the simply typed $\lambda$-calculus with
 annotations on free variables, and give enough types to manipulate these
 annotations.
-I use \cref{sec:lnd} to introduce some notation that allows us to restate the
-typing rules of \name{} so as to not mention contexts explicitly.
-The first problem I tackle with this new syntax is proving admissibility of
-substitution.
-I follow the methodology from \cref{sec:kits}, which
+Given this new calculus $\name$, the first goal is to apply the techniques of
+\cref{sec:simple} to it, yielding a simultaneous substitution operation.
+To do this, I use \cref{sec:lnd} to introduce notation that allows us to restate
+the typing rules of \name{} to not mention contexts explicitly, as was the style
+in \cref{sec:simple}.
+This new notation --- the \emph{bunched connectives} --- is versatile at
+defining simply typed usage-aware syntaxes, and I give further non-$\name$
+examples in \cref{sec:rec}.
+The application of the techniques of \cref{sec:simple} is left to
+\cref{sec:ren-sub-lr}.
 
 \section{A usage-annotated calculus $\name$}\label{sec:lr}
 \input{lr.tex}
 \section{Bunched connectives}\label{sec:lnd}
 \input{lnd.tex}
+\section{Additions to and variations of \name{}}\label{sec:variant}
+\input{rec.tex}
+\section{Addendum: (lack of) partiality}\label{sec:part}
+\input{part.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Renaming and substitution of $\name$}\label{sec:ren-sub-lr}
+
+In \cref{sec:semirings}, I defined my calculus of interest $\name$.
+In this chapter, I develop its syntactic metatheory up to and including
+substitution.
+I follow the approach of \cref{sec:kits} using syntactic kits, but have to make
+significant changes to the underlying notion of \emph{environment} before doing
+so.
+I give and informally motivate these changes to environments in
+\cref{sec:lrkits}, and prove some properties of the new definition in
+\cref{sec:lenv}.
+Finally, I apply these new environments to the syntax of $\name$ in
+\cref{sec:lrsub} to derive renaming and substitution operators.
+
 \section{What are linear renaming and substitution?}\label{sec:lrkits}
 \input{lrkits.tex}
 \section{Properties of linear environments}\label{sec:lenv}
 \input{lenv.tex}
 \section{Substitution is admissible in \name{}}\label{sec:lrsub}
 \input{lrsub.tex}
-\section{Adding recursion to \name{}}\label{sec:rec}
-\input{rec.tex}
-\section{Addendum: (lack of) partiality}\label{sec:part}
-\input{part.tex}

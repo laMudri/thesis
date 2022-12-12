@@ -28,6 +28,7 @@
 \newunicodechar{ʷ}{\ensuremath{\mathnormal{^w}}}
 \newunicodechar{ᴹ}{\ensuremath{\mathnormal{^M}}}
 \newunicodechar{ᴿ}{\ensuremath{\mathnormal{^R}}}
+\newunicodechar{⁰}{\ensuremath{\mathnormal{^0}}}
 \newunicodechar{↙}{\ensuremath{\mathnormal\swarrow}}
 \newunicodechar{↘}{\ensuremath{\mathnormal\searrow}}
 \newunicodechar{⊢}{\ensuremath{\mathnormal\vdash}}
@@ -77,6 +78,8 @@
 \newunicodechar{⋂}{\ensuremath{\mathnormal\bigcap}}
 \newunicodechar{∙}{\ensuremath{\mathnormal\bullet}}
 \newunicodechar{∼}{\ensuremath{\mathnormal\sim}}
+\newunicodechar{∷}{\ensuremath{\mathnormal{::}}}
+\newunicodechar{↝}{\ensuremath{\mathnormal\rightsquigarrow}}
 
 % Characters that are different from what appears in the source code
 \newunicodechar{∋}{\ensuremath{\mathnormal\ni}}
@@ -92,6 +95,7 @@
 % Files
 \def\genericlr{../generic-lr/src/processed-latex}
 \def\LTreetex{\genericlr/Data/LTree.tex}
+\def\Bunchedtex{\genericlr/Relation/Unary/Bunched/Display.tex}
 \def\Syntaxtex{\genericlr/Generic/Linear/Syntax.tex}
 \def\Interpretationtex{\genericlr/Generic/Linear/Syntax/Interpretation.tex}
 \def\Maptex{\genericlr/Generic/Linear/Syntax/Interpretation/Map.tex}
@@ -106,7 +110,9 @@
 \def\Monotonicitytex{\genericlr/Generic/Linear/Example/WRel/Monotonicity.tex}
 \def\MuMuTildetex{\genericlr/Generic/Linear/Example/MuMuTilde.tex}
 \def\MuMuTildeTermtex{\genericlr/Generic/Linear/Example/MuMuTilde/Term.tex}
+\def\SpecificSyntaxtex{\genericlr/Specific/Syntax.tex}
 \def\Snippetstex{../agda/processed-latex/Snippets.tex}
+\def\SnippetsTwotex{../agda/processed-latex/Snippets2.tex}
 
 \def\prefix{../agda/processed-latex}
 \CatchFileBetweenTags{\Ctx}{\prefix/SimpleKits.tex}{Ctx}

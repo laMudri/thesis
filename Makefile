@@ -41,20 +41,20 @@ $(eval $(call lagda2texSimple,SimpleSem))
 
 define lagda2tex
 $(1)/processed-latex/%.tex: $(1)/latex/%.tex
-	#if [ $$< != agda/latex/SimpleKits.tex ] && [ $$< != agda/latex/SimpleSem.tex ]; then \
+	if [ $$< != agda/latex/SimpleKits.tex ] && [ $$< != agda/latex/SimpleSem.tex ]; then \
 	  mkdir -p $$(dir $$@); \
 	  sed \
 	  -e 's/=⇒/⇛/g' \
 	  -e 's/\\AgdaFunction{U}/\\AgdaFunction{⒈}/g' \
 	  -e 's/`⊤/`⒈/g' \
 	  -e 's/─✴/⇥/g' \
-	  -e 's/\\AgdaFunction{⇒}/\\AgdaFunction{⇴}/g' \
+	  -e 's/\\AgdaFunction{\(\\AgdaUnderscore{}\)\?⇒\(\\AgdaUnderscore{}\)\?}/\\AgdaFunction{\1⇴\2}/g' \
 	  -e 's/>>/\\ensuremath{\\rangle\\rangle}/g' \
 	  -e 's/(|/\\ensuremath{\\mathbf\\llparenthesis}/g' \
 	  -e 's/|)/\\ensuremath{\\mathbf\\rrparenthesis}/g' \
 	  -e 's/∋/ヨ/g' \
 	  $$< >$$@; \
-	#fi
+	fi
 
 $(1)/latex/%.tex: $(1)/%.lagda.tex
 	cd $(1); agda --latex $$(subst $(1)/,,$$<)

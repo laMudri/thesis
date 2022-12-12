@@ -11,46 +11,93 @@ For example, nearly half of the rules include the premise
 $\grR \leq \grP + \grQ$.
 Also, the presence of usage annotations, which are often different in different
 parts of a rule, means that we keep repeating the context.
-Explicit contexts go against the style of natural deduction, which is based
+Explicit contexts go against the style we established in \cref{sec:simple},
+which is based
 around being parametric in the context, so that substitution is agnostic to the
 details of typing rules.
 
 To encapsulate the repeated patterns and facilitate an implicit context style,
 I introduce the \emph{bunched connectives} for premises.
-These are inspired by bunched logic~\cite{oHP99}, and will not only be used for
-stating the syntax, but will reappear in the semantics.
+These are inspired by bunched logic~\citep{oHP99}, and will not only be used for
+stating the syntax, but will be used as an abstraction of common patterns in the
+development of the metatheory.
 The idea is to generalise the space between premises from Gentzen's natural
-deduction so as to allow for any linear combination of usage annotations.
+deduction to allow for any linear combination of usage annotations.
 Among other things, this generalisation will allow us to distinguish between
 $\with$-introduction and $\otimes$-introduction by a choice of connective:
 either \emph{sharing} or \emph{separating} conjunction.
-Similar connectives, but with different interpretations, could be used to
-define other linear-like type theories, like DILL, but here I will focus on the
-usage annotation style.
-The interpretations I use are defined in \cref{fig:bunched}.
+%Similar connectives, but with different interpretations, could be used to
+%define other linear-like type theories, like DILL, but here I will focus on the
+%usage annotation style.
+These connectives are defined in \cref{fig:bunched} in Agda notation.
 
 \begin{figure}
-  \begin{align*}
-    \dot1\,\grR &\coloneqq 1 \\
-    (T \dottimes U)\,\grR &\coloneqq T\,\grR \times U\,\grR \\
-    (T \dotto U)\,\grR &\coloneqq T\,\grR \to U\,\grR \\
-    I^*\,\grR &\coloneqq \grR \leq \gr0 \\
-    (T \sep U)\,\grR &\coloneqq \Sigma \grP,\grQ.~\plr{\grR \leq \grP + \grQ}
-                       \times T\,\grP \times U\,\grQ \\
-    (\gr r \cdot T)\,\grR &\coloneqq \Sigma \grP.~\plr{\grR \leq \gr r\grP}
-                       \times T\,\grP
-  \end{align*}
+  %\begin{align*}
+  %  \dot1\,\grR &\coloneqq 1 \\
+  %  (T \dottimes U)\,\grR &\coloneqq T\,\grR \times U\,\grR \\
+  %  (T \dotto U)\,\grR &\coloneqq T\,\grR \to U\,\grR \\
+  %  I^*\,\grR &\coloneqq \grR \leq \gr0 \\
+  %  (T \sep U)\,\grR &\coloneqq \Sigma \grP,\grQ.~\plr{\grR \leq \grP + \grQ}
+  %                     \times T\,\grP \times U\,\grQ \\
+  %  (\gr r \cdot T)\,\grR &\coloneqq \Sigma \grP.~\plr{\grR \leq \gr r\grP}
+  %                     \times T\,\grP
+  %\end{align*}
+  Parameters:
+  \ExecuteMetaData[\Bunchedtex]{BunchedParams}
+
+  Connectives:
+  \vspace{-1em}
+  \begin{multicols}{2}
+    \noindent\ExecuteMetaData[\Bunchedtex]{PointwiseUnit}
+    \noindent\ExecuteMetaData[\Bunchedtex]{forallb}
+    \columnbreak
+    \AgdaNoSpaceAroundCode{}
+    \noindent\ExecuteMetaData[\Bunchedtex]{PointwiseConjunction}
+    \vspace{-0.25em}
+    \noindent\ExecuteMetaData[\Bunchedtex]{PointwiseImplication}
+    \AgdaSpaceAroundCode{}
+  \end{multicols}
+  \vspace{-2em}
+  \ExecuteMetaData[\Bunchedtex]{BunchedUnit}
+  \ExecuteMetaData[\Bunchedtex]{BunchedConjunction}
+  \ExecuteMetaData[\Bunchedtex]{BunchedImplication}
+  \ExecuteMetaData[\Bunchedtex]{BunchedScaling}
   \caption{The bunched connectives}
   \label{fig:bunched}
 \end{figure}
+
+The bunched connectives are parametrised over two sets and three relations.
+For syntax, the set \AgdaBound{A} will be \AgdaRecord{Ctx}, the type of
+contexts, and \AgdaBound{R} will be \AgdaField{Ann}, the type of usage
+annotations (scalars).
+For the relations, the notation is meant to be suggestive, with
+\AgdaBound{$\Gamma$}\AgdaSpace{}\AgdaBound{$\leq$0} typically stating that all
+of the annotations in \AgdaBound{$\Gamma$} are less than or equal to $0$;
+\AgdaBound{$\Gamma$}\AgdaSpace{}\AgdaBound{$\leq$[}\AgdaSpace{}%
+\AgdaBound{$\Delta$}\AgdaSpace{}\AgdaBound{+}\AgdaSpace{}\AgdaBound{$\Theta$}%
+\AgdaSpace{}\AgdaBound{]}
+typically stating that \AgdaBound{$\Gamma$}, \AgdaBound{$\Delta$}, and
+\AgdaBound{$\Theta$} all agree on their types but the usage context of
+\AgdaBound{$\Gamma$} is less than or equal to the sum of the usage contexts of
+\AgdaBound{$\Delta$} and \AgdaBound{$\Theta$}; and
+\AgdaBound{$\Gamma$}\AgdaSpace{}\AgdaBound{$\leq$[}\AgdaSpace{}%
+\AgdaBound{r}\AgdaSpace{}\AgdaBound{*$_l$}\AgdaSpace{}\AgdaBound{$\Delta$}%
+\AgdaSpace{}\AgdaBound{]}
+typically stating that \AgdaBound{$\Gamma$} and \AgdaBound{$\Delta$} agree on
+their types but have the evident scaling relationship with \AgdaBound{r} on
+their usage annotations.
+I use the same symbols for the connectives both in Agda code and in otherwise
+standard mathematical/logical notation.
 
 The first three connectives are those we've already seen for intuitionistic
 systems --- $\dot1$, $\dottimes$, and $\dotto$.
 The absence of premises is encoded by $\dot1$, while the space between premises
 sharing a context is encoded by $\dottimes$.
-When we interpret a rule as a constructor of an inductive definition, $\dotto$
+When we interpret a typing rule as a constructor of an inductive definition,
+$\dotto$
 interprets the horizontal line, reflecting the fact that the usage annotations
-we start off with in the premises are those of the conclusion.
+we start off with in the premises are those of the conclusion, corresponding to
+a general principle of resource conservation.
 The prototypical rules that use $\dot1$ and $\dottimes$ are the introduction
 rules for $\top$ and $\with$, respectively.
 
@@ -78,8 +125,8 @@ rules for $\top$ and $\with$, respectively.
   \end{prooftree}
 \end{align*}
 
-The rest of the bunched connectives are for linear decompositions of the usage
-annotations.
+The rest of the bunched connectives --- $I^*$, $\sep$, $\cdot$, and $\wand$ ---
+involve linear decompositions of the usage annotations.
 The three basic left semimodule operators --- zero, addition, and left-scaling
 --- each get a bunched connective --- $I^*$, $\sep$, and $\gr r \cdot {}$,
 respectively.
@@ -125,36 +172,39 @@ introduction rules for $I$, $\otimes$, and $\oc{\gr r}$, respectively.
 
 The full system \name{} is stated in terms of bunched connectives in
 \cref{fig:lr-bunched}.
-%I have not included a variable rule because, like with intuitionistic
-%natural deduction,
+The bunched connectives also yield a reasonably consise definition of the Agda
+data type of \name{} derivations, as seen in \cref{fig:lr-bunched-Agda}.
 
-These bunched connectives should not be confused for the linear connectives
-they appear in the introduction rules of.
+While we have seen a connection between the bunched connectives and the
+connectives of $\name$, the two should not be confused.
+In particular, the bunched connectives obey different laws to what we would
+expect from linear logic.
 For example, it would make sense to define a bunched connective $\dotplus$,
 defined analogously to $\dottimes$.
 This $\dotplus$ could be used to rephrase the introduction rules for $\oplus$.
 We then have maps both ways between $T \dottimes (U \dotplus V)$ and
-$(T \dottimes U) \dotplus (T \dottimes V)$, reminiscent of bunched logic,
+$(T \dottimes U) \dotplus (T \dottimes V)$, reminiscent of the distributivity of
+additive connectives in bunched logic,
 whereas linear logic only has a map from $(A \with B) \oplus (A \with C)$ to
 $A \with (B \oplus C)$, and not a map the other way.
-%For example, linearly we have
-%$\oc{\gr r}(A \with B) \simeq \oc{\gr r} A \otimes \oc{\gr r} B$, while the
-%expressions $\gr r \cdot (A \dottimes B)$ and $\gr r \cdot A \sep \gr r \cdot B$
-%are generally incomparable.
-We will also see later\todo{Forward reference} that, while
-$(\dottimes, \dotto)$ gives a Cartesian \todo{wrong}
-closed structure, $\sep$ is monoidally closed, with an internal hom $\wand$.
-Indeed, the Cartesian closed structure is sufficient to give us the interaction
-between $\dotplus$ and $\dottimes$, by the fact that $A \dottimes {-}$ is a
-left adjoint, and therefore preserves colimits.
 Looking at the interpretations, the connection with bunched logic makes sense.
-Instead of the partial commutative monoid (representing heaps) found in
+Instead of the partial commutative monoid (often representing heaps) found in
 standard semantics of bunched logic, we have a left semimodule of usage
 contexts, which we are similarly interested in splitting and sharing between
 various subterms.
-\todo{Bunched type system to Agda}
-\todo{Split chapter here. Play around with other systems using bunched
-  connectives. Lists/recursion, annotated arrow, Granule elim, sharing elim.}
+
+A discrepancy with bunched logic is that $\dotto$ is not part of the Cartesian
+closure of context-indexed families.
+In fact, it fails to be a functor because it does not respect the ordering of
+usage contexts.
+This fact has little impact on the development of this thesis, because I mainly
+use $\dotto$ at the top level, directly in conjunction with $\forallb{-}$.
+The combination describes the ``external hom'', i.e.\ the morphisms in the
+category of context-indexed families, with the internal hom being more like the
+Kripke function space, which I do not use.
+
+%\todo{Split chapter here. Play around with other systems using bunched
+%  connectives. Lists/recursion, annotated arrow, Granule elim, sharing elim.}
 
 \begin{figure}
   \ebproofset{separation=0.75em}
@@ -263,4 +313,12 @@ various subterms.
   \ebproofset{separation=1.5em}
   \caption{\name{} stated using bunched connectives}
   \label{fig:lr-bunched}
+\end{figure}
+
+\begin{figure}
+  \ExecuteMetaData[\SpecificSyntaxtex]{Ty}
+  \ExecuteMetaData[\SpecificSyntaxtex]{Bind}
+  \ExecuteMetaData[\SpecificSyntaxtex]{lr}
+  \caption{\name{} stated using bunched connectives in Agda}
+  \label{fig:lr-bunched-Agda}
 \end{figure}
