@@ -27,13 +27,13 @@ of the appropriate type.
   We can define all of the following equivalences for any values of the free
   variables, assuming that $\V$ respects subusaging (i.e.,
   $\grPprime \leq \grP \to
-  \forallb{\V\,\grP\gamma \dotto \V\,\grPprime\gamma}$).
+  \V\,\grP\gamma \rightarrowtriangle \V\,\grPprime\gamma$).
   \begin{itemize}
-    \item $\forallb{I \dotlr \plr{{-} \env\V {\cdot}}}$
-    \item $\forallb{\plr{{-} \env\V \Delta_l} \sep \plr{{-} \env\V \Delta_r}
-      \dotlr \plr{{-} \env\V \Delta_l, \Delta_r}}$
-    \item
-      $\forallb{\gr r \cdot \plr{\V\,(-)\,A} \dotlr \plr{{-} \env\V \gr rA}}$
+    \item $I^{\sep} \leftrightarrowtriangle \plr{{-} \env\V {\cdot}}$
+    \item $\plr{{-} \env\V \Delta_l} \sep \plr{{-} \env\V \Delta_r}
+      \leftrightarrowtriangle \plr{{-} \env\V \Delta_l, \Delta_r}$
+    \item $\gr r \cdot \plr{\V\,(-)\,A}
+      \leftrightarrowtriangle \plr{{-} \env\V \gr rA}$
   \end{itemize}
 \end{lemma}
 \begin{proof}
@@ -41,14 +41,14 @@ of the appropriate type.
   Throughout, we write $\Gamma$ as $\grP\gamma$ and $\Delta$ as $\grQ\delta$
   when convenient.
   \begin{description}
-    \item[$I(\to)$]
+    \item[$I^{\sep}(\rightarrowtriangle)$]
       Let $\gr\Psi$ be the unique linear map out of the zero space.
       By assumption and definition, $\grP \leq \gr0 = \grQ\gr\Psi$.
       There are no variables to act upon.
-    \item[$I(\gets)$]
+    \item[$I^{\sep}(\leftarrowtriangle)$]
       $\grQ\gr\Psi$ is an empty sum, so if $\grP \leq \grQ\gr\Psi$ then
       $\grP \leq \gr0$.
-    \item[$\sep(\to)$]
+    \item[$\sep(\rightarrowtriangle)$]
       Let the given environments be $\rho_l : \grPl\gamma \env\V \grQl\delta$
       and $\rho_r : \grPr\gamma \env\V \grQr\delta$, with
       $\grP \leq \grPl + \grPr$.
@@ -66,7 +66,7 @@ of the appropriate type.
       \gr{\grQ'_l}\plr{\rho_l.\gr\Psi} + \gr{\grQ'_r}\plr{\rho_r.\gr\Psi} \leq
       \gr{\grQ'_l}\plr{\rho_l.\gr\Psi}$,
       and we can act on the variable using $\rho_l$.
-    \item[$\sep(\gets)$]
+    \item[$\sep(\leftarrowtriangle)$]
       Let the unnamed context be $\Gamma$, also written $\grP\gamma$.
       The linear map
       $\gr\Psi : \Ann^{\size{\Delta_l} + \size{\Delta_r}} \to \Ann^{\size\Gamma}$
@@ -88,7 +88,7 @@ of the appropriate type.
       \begin{pmatrix} \gr{\grQ'_l} & \gr0 \end{pmatrix}\gr\Psi$ and
       $\gr{\grQ'_l}\delta_l, \gr0\delta_r \sqni A$.
       We can therefore act using the original environment.
-    \item[$\cdot(\to)$]
+    \item[$\cdot(\rightarrowtriangle)$]
       Let $\grP$ and $\grPprime$ be such that $\grP \leq \gr r\grPprime$ and let
       $v : \V\,\grPprime\gamma\,A$.
       Let $\gr\Psi : \Ann \to \Ann^{\size\gamma}
@@ -101,7 +101,7 @@ of the appropriate type.
       Thus, $\grP\gr{''} \leq \grPprime$.
       Therefore, by subusaging, we may produce a value of type
       $\V\,\grPprime\gamma\,A$, which we can take to be $v$.
-    \item[$\cdot(\gets)$]
+    \item[$\cdot(\leftarrowtriangle)$]
       Let us have an environment of type $\grP\gamma \env\V \gr rA$.
       We want to use its action on variables to yield a value.
       To do this, we let $\grPprime \coloneqq \gr1\gr\Psi$, and use this
@@ -220,8 +220,8 @@ setting.
 \begin{lemma}[\AgdaFunction{bindEnv}]\label{thm:lr-bind}
   Given functions
   ${\swarrow^k} : \forall \Gamma, \grR, \theta.~\grR \leq \gr0 \to
-  \forallb{\V\,\Gamma \dotto \V\,\plr{\Gamma, \grR\theta}}$ and
-  $\mathrm{vr} : \forallb{{\sqni} \dotto \V}$, we can turn an environment of
+  \V\,\Gamma \rightarrowtriangle \V\,\plr{\Gamma, \grR\theta}$ and
+  $\mathrm{vr} : {\sqni} \rightarrowtriangle \V$, we can turn an environment of
   type $\Gamma \env\V \Delta$ into an environment of type
   $\Gamma, \Theta \env\V \Delta, \Theta$ for any context $\Theta$.
 \end{lemma}
@@ -274,33 +274,34 @@ a relative monad over $\ni$ seen as a functor from the category of contexts
 under renaming to the functor category $\blr{\mathrm{Ty}, \Set}$, where
 $\mathrm{Ty}$ is the discrete category of ST$\lambda$C types.
 Notice that, given $F,G : \blr{\mathrm{Ty}, \Set}$, a morphism from $F$ to $G$
-is a function of type $\forallb{F \dotto G}$ (with naturality being trivial).
+is a function of type $F \rightarrowtriangle G$ (with naturality being trivial).
 Therefore, we expect a relative monad, given as a Kleisli triple, to have a unit
-$\eta_\Gamma : \forallb{\Gamma \ni \plr{-} \dotto \Gamma \vdash \plr{-}}$
+$\eta_\Gamma : \Gamma \ni \plr{-} \rightarrowtriangle \Gamma \vdash \plr{-}$
 given by the variable rule, and a Kleisli extension operator
 ${^*}_{\Gamma,\Delta} :
-\forallb{\Gamma \ni \plr{-} \dotto \Delta \vdash \plr{-}} \to
-\forallb{\Gamma \vdash \plr{-} \dotto \Delta \vdash \plr{-}}$
+\plr{\Gamma \ni \plr{-} \rightarrowtriangle \Delta \vdash \plr{-}} \to
+\plr{\Gamma \vdash \plr{-} \rightarrowtriangle \Delta \vdash \plr{-}}$
 given by substitution.
 Composition of substitutions falls out of this framework as Kleisli composition.
 However, in the usage-aware case, substitution needs not just a mapping of
-variables $f : \forallb{\Gamma \sqni \plr{-} \dotto \Delta \vdash \plr{-}}$,
+variables $f : \Gamma \sqni \plr{-} \rightarrowtriangle \Delta \vdash \plr{-}$,
 but rather an environment $\rho : \Delta \env\vdash \Gamma$, as we have already
 discussed.
 It therefore makes sense for our replacement for the Kleisli extension operator
 to similarly take an environment rather than a simple variable mapping.
 
-\Cref{thm:env-comp-lemma} below amounts to deriving a modified notion of Kleisli
+\Cref{thm:env-comp} below amounts to deriving a modified notion of Kleisli
 composition from a modified Kleisli extension.
-Additionally, \cref{thm:env-id-lemma} is required to turn a monadic unit into an
+Additionally, \cref{thm:env-id} is required to turn a monadic unit into an
 identity environment.
 Both lemmas are stated in terms of general $\U$/$\V$/$\W$-environments, with
 some specific examples (e.g.\ for renaming and substitution) below them.
 
-\begin{lemma}[Identity environment]\label{thm:env-id-lemma}
+\begin{lemma}[Identity environment]\label{thm:env-id}
   Given a function
   \[
-    \mathrm{vr}_{\Gamma'} : \forallb{\Gamma' \sqni \plr{-} \dotto \V\,\Gamma'}
+    \mathrm{vr}_{\Gamma'} :
+    \Gamma' \sqni \plr{-} \rightarrowtriangle \V\,\Gamma'
   \]
   for any
   $\Gamma$ we have an environment $\mathrm{id} : \Gamma \env\V \Gamma$.
@@ -316,11 +317,11 @@ some specific examples (e.g.\ for renaming and substitution) below them.
   $\mathrm{vr}$ to get the required value of type $\V\,\grPprime\gamma\,A$.
 \end{proof}
 
-\begin{lemma}[Composition of environments]\label{thm:env-comp-lemma}
+\begin{lemma}[Composition of environments]\label{thm:env-comp}
   Given a function
   \[
     \mathrm{lift}_{\Gamma', \Delta'} :
-    \Gamma' \env\U \Delta' \to \forallb{\V\,\Delta' \dotto \W\,\Gamma'}
+    \Gamma' \env\U \Delta' \to \V\,\Delta' \rightarrowtriangle \W\,\Gamma'
   \]
   we can compose environments $\rho : \Gamma \env\U \Delta$ and
   $\sigma : \Delta \env\V \Theta$ into an environment

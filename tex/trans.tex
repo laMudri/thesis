@@ -1,0 +1,489 @@
+\newcommand\instDILL{\gr{01\omega}}
+\newcommand\instPD{\gr{01\Box}}
+
+\newcommand\unused{\gr0}
+\newcommand\true{\gr1}
+\newcommand\valid{\gr\Box}
+
+A motivating reason to consider the system $\name$ is that
+instances of it correspond to previously studied systems.
+In this section, I present translations from \name{} to Dual Intuitionistic
+Linear Logic~\citep{Barber1996} and the modal system of \citet{judgmental},
+and vice versa.
+These translations are not mechanised, as part of the reason for developing
+\name{} was to avoid mechanising these systems directly.
+We cannot prove that the translations form an equivalence, because I have not
+written down an equational theory for \name{}, but I expect this to be easy
+enough to do.
+
+\subsection{Dual Intuitionistic Linear Logic}\label{sec:dill}
+
+Dual Intuitionistic Linear Logic is a particular formulation of intuitionistic
+linear logic introduced by \citet{Barber1996}.
+Its key feature, which simplifies the metatheory of linear logic, is the use of
+separate contexts for linear and intuitionistic free variables.
+Here I show that DILL is a fragment of the instantiation of \name{} at the
+linearity semiring $\{\gr0, \gr1, \gr\omega\}$.
+
+The types of DILL are the same as the types of \name, except for the
+restriction of $\oc\gr{r}$ to just $\oc\gr\omega$.
+I will write the latter simply as $\oc$ when it appears in DILL\@.
+I add sums and with-products to the calculus of \cite{Barber1996}, with the
+obvious rules (stated fully in \cref{fig:dill}).
+These additive type formers present no additional difficulty to the translation.
+
+\begin{figure}
+  \begin{mathpar}
+    \inferrule*[right=Int-Ax]{ }
+    {\gamma, A; \cdot \vdash A}
+    \and
+    \inferrule*[right=Lin-Ax]{ }
+    {\gamma; A \vdash A}
+    \and
+    \inferrule*[right=$I$-I]{ }
+    {\gamma; \cdot \vdash I}
+    \and
+    \inferrule*[right=$I$-E]
+    {\gamma; \delta_1 \vdash I \\ \gamma; \delta_2 \vdash A}
+    {\gamma; \delta_1, \delta_2 \vdash A}
+    \and
+    \inferrule*[right=$\otimes$-I]
+    {\gamma; \delta_1 \vdash A \\ \gamma, \delta_2 \vdash B}
+    {\gamma; \delta_1, \delta_2 \vdash A \otimes B}
+    \and
+    \inferrule*[right=$\otimes$-E]
+    {\gamma; \delta_1 \vdash A \otimes B \\ \gamma; \delta_2, A, B \vdash C}
+    {\gamma; \delta_1, \delta_2 \vdash C}
+    \and
+    \inferrule*[right=$\multimap$-I]
+    {\gamma; \delta, A \vdash B}
+    {\gamma; \delta \vdash A \multimap B}
+    \and
+    \inferrule*[right=$\multimap$-E]
+    {\gamma; \delta_1 \vdash A \multimap B \\ \gamma; \delta_2 \vdash A}
+    {\gamma; \delta_1, \delta_2 \vdash B}
+    \and
+    \inferrule*[right=$\oc$-I]
+    {\gamma; \cdot \vdash A}
+    {\gamma; \cdot \vdash \oc A}
+    \and
+    \inferrule*[right=$\oc$-E]
+    {\gamma; \delta_1 \vdash \oc A \\ \gamma, A; \delta_2 \vdash B}
+    {\gamma; \delta_1, \delta_2 \vdash B}
+    \and
+    \inferrule*[right=$\top$-I]{ }
+    {\gamma; \delta \vdash \top}
+    \and
+    \inferrule*[right=$\with$-I]
+    {\gamma; \delta \vdash A \\ \gamma, \delta \vdash B}
+    {\gamma; \delta \vdash A \with B}
+    \and
+    \inferrule*[right=$\with$-E$_i$]
+    {\gamma; \delta \vdash A_0 \with A_1}
+    {\gamma; \delta \vdash A_i}
+    \and
+    \inferrule*[right=$0$-E]
+    {\gamma; \delta_1 \vdash 0}
+    {\gamma; \delta_1, \delta_2 \vdash A}
+    \and
+    \inferrule*[right=$\oplus$-I$_i$]
+    {\gamma; \delta \vdash A_i}
+    {\gamma; \delta \vdash A_0 \oplus A_1}
+    \and
+    \inferrule*[right=$\oplus$-E]
+    {
+      \gamma; \delta_1 \vdash A \oplus B \\
+      \gamma; \delta_2, A \vdash C \\
+      \gamma; \delta_2, B \vdash C
+    }
+    {\gamma; \delta_1, \delta_2 \vdash C}
+  \end{mathpar}
+  \label{fig:dill}
+  \caption{The rules of DILL, extended with additive connectives}
+\end{figure}
+
+\begin{figure}
+  \begin{mathpar}
+    \begin{eqns}
+      \mathrm{DILL} &\hookrightarrow& \name_\instDILL \\
+      Y &\mapsto& \iota_Y \\
+      I &\mapsto& I \\
+      A \otimes B &\mapsto& A \otimes B \\
+      A \multimap B &\mapsto& A \multimap B \\
+      \oc A &\mapsto& \oc{\gr\omega}{A} \\
+      0 &\mapsto& 0 \\
+      A \oplus B &\mapsto& A \oplus B \\
+      \top &\mapsto& \top \\
+      A \with B &\mapsto& A \with B
+    \end{eqns}
+    \and
+    \begin{eqns}
+      \mathrm{PD} &\hookrightarrow& \name_\instPD \\
+      Y &\mapsto& \iota_Y \\
+      \top &\mapsto& I \\
+      A \wedge B &\mapsto& A \with B \\
+      A \supset B &\mapsto& A \multimap B \\
+      \Box A &\mapsto& \oc{\valid}{A} \\
+      \bot &\mapsto& 0 \\
+      A \vee B &\mapsto& A \oplus B
+    \end{eqns}
+  \end{mathpar}
+  \label{fig:dill-pd}
+  \caption{Embedding of DILL and PD types into \name}
+\end{figure}
+
+\begin{proposition}[DILL $\to$ \name]
+  Given a DILL derivation of $\gamma; \delta \vdash A$, we can produce a
+  $\name_{\instDILL}$ derivation of
+  $\gr\omega\gamma, \gr1\delta \vdash A$.
+\end{proposition}
+\begin{proof}
+  By induction on the derivation.
+  We have $\gr\omega \leq \gr0$, which allows us to discard
+  intuitionistic variables at the var rules, and both
+  $\gr1 \leq \gr1$ and $\gr\omega \leq \gr1$, which allow
+  us to use both linear and intuitionistic variables.
+
+  Weakening is used when splitting linear variables between two premises.
+  For example, \TirName{$\otimes$-I} in DILL is as follows.
+  \[
+    \inferrule*[right=$\otimes$-I]
+    {\gamma; \delta_t \vdash t : A \\ \gamma; \delta_u \vdash u : B}
+    {\gamma; \delta_t, \delta_u \vdash t \otimes u : A \otimes B}
+  \]
+  From this, our new derivation is as follows.
+  \[
+    \inferrule*[right=$\otimes$-I]
+    {
+      \inferrule*[right=Weak]
+      {\mathit{ih}_t \\\\
+        \gr\omega\gamma, \gr1\delta_t
+        \vdash M_t : A}
+      {\gr\omega\gamma, \gr1\delta_t,
+        \gr0\delta_u
+        \vdash M_t : A}
+      \\
+      \inferrule*[right=Weak]
+      {\mathit{ih}_u \\\\
+        \gr\omega\gamma, \gr1\delta_u
+        \vdash M_u : A}
+      {\gr\omega\gamma, \gr0\delta_t,
+        \gr1\delta_u
+        \vdash M_u : A}
+    }
+    {\gr\omega\gamma, \gr1\delta_t,
+      \gr1\delta_u
+      \vdash \plr{M_t, M_u} : A \otimes B}
+  \]
+\end{proof}
+
+When translating from \name{} to DILL, we first coerce the \name{} derivation
+to be in a form easily amenable to translation into DILL\@.
+An example of a \name{} derivation with no direct translation into DILL is the
+following.
+In DILL terms, the intuitionistic variable of the conclusion becomes a linear
+variable in the premises.
+Such a move is admissible in DILL, but does not come naturally.
+
+\[
+  \inferrule*[right=$\otimes$-I]
+  {
+    \inferrule*[right=var]{ }
+    {\gr1A : x \vdash A}
+    \\
+    \inferrule*[right=var]{ }
+    {\gr1A : x \vdash A}
+    \\
+    \gr\omega \leq \gr1 + \gr1
+  }
+  {\gr\omega A : x \vdash A \otimes A}
+\]
+
+To avoid such situations, and therefore manipulations on DILL derivations, I
+show that all $\name_{\instDILL}$ derivations can be made in \emph{bottom-up}
+style.
+In bottom-up style, the algebraic facts we make use of are dictated by making
+most general choices based on the conclusions of rules.
+Bottom-up style corresponds to a (non-deterministic) form of
+\emph{usage checking}, and the following lemma can be understood as saying
+that that form of usage checking is sufficiently general.
+
+\begin{definition}
+  A derivation is said to be \emph{$\instDILL$-bottom-up} if only the following
+  facts about addition and multiplication are used, and all proofs of
+  inequalities not at leaves are by reflexivity (i.e, not using the facts that
+  $\gr\omega \leq \gr0$ and $\gr\omega \leq \gr1$).
+
+  \makebox[\textwidth][s]{
+    \begin{tabular}{c|ccc}
+      $+$ & $\gr0$ & $\gr1$ & $\gr\omega$ \\ \hline
+      $\gr0$ & $\gr0$ & $\gr1$ & - \\
+      $\gr1$ & $\gr1$ & - & - \\
+      $\gr\omega$ & - & - & $\gr\omega$ \\
+    \end{tabular}
+    \begin{tabular}{c|ccc}
+      $*$ & $\gr0$ & $\gr1$ & $\gr\omega$ \\ \hline
+      $\gr0$ & - & - & $\gr0$ \\
+      $\gr1$ & $\gr0$ & $\gr1$ & $\gr\omega$ \\
+      $\gr\omega$ & $\gr0$ & - & $\gr\omega$ \\
+    \end{tabular}
+  }
+\end{definition}
+
+Bottom-up style enforces that whenever we split a context into two (for
+example, in the rule \TirName{$\otimes$-I}) all unused variables in the
+conclusion stay unused in the premises, intuitionistic variables stay
+intuitionistic, and linear variables go either left or right.
+Multiplication is only used in the rule \TirName{$\oc\gr{r}$-I}, at which point
+both the result and left argument are available.
+Here, the bottom-up style enforces that linear variables never appear in the
+premise of \TirName{$\oc{\gr\omega}$-I}.
+
+\begin{lemma}
+  Every $\name_{\instDILL}$ derivation can be translated into a bottom-up
+  $\name_{\instDILL}$ derivation.
+\end{lemma}
+\begin{proof}
+  By induction on the shape of the derivation.
+  When we come across a non-bottom-up use of addition, it must be that the
+  corresponding variable in the conclusion has annotation $\gr\omega$.
+  By subusaging, we can give this variable annotation $\gr\omega$ in
+  the premises too, before translating the subderivations to bottom-up
+  style.
+  A similar argument applies to uses of multiplication, remembering that both
+  the left argument and result are fixed.
+\end{proof}
+
+\begin{proposition}[\name{} $\to$ DILL]
+  Given a $\name_{\instDILL}$ derivation of
+  $\gr\omega\gamma, \gr1\delta,
+  \gr0\theta \vdash A$ which contains only types expressible
+  in DILL, we can produce a DILL derivation of $\gamma; \delta \vdash A$.
+\end{proposition}
+\begin{proof}
+  By induction on the derivation having been translated to bottom-up form.
+
+  In the case of \TirName{var}, all of the unused variables have annotation
+  greater than $\gr0$, i.e., $\gr0$ or $\gr\omega$.
+  Those annotated $\gr0$ are absent from the DILL derivation, and those
+  annotated $\gr\omega$ are in the intuitionistic context.
+  The used variable is annotated either $\gr1$ or $\gr\omega$.
+  In the first case, we use \TirName{Lin-Ax}, and in the second case,
+  \TirName{Int-Ax}.
+
+  All binding of variables in \name{} maps directly onto DILL\@.
+
+  Because we translated to bottom-up form, additions, as seen in, for example,
+  the \TirName{$\otimes$-I} rule, can be handled straightforwardly.
+  Any intuitionistic variables in the conclusion correspond to intuitionistic
+  variables in both premises.
+  Any linear variables in the conclusion correspond to a linear variable in
+  exactly one of the premises, and is absent in the other premise.
+
+  The only remaining rule is \TirName{$\oc\gr{r}$-I}, of which we only cover
+  \TirName{$\oc{\gr\omega}$-I} (the other two targeting types not found
+  in DILL).
+  In this case, we know that every variable in the conclusion is annotated
+  either $\gr0$ or $\gr\omega$, and every variable in the premise is
+  annotated the same way.
+  This corresponds exactly to the restrictions of DILL's \TirName{$\oc$-I}.
+\end{proof}
+
+\subsection{Pfenning Davies}\label{sec:pd}
+
+The translation to and from the modal system of Pfenning and Davies
+\cite{judgmental} (henceforth \emph{PD}) is similar to the translation to and
+from DILL\@.
+I present my variant of PD, again adding some common connectives, in
+\cref{fig:pd}
+The main difference is the algebra at which \name{} is instantiated.
+
+\begin{figure}
+  \begin{mathpar}
+    \inferrule*[right=hyp]{ }
+    {\gamma; \delta, A\;\mathit{true} \vdash A\;\mathit{true}}
+    \and
+    \inferrule*[right=hyp*]{ }
+    {\gamma, A\;\mathit{valid}; \delta \vdash A\;\mathit{true}}
+    \and
+    \inferrule*[right=$\supset$I]
+    {\gamma; \delta, A\;\mathit{true} \vdash B\;\mathit{true}}
+    {\gamma; \delta \vdash A \supset B\;\mathit{true}}
+    \and
+    \inferrule*[right=$\supset$E]
+    {
+      \gamma; \delta \vdash A \supset B\;\mathit{true} \\
+      \gamma; \delta \vdash A\;\mathit{true}
+    }
+    {\gamma; \delta \vdash B\;\mathit{true}}
+    \and
+    \inferrule*[right=$\Box$I]
+    {\gamma; \cdot \vdash A\;\mathit{true}}
+    {\gamma; \delta \vdash \Box A\;\mathit{true}}
+    \and
+    \inferrule*[right=$\Box$-E]
+    {
+      \gamma; \delta \vdash \Box A\;\mathit{true} \\
+      \gamma, A\;\mathit{valid}; \delta \vdash B\;\mathit{true}
+    }
+    {\gamma; \delta \vdash B\;\mathit{true}}
+    \and
+    \inferrule*[right=$\top$-I]{ }
+    {\gamma; \delta \vdash \top\;\mathit{true}}
+    \and
+    \inferrule*[right=$\wedge$-I]
+    {
+      \gamma; \delta \vdash A\;\mathit{true} \\
+      \gamma, \delta \vdash B\;\mathit{true}
+    }
+    {\gamma; \delta \vdash A \wedge B\;\mathit{true}}
+    \and
+    \inferrule*[right=$\wedge$-E$_i$]
+    {\gamma; \delta \vdash A_0 \wedge A_1\;\mathit{true}}
+    {\gamma; \delta \vdash A_i\;\mathit{true}}
+    \and
+    \inferrule*[right=$\bot$-E]
+    {\gamma; \delta \vdash \bot\;\mathit{true}}
+    {\gamma; \delta \vdash A\;\mathit{true}}
+    \and
+    \inferrule*[right=$\vee$-I$_i$]
+    {\gamma; \delta \vdash A_i\;\mathit{true}}
+    {\gamma; \delta \vdash A_0 \vee A_1\;\mathit{true}}
+    \and
+    \inferrule*[right=$\vee$-E]
+    {
+      \gamma; \delta \vdash A \vee B\;\mathit{true} \\
+      \gamma; \delta, A \vdash C\;\mathit{true} \\
+      \gamma; \delta, B \vdash C\;\mathit{true}
+    }
+    {\gamma; \delta \vdash C\;\mathit{true}}
+  \end{mathpar}
+  \label{fig:pd}
+  \caption{The rules of PD, extended with several standard connectives}
+\end{figure}
+
+\begin{definition}
+  Let $\instPD$ denote the following semiring on the partially ordered set
+  $\{\valid \triangleleft \true \triangleleft \unused\}$.
+  \begin{itemize}
+    \item $0 := \unused$.
+    \item $+$ is the meet ($\wedge$) according to the subusaging order.
+    \item $1 := \true$.
+    \item
+      \begin{tabular}{c|ccc}
+        $*$ & $\unused$ & $\true$ & $\valid$ \\ \hline
+        $\unused$ & $\unused$ & $\unused$ & $\unused$ \\
+        $\true$ & $\unused$ & $\true$ & $\valid$ \\
+        $\valid$ & $\unused$ & $\valid$ & $\valid$ \\
+      \end{tabular}
+  \end{itemize}
+\end{definition}
+
+The $\unused$ annotation plays only a formal role in this example.
+Meanwhile, $\true$ and $\valid$ correspond to the judgement forms
+$\mathit{true}$ and $\mathit{valid}$ from PD\@.
+Addition being the meet makes it idempotent.
+Furthermore, it gives us that $\true + \valid = \valid$ --- if somewhere we
+require an assumption to be true, and elsewhere require it to be valid, then
+ultimately it must be valid (from which we can deduce that it is true).
+Multiplication is designed to make $\oc{\valid}$ act like PD's $\Box$.
+In particular, $\valid * \valid = \valid$ says that the valid assumptions are
+available before and after \TirName{$\oc{\valid}$-I}, whereas
+$\valid * \true = \valid$ says that valid assumptions in the conclusion can be
+weakened to true assumptions in the premise.
+The latter fact does not appear in PD, and will be excluded from
+\emph{bottom-up} derivations.
+
+To keep my notation consistent with that of DILL, I swap the roles of
+$\gamma$ and $\delta$ in PD compared to what they were in the original paper.
+Thus, my PD judgements are of the form $\gamma; \delta \vdash A~\mathit{true}$,
+where $\gamma$ contains valid assumptions and $\delta$ contains true
+assumptions.
+
+\begin{proposition}[PD $\to$ \name]
+  Given a PD derivation of $\gamma; \delta \vdash t : A~\mathit{true}$, we can
+  produce a $\name_{\instPD}$ derivation of
+  $\valid\gamma, \true\delta \vdash A$.
+\end{proposition}
+\begin{proof}
+  By induction on the PD derivation.
+  Most PD rules have direct $\name$ counterparts, noting that variables of any
+  annotation can be discarded and duplicated because we have both
+  $\gr r \leq \gr 0$ and
+  $\gr r \leq \gr r + \gr r$ for all
+  $\gr r$.
+
+  Care must be taken with the \TirName{$\Box$I} rule.
+  We have, from the induction hypothesis, a $\name$ derivation of
+  $\gr\Box\gamma \vdash A$.
+  By \TirName{$\oc\valid$-I}, we have
+  $\gr\Box\gamma \vdash \oc\valid A$.
+  To get the desired conclusion, we must use \TirName{Weak} to get
+  $\gr\Box\gamma, \gr\unused\delta \vdash \oc\valid A$, and
+  then \TirName{Subuse} on the variables we just introduced (noting that
+  $\true \leq \unused$) to get
+  $\gr\Box\gamma, \gr\true\delta \vdash \oc\valid A$.
+\end{proof}
+
+For translating from $\name_{\instPD}$ to PD, I introduce a similar notion of
+\emph{bottom-up} derivations as I did for DILL\@.
+Every $\name_{\instPD}$ derivation can be translated into bottom-up style, and
+then be directly translated into PD\@.
+
+\begin{definition}
+  A derivation is said to be \emph{$\instPD$-bottom-up} if only the following
+  facts about addition and multiplication are used, and all proofs of
+  inequalities not at leaves are by reflexivity.
+
+  \makebox[\textwidth][s]{
+    \begin{tabular}{c|ccc}
+      $+$ & $\unused$ & $\true$ & $\valid$ \\ \hline
+      $\unused$ & $\unused$ & - & - \\
+      $\true$ & - & $\true$ & - \\
+      $\valid$ & - & - & $\valid$ \\
+    \end{tabular}
+    \begin{tabular}{c|ccc}
+      $*$ & $\unused$ & $\true$ & $\valid$ \\ \hline
+      $\unused$ & - & - & $\unused$ \\
+      $\true$ & $\unused$ & $\true$ & $\valid$ \\
+      $\valid$ & $\unused$ & - & $\valid$ \\
+    \end{tabular}
+  }
+\end{definition}
+
+\begin{lemma}
+  Every $\name_{\instPD}$ derivation can be translated into a bottom-up
+  $\name_{\instPD}$ derivation.
+\end{lemma}
+\begin{proof}
+  By induction on the shape of the derivation.
+  Given that addition is a meet, it is clear that any non-bottom-up uses of
+  addition come from one of the arguments being greater than the result.
+  Therefore, it is safe to make this argument smaller in the corresponding
+  premise (via subusaging), before translating that subderivation.
+  For multiplication, again, there is always a lesser value of the right
+  argument that will take us from a non-bottom-up fact to a bottom-up fact with
+  the same left argument and result.
+\end{proof}
+
+\begin{proposition}[\name{} $\to$ PD]
+  Given a $\name_{\instPD}$ derivation of
+  $\valid\gamma, \true\delta, \unused\theta
+  \vdash M : A$ which does not contain types using $\oc{\unused}{}$ or
+  $\oc{\true}$, we can produce a PD derivation of
+  $\gamma; \delta \vdash A~\mathit{true}$.
+\end{proposition}
+\begin{proof}
+  We translate away tensor products and tensor units using
+  \cref{thm:top-meet}, and translate the resulting derivation to bottom-up
+  form.
+  The proof proceeds by induction on the resulting derivation in the obvious
+  way.
+\end{proof}
+
+As mentioned in \cref{sec:alt}, the system of \citet{AbelBernardy2020}
+is unable to embed PD in this way, as it would prove
+$\Box(A \wedge B) \to \Box A \wedge \Box B$, where PD and $\name$ do not.
+In fact, this example shows that, even when weakening and contraction are
+admissible, with- and tensor-products are distinct in their system in the
+presence of modalities.

@@ -337,16 +337,26 @@ examples of posemirings for tracking interesting usage patterns.
   Note that the order is reversed, making $\gr\infty$ coercible to any other
   annotation and anything coercible to $\gr0$.
 
-  This posemiring can be used for sensitivity analysis, where we want to bound
-  the effect of a perturbation on inputs in terms of some semantic notion of
-  distance between values.
-  An annotation $\gr r$ says that if that input is perturbed by at most $r$,
-  then the output will change by at most $1$.
-  An $\gr\infty$-annotated variable gives the very strong guarantee that any
-  change in the input will make a minimal change to the output, while a
-  $\gr0$-annotated variable provides no guarantee at all.
+  The intended semantics for these annotations is to interpret types as metric
+  spaces and terms as Lipschitz-continuous maps.
+  That is to say, each type $A$ comes with a notion of distance $d_A$, and a map
+  $f : A \to B$ satisfies
+  \[
+    \exists\gr r \in \mathbb R^+.\forall x,y.~%
+    d_B(f(x), f(y)) \leq \gr rd_A(x, y).
+  \]
+  I internalise this constant $\gr r$ so that derivations of
+  $\gr rA \vdash B$ are interpreted as $\gr r$-Lipschitz-continuous functions.
+  If $\gr r = \gr\infty$, then the Lipschitz condition is trivially satisfied,
+  meaning that $\gr\infty$-annotated variables can be used without constraint.
+  If $\gr r = \gr0$, then $f$ has to be constant, and the corresponding
+  syntactic constraint is that a $\gr0$-annotated variable cannot be used.
+
   Addition forbids general contraction, which would otherwise allow arbitrary
   finite blow-up of the effect of any non-$\gr0$-annotated variable.
   However, the ordering, with $\gr0$ at the top, means that we have general
   weakening, so the resulting sensitivity calculus has an affine flavour.
+
+  Such a system has been applied to sensitivity analysis, a component of
+  differential privacy, by \citet{reed10distance}.
 \end{example}

@@ -6,7 +6,7 @@ again expediates experimentation.
 In this section, I give some example syntactic features that can be covered in
 the bunched connective paradigm.
 
-\subsection{Alternative object-language connectives}
+\subsection{Alternative object-language connectives}\label{sec:alt}
 
 I presented $\name$ as an essentially arbitrary collection of rules, with no
 broader characterisation than that it intuitively seems to capture some notion
@@ -35,8 +35,9 @@ the modal operator $\oc$.
   }
 \end{mathpar}
 
-We can also give an alternative elimination rule for $\otimes$-products inspired
-by Granule~\citep{Granule18,HMWO21}.
+We can also give an alternative elimination rule for $\otimes$-products, as
+found in Granule~\citep{Granule18,HMWO21} and the work of
+\citet{AbelBernardy2020} and \citet{reed10distance}.
 This modified rule allows us to, for example, have a variable
 $\gr rx : A \otimes B$ for any $\gr r$, and pattern-match it into
 $\gr ry : A, \gr rz : B$.
@@ -135,7 +136,7 @@ preserved by all linear operations.
   $\grQ$, omitted to save space).
 
   \begin{align*}
-    \text{nil}\left[
+    \TirName{nil}\left[
     \begin{prooftree}
       \hypo{\grR \leq \gr0}
       \infer1[$I$-I]{\grR\gamma \vdash I}
@@ -145,7 +146,7 @@ preserved by all linear operations.
     \end{prooftree}
     \right.
     &&
-    \text{cons}\left[
+    \TirName{cons}\left[
     \begin{prooftree}
       \hypo{\grR \leq \grP + \grQ}
       \hypo{\grP\gamma \vdash A}
@@ -158,7 +159,7 @@ preserved by all linear operations.
     \right.
   \end{align*}
   \begin{displaymath}
-    \text{foldr}\left[
+    \TirName{foldr}\left[
     \begin{prooftree}
       \hypo{\grP\gamma \vdash \mathrm{List}_A}
       \infer0[Var]{\gr0\gamma, \gr1\plr{I \oplus \plr{A \otimes C}}
@@ -241,6 +242,85 @@ along with the resulting implicit-context typing rules.
   \end{align*}
 \end{example}
 
+Among the inductive types given by this $\mu$ operator are also
+\emph{$\with$-lists} (\emph{with-lists}).
+
+\begin{example}
+  Let us define \emph{$\with$-lists} as follows.
+  \[
+    \mathrm{WithList}_A \coloneqq \mu X.~\top \oplus \plr{A \with X}
+  \]
+  Unlike ordinary lists (which we may call \emph{$\otimes$-lists}),
+  $\with$-lists support a \emph{lookup} operation with the type below, where
+  $\mathbb N \coloneqq \mu X.~I \oplus X$.
+  \begin{align*}
+    \mathit{lookup} :
+    \mathrm{WithList}_A \multimap \mathbb N \multimap \top \oplus A
+  \end{align*}
+  The $\name$ term implementing $\mathit{lookup}$ in terms of iterators
+  (\TirName{$\mu$-E}) is complex and tedious, so I do not show it here.
+  Instead, I provide the following clausal specification, where
+  $\mathrm{nil}\plr{-}$ and $\mathrm{cons}\plr{-}$ are the constructors of
+  $\with$-lists, $\mathrm{zero}\plr{}$ and $\mathrm{succ}\plr{}$ are the
+  constructors of $\mathbb N$, $\mathrm{inl}\plr{-}$ and $\mathrm{inr}\plr{-}$
+  are the constructors of $\oplus$, $\langle\rangle$ constructs the
+  inhabitant of $\top$, and postfix $.\pi_l$ and $.\pi_r$ are the projections
+  out of a $\with$-pair.
+  %\begin{align*}
+  %  \mathit{lookup}\,\mathrm{nil}\plr{t}\,i
+  %  &\coloneqq \mathrm{inl}\plr{\langle\rangle} \\
+  %  \mathit{lookup}\,\mathrm{cons}\plr{\mathit{xxs}}\,\mathrm{zero}\plr{}
+  %  &\coloneqq \mathrm{inr}\plr{\mathit{xxs}.\pi_l} \\
+  %  \mathit{lookup}\,\mathrm{cons}\plr{\mathit{xxs}}\,\mathrm{succ}\plr{i}
+  %  &\coloneqq \mathit{lookup}\,\plr{\mathit{xxs}.\pi_r}\,i
+  %\end{align*}
+
+  %\noindent{}\hspace{-0.75ex}
+  \[
+    \begin{pmboxed}
+      \defaultcolumn{l}
+      \> \mathit{lookup} \> \mathrm{nil}\plr{t} \> i
+      \> \coloneqq \> \mathrm{inl}\plr{\langle\rangle} \\
+      \> \mathit{lookup} \> \mathrm{cons}\plr{\mathit{xxs}}
+      \> \mathrm{zero}\plr{} \> \coloneqq
+      \> \mathrm{inr}\plr{\mathit{xxs}.\pi_l} \\
+      \> \mathit{lookup} \> \mathrm{cons}\plr{\mathit{xxs}}
+      \> \mathrm{succ}\plr{i} \> \coloneqq
+      \> \mathit{lookup}\,\plr{\mathit{xxs}.\pi_r}\,i \\
+    \end{pmboxed}
+  \]
+  %\begin{verbatim}
+  %  lookup := \xs. wfoldr(xs;
+  %    List I -o T + A;
+  %    t. \i. foldr(i; T -o T + A; \t'. inl(t'); u, r. let () := u in r) t;
+  %    xr. \i. let (i', r) :=
+  %      foldr(i;
+  %        A & (T + A) -o List I * (T + A);
+  %        \xr'. ([], prl(xr'));
+  %        u, ir. \xr'.
+  %          let () := u in
+  %          let (i', r) := ir in
+  %          (() :: i', prr(xr') prl(ir)))
+  %      xr in
+  %      foldr(i'; T + A; r; u, r'. let () := u in r'))
+  %\end{verbatim}
+  %\begin{align*}
+  %  \mathit{lookup} &:
+  %  \mathrm{WithList}_A \multimap \mathrm{List}_I \multimap \top \oplus A
+  %  \\
+  %                  &\coloneqq \lambda\mathit{xs}.~\mathrm{rec}\plr{xs; %
+  %                    \mathrm{List}_I \multimap \top \oplus A; %
+  %                    t.~\lambda i.~\mathrm{inl}\plr{%
+  %                    \mathrm{foldr}\plr{i, \top \multimap \top; \lambda t'.~t'; %
+  %                    u, r.~\textrm{let }{*} \coloneqq u\textrm{ in }r}\,t}; %
+  %                    \mathit{xr}.~\lambda i.~%
+  %                    \mathrm{foldr}\plr{i; %
+  %                    A \with \plr{\top \oplus A} \multimap \top \oplus A; %
+  %                    \lambda
+  %                    }\,\mathit{xr}}
+  %\end{align*}
+\end{example}
+
 As suggested by the notation, $\Box^{0{+}}$ may not be particularly canonical in
 terms of what operations the usage context is stable under.
 For example, we could also ask for $\forall \gr r.~\grQ \leq \gr r\grQ$, i.e.\
@@ -261,3 +341,8 @@ or equal to $\gr0$ are $\gr0$ and $\gr\omega$.
 Also, in semirings for relevant systems, all annotations are stable under
 addition (up to $\leq$ in the appropriate direction), so we need only check for
 being less than or equal to $\gr0$.
+
+A similar modality, $\Box$, appears in the work of \citet{BB18} when they deal
+with \emph{persistent predicates} in bunched logic.
+They similarly aim to pick out those objects not depending on any external
+resources.

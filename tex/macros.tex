@@ -36,11 +36,11 @@
 \renewcommand\C{\mathcal C}
 \newcommand\sqin{\mathrel{\mathrlap{\sqsubset}{\mathord{-}}}}
 \newcommand\sqni{\mathrel{\mathrlap{\sqsupset}{\mathord{-}}}}
-\newcommand\subres{=}
 \newcommand\Ann{\mathscr R}
 
 \renewcommand\land{~\wedge~}
 \renewcommand\lor{~\vee~}
+\newcommand\rel{\mathrel{\mathord{\to}\hspace{-2.25ex}+}}
 
 \DeclareMathOperator\Set{Set}
 \DeclareMathOperator\obj{Obj}
@@ -71,5 +71,6 @@
 \newcommand\lnl{\ensuremath{\mathrm{L/nL}}}
 
 \ebproofnewstyle{comb}{separation=0.75em}
+\ebproofset{right label template=\TirName{\inserttext}}
 
 \newenvironment{eqns}{\begin{array}{r@{\hspace{0.3em}}c@{\hspace{0.3em}}l}}{\end{array}}

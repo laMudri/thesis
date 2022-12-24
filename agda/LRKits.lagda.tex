@@ -14,7 +14,7 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
   open import Data.Wrap
   open import Function using (id; _∘_; Equivalence)
   open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
-  open import Relation.Nary
+  open import Relation.Nary.Extra using (_⊆_)
   open import Relation.Unary.Bunched
 
   data Ty : Set where
@@ -24,7 +24,7 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
   open import Generic.Linear.Operations rawPoSemiring
   open import Generic.Linear.Algebra poSemiring
   open import Generic.Linear.Syntax Ty Ann
-  open import Generic.Linear.Syntax.Interpretation Ty rawPoSemiring
+  open import Generic.Linear.Syntax.Interpretation Ty rawPoSemiring hiding (◇)
   open import Generic.Linear.Variable Ty rawPoSemiring hiding (_↙ᵛ_; _↘ᵛ_)
   open import Generic.Linear.Environment Ty poSemiring
   open import Generic.Linear.Environment.Properties Ty poSemiring
@@ -37,9 +37,9 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
   Bind Δ T Γ = T (Γ ++ᶜ Δ)
 
   data _⊢_ : Ctx → Ty → Set where
-    var : ∀[ _∋_ ⇒ _⊢_ ]
-    !-I : ∀ {r A} → ∀[ r ·ᶜ (_⊢ A) ⇒ _⊢ `! r A ]
-    !-E : ∀ {r A C} → ∀[ (_⊢ `! r A) ✴ᶜ Bind [ r · A ]ᶜ (_⊢ C) ⇒ _⊢ C ]
+    var : _∋_ ⊆ _⊢_
+    !-I : ∀ {r A} → r · (_⊢ A) ⊆ _⊢ `! r A
+    !-E : ∀ {r A C} → (_⊢ `! r A) ✴ Bind [ r ∙ A ]ᶜ (_⊢ C) ⊆ _⊢ C
 \end{code}
 %</Tm>
 
@@ -48,7 +48,7 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
 
     env-+ : ∀ {s t γ δ P Qₗ Qᵣ} →
       let Γ = ctx {s} P γ; Δₗ = ctx {t} Qₗ δ; Δᵣ = ctx {t} Qᵣ δ in
-      (λ Q → [ 𝓥 ] Γ ⇒ᵉ ctx Q δ) ◇ _≤[ Qₗ +* Qᵣ ] →
+      (λ Q → [ 𝓥 ] Γ ⇒ᵉ ctx Q δ) ◇ (_≤[ Qₗ +* Qᵣ ]) →
       (λ Pₗ → [ 𝓥 ] ctx Pₗ γ ⇒ᵉ Δₗ)
         ↘- P ≤[_+*_] -↙
       (λ Pᵣ → [ 𝓥 ] ctx Pᵣ γ ⇒ᵉ Δᵣ)
@@ -72,14 +72,14 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
   Weakening : ∀ {v} {A : Set} → (Ctx → A → Set v) → Set v
   Weakening 𝓥 =
     ∀ {s t P} {γ : Vector Ty (s <+> t)} → P ∘ ↘ ≤* 0* →
-    ∀[ 𝓥 (ctx (P ∘ ↙) (γ ∘ ↙)) ⇒ 𝓥 (ctx P γ) ]
+    𝓥 (ctx (P ∘ ↙) (γ ∘ ↙)) ⊆ 𝓥 (ctx P γ)
 
   record Kit (𝓥 : Ctx → Ty → Set) : Set where
     constructor kit
     field
       ↙ᵏ : Weakening 𝓥
-      vr : ∀[ _∋_ ⇒ 𝓥 ]
-      tm : ∀[ 𝓥 ⇒ _⊢_ ]
+      vr : _∋_ ⊆ 𝓥
+      tm : 𝓥 ⊆ _⊢_
 \end{code}
 %</Kit>
 
@@ -92,7 +92,12 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
 %<*bindEnv>
 \begin{code}
     bindEnv : ∀ {Γ Δ Θ} → [ 𝓥 ] Γ ⇒ᵉ Δ → [ 𝓥 ] Γ ++ᶜ Θ ⇒ᵉ Δ ++ᶜ Θ
-    bindEnv ρ .Ψ = [ [ ρ .Ψ │ 0ᴿ ]ᴿ ─ [ 0ᴿ │ 1ᴿ ]ᴿ ]ᴿ
+\end{code}
+%</bindEnv>
+\begin{code}
+    bindEnv ρ .Ψ = [  [ ρ .Ψ  │ 0ᴿ ]ᴿ
+                              ─
+                      [ 0ᴿ    │ 1ᴿ ]ᴿ ]ᴿ
     bindEnv ρ .fit-here = _↘,_,↙_
       {left = _ ++ _} {right = _ ++ _}
       (ρ .fit-here , 0*-triv)
@@ -112,18 +117,17 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
       ++ₙ
       ≤*-trans (+ₘ-identityˡ→ (ur , sp+r)) (≤*-trans dr br)))
 \end{code}
-%</bindEnv>
 
 %<*trav>
 \begin{code}
     trav : ∀ {Γ Δ A} → [ 𝓥 ] Γ ⇒ᵉ Δ → Δ ⊢ A → Γ ⊢ A
     trav ρ (var x) = tm (ρ .lookup (ρ .fit-here) x)
-    trav ρ (!-I (⟨ sp* ⟩· M)) =
+    trav ρ (!-I (⟨ sp* ⟩·ᶜ M)) =
       let sp*′ , ρ′ = env-* (ρ , sp*) in
-      !-I (⟨ sp*′ ⟩· (trav ρ′ M))
-    trav ρ (!-E (M ✴⟨ sp+ ⟩ N)) =
+      !-I (⟨ sp*′ ⟩·ᶜ (trav ρ′ M))
+    trav ρ (!-E (M ✴ᶜ⟨ sp+ ⟩ N)) =
       let ρₗ ↘, sp+′ ,↙ ρᵣ = env-+ (ρ , sp+) in
-      !-E (trav ρₗ M ✴⟨ sp+′ ⟩ trav (bindEnv ρᵣ) N)
+      !-E (trav ρₗ M ✴ᶜ⟨ sp+′ ⟩ trav (bindEnv ρᵣ) N)
 \end{code}
 %</trav>
 
@@ -145,6 +149,7 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
   ∋-kit : Kit _∋_
   ∋-kit = kit ↙ᵛ id var
 
+  ren : ∀ {Γ Δ A} → [ _∋_ ] Γ ⇒ᵉ Δ → Δ ⊢ A → Γ ⊢ A
   ren = trav ∋-kit
 \end{code}
 %</var-kit>
@@ -174,6 +179,7 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
   ⊢-kit : Kit _⊢_
   ⊢-kit = kit (λ R0 → ren (↙ᵛ-env R0)) var id
 
+  sub : ∀ {Γ Δ A} → [ _⊢_ ] Γ ⇒ᵉ Δ → Δ ⊢ A → Γ ⊢ A
   sub = trav ⊢-kit
 \end{code}
 %</sub>
@@ -192,10 +198,10 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
 %<*subSingle>
 \begin{code}
     sub[-] : ∀ {s P Q R γ r A B} → R ≤[ Q +*_] ◇ _≤[ r *ₗ P ] →
-      ctx {s} P γ ⊢ A → ctx Q γ ++ᶜ [ r · A ]ᶜ ⊢ B → ctx R γ ⊢ B
+      ctx {s} P γ ⊢ A → ctx Q γ ++ᶜ [ r ∙ A ]ᶜ ⊢ B → ctx R γ ⊢ B
     sub[-] {Q = Q} {R} {γ} {r} {A} (sp+ , sp*) t = sub σ
       where
-      σ : [ _⊢_ ] ctx R γ ⇒ᵉ ctx Q γ ++ᶜ [ r · A ]ᶜ
-      σ = ++ᵉ (id^Env ✴⟨ sp+ ⟩ [-]ᵉ (⟨ sp* ⟩· t))
+      σ : [ _⊢_ ] ctx R γ ⇒ᵉ ctx Q γ ++ᶜ [ r ∙ A ]ᶜ
+      σ = ++ᵉ (id^Env ✴ᶜ⟨ sp+ ⟩ [-]ᵉ (⟨ sp* ⟩·ᶜ t))
 \end{code}
 %</subSingle>

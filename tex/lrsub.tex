@@ -45,13 +45,8 @@ The resulting type of well typed terms is below.
 
 \ExecuteMetaData[\LRKits]{Tm}
 
-Given a \AgdaRecord{Kit}, \cref{thm:lr-bind} looks like the following.
-The \AgdaField{lookup} clauses still contain essentially the same structure as
-in the intuitionistic case: discriminating on whether the variable is old or
-new, using the given environment \AgdaBound{$\rho$} and weakening on the old
-variables, and using \AgdaField{vr} to repackage new variables.
-I will not explain any of the algebraic manipulations here; see
-\cref{thm:lr-bind}.
+Given a \AgdaRecord{Kit}\AgdaSpace{}\AgdaBound{$\V$},
+\cref{thm:lr-bind} gives a function with the following type.
 
 \ExecuteMetaData[\LRKits]{bindEnv}
 
@@ -112,25 +107,34 @@ As a reminder, I also give the type of \AgdaFunction{sub} in rule form.
 \]
 
 Finally, the simultaneous substitution \AgdaFunction{sub} specialises to
-single substitution \AgdaFunction{sub[-]}.
-Single substitution is stated as an admissible rule below.
-To substitute in for $\gr r$-many $A$ in the second term, we need to derive
-one $A$ with usages $\grP$, and then assert that the result can handle the
-usages of the original term $\grQ$, plus $\gr r$-many copies of $\grP$.
+single substitution.
 
-\[
-  \ebrule{%
-    \hypo{\grR \leq \grQ + \gr r\grP}
-    \hypo{\grP\gamma \vdash A}
-    \hypo{\grQ\gamma, \gr rA \vdash B}
-    \infer3[singleSub]{\grR\gamma \vdash B}
-  }
-\]
-
-The proof strategy for producing the substitution \AgdaFunction{$\sigma$} is
-to proceed structurally on the codomain context $\grQ\gamma, \gr rA$ using
-\cref{thm:construct-env}, applying the identity substitution
-\AgdaFunction{id\^{}Env} on the $\gamma$ half, and dropping the term
-\AgdaBound{t} in place of the variable we are substituting for.
-
-\ExecuteMetaData[\LRKits]{subSingle}
+\begin{corollary}[Single substitution]\label{thm:single-sub}
+  The following equivalent rules are admissible.
+  \begin{mathpar}
+    \ebrule{%
+      \hypo{\grR \leq \gr r\grP + \grQ}
+      \hypo{\grP\gamma \vdash A}
+      \hypo{\grQ\gamma, \gr rA \vdash B}
+      \infer3{\grR\gamma \vdash B}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\gr r \cdot \plr{{} \vdash A}}
+      \hypo{\sep}
+      \hypo{\gr rA \vdash B}
+      \infer3{{} \vdash B}
+    }
+  \end{mathpar}
+\end{corollary}
+\begin{proof}
+  It is enough to construct a substitution of type
+  $\grR\gamma \env\vdash \grQ\gamma, \gr rA$.
+  To do this, we use \cref{thm:construct-env} cases $\sep(\rightarrowtriangle)$
+  and $\cdot(\rightarrowtriangle)$ on inequalities
+  $\grR \leq \grQ + \gr r\grP$ and $\gr r\grP \leq \gr r\grP$ respectively to
+  leave us needing a substitution of type $\grQ\gamma \env\vdash \grQ\gamma$ and
+  a term of type $\grP\gamma \vdash A$.
+  For the substitution, we give the identity substitution (\cref{thm:env-id}),
+  and we have the term as a hypothesis.
+\end{proof}

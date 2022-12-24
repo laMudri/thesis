@@ -1,10 +1,3 @@
-%This should stay fairly general, so it could be compiled to a DILL-style
-%calculus as well as the one with usage annotations.
-%Our framework compiles a ND system down to a sequent calculus.
-%It isolates the building blocks of typing rules ($\vdash$, $\wedge$, $*$,
-%$\Box$, $\cdot$) so that we can do more generic programming (e.g., usage
-%checker).
-
 The typing rules of $\name$ presented in \cref{fig:lr} contain a lot of detail
 and repeated patterns.
 For example, nearly half of the rules include the premise
@@ -49,13 +42,11 @@ These connectives are defined in \cref{fig:bunched} in Agda notation.
   \vspace{-1em}
   \begin{multicols}{2}
     \noindent\ExecuteMetaData[\Bunchedtex]{PointwiseUnit}
-    \noindent\ExecuteMetaData[\Bunchedtex]{forallb}
-    \columnbreak
-    \AgdaNoSpaceAroundCode{}
     \noindent\ExecuteMetaData[\Bunchedtex]{PointwiseConjunction}
-    \vspace{-0.25em}
-    \noindent\ExecuteMetaData[\Bunchedtex]{PointwiseImplication}
-    \AgdaSpaceAroundCode{}
+    \columnbreak
+    %\AgdaNoSpaceAroundCode{}
+    \noindent\ExecuteMetaData[\Bunchedtex]{Entails}
+    %\AgdaSpaceAroundCode{}
   \end{multicols}
   \vspace{-2em}
   \ExecuteMetaData[\Bunchedtex]{BunchedUnit}
@@ -89,12 +80,15 @@ their usage annotations.
 I use the same symbols for the connectives both in Agda code and in otherwise
 standard mathematical/logical notation.
 
-The first three connectives are those we've already seen for intuitionistic
-systems --- $\dot1$, $\dottimes$, and $\dotto$.
+The first two connectives are those we've already seen for intuitionistic
+systems --- $\dot1$ and $\dottimes$.
 The absence of premises is encoded by $\dot1$, while the space between premises
 sharing a context is encoded by $\dottimes$.
+As for implication, I temporarily avoid giving a $\dotto$ connectives, instead
+fusing it together with $\forallb{-}$ to produce the \emph{set} of
+context-preserving functions $T \rightarrowtriangle U$.
 When we interpret a typing rule as a constructor of an inductive definition,
-$\dotto$
+$\rightarrowtriangle$
 interprets the horizontal line, reflecting the fact that the usage annotations
 we start off with in the premises are those of the conclusion, corresponding to
 a general principle of resource conservation.
@@ -170,41 +164,11 @@ introduction rules for $I$, $\otimes$, and $\oc{\gr r}$, respectively.
   \end{prooftree}
 \end{align*}
 
+\subsection{$\name$ stated using bunched connectives}\label{sec:lr-bunched}
 The full system \name{} is stated in terms of bunched connectives in
 \cref{fig:lr-bunched}.
 The bunched connectives also yield a reasonably consise definition of the Agda
 data type of \name{} derivations, as seen in \cref{fig:lr-bunched-Agda}.
-
-While we have seen a connection between the bunched connectives and the
-connectives of $\name$, the two should not be confused.
-In particular, the bunched connectives obey different laws to what we would
-expect from linear logic.
-For example, it would make sense to define a bunched connective $\dotplus$,
-defined analogously to $\dottimes$.
-This $\dotplus$ could be used to rephrase the introduction rules for $\oplus$.
-We then have maps both ways between $T \dottimes (U \dotplus V)$ and
-$(T \dottimes U) \dotplus (T \dottimes V)$, reminiscent of the distributivity of
-additive connectives in bunched logic,
-whereas linear logic only has a map from $(A \with B) \oplus (A \with C)$ to
-$A \with (B \oplus C)$, and not a map the other way.
-Looking at the interpretations, the connection with bunched logic makes sense.
-Instead of the partial commutative monoid (often representing heaps) found in
-standard semantics of bunched logic, we have a left semimodule of usage
-contexts, which we are similarly interested in splitting and sharing between
-various subterms.
-
-A discrepancy with bunched logic is that $\dotto$ is not part of the Cartesian
-closure of context-indexed families.
-In fact, it fails to be a functor because it does not respect the ordering of
-usage contexts.
-This fact has little impact on the development of this thesis, because I mainly
-use $\dotto$ at the top level, directly in conjunction with $\forallb{-}$.
-The combination describes the ``external hom'', i.e.\ the morphisms in the
-category of context-indexed families, with the internal hom being more like the
-Kripke function space, which I do not use.
-
-%\todo{Split chapter here. Play around with other systems using bunched
-%  connectives. Lists/recursion, annotated arrow, Granule elim, sharing elim.}
 
 \begin{figure}
   \ebproofset{separation=0.75em}
@@ -322,3 +286,74 @@ Kripke function space, which I do not use.
   \caption{\name{} stated using bunched connectives in Agda}
   \label{fig:lr-bunched-Agda}
 \end{figure}
+
+\subsection{Connection with bunched logic}\label{sec:bunched-logic}
+While we have seen a connection between the bunched connectives and the
+connectives of $\name$, the two should not be confused.
+In particular, the bunched connectives obey different laws to what we would
+expect from linear logic.
+For example, it would make sense to define a bunched connective $\dotplus$,
+defined analogously to $\dottimes$.
+This $\dotplus$ could be used to rephrase the introduction rules for $\oplus$.
+We then have maps both ways between $T \dottimes (U \dotplus V)$ and
+$(T \dottimes U) \dotplus (T \dottimes V)$, reminiscent of the distributivity of
+additive connectives in bunched logic,
+whereas linear logic only has a map from $(A \with B) \oplus (A \with C)$ to
+$A \with (B \oplus C)$, and not a map the other way.
+Looking at the interpretations, the connection with bunched logic makes sense.
+Instead of the partial commutative monoid (often representing heaps) found in
+standard semantics of bunched logic, we have a left semimodule of usage
+contexts, which we are similarly interested in splitting and sharing between
+various subterms.
+
+From bunched logic, we would expect the Cartesian product $\dottimes$ to have an
+internal hom.
+In the intuitionistic case, $\dotto$ filled this role.
+However, with usage contexts, it makes sense for open types to be presheaves
+over the partial order of contexts under pointwise $\leq$ of usage annotations.
+The family $T \dotto U$ does not satisfy the functoriality condition because of
+the contravariance in the domain $T$.
+Instead, as found in models of bunched logic, we would want a Kripke function
+space, like
+$\lambda\Gamma.~\forall \Gamma' \leq \Gamma.~T\,\Gamma' \to U\,\Gamma'$.
+However, I do not make use of such a connective.
+
+The separating conjunction $\sep$ can be seen as a decategorified version of Day
+convolution~\citep{Day70}.
+It also resembles the use of ternary frames \todo{cite} in semantics of
+substructural logics.
+
+\subsection{Operations on bunched connectives}\label{sec:bunched-op}
+To manipulate terms and other open types defined using bunched connectives, we
+need the zero, addition, and multiplication relations to satisfy some laws.
+For example, to achieve a symmetry map $T \sep U \rightarrowtriangle U \sep T$,
+we need addition to satisfy the commutativity law
+$\forall x,y,z : A.~x \leq y + z \to x \leq z + y$.
+
+For all uses of bunched connectives in this thesis, the carrier set $A$ will
+form a partial order --- for example, with contexts, the order is given by the
+pointwise order on the usage vectors.
+We then consider the category whose objects are posets and whose morphisms are
+relations $R : A \rel B$ satisfying the contravariant-covariant law
+$\forall x,x',y,y'.~x' \leq x \to y \leq y' \to xRy \to x'Ry'$.
+This category can be given the usual monoidal product of relations, which is
+the pointwise product of posets on objects.
+Then, we will always expect zero and addition to together form a cocommutative
+comonoid in this category.
+With this structure, we can get the following equivalences and functions.
+
+\begin{mathpar}
+  I^* \sep T \leftrightarrowtriangle T \and
+  T \sep I^* \leftrightarrowtriangle T \and
+  (T \sep U) \sep V \leftrightarrowtriangle T \sep (U \sep V) \and
+  T \sep U \leftrightarrowtriangle U \sep T \and
+  (T \wand U) \sep T \rightarrowtriangle U \and
+  I^* \wand T \leftrightarrowtriangle T \and
+  (T \sep U) \wand V \leftrightarrowtriangle T \wand (U \wand V)
+\end{mathpar}
+
+I do not use algebraic properties of multiplication in conjunction with
+manipulation of bunched connectives in this thesis, but we could expect
+scalar multiplication
+to add a comodule structure over cosemiring $R$ to the cocommutative comonoid
+given by zero and addition.
