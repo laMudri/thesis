@@ -1,4 +1,4 @@
-\chapter{A framework for usage-restricted calculi}\label{sec:framework}
+\chapter{Generic usage-annotated syntax}\label{sec:framework}
 
 In \cref{sec:semirings}, we saw how to use parametrisation over a partially
 ordered semiring to recreate a range of usage-aware calculi.
@@ -8,25 +8,21 @@ studied in the literature and required in practice.
 
 In this chapter, I take the framework for typed syntaxes with binding developed
 by \citet{AACMM21} and apply the principles we discovered in
-\cref{sec:semirings} to yield a framework allowing for semiring-based usage
-restrictions on variables.
+\cref{sec:semirings} to yield a framework for defining calculi with
+semiring-based usage restrictions on variables.
 Syntactically, I claim that this framework ranges over all finitiary
 variable-based simply typed semiring-annotated calculi, with justification by
 comparison to the framework of \citet{AACMM21} and some novel examples in
 \cref{sec:other-syntaxes}.
-I also derive analogues to some of the semantic results of \citet{AACMM21},
-strengthening them to take advantage of usage restrictions.
+%I also derive analogues to some of the semantic results of \citet{AACMM21},
+%strengthening them to take advantage of usage restrictions.
 
 The work in this chapter is fully mechanised in Agda, which allows me to be
 precise about the various levels of domain-specific languages which appear.
-I assume that the reader is familiar with the bunched connectives introduced in
-\cref{fig:bunched} and the usage-aware environments of \cref{def:lr-env}.
-
-\section{Syntax}
 
 \input{syntax}
 
-\section{Semantics}
+\chapter{Generic usage-aware semantics}\label{sec:semantics}
 
 \input{semantics}
 

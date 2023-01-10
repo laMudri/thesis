@@ -7,7 +7,7 @@ interpretation of variables). Before we can define
 \AgdaFunction{semantics}, we need to treat recursion through rules'
 premises (\cref{sec:functorial}) and extension of environments when
 going under variable binders (\cref{sec:kripke}).
-\todo{Maybe split the chapter here. Syntax/semantics}
+\todo{Introduction for the chapter}
 
 % Our goal in this section is to define \AgdaFunction{semantics}, a
 % recursor that turns a term into a \AgdaBound{$\C$}-value using a
@@ -24,50 +24,7 @@ going under variable binders (\cref{sec:kripke}).
 % features of our syntax: the usage annotations (\cref{sec:functorial})
 % and variable binding (\cref{sec:kripke}). \todo{fwd ref to where these are used}
 
-\subsection{A layer of syntax is functorial}\label{sec:functorial}
-
-A basic property of the universe of syntaxes we described in \cref{sec:syntax}
-is that every syntax supports a functorial action on subterms, realised by the function \AgdaFunction{map-s}.
-Its type says that to map a function \AgdaBound{f}
-over a layer of syntax, there must be a linear map \AgdaBound{F} relating the
-domain and codomain usage contexts, and \AgdaBound{f} should be usable
-wherever the domain and codomain usage contexts are similarly related by
-\AgdaBound{F}.
-
-\ExecuteMetaData[\Maptex]{map-s-type}
-
-This generality is needed because usage contexts change between
-a term and its immediate subterms---they are decomposed according to the bunched connectives used in the rules.
-\AgdaBound{X} and \AgdaBound{Y} are \AgdaFunction{ExtOpenFam}s, with
-\AgdaBound{$\Theta$} being the context extension for a subterm (i.e., the
-variables newly bound in that subterm).
-Unlike usage annotations, types in the contexts \AgdaBound{$\gamma$} and \AgdaBound{$\delta$}, and the conclusion types implicit here, are preserved throughout.
-This is the essence of the usage annotation based approach---we use traditional techniques for variable binding, with the usage annotations layered on top.
-
-The heart of \AgdaFunction{map-s} is \AgdaFunction{map-p}, which recursively
-works through the structure \AgdaBound{ps} of premises of the rule applied,
-acting on each subterm it finds.
-Here, particularly in the clauses for \AgdaInductiveConstructor{`$\sep$} and
-\AgdaInductiveConstructor{`$\cdot$}, we see why it is not enough for the
-function on subterms to apply at usage contexts \AgdaBound{P} and \AgdaBound{Q}
---- rather, it also needs to apply at any similarly related \AgdaBound{P$'$}
-and \AgdaBound{Q$'$}.
-In the case of \AgdaInductiveConstructor{`$\sep$}, we have that
-$\grP \leq \grP_M + \grP_N$, with \AgdaBound{M} and \AgdaBound{N} being
-collections of subterms in usage contexts $\grP_M$ and $\grP_N$, respectively.
-Linearity of \AgdaBound{F} yields $\grQ_M$ and $\grQ_N$ such that
-$\grQ \leq \grQ_M + \grQ_N$ and we use \AgdaFunction{map-p} recursively at
-$(\grP_M, \grQ_M)$ and $(\grP_N, \grQ_N)$ on \AgdaBound{M} and \AgdaBound{N}.
-The cases for \AgdaInductiveConstructor{`$\cdot$} and
-\AgdaInductiveConstructor{`$I^*$} are similar, each using a different aspect
-of linearity.
-In contrast, the cases for \AgdaInductiveConstructor{`$\dot1$} and
-\AgdaInductiveConstructor{`$\dot\times$}, which are the only constructors used in fully structural
-systems, do not involve any changes in the usage contexts.
-
-\ExecuteMetaData[\Maptex]{map-p}
-
-\subsection{The Kripke function space}\label{sec:kripke}
+\section{The Kripke function space}\label{sec:kripke}
 
 At this point we introduce a minor generalisation to
 \AgdaFunction{OpenFam} and \AgdaFunction{ExtOpenFam}:
@@ -140,7 +97,7 @@ post-composition:
 % We use this generality later in \AgdaFunction{extend}, setting \AgdaBound{I}
 % to \AgdaDatatype{Ctx}.
 
-\subsection{Semantic traversal}\label{sec:traversal}
+\section{Semantic traversal}\label{sec:traversal}
 
 We can now state the data required to implement a traversal assigning
 semantics to terms. For open families $\V$ and $\C$, interpreting

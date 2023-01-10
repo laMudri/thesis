@@ -1,4 +1,4 @@
-The aim of this section is to produce a domain-specific language of
+The aim of this chapter is to produce a domain-specific language of
 \emph{syntax descriptions}.
 One may also use the terminology ``universe'' in place of ``domain-specific
 language'', alluding to the \emph{universe pattern} common in dependently typed
@@ -25,7 +25,7 @@ inclusion of semiring annotations on newly bound variables.
 %We now start to use Agda notation for record and data type
 %declarations, to emphasise that our framework has been implemented.
 
-\subsection{Descriptions of Systems}
+\section{Descriptions of Systems}
 
 % We capture the form of rules exemplified previously\todo{Previously?} via
 % \emph{descriptions} of rules.
@@ -58,7 +58,10 @@ bunched connectives. %, and will be interpreted directly as such, below.
 \ExecuteMetaData[\Syntaxtex]{Premises}
 
 A \AgdaRecord{Rule} is a pair of some \AgdaDatatype{Premises} and a
-conclusion. We use an infix arrow as a suggestive notation for rules.
+conclusion.
+I suggestively use a quoted version of the ``universal entailment'' arrow
+$\rightarrowtriangle$, the unquoted version of which interprets the horizontal
+line in a traditionally presented typing rule.
 
 \ExecuteMetaData[\Syntaxtex]{Rule}
 
@@ -86,7 +89,7 @@ labels with \AgdaRecord{Rule}s in a \AgdaRecord{System}.
 \noindent
 \begin{minipage}[t]{0.5\textwidth}
   \ExecuteMetaData[\PaperExamplestex]{Ty}
-  \ExecuteMetaData[\PaperExamplestex]{Side}
+  \ExecuteMetaData[\Handtex]{Hand}
 \end{minipage}
 \begin{minipage}[t]{0.5\textwidth}
   \ExecuteMetaData[\PaperExamplestex]{qlR}
@@ -104,7 +107,7 @@ is that we do not include a counterpart to the
 \AgdaRecord{System}. Variables are common to all the systems
 representable in our framework.
 
-\subsection{Terms of a \AgdaRecord{System}}\label{sec:terms}
+\section{Terms of a \AgdaRecord{System}}\label{sec:terms}
 
 The next thing we want to do is to build terms in the described type system.
 The following definitions are useful for talking about types indexed over
@@ -238,18 +241,23 @@ necessary proofs via a \AgdaRecord{System}-generic elaborator in
 
 % \ExecuteMetaData[\Maptex]{map-s-type}
 
-\subsection{Other syntaxes and syntactic forms}\label{sec:other-syntaxes}
+\section{More example syntaxes}\label{sec:other-syntaxes}
 
-\paragraph{The system $\mu\tilde\mu$.}
-We can encode a usage-annotated version of System $L$/the
-$\mu\tilde\mu$-calculus~\cite{CH00} --- a syntax for classical logic --- in
+With the range of representable syntaxes now formalised, we can explore encoding
+techniques for syntaxes more exotic than ST$\lambda$C and $\name$.
+As well as the variations presented in \cref{sec:variant}, we can represent a
+usage-annotated $\mu\tilde\mu$-calculus and a Linear/non Linear system.
+
+\subsection{The system $\mu\tilde\mu$}
+I encode a usage-annotated version of System $L$/the
+$\mu\tilde\mu$-calculus~\citep{CH00} --- a syntax for classical logic --- in
 such a way that contexts capture the undistinguished parts of the sequent.
 As such, the generic substitution lemma we get in \cref{sec:kit-to-sem} is the
 form of substitution required in standard $\mu\tilde\mu$-calculus metatheory.
 Though the $\mu\tilde\mu$-calculus is originally described as a sequent
-calculus~\cite{CH00}, we use the techniques of
-\citet[p.~12]{herbelin-hab} and \citet{LC06} to present it as a natural
-deduction system, thus giving a notion of \emph{variable} to the system.
+calculus~\citep{CH00}, I use the techniques of
+\citet[p.~12]{herbelin-hab} and \citet{LC06} to present it using hypothetical
+judgements, thus giving a notion of \emph{variable} to the system.
 
 Unlike the single judgement form of \name{} and standard simply typed
 $\lambda$-calculi, the $\mu\tilde\mu$-calculus has three judgement forms:
@@ -259,7 +267,7 @@ propositions (types), while commands exhibit contradictions.
 This means that the abstract \AgdaBound{Ty} in the generic framework is
 instantiated to \AgdaDatatype{Conc} (for \emph{conclusion}) as below, with
 \AgdaDatatype{Ty} not being exposed directly to the generic framework.
-For now, we just consider multiplicative disjunction $\parr$ (\emph{par}) and
+For now, I just consider multiplicative disjunction $\parr$ (\emph{par}) and
 negation/duality, beside an uninterpreted base type.
 These are enough to exhibit classical behaviour.
 
@@ -293,25 +301,245 @@ then term and coterm (introduction and elimination) forms for negation and
 %\ExecuteMetaData[\MuMuTildeTermtex]{patterns}
 %\ExecuteMetaData[\MuMuTildeTermtex]{myComm}
 
-\paragraph{Duplicability}
-There is one more bunched combinator we have experimented with adding to the
-framework:
+\subsection{Duplicability and L/nL}\label{sec:dup-lnl}
+In \cref{sec:rec}, I introduced a bunched connective $\Box^{0{+}}$, used to
+ensure that such a premise is derived in a context that allows it to be
+duplicated and discarded.
+Syntax for this connective can be added to \AgdaDatatype{Premises} and worked
+through the various parts of the framework, though I do not show these parts in
+the text of this thesis for the sake of simplicity and brevity.
+Additionally, variations such as $\Box^0$ (requiring only that the context is
+${} \leq \gr0$) and $\Box^{0{+}{*}}$ (requiring, in addition to
+$\Box^{0{+}}$, closure under multiplication by any scalar) can be added to the
+framework independently of each other and of $\Box^{0{+}}$.
 
-\[
-  \plr{\Box T}\,\grR \coloneqq \Sigma\grRprime.~\plr{\grRprime \leq \grR}
-  \times \plr{\grRprime \leq \gr0}
-  \times \plr{\grRprime \leq \grRprime + \grRprime}
-  \times T\,\grRprime
-\]
+As well as the use case of inductive types, as shown in \cref{sec:rec}, I use
+the $\Box^{0{+}{*}}$-modality to encode the restriction to intuitionistic
+variables in the intuitionistic judgement forms of the L/nL
+calculus~\citep{Benton94}.
+I will explain this in detail in due course.
 
-The idea of $\plr{\Box T}\,\grR$ is to assert that $\grR$, or some refinement
-of it, can be both discarded and duplicated indefinitely, and in the
-refinement we have a $T$.
-We use this combinator to introduce subterms that are used an unknown number of
-times, for example the continuations of the eliminator of an inductive type,
-or other fixed points.
-We can also use it in linear/non-linear style systems~\cite{Benton94} to make
-sure linear variables are not available in the intuitionistic fragment.
+\todo{Maybe partially merge with the later L/nL section.}
+Linear/non-Linear Logic has two sorts of types: linear types $A, B, C$ and
+intuitionistic types $X, Y, Z$.
+I encode these two sorts in the Agda types
+\AgdaDatatype{Ty}\AgdaSpace{}\AgdaInductiveConstructor{lin} and
+\AgdaDatatype{Ty}\AgdaSpace{}\AgdaInductiveConstructor{int}, respectively.
+Using an indexed type lets me take the total space of \AgdaDatatype{Ty}, named
+\AgdaFunction{$\Sigma$Ty}, as the evident dependent pair type.
+\AgdaFunction{$\Sigma$Ty} becomes the type of types seen by the framework.
+The types themselves are, on the linear side,
+a tensor unit \AgdaInductiveConstructor{tI},
+a tensor product \AgdaInductiveConstructor{\_t$\otimes$\_}, and
+a linear function space \AgdaInductiveConstructor{\_t$\multimap$\_};
+on the intuitionistic side,
+a unit \AgdaInductiveConstructor{t1},
+a product \AgdaInductiveConstructor{\_t$\times$\_}, and
+an intuitionistic function space \AgdaInductiveConstructor{\_t$\to$\_};
+and adjoint type formers \AgdaInductiveConstructor{tF} and
+\AgdaInductiveConstructor{tG}.
+I also throw in a linear base type \AgdaInductiveConstructor{$\iota$}.
 
-Adding the $\Box$ combinator is the only thing we have found that requires our
-linear maps be functional rather than merely relational.
+\ExecuteMetaData[\LnLtex]{Frag}
+\ExecuteMetaData[\LnLtex]{Ty}
+%\ExecuteMetaData[\LnLtex]{SigTy}
+
+As in the other examples, I define a data type of rule labels
+\AgdaDatatype{`LnL} before defining the type system \AgdaFunction{LnL}.
+The system \AgdaFunction{LnL} has types \AgdaFunction{$\Sigma$Ty} and usage
+annotations $\{\gr0, \gr1, \gr\omega\}$, as we have used before for linear
+systems.
+
+We want to be able to embed the L/nL judgement forms
+$\Theta; \Gamma \vdash_{\mathcal L} A$ and $\Theta \vdash_{\mathcal C} X$, where
+$\Theta$ is made of intuitionistic variables and $\Gamma$ is made of linear
+variables.
+Following allowed usage patterns, intuitionistic variables will all have usage
+annotation $\gr\omega$, while linear variables will each be annotated
+either $\gr1$ or $\gr0$.
+These assignments of usage annotations are enforced wherever the rules bind new
+variables.
+By usage subsumption, intuitionistic variables may also end up with annotation
+$\gr1$ or $\gr0$, but we see this as a (meaningless) refinement of the
+$\gr\omega$ annotation, not causing a soundness problem.
+The key invariant is that linear variables never get annotation $\gr\omega$.
+
+The framework already tells us what variables and contexts we can
+have --- namely that we can make any assumption in any context.
+This means that we can propose ill formed sequents like
+$\gr1A \vdash X$.
+To make sure that this is not a problem, we want to maintain the invariant that
+any \emph{derivation} of a well formed sequent contains only well formed
+sequents.
+I enforce this locally using the $\Box^{0{+}{*}}$ bunched modality:
+Every rule targeting an intuitionistic judgement has its premises wrapped in a
+$\Box^{0{+}{*}}$ to restrict the usage annotations to $\gr0$ and $\gr\omega$.
+Additionally, rules \TirName{$F$i} and \TirName{$G$e}, which target linear
+judgements but have intuitionistic premises, similarly get a $\Box^{0{+}{*}}$.
+Note that having the annotation $\gr0$ means that well formed intuitionistic
+sequents can contain linear variables annotated $\gr0$, but these variables are
+not usable.
+
+The rules are presented in Agda code below, and also using bunched inference
+rule notation in \cref{fig:LnL-bunched}
+
+\ExecuteMetaData[\LnLtex]{quoteLnL}
+\ExecuteMetaData[\LnLtex]{LnL}
+
+\begin{figure}
+  \begin{mathpar}
+    \ebrule[comb]{%
+      \hypo{I^{\sep}}
+      \infer1[$I$i]{\vdashL I}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\vdashL I}
+      \hypo{\sep}
+      \hypo{\vdashL C}
+      \infer3[$I$e]{\vdashL C}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\vdashL A}
+      \hypo{\sep}
+      \hypo{\vdashL B}
+      \infer3[$\otimes$i]{\vdashL A \otimes B}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\vdashL A \otimes B}
+      \hypo{\sep}
+      \hypo{\gr1A, \gr1B \vdashL C}
+      \infer3[$\otimes$e]{\vdashL C}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\gr1A \vdashL B}
+      \infer1[$\multimap$i]{\vdashL A \multimap B}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\vdashL A \multimap B}
+      \hypo{\sep}
+      \hypo{\vdashL A}
+      \infer3[$\multimap$e]{\vdashL B}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\Boxzpt\plr{\vdashC X}}
+      \infer1[$F$i]{\vdashL FX}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\vdashL FX}
+      \hypo{\sep}
+      \hypo{\gr\omega X \vdashL C}
+      \infer3[$F$e]{\vdashL C}
+    }
+    \and
+    \ebrule[comb]{%
+      \hypo{\Boxzpt\dot1}
+      \infer1[$1$i]{\vdashC 1}
+    }
+    \and
+    \text{(no \TirName{$1$e})}
+    \and
+    \ebrule[comb]{%
+      \hypo{\Boxzpt(\vdashC X}
+      \hypo{\dottimes}
+      \hypo{\vdashC Y)}
+      \infer3[$\times$i]{\vdashC X \times Y}
+    }
+  \end{mathpar}
+  \caption{Linear/non-Linear Logic in bunched notation}\label{fig:LnL-bunched}
+\end{figure}
+
+Later,\todo{When?} I will give translations between this encoding of L/nL and
+$\name$, providing some assurance that the correct logic has been encoded.
+
+%There is one more bunched combinator we have experimented with adding to the
+%framework:
+%
+%\[
+%  \plr{\Box T}\,\grR \coloneqq \Sigma\grRprime.~\plr{\grRprime \leq \grR}
+%  \times \plr{\grRprime \leq \gr0}
+%  \times \plr{\grRprime \leq \grRprime + \grRprime}
+%  \times T\,\grRprime
+%\]
+%
+%The idea of $\plr{\Box T}\,\grR$ is to assert that $\grR$, or some refinement
+%of it, can be both discarded and duplicated indefinitely, and in the
+%refinement we have a $T$.
+%We use this combinator to introduce subterms that are used an unknown number of
+%times, for example the continuations of the eliminator of an inductive type,
+%or other fixed points.
+%We can also use it in linear/non-linear style systems~\cite{Benton94} to make
+%sure linear variables are not available in the intuitionistic fragment.
+%
+%Adding the $\Box$ combinator is the only thing we have found that requires our
+%linear maps be functional rather than merely relational.
+
+\section{A layer of syntax is functorial}\label{sec:functorial}
+
+A basic property of the universe of syntaxes
+is that every syntax supports a functorial action on subterms, realised by a
+function \AgdaFunction{map-s}.
+Its type says that to map a function \AgdaBound{f}
+over a layer of syntax, there must be a linear map \AgdaBound{$\Psi$} relating the
+domain and codomain usage contexts, and \AgdaBound{f} should be usable
+wherever the domain and codomain usage contexts are similarly related by
+\AgdaBound{$\Psi$}.
+The notation
+\AgdaBound{$\Psi$}\AgdaSpace{}\AgdaSymbol{.}\AgdaField{rel}\AgdaSpace{}%
+\AgdaBound{P}\AgdaSpace{}\AgdaBound{Q}
+means the same as $\grQ \leq \grP\gr\Psi$ from \cref{sec:ren-sub-lr}.
+The new notation comes about because I state \AgdaBound{$\Psi$} as a total and
+deterministic linear relation, rather than a linear map, for reasons related to
+mechanisation beyond the scope of this thesis.
+
+\ExecuteMetaData[\Maptex]{map-s-type}
+
+This generality is needed because usage contexts change between
+a term and its immediate subterms---they are decomposed according to the bunched connectives used in the rules.
+\AgdaBound{X} and \AgdaBound{Y} are \AgdaFunction{ExtOpenFam}s, with
+\AgdaBound{$\Theta$} being the context extension for a subterm (i.e., the
+variables newly bound in that subterm).
+Unlike usage annotations, types in the contexts \AgdaBound{$\gamma$} and \AgdaBound{$\delta$}, and the conclusion types implicit here, are preserved throughout.
+This is the essence of the usage annotation based approach---we use traditional techniques for variable binding, with the usage annotations layered on top.
+
+The heart of \AgdaFunction{map-s} is \AgdaFunction{map-p}, which recursively
+works through the structure \AgdaBound{ps} of premises of the rule applied,
+acting on each subterm it finds.
+Here, particularly in the clauses for \AgdaInductiveConstructor{`$\sep$} and
+\AgdaInductiveConstructor{`$\cdot$}, we see why it is not enough for the
+function on subterms to apply at usage contexts \AgdaBound{P} and \AgdaBound{Q}
+--- rather, it also needs to apply at any similarly related \AgdaBound{P$'$}
+and \AgdaBound{Q$'$}.
+In the case of \AgdaInductiveConstructor{`$\sep$}, we have that
+$\grP \leq \grP_M + \grP_N$, with \AgdaBound{M} and \AgdaBound{N} being
+collections of subterms in usage contexts $\grP_M$ and $\grP_N$, respectively.
+Linearity of \AgdaBound{$\Psi$} yields $\grQ_M$ and $\grQ_N$ such that
+$\grQ \leq \grQ_M + \grQ_N$ and we use \AgdaFunction{map-p} recursively at
+$(\grP_M, \grQ_M)$ and $(\grP_N, \grQ_N)$ on \AgdaBound{M} and \AgdaBound{N}.
+The cases for \AgdaInductiveConstructor{`$\cdot$} and
+\AgdaInductiveConstructor{`$I^*$} are similar, each using a different aspect
+of linearity.
+In contrast, the cases for \AgdaInductiveConstructor{`$\dot1$} and
+\AgdaInductiveConstructor{`$\dot\times$}, which are the only constructors used in fully structural
+systems, do not involve any changes in the usage contexts.
+
+The linearity of relation \AgdaBound{$\Psi$} is given by fields
+\AgdaField{rel-0$_m$}, \AgdaField{rel-+$_m$}, and \AgdaField{rel-*$_m$} (with
+the subscript-m being a mnemonic for \emph{module}, as opposed to scalar).
+\todo{Refer to preliminaries}
+
+\ExecuteMetaData[\Maptex]{map-p}
+
+I have also extended \AgdaFunction{map-p} to handle the various
+$\Box$-modalities described in \cref{sec:dup-lnl}.
+The Agda code for this extension is not particularly readable, so I do not
+include it in this document.
+However, this extension is notable as the only part of the framework requiring
+that the linear relation \AgdaBound{$\Psi$} be functional (i.e., total and
+deterministic).
