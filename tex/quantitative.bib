@@ -752,3 +752,36 @@ book{Prawitz65,
   author = {Aleš Bizjak and Lars Birkedal},
   keywords = {separation logic, model, modalities}
 }
+
+@article{CK20,
+  author = {Choudhury, Vikraman and Krishnaswami, Neel},
+  title = {Recovering Purity with Comonads and Capabilities},
+  year = {2020},
+  issue_date = {August 2020},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {4},
+  number = {ICFP},
+  url = {https://doi.org/10.1145/3408993},
+  doi = {10.1145/3408993},
+  abstract = {In this paper, we take a pervasively effectful (in the style of ML) typed lambda calculus, and show how to extend it to permit capturing pure expressions with types. Our key observation is that, just as the pure simply-typed lambda calculus can be extended to support effects with a monadic type discipline, an impure typed lambda calculus can be extended to support purity with a comonadic type discipline. We establish the correctness of our type system via a simple denotational model, which we call the capability space model. Our model formalises the intuition common to systems programmers that the ability to perform effects should be controlled via access to a permission or capability, and that a program is capability-safe if it performs no effects that it does not have a runtime capability for. We then identify the axiomatic categorical structure that the capability space model validates, and use these axioms to give a categorical semantics for our comonadic type system. We then give an equational theory (substitution and the call-by-value β and η laws) for the imperative lambda calculus, and show its soundness relative to this semantics. Finally, we give a translation of the pure simply-typed lambda calculus into our comonadic imperative calculus, and show that any two terms which are βη-equal in the STLC are equal in the equational theory of the comonadic calculus, establishing that pure programs can be mapped in an equation-preserving way into our imperative calculus.},
+  journal = {Proc. ACM Program. Lang.},
+  month = {aug},
+  articleno = {111},
+  numpages = {28},
+  keywords = {comonads, effects, modal type theory, capabilities, categorical semantics}
+}
+
+@article{Lambek58,
+  author = {Joachim Lambek},
+  title = {The Mathematics of Sentence Structure},
+  journal = {The American Mathematical Monthly},
+  volume = {65},
+  number = {3},
+  pages = {154-170},
+  year  = {1958},
+  publisher = {Taylor & Francis},
+  doi = {10.1080/00029890.1958.11989160},
+  URL = {https://doi.org/10.1080/00029890.1958.11989160},
+  eprint = {https://doi.org/10.1080/00029890.1958.11989160}
+}

@@ -280,138 +280,61 @@ DILL~\citep{Barber1996} and the modal calculus of \citet{judgmental}.
 \input{rec.tex}
 \section{Translation to and from existing systems}\label{sec:translation}
 \input{trans.tex}
-\section{Addendum: (lack of) partiality}\label{sec:part}
-\input{part.tex}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}\label{sec:semirings-conc}
 
-\chapter{Renaming and substitution for $\name$}\label{sec:ren-sub-lr}
+In this chapter, I have presented the calculus $\name$, with particular focus on
+the posemiring usage annotations.
+Posemirings are sufficient for many use cases, as shown by the examples in this
+chapter.
+However, there are many more substructural disciplines in the literature which
+cannot be expressed using posemirings.
 
-In \cref{sec:semirings}, I defined my calculus of interest $\name$.
-In this chapter, I develop the necessary syntactic metatheory for
-specifying and implementing the substitution operation.
-I follow the approach of \cref{sec:kits} using syntactic kits, but have to make
-significant changes to the underlying notion of \emph{environment} before doing
-so.
-I give and informally motivate these changes to environments in
-\cref{sec:lrkits}, and prove some properties of the new definition in
-\cref{sec:lenv}.
-Finally, I apply these new environments to the syntax of $\name$ in
-\cref{sec:lrsub} to derive renaming and substitution operators.
+An important point to note is that $\name$ cannot be instantiated to become a
+bunched logic, in the sense of \citet{oHP99}.
+This is despite the use of the bunched connectives in the \emph{definition} of
+$\name$, and despite the formally tree-shaped contexts.
+However, the variable rule of $\name$ essentially treats the variables in the
+context independently, except for the individual checking of usage annotations
+on each variable.
+Therefore, we cannot talk about more interesting spatial relationships between
+variables, as required by bunched logic.
+This property also precludes us from capturing calculi without exchange
+(non-commutative logics), such as Lambek calculus~\citep{Lambek58}.
+Fitch-style systems\todo{cite} probably also are precluded similarly.
 
-\section{What are linear renaming and substitution?}\label{sec:lrkits}
-\input{lrkits.tex}
-\section{Properties of linear environments}\label{sec:lenv}
-\input{lenv.tex}
-\section{Substitution is admissible in \name{}}\label{sec:lrsub}
-\input{lrsub.tex}
-\section{Conclusion}\label{sec:ren-sub-lr-conc}
+The work I present here has some methodological similarities with the earlier
+work of \citet{LicataSR17}.
+In that framework, one can provide a very precise \emph{mode theory}, expressing
+which structural rules are available, and from it get a sequent calculus with
+cut-elimination.
+They encode many systems, including a non-associative logic (where context are
+trees obeying no structural rules) and a bunched logic, and the framework is
+probably expressive enough to encode all posemiring-based usage disciplines.
+However, aside from the structural rules, the sequent calculus is fixed ---
+there are two connectives: $\mathsf F$ (internalising the left of the sequent,
+comparable to my
+$\oc_{\gr{r_1}}\plr{-} \otimes \cdots \otimes \oc_{\gr{r_n}}\plr{-}$) and
+$\mathsf U$ (internalising the whole sequent, comparable to my
+$\oc_{\gr{r_1}}\plr{-} \multimap \cdots \multimap \oc_{\gr{r_n}}\plr{-}
+\multimap \plr{-}$), which have left and right rules, and then the only other
+rule is the variable rule.
+This restriction is what allows the cut elimination theorem to be even
+plausible, but means that other connectives, like additives and inductive types,
+and more exotic syntaxes, like those I will present in
+\cref{sec:other-syntaxes}, would have to be developed from scratch.
 
-In the preceding two chapters, I have developed a discipline for specifying
-the syntax of linear and modal type systems, and furthermore developing the
-syntactic metatheory of those type systems.
-All of these are based on semirings, and the linear algebra arising from
-considering a usage context full of semiring elements as a vector.
-
-These developments can be seen in retrospect as a generalisation of the methods
-explained in \cref{sec:simple}.
-In terms of premise connectives in the syntactic rules, we have generalised from
-just $\{\dot1, \dottimes\}$ to
-$\{\dot1, \dottimes, I^*, \sep, \gr r\cdot{}, \Box^{0{+}}\}$, maintaining our
-ability to keep the context implicit.
-Similarly to how rule premises can require separation of usage annotations, our
-new environments can require such a separation between their entries thanks to
-the linear map they now contain.
-I have generalised the key property of a kit from arbitrary weakening to
-weakening by $\gr0$-annotated variables, and using that have produced a
-substitution operation based on the same principles as that from
-\cref{sec:kits}.
-
-Having generalised all of the components --- namely the contexts, the syntax,
-and the notion of environment --- the type of the substitution operation looks
-the same as it did for intuitionistic ST$\lambda$C\@.
-Being able to maintain this uniformity is a key step towards generalising the
-rest of \cref{sec:simple} (i.e., \cref{sec:gen-sem,sec:gen-syn}), as I do in
-\cref{sec:framework}.
-
-A similar substitution lemma appears in the PhD thesis of
-\citet[p.\ 138]{petricek-thesis} under the name \emph{multi-nary substitution}.
-In my notation, \citeauthor{petricek-thesis}'s substitution rule looks like the
-following, up to permutation of the contexts containing $\Gamma$.
-Note that if $\Delta = \grQ\delta$, then $\gr r\Delta$ denotes the context
-$\plr{\gr r\grQ}\delta$.
-This rule is essentially an iterated version of the standard linear single
-substitution principle, and is used by \citeauthor{petricek-thesis} as a
-strengthened induction hypothesis required to derive single substitution.
-
-\[
-  \ebrule{%
-    \hypo{\Delta_1 \vdash A_1}
-    \hypo{\cdots}
-    \hypo{\Delta_n \vdash A_n}
-    \hypo{\Gamma, \gr{r_1}A_1, \ldots, \gr{r_n}A_n \vdash B}
-    \infer4{\Gamma, \gr{r_1}\Delta_1, \ldots, \gr{r_n}\Delta_n \vdash B}
-  }
-\]
-
-We can derive \citeauthor{petricek-thesis}-style multi-nary substitution as a
-corollary of my simultaneous substitution, using reasoning similar to that of
-\cref{thm:single-sub}.
-
-\begin{corollary}\label{thm:petricek-sub}
-  \Citeauthor{petricek-thesis}'s multi-nary substitution, as stated above, is
-  admissible in $\name$.
-\end{corollary}
-\begin{proof}
-  It is enough to provide a substitution of type
-  \[
-    \Gamma, \gr{r_1}\Delta_1, \ldots, \gr{r_n}\Delta_n
-    \env\vdash \Gamma, \gr{r_1}A_1, \ldots, \gr{r_n}A_n.
-  \]
-  To do this, we use \cref{thm:construct-env} repeatedly, leaving us needing a
-  substitution of type
-  $\Gamma, \gr0\Delta_1, \ldots, \gr0\Delta_n \env\vdash \Gamma$ and terms of
-  types
-  \begin{align*}
-    \gr0\gamma, \Delta_1, \gr0\delta_2, &\ldots, \gr0\delta_{n-1}, \gr0\delta_n
-    \vdash A_1 \\
-    &\vdots \\
-    \gr0\gamma, \gr0\delta_1, \gr0\delta_2, &\ldots, \gr0\delta_{n-1}, \Delta_n
-    \vdash A_n.
-  \end{align*}
-  The identity substitution and weakening by $\gr0$-annotated variables is
-  enough to make these requirements line up with the given hypotheses.
-\end{proof}
-
-My substitution principle is stronger than \citeauthor{petricek-thesis}'s.
-Where \citeauthor{petricek-thesis} requires that distinct variables be
-available for each hypothesis, I allow for separation of uses via addition of
-contexts.
-Below is a prototypical example.
-
-\begin{example}
-  Let $\Ann \coloneqq \plr{\mathbb N, =, 0, +, 1, \times}$, the exact
-  usage-counting posemiring.
-  Then, we can construct a substitution $\rho : \gr2A \env\vdash \gr1A, \gr1A$,
-  yielding a transformation of terms of the following form:
-  \[
-    \ebrule{%
-      \hypo{\gr1A, \gr1A \vdash B}
-      \infer1{\gr2A \vdash B}
-    }.
-  \]
-  To construct $\rho$, we use \cref{thm:construct-env} case
-  $\sep(\rightarrowtriangle)$, using the fact that $\gr2 \leq \gr1 + \gr1$.
-  From there, two identity substitutions suffice.
-  The action of $\rho$ on terms is to merge the two variables into one.
-  Note that a renaming, rather than a substitution, would also suffice.
-\end{example}
-
-Most notably, my (single) substitution principle more naturally fits the
-requirement we would have for the reduct of the $\beta$-rule for functions in
-$\name$, whereas \citeauthor{petricek-thesis}'s substitution principle would
-need some additional transformation for it to fit properly.
-This comes from the fact that the $\name$ function application rule introduces
-an algebraic ($+$) separation between its premises, whereas
-\citeauthor{petricek-thesis}'s substitution principle separates premises only
-via concatenation.
+The distinction between sharing and separating conjunction of premises naturally
+falls out of the posemiring approach to usage restrictions.
+However, a similar distinction also appears in other approaches to linearity,
+and perhaps in other substructural systems.
+Indeed, in the paper that inspired the bunched connectives~\citep{RPKV20},
+linearity is enforced in a similar style as in Yalla~\citep{laurent18}, using
+lists which can be split.
+It would be interesting to see future work on substructural systems work out the
+appropriate premise connectives and define their systems from there, rather than
+directly manipulating contexts.
+It may also be possible to see future work profitably abstracting over the
+posemiring annotations, requiring only that contexts form something like a
+commutative $\mathrm{Rel}$-monoid supporting variable-binding and
+variable access.

@@ -261,7 +261,8 @@ judgements, thus giving a notion of \emph{variable} to the system.
 
 Unlike the single judgement form of \name{} and standard simply typed
 $\lambda$-calculi, the $\mu\tilde\mu$-calculus has three judgement forms:
-terms, coterms, and commands.
+terms (traditional notation: $\Gamma \vdash A \mid \Delta$), coterms
+($\Gamma \mid A \vdash \Delta$), and commands ($\Gamma \vdash \Delta$).
 Read logically, terms and coterms are seen to, respectively, prove and refute
 propositions (types), while commands exhibit contradictions.
 This means that the abstract \AgdaBound{Ty} in the generic framework is
@@ -291,8 +292,54 @@ The syntax comprises a \emph{cut} between a term and a coterm of the same type,
 the eponymous $\mu$ and $\tilde\mu$ constructs for proof by contradiction, and
 then term and coterm (introduction and elimination) forms for negation and
 \emph{par}.
+I give a traditional presentation of this fragment of the
+$\mu\tilde\mu$-calculus in \cref{fig:mmt-orig}, with my encoding of the rules
+below.
 
 \ExecuteMetaData[\MuMuTildetex]{MMT}
+
+\begin{figure}
+  \begin{mathpar}
+    \ebrule{%
+      \hypo{\grP \leq \grPl + \grPr}
+      \hypo{\grQ \leq \grQl + \grQr}
+      \hypo{\grPl\gamma \vdash A \mid \grQl\delta}
+      \hypo{\grPr\gamma \mid A \vdash \grQr\delta}
+      \infer4[Cut$_A$]{\grP\gamma \vdash \grQ\delta}
+    } \and
+    \ebrule{%
+      \hypo{\Gamma \vdash \gr1A, \Delta}
+      \infer1[$\mu$]{\Gamma \vdash A \mid \Delta}
+    } \and
+    \ebrule{%
+      \hypo{\Gamma, \gr1A \vdash \Delta}
+      \infer1[$\tilde\mu$]{\Gamma \mid A \vdash \Delta}
+    } \and
+    \ebrule{%
+      \hypo{\Gamma \mid A \vdash \Delta}
+      \infer1[$\lambda$]{\Gamma \vdash A^\bot \mid \Delta}
+    } \and
+    \ebrule{%
+      \hypo{\Gamma \vdash A \mid \Delta}
+      \infer1[$\tilde\lambda$]{\Gamma \mid A^\bot \vdash \Delta}
+    } \and
+    \ebrule{%
+      \hypo{\grP \leq \gr r\grPl + \gr s\grPr}
+      \hypo{\grQ \leq \gr r\grQl + \gr s\grQr}
+      \hypo{\grPl\gamma \vdash A \mid \grQl\delta}
+      \hypo{\grPr\gamma \vdash B \mid \grQr\delta}
+      \infer4[$\alr{-,-}$]%
+      {\grP\gamma \vdash \gr rA \parr \gr sB \mid \grQ\delta}
+    } \and
+    \ebrule{%
+      \hypo{\Gamma, \gr rA, \gr sB \vdash \Delta}
+      \infer1[$\mu\alr{-,-}$]{\Gamma \mid \gr rA \parr \gr sB \vdash \Delta}
+    }
+  \end{mathpar}
+  \caption{A fragment of a usage-annotated $\mu\tilde\mu$-calculus presented in
+    traditional sequent notation}
+  \label{fig:mmt-orig}
+\end{figure}
 
 %With a collection of pattern synonyms and the machinery from
 %\cref{sec:usage-elaborator}, we can write an example term: a function which
@@ -349,6 +396,8 @@ As in the other examples, I define a data type of rule labels
 The system \AgdaFunction{LnL} has types \AgdaFunction{$\Sigma$Ty} and usage
 annotations $\{\gr0, \gr1, \gr\omega\}$, as we have used before for linear
 systems.
+For reference, I give a standard presentation of the rules of L/nL in
+\cref{fig:LnL-orig}
 
 We want to be able to embed the L/nL judgement forms
 $\Theta; \Gamma \vdash_{\mathcal L} A$ and $\Theta \vdash_{\mathcal C} X$, where
@@ -387,72 +436,169 @@ rule notation in \cref{fig:LnL-bunched}
 \ExecuteMetaData[\LnLtex]{LnL}
 
 \begin{figure}
+  \begin{align*}
+    \mathcal J \Coloneqq \; \Theta; \Gamma \vdashL A \; \mid \; \Theta \vdashC X
+  \end{align*}
+  \begin{mathpar}
+    \ebrule{%
+      \infer0[$\mathcal L$-var]{\Theta; A \vdashL A}
+    } \and
+    \ebrule{%
+      \infer0[$\mathcal C$-var]{\Theta, X \vdashC X}
+    } \and
+    \ebrule{%
+      \infer0[$I$i]{\Theta; {\cdot} \vdashL I}
+    } \and
+    \ebrule{%
+      \hypo{\Theta; \Gamma \vdashL I}
+      \hypo{\Theta; \Delta \vdashL C}
+      \infer2[$I$e]{\Theta; \Gamma, \Delta \vdashL C}
+    } \and
+    \ebrule{%
+      \hypo{\Theta; \Gamma \vdashL A}
+      \hypo{\Theta; \Delta \vdashL B}
+      \infer2[$\otimes$i]{\Theta; \Gamma, \Delta \vdashL A \otimes B}
+    } \and
+    \ebrule{%
+      \hypo{\Theta; \Gamma \vdashL A \otimes B}
+      \hypo{\Theta; \Delta, A, B \vdashL C}
+      \infer2[$\otimes$e]{\Theta; \Gamma, \Delta \vdashL C}
+    } \and
+    \ebrule{%
+      \hypo{\Theta; \Gamma, A \vdashL B}
+      \infer1[$\multimap$i]{\Theta; \Gamma \vdashL A \multimap B}
+    } \and
+    \ebrule{%
+      \hypo{\Theta; \Gamma \vdashL A \multimap B}
+      \hypo{\Theta; \Delta \vdashL A}
+      \infer2[$\multimap$e]{\Theta; \Gamma, \Delta \vdashL B}
+    } \and
+    \ebrule{%
+      \hypo{\Theta \vdashC X}
+      \infer1[$F$i]{\Theta; {\cdot} \vdashL FX}
+    } \and
+    \ebrule{%
+      \hypo{\Theta; \Gamma \vdashL FX}
+      \hypo{\Theta, X; \Delta \vdashL C}
+      \infer2[$F$e]{\Theta; \Gamma, \Delta \vdashL C}
+    } \and
+    \ebrule{%
+      \infer0[$1$i]{\Theta \vdashC 1}
+    } \and
+    \text{(no \TirName{$1$e})} \and
+    \ebrule{%
+      \hypo{\Theta \vdashC X}
+      \hypo{\Theta \vdashC Y}
+      \infer2[$\times$i]{\Theta \vdashC X \times Y}
+    } \and
+    \ebrule{%
+      \hypo{\Theta \vdashC X_0 \times X_1}
+      \infer1[$\times$e$_i$]{\Theta \vdashC X_i}
+    } \and
+    \ebrule{%
+      \hypo{\Theta, X \vdashC Y}
+      \infer1[$\to$i]{\Theta \vdashC X \to Y}
+    } \and
+    \ebrule{%
+      \hypo{\Theta \vdashC X \to Y}
+      \hypo{\Theta \vdashC X}
+      \infer2[$\to$e]{\Theta \vdashC Y}
+    } \and
+    \ebrule{%
+      \hypo{\Theta; {\cdot} \vdashL A}
+      \infer1[$G$i]{\Theta \vdashC GA}
+    } \and
+    \ebrule{%
+      \hypo{\Theta \vdashC GA}
+      \infer1[$G$e]{\Theta; {\cdot} \vdashL A}
+    }
+  \end{mathpar}
+  \caption{Linear/non-Linear Logic in traditional sequent notation}
+  \label{fig:LnL-orig}
+\end{figure}
+
+\begin{figure}
   \begin{mathpar}
     \ebrule[comb]{%
       \hypo{I^{\sep}}
       \infer1[$I$i]{\vdashL I}
-    }
-    \and
+    } \and
     \ebrule[comb]{%
       \hypo{\vdashL I}
       \hypo{\sep}
       \hypo{\vdashL C}
       \infer3[$I$e]{\vdashL C}
-    }
-    \and
+    } \and
     \ebrule[comb]{%
       \hypo{\vdashL A}
       \hypo{\sep}
       \hypo{\vdashL B}
       \infer3[$\otimes$i]{\vdashL A \otimes B}
-    }
-    \and
+    } \and
     \ebrule[comb]{%
       \hypo{\vdashL A \otimes B}
       \hypo{\sep}
       \hypo{\gr1A, \gr1B \vdashL C}
       \infer3[$\otimes$e]{\vdashL C}
-    }
-    \and
+    } \and
     \ebrule[comb]{%
       \hypo{\gr1A \vdashL B}
       \infer1[$\multimap$i]{\vdashL A \multimap B}
-    }
-    \and
+    } \and
     \ebrule[comb]{%
       \hypo{\vdashL A \multimap B}
       \hypo{\sep}
       \hypo{\vdashL A}
       \infer3[$\multimap$e]{\vdashL B}
-    }
-    \and
+    } \and
     \ebrule[comb]{%
-      \hypo{\Boxzpt\plr{\vdashC X}}
+      \hypo{\Box\plr{\vdashC X}}
       \infer1[$F$i]{\vdashL FX}
-    }
-    \and
+    } \and
     \ebrule[comb]{%
       \hypo{\vdashL FX}
       \hypo{\sep}
       \hypo{\gr\omega X \vdashL C}
       \infer3[$F$e]{\vdashL C}
-    }
-    \and
+    } \and
     \ebrule[comb]{%
-      \hypo{\Boxzpt\dot1}
+      \hypo{\Box\dot1}
       \infer1[$1$i]{\vdashC 1}
-    }
-    \and
-    \text{(no \TirName{$1$e})}
-    \and
+    } \and
+    \text{(no \TirName{$1$e})} \and
     \ebrule[comb]{%
-      \hypo{\Boxzpt(\vdashC X}
+      \hypo{\Box(\vdashC X}
       \hypo{\dottimes}
       \hypo{\vdashC Y)}
       \infer3[$\times$i]{\vdashC X \times Y}
+    } \and
+    \ebrule[comb]{%
+      \hypo{\Box\plr{\vdashC X_0 \times X_1}}
+      \infer1[$\times$e$_i$]{\vdashC X_i}
+    } \and
+    \ebrule[comb]{%
+      \hypo{\Box\plr{\gr\omega X \vdashC Y}}
+      \infer1[$\to$i]{\vdashC X \to Y}
+    } \and
+    \ebrule[comb]{%
+      \hypo{\Box(\vdashC X \to Y}
+      \hypo{\dottimes}
+      \hypo{\vdashC X)}
+      \infer3[$\to$e]{\vdashC Y}
+    } \and
+    \ebrule[comb]{%
+      \hypo{\Box\plr{\vdashL A}}
+      \infer1[$G$i]{\vdashC GA}
+    } \and
+    \ebrule[comb]{%
+      \hypo{\Box\plr{\vdashC GA}}
+      \infer1[$G$e]{\vdashL A}
     }
   \end{mathpar}
-  \caption{Linear/non-Linear Logic in bunched notation}\label{fig:LnL-bunched}
+  \caption{Linear/non-Linear Logic in bunched notation using
+    $\{\gr0, \gr1, \gr\omega\}$ usage annotations and with $\Boxzpt$ abbreviated
+    to $\Box$}
+  \label{fig:LnL-bunched}
 \end{figure}
 
 Later,\todo{When?} I will give translations between this encoding of L/nL and
@@ -480,66 +626,74 @@ $\name$, providing some assurance that the correct logic has been encoded.
 %Adding the $\Box$ combinator is the only thing we have found that requires our
 %linear maps be functional rather than merely relational.
 
-\section{A layer of syntax is functorial}\label{sec:functorial}
+\section{Conclusion}
 
-A basic property of the universe of syntaxes
-is that every syntax supports a functorial action on subterms, realised by a
-function \AgdaFunction{map-s}.
-Its type says that to map a function \AgdaBound{f}
-over a layer of syntax, there must be a linear map \AgdaBound{$\Psi$} relating the
-domain and codomain usage contexts, and \AgdaBound{f} should be usable
-wherever the domain and codomain usage contexts are similarly related by
-\AgdaBound{$\Psi$}.
-The notation
-\AgdaBound{$\Psi$}\AgdaSpace{}\AgdaSymbol{.}\AgdaField{rel}\AgdaSpace{}%
-\AgdaBound{P}\AgdaSpace{}\AgdaBound{Q}
-means the same as $\grQ \leq \grP\gr\Psi$ from \cref{sec:ren-sub-lr}.
-The new notation comes about because I state \AgdaBound{$\Psi$} as a total and
-deterministic linear relation, rather than a linear map, for reasons related to
-mechanisation beyond the scope of this thesis.
+I have shown via examples that the syntax descriptions defined in this chapter
+can capture a significant range of simply typed usage-aware calculi.
+Together with the examples of posemirings given in \cref{sec:semirings}, the
+whole framework is capable of encoding many specific substructural calculi.
+However, the language of descriptions has several restrictions, with more and
+less clear practical consequences.
+Many of these restrictions are shared with the syntax descriptions of
+\citet{AACMM21}, but some pertain to usage annotations.
 
-\ExecuteMetaData[\Maptex]{map-s-type}
+One clear limitation is that the forms of judgements do not allow enough
+interdependency to capture dependently typed calculi.
+In particular, for any given calculus, there is one fixed set of types, with no
+indexing over contexts.
+This allows contexts to have a flat list-like structure rather than a telescope,
+and means that the type of a term does not depend on that context, but clearly
+restricts the expressiveness of the calculi which can be encoded.
+As well as dependently typed calculi, this also prevents the encoding of the
+well formed types of System $F_\omega$.
 
-This generality is needed because usage contexts change between
-a term and its immediate subterms---they are decomposed according to the bunched connectives used in the rules.
-\AgdaBound{X} and \AgdaBound{Y} are \AgdaFunction{ExtOpenFam}s, with
-\AgdaBound{$\Theta$} being the context extension for a subterm (i.e., the
-variables newly bound in that subterm).
-Unlike usage annotations, types in the contexts \AgdaBound{$\gamma$} and \AgdaBound{$\delta$}, and the conclusion types implicit here, are preserved throughout.
-This is the essence of the usage annotation based approach---we use traditional techniques for variable binding, with the usage annotations layered on top.
+Less clear than describability of System $F_\omega$ is describability of System
+$F$.
+Though I have not presented the details, I believe it should be possible to
+encode calculi with polymorphism, such as System $F$ and the usage-annotated
+system found in \citet{AbelBernardy2020}, via a two-stage process.
+First, we make a syntax description for the language of types, and then use
+the well typed terms arising from that description as the set of types when
+making the description for the System $F$ terms.
+Such an encoding would yield all of the benefits of the framework presented in
+this thesis separately to the language of types and the language of terms, but
+how these two languages interact is unclear.
+For example, in \cref{sec:semantics}, I provide a syntax-generic substitution
+operation.
+This operation would yield substitution for type variables in types and
+substitution for term variables in terms, but substitution for type variables in
+terms would have to be provided separately, and would likely be more
+complicated.
+It would be interesting to see future work in this direction, possibly inspired
+by how Autosubst~\citep{Autosubst15} handles the same issue.
 
-The heart of \AgdaFunction{map-s} is \AgdaFunction{map-p}, which recursively
-works through the structure \AgdaBound{ps} of premises of the rule applied,
-acting on each subterm it finds.
-Here, particularly in the clauses for \AgdaInductiveConstructor{`$\sep$} and
-\AgdaInductiveConstructor{`$\cdot$}, we see why it is not enough for the
-function on subterms to apply at usage contexts \AgdaBound{P} and \AgdaBound{Q}
---- rather, it also needs to apply at any similarly related \AgdaBound{P$'$}
-and \AgdaBound{Q$'$}.
-In the case of \AgdaInductiveConstructor{`$\sep$}, we have that
-$\grP \leq \grP_M + \grP_N$, with \AgdaBound{M} and \AgdaBound{N} being
-collections of subterms in usage contexts $\grP_M$ and $\grP_N$, respectively.
-Linearity of \AgdaBound{$\Psi$} yields $\grQ_M$ and $\grQ_N$ such that
-$\grQ \leq \grQ_M + \grQ_N$ and we use \AgdaFunction{map-p} recursively at
-$(\grP_M, \grQ_M)$ and $(\grP_N, \grQ_N)$ on \AgdaBound{M} and \AgdaBound{N}.
-The cases for \AgdaInductiveConstructor{`$\cdot$} and
-\AgdaInductiveConstructor{`$I^*$} are similar, each using a different aspect
-of linearity.
-In contrast, the cases for \AgdaInductiveConstructor{`$\dot1$} and
-\AgdaInductiveConstructor{`$\dot\times$}, which are the only constructors used in fully structural
-systems, do not involve any changes in the usage contexts.
+As for restrictions peculiar to the usage-aware setting, we of course have the
+general limitations of posemiring annotations listed in
+\cref{sec:semirings-conc}, which I will not repeat here.
+Additionally, there are things we could wish to do with posemiring-based usage
+annotations which we do not have access to with the descriptions given in this
+chapter.
+For example, an issue one may have with the encoding of Linear/non-Linear Logic
+given in \cref{sec:dup-lnl} is that linear variables and intuitionistic
+variables, despite having morally distinct usage disciplines, necessarily share
+the $\{\gr0, \gr1, \gr\omega\}$ posemiring of usage annotations.
+If one wanted to generalise this construction to different pairs of usage
+disciplines, one may well find that they do not combine adequately into a single
+posemiring.
+A possible solution would be to have a range of kinds, and for each kind to have
+its own set of types and its own posemiring --- for example, a \emph{linear}
+kind and an \emph{intuitionistic} kind, using $\{\gr0, \gr1, \gr\omega\}$ and
+the 1-element posemiring, respectively.
+However, the descriptions given in this thesis only allow for one posemiring.
 
-The linearity of relation \AgdaBound{$\Psi$} is given by fields
-\AgdaField{rel-0$_m$}, \AgdaField{rel-+$_m$}, and \AgdaField{rel-*$_m$} (with
-the subscript-m being a mnemonic for \emph{module}, as opposed to scalar).
-\todo{Refer to preliminaries}
-
-\ExecuteMetaData[\Maptex]{map-p}
-
-I have also extended \AgdaFunction{map-p} to handle the various
-$\Box$-modalities described in \cref{sec:dup-lnl}.
-The Agda code for this extension is not particularly readable, so I do not
-include it in this document.
-However, this extension is notable as the only part of the framework requiring
-that the linear relation \AgdaBound{$\Psi$} be functional (i.e., total and
-deterministic).
+Finally, while there is a simple and well motivated core of premise combinators
+--- $\dot1$, $\dottimes$, $I^{\sep}$, $\sep$, and $\gr r \cdot \plr{-}$ --- the
+various $\Box$-modalities feel like ad hoc additions.
+While I have shown that $\Boxzp$ and $\Boxzpt$ have several practical uses, it
+is unclear whether there should be more modalities.
+Furthermore, I have not made an effort to isolate the properties that make these
+modalities well behaved.
+We will see in \cref{sec:functorial} that any such modality will need to be
+functorial in the appropriate sense, but other examples of generic programming,
+such as the usage elaborator which will be detailed in
+\cref{sec:usage-elaborator}, may need further properties.

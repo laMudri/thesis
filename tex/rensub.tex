@@ -1,0 +1,81 @@
+\chapter{Renaming and substitution for $\name$}\label{sec:ren-sub-lr}
+
+In \cref{sec:semirings}, I defined my calculus of interest $\name$.
+In this chapter, I develop the necessary syntactic metatheory for
+specifying and implementing the substitution operation.
+I follow the approach of \cref{sec:kits} using syntactic kits, but have to make
+significant changes to the underlying notion of \emph{environment} before doing
+so.
+I give and informally motivate these changes to environments in
+\cref{sec:lrkits}, and prove some properties of the new definition in
+\cref{sec:lenv}.
+Finally, I apply these new environments to the syntax of $\name$ in
+\cref{sec:lrsub} to derive renaming and substitution operators.
+
+\section{What are linear renaming and substitution?}\label{sec:lrkits}
+\input{lrkits.tex}
+\section{Properties of linear environments}\label{sec:lenv}
+\input{lenv.tex}
+\section{Substitution is admissible in \name{}}\label{sec:lrsub}
+\input{lrsub.tex}
+\section{Comparison with Petricek's substitution lemma}\label{sec:petricek}
+\input{petricek.tex}
+\section{Conclusion}\label{sec:ren-sub-lr-conc}
+
+In this and the preceding chapter, I have developed a discipline for specifying
+the syntax of linear and modal type systems, and furthermore developing the
+syntactic metatheory of those type systems.
+All of these are based on semirings, and the linear algebra arising from
+considering a usage context full of semiring elements as a vector.
+
+These developments can be seen in retrospect as a generalisation of the methods
+explained in \cref{sec:simple}.
+In terms of premise connectives in the syntactic rules, we have generalised from
+just $\{\dot1, \dottimes\}$ to
+$\{\dot1, \dottimes, I^*, \sep, \gr r\cdot{}, \Box^{0{+}}\}$, maintaining our
+ability to keep the context implicit.
+Similarly to how rule premises can require separation of usage annotations, our
+new environments can require such a separation between their entries thanks to
+the linear map they now contain.
+I have generalised the key property of a kit from arbitrary weakening to
+weakening by $\gr0$-annotated variables, and using that have produced a
+substitution operation based on the same principles as that from
+\cref{sec:kits}.
+
+Having generalised all of the components --- namely the contexts, the syntax,
+and the notion of environment --- the type of the substitution operation looks
+the same as it did for intuitionistic ST$\lambda$C\@.
+Being able to maintain this uniformity is a key step towards generalising the
+rest of \cref{sec:simple} (i.e., \cref{sec:gen-sem,sec:gen-syn}), as I do in
+\cref{sec:framework}.
+
+\begin{itemize}
+  \item Everything presented in this chapter is perfect.
+  \item But equivalence of substitutions is hard to define/work with.
+  \item The process of this development gives a template for defining
+    simultaneous substitution for other substructural calculi.
+\end{itemize}
+
+I have made few unforced design decisions in this chapter, so there are few
+aspects I can see future work improving upon.
+However, future work may want to extend the work of this chapter, in which case
+there are some unanswered questions.
+Principle among these, in my mind, is dealing with equivalence/equality of
+environments.
+Intuitionistic environments $\rho, \sigma : \Gamma \env\V \Delta$ are equal
+if and only if, for each type $A$ and each variable $x : \Delta \ni A$, we have
+$\rho\,x = \sigma\,x$.
+This follows from what we expect of equality of functions (function
+extensionality).
+Usage-aware environments, on the other hand, are $\Sigma$-types --- a way of
+dividing up the usage annotations of $\Gamma$, and then a function producing
+$\V$-values whose usage annotations come from that division.
+Equality of $\Sigma$-types is tricky --- we need to equate the first components,
+then rewrite the types of the second components by this equation before equating
+them.
+In practice, the equations rewriting other other equations build up so much that
+I have given up on a first effort to give a treatment of the equational theory
+of substitutions.
+Note that recursively defined environments (\cref{def:lr-rec-env}) are also
+$\Sigma$-types in cases where $\Delta$ is a concatenation of contexts, so that
+definition does not clearly help.

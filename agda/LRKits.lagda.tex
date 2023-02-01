@@ -53,7 +53,7 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
         ↘- P ≤[_+*_] -↙
       (λ Pᵣ → [ 𝓥 ] ctx Pᵣ γ ⇒ᵉ Δᵣ)
     env-+ (ρ , sp) =
-      let fit-hereₗ ↘, sp′ ,↙ fit-hereᵣ = ρ .Ψ .rel-+ₘ (sp , ρ .fit-here) in
+      let fit-hereₗ ↘, sp′ ,↙ fit-hereᵣ = ρ .Ψ .rel-+ₘ (ρ .fit-here , sp) in
       record { [_]_⇒ᵉ_ ρ; fit-here = fit-hereₗ }
         ↘, sp′ ,↙
       record { [_]_⇒ᵉ_ ρ; fit-here = fit-hereᵣ }
@@ -63,7 +63,7 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
       (λ Q → [ 𝓥 ] Γ ⇒ᵉ ctx Q δ) ◇ _≤[ r *ₗ Q′ ] →
       P ≤[ r *ₗ_] ◇ (λ P′ → [ 𝓥 ] ctx P′ γ ⇒ᵉ Δ′)
     env-* (ρ , sp) =
-      let fit-here′ , sp′ = ρ .Ψ .rel-*ₘ (sp , ρ .fit-here) in
+      let fit-here′ , sp′ = ρ .Ψ .rel-*ₘ (ρ .fit-here , sp) in
       sp′ , record { [_]_⇒ᵉ_ ρ; fit-here = fit-here′ }
 \end{code}
 
@@ -108,12 +108,12 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
     bindEnv ρ .lookup ((ul , ur) ↘, sp+ ,↙ (dl , dr)) (lvar (↙ i) q b)
       | sp+l , sp+r | bl , br = ↙ᵏ
       (≤*-trans (+ₘ-identityˡ→ (ur , sp+r)) (≤*-trans dr br))
-      (ρ .lookup (ρ .Ψ .rel-≤ₘ ≤*-refl (+ₘ-identityʳ→ (sp+l , dl)) ul)
+      (ρ .lookup (ρ .Ψ .rel-≤ₘ (+ₘ-identityʳ→ (sp+l , dl)) ≤*-refl ul)
         (lvar i q bl))
     bindEnv ρ .lookup ((ul , ur) ↘, sp+ ,↙ (dl , dr)) (lvar (↘ i) q b)
       | sp+l , sp+r | bl , br = vr (lvar (↘ i) q
       (≤*-trans (+ₘ-identityʳ→ (sp+l , dl))
-        (0*→≤* (ρ .Ψ .rel-0ₘ (≤*→0* bl , ul)))
+        (0*→≤* (ρ .Ψ .rel-0ₘ (ul , ≤*→0* bl)))
       ++ₙ
       ≤*-trans (+ₘ-identityˡ→ (ur , sp+r)) (≤*-trans dr br)))
 \end{code}

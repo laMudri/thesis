@@ -1,0 +1,82 @@
+A similar substitution lemma to the one presented in this chapter appears in the
+PhD thesis of \citet[p.\ 138]{petricek-thesis} under the name
+\emph{multi-nary substitution}.
+In my notation, \citeauthor{petricek-thesis}'s substitution rule looks like the
+following, up to permutation of the contexts containing $\Gamma$.
+Note that if $\Delta = \grQ\delta$, then $\gr r\Delta$ denotes the context
+$\plr{\gr r\grQ}\delta$.
+This rule is essentially an iterated version of the standard linear single
+substitution principle, and is used by \citeauthor{petricek-thesis} as a
+strengthened induction hypothesis required to derive single substitution.
+
+\[
+  \ebrule{%
+    \hypo{\Delta_1 \vdash A_1}
+    \hypo{\cdots}
+    \hypo{\Delta_n \vdash A_n}
+    \hypo{\Gamma, \gr{r_1}A_1, \ldots, \gr{r_n}A_n \vdash B}
+    \infer4{\Gamma, \gr{r_1}\Delta_1, \ldots, \gr{r_n}\Delta_n \vdash B}
+  }
+\]
+
+We can derive \citeauthor{petricek-thesis}-style multi-nary substitution as a
+corollary of my simultaneous substitution, using reasoning similar to that of
+\cref{thm:single-sub}.
+
+\begin{corollary}\label{thm:petricek-sub}
+  \Citeauthor{petricek-thesis}'s multi-nary substitution, as stated above, is
+  admissible in $\name$.
+\end{corollary}
+\begin{proof}
+  It is enough to provide a substitution of type
+  \[
+    \Gamma, \gr{r_1}\Delta_1, \ldots, \gr{r_n}\Delta_n
+    \env\vdash \Gamma, \gr{r_1}A_1, \ldots, \gr{r_n}A_n.
+  \]
+  To do this, we use \cref{thm:construct-env} repeatedly, leaving us needing a
+  substitution of type
+  $\Gamma, \gr0\Delta_1, \ldots, \gr0\Delta_n \env\vdash \Gamma$ and terms of
+  types
+  \begin{align*}
+    \gr0\gamma, \Delta_1, \gr0\delta_2, &\ldots, \gr0\delta_{n-1}, \gr0\delta_n
+    \vdash A_1 \\
+    &\vdots \\
+    \gr0\gamma, \gr0\delta_1, \gr0\delta_2, &\ldots, \gr0\delta_{n-1}, \Delta_n
+    \vdash A_n.
+  \end{align*}
+  The identity substitution and weakening by $\gr0$-annotated variables is
+  enough to make these requirements line up with the given hypotheses.
+\end{proof}
+
+My substitution principle is stronger than \citeauthor{petricek-thesis}'s.
+Where \citeauthor{petricek-thesis} requires that distinct variables be
+available for each hypothesis, I allow for separation of uses via addition of
+contexts.
+Below is a prototypical example.
+
+\begin{example}
+  Let $\Ann \coloneqq \plr{\mathbb N, =, 0, +, 1, \times}$, the exact
+  usage-counting posemiring.
+  Then, we can construct a substitution $\rho : \gr2A \env\vdash \gr1A, \gr1A$,
+  yielding a transformation of terms of the following form:
+  \[
+    \ebrule{%
+      \hypo{\gr1A, \gr1A \vdash B}
+      \infer1{\gr2A \vdash B}
+    }.
+  \]
+  To construct $\rho$, we use \cref{thm:construct-env} case
+  $\sep(\rightarrowtriangle)$, using the fact that $\gr2 \leq \gr1 + \gr1$.
+  From there, two identity substitutions suffice.
+  The action of $\rho$ on terms is to merge the two variables into one.
+  Note that a renaming, rather than a substitution, would also suffice.
+\end{example}
+
+Most notably, my (single) substitution principle more naturally fits the
+requirement we would have for the reduct of the $\beta$-rule for functions in
+$\name$, whereas \citeauthor{petricek-thesis}'s substitution principle would
+need some additional transformation for it to fit properly.
+This comes from the fact that the $\name$ function application rule introduces
+an algebraic ($+$) separation between its premises, whereas
+\citeauthor{petricek-thesis}'s substitution principle separates premises only
+via concatenation.
