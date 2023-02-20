@@ -55,6 +55,82 @@ Some of these modifications aim to bring Autosubst into line with
 theoretical basis.
 TODO: more.
 
-\subsection{Fiore, Plotkin, Turi}
+\subsection{Fiore et al.}
 
-TODO: cite \citet{FPT99} and \citet{FS22}.
+\todo{This section is currently a random selection of paragraphs.}
+Marcelo Fiore and various collaborators have a long line of work aiming for a
+categorical account of variable-binding~\citep{FPT99,Fiore08,FH13,FH10,FM10}.
+A recent, particularly relevant paper from this line of work is \citet{FS22},
+which mechanises some of this work to obtain a framework similar in scope to
+the work of \citet{AACMM21}.
+
+Perhaps the main methodological difference between the works by
+\citet{AACMM21} and \citet{FS22} is that \citet{AACMM21} start from typed
+syntaxes and then give them semantics, whereas \citet{FS22} start by
+characterising the category of models of a theory, and then later showing that
+syntaxes form the initial model.
+The latter approach means that \citeauthor{FS22} can do a significant amount of
+theory not mentioning syntax in a compositional and structured style.
+In contrast, the former approach is more lightweight when one wants to write
+programs without a categorical specification.
+
+I chose to base the work of this thesis on that of \citet{AACMM21} for largely
+circumstantial reasons.
+I only became aware of the work of \citet{FS22} when it was published, by which
+time I had already completed the bulk of the work presented in this thesis.
+Also, one of the authors of the former paper is my PhD supervisor, and the other
+authors too were working nearby, so it was easy to discuss their work quickly
+and informally.
+
+In terms of the underlying theory, both works extend multi-sorted universal
+algebra\todo{cite} with variable-binding.
+However, the two extensions are subtly different.
+Universal algebra already has a notion of variable, which supports renaming and
+substitution, and which allows a given term to be evaluated when the free
+variables of that term are assigned semantic values.
+\citeauthor{AACMM21} reuse this notion of variable, and allow binding of such
+variables in terms.
+On the other hand, \citeauthor{FS22} recast the existing variables as
+\emph{metavariables}, and introduce a new notion of (bindable) variables
+separately into the syntax.
+The resulting metavariables can then stand for arbitrary \emph{open} terms, and
+thus each one remembers its context and requires a substitution whenever it is
+used.
+
+%Compared to the work of \citet{AACMM21}, which is what I chose to guide this
+%chapter and the rest of this thesis, \citet{FS22} can be understood as providing
+%many extra features.
+%I happened not to be interested in these specific features, so have not
+%implemented them, but future development of the work I present in this thesis
+%could benefit from such features.
+%The extra features include an externally compiled language of syntax and theory
+%descriptions, internal support for metavariables, and a treatment of the
+%category of models (of which terms are the initial model and what I call
+%\AgdaFunction{sem} forms the universal morphism from terms to any other model).
+
+\Citeauthor{FS22} use metavariables to form descriptions of relations over
+terms, like an equational theory over the simply typed $\lambda$-calculus.
+Terms have, as well as their context of variables, a context of metavariables,
+and terms can contain a metavariable wherever they could contain a subterm.
+There is then an operation of metavariable substitution, which substitutes terms
+in the place of metavariables.
+Metavariable substitution is used to instantiate the rules of described
+relations/theories.
+In contrast, \citeauthor{AACMM21} make do with the variables of the metalanguage
+(i.e.\ Agda variables).
+\todo{Congruence once and for all.}
+
+Technologically, \citeauthor{FS22} provide an external domain-specific language
+for syntax descriptions.
+From such a description, a Python program generates some boilerplate Agda code
+providing the types, the algebraic signature, the well typed terms, and a proof
+that the terms are the initial model.
+Using code generation like this resembles parts of the Autosubst plugin, as
+opposed to the purely internal, generic programming-based solution given by
+\citeauthor{AACMM21} and in this thesis.
+
+\Citet[p.\ 19]{FS22} avoid sized types by defining their equivalent of the
+functorial mapping \AgdaFunction{map-s} specialised to \AgdaFunction{sem}, with
+these two functions being mutually recursive.
+This is a standard solution, where code reuse is traded away in favour of
+satisfying the termination checker and avoiding sized types.

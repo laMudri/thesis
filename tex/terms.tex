@@ -87,8 +87,9 @@ The contents of the context --- the types --- are then stored in the functional
 vector \AgdaField{ty-ctx}, which is a mapping from leaves in \AgdaField{shape}
 to object language types \AgdaDatatype{Ty}.
 The advantages of the functional vector representation will not become clear
-until later chapters\todo{forward reference}, where I make use of the ease of
-look-up and $\eta$-law of functions.
+until later chapters --- particularly the example in
+\cref{sec:usage-elaborator}, where I make use of the ease of look-up and
+$\eta$-law of functions.
 However, I claim for now that there is little to no disadvantage in the
 functional vector representation --- in particular, we have no need for
 function extensionality principles because we never talk about equality of

@@ -90,7 +90,7 @@ inductively constructing, as opposed to the description syntax found in the
 premises.
 
 In our generic version of \AgdaRecord{Semantics}, we keep the
-\AgdaField{ren\textasciicaron$\V$} and \AgdaField{$\llbracket$var$\rrbracket$}
+\AgdaField{ren\textasciicircum$\V$} and \AgdaField{$\llbracket$var$\rrbracket$}
 fields as before, and replace \AgdaField{$\llbracket$app$\rrbracket$} and
 \AgdaField{$\llbracket$lam$\rrbracket$} by a
 \AgdaField{$\llbracket$con$\rrbracket$} field as follows.
@@ -113,3 +113,140 @@ $\V$-values --- one value for each element of $\Delta$.
 We could make a special case of premises which do not bind any variables, as did
 \citet{AACMM21}, eliding the $\Box$ and empty environment, but I choose not to
 for uniformity and simplicity of presentation.
+
+To generate the expressions involving ellipses, I give an interpretation of the
+formal rule descriptions.
+The interpretation is parametrised on some
+\ExecuteMetaData[\SimpleSyntaxtex]{WithScope}, where, in
+\AgdaBound{,}\AgdaSpace{}\AgdaBound{$\Delta$}\AgdaSpace{}%
+\AgdaBound{$\llbracket$}\AgdaSpace{}\AgdaBound{$\Gamma$}\AgdaSpace{}%
+\AgdaBound{$\vdash$}\AgdaSpace{}\AgdaBound{A}\AgdaSpace{}%
+\AgdaBound{$\rrbracket$}, the context \AgdaBound{$\Delta$} stands for the newly
+bound variables of a premise, \AgdaBound{$\Gamma$} is the context as it was
+below the rule's horizontal line, and \AgdaBound{A} is the type of the premise.
+In the \AgdaInductiveConstructor{con} constructor for terms, the parameter is
+$\Gamma, \Delta \vdash A$, and in the \AgdaField{$\llbracket$con$\rrbracket$}
+field for semantics, the parameter is
+$\Box\plr{{} \env\V \Delta \dotto {} \sdtstile{}\C A}\,\Gamma$.
+
+A single premise with newly bound variables is interpreted by shuffling the
+parts into the right place, while multiple premises are interpreted as pointwise
+products of the individual premises (giving the ellipses above).
+
+\ExecuteMetaData[\SimpleSyntaxtex]{semp}
+
+A rule, with all its parameters instantiated, targets a specific type
+\AgdaBound{A$'$}, which we check to match the desired type \AgdaBound{A}.
+Finally, a whole \AgdaRecord{System} comprises a set \AgdaBound{L} of rule
+labels, and \AgdaBound{rs}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}\AgdaBound{L}%
+\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaRecord{Rule}.
+The interpretation of these data is to pick a rule label \AgdaBound{l}, and then
+take the interpretation of the rule \AgdaBound{rs}\AgdaSpace{}\AgdaBound{l}.
+For the sake of defining terms as a least fixed point, it is important to note
+that the interpretation of a syntax description is strictly positive in the
+parameter \AgdaBound{,\_$\llbracket$\_$\vdash$\_$\rrbracket$}.
+
+\ExecuteMetaData[\SimpleSyntaxtex]{semr}
+\ExecuteMetaData[\SimpleSyntaxtex]{sems}
+
+The interpretation of a system description as a single layer of syntax is
+functorial, supporting the \AgdaFunction{map-s} function when the parameter
+\AgdaBound{,\_$\llbracket$\_$\vdash$\_$\rrbracket$} is given as an extra
+argument named \AgdaBound{X} or \AgdaBound{Y} (which are both fixed as
+parameters of \AgdaFunction{map-s}, together with \AgdaBound{$\Gamma$} and
+\AgdaBound{$\Delta$}).
+
+\ExecuteMetaData[\SimpleSyntaxtex]{map-s-type}
+
+The implementation of \AgdaFunction{map-s} is straightforward, so I do not list
+it here.
+We preserve
+the shape of the syntactic layer, applying the function to each \AgdaBound{X}
+we find (wherever the description contains \AgdaInductiveConstructor{$\langle$}%
+\AgdaSpace{}\AgdaBound{$\Delta$}\AgdaSpace{}%
+\AgdaInductiveConstructor{`$\vdash$}\AgdaSpace{}\AgdaBound{A}\AgdaSpace{}%
+\AgdaInductiveConstructor{$\rangle$}).
+
+This \AgdaFunction{map-s} will be used in the generic syntax version of
+\AgdaFunction{sem} to recursively apply \AgdaFunction{sem} to all subterms.
+However, a major distinction between generic syntax and the specific syntax of
+previous sections is that the subterms found by \AgdaFunction{map-s} are not
+recognised by Agda's termination checker as \emph{structurally smaller} than
+the original term.
+Therefore, a na\"{i}vely written \AgdaFunction{sem} will fail Agda's termination
+check.
+
+To make \AgdaFunction{sem} pass the termination check, we have three major
+options:
+\begin{enumerate}
+  \item Assert \AgdaFunction{sem} to be terminating, bypassing the termination
+    check.
+  \item Use Agda's \emph{sized types} to remember that the subterms are smaller.
+  \item Avoid sized types, and index terms over some user-defined type (for
+    example, natural numbers or ordinal notations) which is structurally smaller
+    at subterms.
+\end{enumerate}
+
+Each of these approaches has drawbacks.
+Approach 1 is clearly unsafe, in the sense that the fundamental lemma
+\AgdaFunction{sem} is not being completely checked for type-correctness.
+Approach 2 is also unsafe, because Agda's sized type implementation is known to
+make the system inconsistent~\citep{AgdaIssue1201}.
+Meanwhile, approach 3 is safe, but entails a lot of manually extracted and
+supplied extra arguments, which I think would distract from the presentation and
+make the resulting code harder to use.
+I choose to follow \citet{AACMM21} in using sized types, justified by the idea
+that Agda may eventually have a sound implementation of sized types, at which
+point I would want my code to be as easy to update for that new version of Agda
+as possible.
+
+Using sized types, my type family of \AgdaRecord{System}-generic terms is as
+below.
+\AgdaFunction{Scope} is a name for the transformation of an
+\AgdaFunction{OpenFam} into a \AgdaRecord{Ctx}\AgdaSpace{}\AgdaSymbol{$\to$}%
+\AgdaSpace{}\AgdaFunction{OpenFam} which appends the extra context to the
+existing context before applying the original \AgdaFunction{OpenFam}
+(in this case, producing something like $\Gamma, \Delta \vdash A$ from
+$\vdash$).
+The Agda builtin \AgdaPostulate{$\uparrow$} produces a bigger size from an
+existing size \AgdaBound{sz}, giving us here that the size of a term is 1 bigger
+than the size of all of its immediate subterms.
+Agda's elaborator and termination checker have special support for sizes, so we
+do not have to worry much about them from this point on.
+
+\ExecuteMetaData[\SimpleTermtex]{Tm}
+
+Corresponding to the generic \AgdaInductiveConstructor{`con} constructor for
+terms, we have a generic field \AgdaField{$\llbracket$con$\rrbracket$} in the
+updated \AgdaRecord{Semantics} record.
+In place of where one might expect
+\AgdaFunction{Scope}\AgdaSpace{}\AgdaBound{$\C$}, we instead have
+\AgdaFunction{Kripke}\AgdaSpace{}\AgdaBound{$\V$}\AgdaSpace{}\AgdaBound{$\C$},
+with \AgdaFunction{Kripke} defined below.
+The form of \AgdaFunction{Kripke} follows from the shape we saw in the type of
+the \AgdaField{$\llbracket$lam$\rrbracket$} field we saw in \cref{sec:gen-sem},
+where I use an environment targeting \AgdaBound{$\Delta$} as a way to say
+``a value for each type in \AgdaBound{$\Delta$}''.
+
+\ExecuteMetaData[\SimpleSemanticstex]{Kripke}
+\ExecuteMetaData[\SimpleSemanticstex]{Semantics}
+
+Finally, we get a generic semantic traversal as follows.
+The function \AgdaFunction{bindEnv} is unchanged from \cref{sec:gen-sem}, as it
+never mentions the syntax.
+The type of the traversal \AgdaFunction{sem} is also basically unchanged --- we
+just need to account for arbitrary term sizes (\AgdaBound{sz}), which will get
+smaller when recursing on subterms.
+I have chosen, as did \citet{AACMM21}, to define \AgdaFunction{sem} mutually
+with a function \AgdaFunction{body}, which is like a counterpart to
+\AgdaFunction{sem} dealing with newly bound variables.
+Note that the mutual recursion is not essential --- for example,
+\AgdaFunction{body} could simply be inlined.
+The \AgdaInductiveConstructor{`var} case of \AgdaFunction{sem} is as before.
+The \AgdaInductiveConstructor{`con} case, if viewed appropriately, is a direct
+generalisation of the \AgdaInductiveConstructor{lam} case from earlier.
+We recursively apply \AgdaFunction{sem} to all immediate subterms contained in
+\AgdaBound{M} (as found by \AgdaFunction{map-s}), with an environment updated to
+reflect the newly bound variables in each premise of the rule that was applied.
+
+\ExecuteMetaData[\SimpleSemanticstex]{sem}

@@ -208,7 +208,6 @@ module Box where
 %<*Semantics>
 \begin{code}
   record Semantics (𝓥 𝓒 : Ctx → Ty → Set) : Set where
-    constructor kit
     infix 20 _𝓥⊨_ _𝓒⊨_; private _𝓥⊨_ = 𝓥; _𝓒⊨_ = 𝓒
     field
       ren^𝓥 : ∀ {A} → ∀[ _𝓥⊨ A ⇒ □ (_𝓥⊨ A) ]

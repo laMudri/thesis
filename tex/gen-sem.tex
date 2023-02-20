@@ -168,3 +168,27 @@ the original context \AgdaBound{$\Gamma$} out of the
 \ExecuteMetaData[\SimpleKits]{GA}.
 
 \ExecuteMetaData[\SimpleSem]{kit}
+
+With \AgdaRecord{Semantics} fixed, I also give the corresponding implementation
+of \AgdaFunction{sem}.
+Like \AgdaFunction{trav} from \cref{sec:syntactic-kits}, we need a
+\AgdaFunction{bindEnv} function, but I have updated this to deal with renamings
+and the \AgdaFunction{$\Box$}-operator, and also to fit better with concepts
+important for generic \emph{syntax} (as in \cref{sec:gen-syn}).
+\AgdaFunction{bindEnv} now takes the old environment \AgdaBound{$\rho$}%
+\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}\AgdaFunction{[}\AgdaSpace{}%
+\AgdaBound{$\V$}\AgdaSpace{}\AgdaFunction{]}\AgdaSpace{}\AgdaBound{$\Gamma$}%
+\AgdaSpace{}\AgdaFunction{$\Rightarrow^e$}\AgdaSpace{}\AgdaBound{$\Delta$}, a
+renaming \AgdaBound{r}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaFunction{Ren}\AgdaSpace{}\AgdaBound{$\Gamma^{+}$}\AgdaSpace{}%
+\AgdaBound{$\Gamma$}, and an environment \AgdaBound{$\sigma$} in the renamed
+context \AgdaBound{$\Gamma^{+}$} targeting the context extension
+\AgdaBound{$\Delta$r}.
+In the \AgdaInductiveConstructor{lam} case of \AgdaFunction{sem}, the
+\AgdaField{$\llbracket$lam$\rrbracket$} field gives us exactly the renaming to
+pass to \AgdaFunction{bindEnv}, while the extension environment
+\AgdaBound{$\sigma$} is made as a singleton environment containing just the
+\AgdaBound{A}-value \AgdaBound{v}.
+
+\ExecuteMetaData[\SimpleSem]{sem}
+\ExecuteMetaData[\SimpleSem]{bindEnv}
