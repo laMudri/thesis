@@ -49,19 +49,27 @@ Being able to maintain this uniformity is a key step towards generalising the
 rest of \cref{sec:simple} (i.e., \cref{sec:gen-sem,sec:gen-syn}), as I do in
 \cref{sec:framework}.
 
-\begin{itemize}
-  \item Everything presented in this chapter is perfect.
-  \item But equivalence of substitutions is hard to define/work with.
-  \item The process of this development gives a template for defining
-    simultaneous substitution for other substructural calculi.
-\end{itemize}
-
 I have made few unforced design decisions in this chapter, so there are few
-aspects I can see future work improving upon.
+aspects I can see future work improving upon.\todo{Which?}
 However, future work may want to extend the work of this chapter, in which case
 there are some unanswered questions.
-Principle among these, in my mind, is dealing with equivalence/equality of
+Principal among these, in my mind, is dealing with equivalence/equality of
 environments.
+We want to talk about equality of environments for two related purposes.
+The most immediate is that we want to develop the equational theory of renaming
+and substitution --- for example, when we use \cref{thm:env-comp} to compose
+substitutions, we expect that composition to be associative and unital (with
+respect to \cref{thm:env-id}).
+These equations of substitutions should yield equations on terms in which such
+substitutions have been applied.
+Slightly more abstractly, I would like to develop a theory of
+\emph{quantitative multicategories}, in which multimorphisms have in their
+domain a list of objects paired with usage annotations.
+I would hope for $\name$ types and terms to give an example quantitative
+multicategory, analogously to how Lambek calculus gives an example of an
+ordinary multicategory and the simply typed $\lambda$-calculus gives an example
+of a Cartesian multicategory.
+
 Intuitionistic environments $\rho, \sigma : \Gamma \env\V \Delta$ are equal
 if and only if, for each type $A$ and each variable $x : \Delta \ni A$, we have
 $\rho\,x = \sigma\,x$.
@@ -79,3 +87,15 @@ of substitutions.
 Note that recursively defined environments (\cref{def:lr-rec-env}) are also
 $\Sigma$-types in cases where $\Delta$ is a concatenation of contexts, so that
 definition does not clearly help.
+
+I hope that people working on substructural type systems in the future can take
+inspiration from the process laid out in \cref{sec:lrkits} when working out the
+appropriate notion of environment for their discipline.
+Particularly, \cref{def:lr-rec-env} (the recursive definition) should serve as a
+specification, if not the actual implementation, when coming across a new
+substructural discipline.
+As for the progression to \cref{def:lr-env}, this appears to arise from the fact
+that the quantitative usage information is a refinement of the intuitionistic de
+Bruijn index-based syntax.
+%Being just a refinement means that the action of an environment on a variable
+%is largely as it was in the intuitionistic case,

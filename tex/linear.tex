@@ -1,13 +1,37 @@
-\chapter{Linearity}\label{sec:linearity}
+\chapter{Linearity and modality}\label{sec:linearity}
 
-Linear logic was introduced by \citet{girard87linear} as a tool of proof theory.
-Its distinguishing feature is that hypotheses, by default, must be used exactly
-once.
-I devote a chapter to introducing linear logic because it is better understood
-than any individual or general semiring-annotated calculi, and is thus an
-important point of comparison.
-Linear logic will be an instance of the semiring-annotated systems we study
-later.
+\begin{itemize}
+  \item Motivation via prior work:
+    \begin{itemize}
+      \item Rust
+      \item Session types
+      \item ATS
+      \item Complexity \citep{Hofmann03}
+      \item Modal\ldots
+    \end{itemize}
+  \item Can \citet{AACMM21} capture linearity/modality?
+    It's unclear based on standard presentations.
+    Let's find one that looks good (DILL/PD), and see whether it works.
+  \item In-depth introduction of DILL and PD
+  \item It's close to working, but doesn't.
+  \item Mention \citet{BBdePH93}, problems with substitution.
+\end{itemize}
+
+The techniques of \cref{sec:simple} were developed to handle idealised core
+calculi, like the simply typed $\lambda$-calculus and its many variants.
+Such core calculi are fairly close to some real intermediate languages,
+\todo{cite} though many intermediate languages also have polymorphism in their
+type systems, which I have not discussed, but has been considered by much prior
+work\todo{cite}.
+
+%Linear logic was introduced by \citet{girard87linear} as a tool of proof theory.
+%Its distinguishing feature is that hypotheses, by default, must be used exactly
+%once.
+%I devote a chapter to introducing linear logic because it is better understood
+%than any individual or general semiring-annotated calculi, and is thus an
+%important point of comparison.
+%Linear logic will be an instance of the semiring-annotated systems we study
+%later.
 
 \section{Intuitionistic linear logic}\label{sec:ill}
 \input{ill.tex}

@@ -147,14 +147,14 @@ target context --- empty, concatenation, and a usage-annotated singleton.
   \end{itemize}
 \end{definition}
 
-\begin{example}
+\begin{example}\label{ex:rec-sub}
   Take $\Ann = \plr{\mathbb N, =, 0, +, 1, \times}$, with the equality order
   chosen to avoid any concerns around subsumption of annotations.
-  Then, there is an intuitionistic recursive environment as follows, where
-  $y\,z$ is the application of $y$ to $z$.
+  Then, there is an intuitionistic recursive environment (substitution) as
+  follows, where $y\,z$ is the application of $y$ to $z$.
   \[
     \alr{\alr{z},\alr{y\,z}} :
-    \plr{x : A, y : B \to C, z : B} \env\vdash_R \plr{B, C}.
+    \plr{x : A, y : B \to C, z : B} \env\vdash_R \plr{B, C}
   \]
   There is also a usage-aware recursive environment
   \[
@@ -172,9 +172,33 @@ target context --- empty, concatenation, and a usage-annotated singleton.
   $\gr0x : A, \gr1y : B \multimap C, \gr1z : B \vdash y\,z : C$.
 \end{example}
 
-From the example, we can see that the important usage vectors are the initial
-one $\begin{pmatrix} \gr0 & \gr2 & \gr3 \end{pmatrix}$ and the usage vectors
-at which terms are derived: $\begin{pmatrix} \gr0 & \gr0 & \gr1 \end{pmatrix}$
+\begin{example}\label{ex:rec-ren}
+  Take $\Ann = \plr{\mathbb N, =, 0, +, 1, \times}$.
+  Then, there is an intuitionistic recursive environment (renaming) as follows,
+  where $\alr{-,-,-}$ abbreviates $\alr{-,\alr{-,-}}$ (matching a similar
+  abbreviation in the notation of contexts).
+  \[
+    \alr{\alr{c},\alr{a},\alr{a}} :
+    \plr{a : A, b : B, c : C, d : D} \env\sqni_R \plr{C, A, A}.
+  \]
+  There is also a usage-aware recursive environment
+  \[
+    \alr{\alr{c},\alr{a},\alr{a}} :
+    \plr{\gr6a : A, \gr0b : B, \gr1c : C, \gr0d : D}
+    \env\sqni_R \plr{\gr1C, \gr2A, \gr4A}.
+  \]
+  Intuitively, this choice of usage annotations works because the $\gr6$ $A$s on
+  the left can be divided into the $\gr2 + \gr4$ $A$s on the right.
+  Similarly, the $\gr0$ $B$s and $\gr0$ $D$s on the left can be discarded to
+  yield none on the right.
+  Note that these divisions are directed, so we cannot merge variables or
+  introduce new variables on the right.
+\end{example}
+
+From \cref{ex:rec-sub}, we can see that the important usage vectors are the
+initial one $\begin{pmatrix} \gr0 & \gr2 & \gr3 \end{pmatrix}$ and the usage
+vectors at which terms are derived:
+$\begin{pmatrix} \gr0 & \gr0 & \gr1 \end{pmatrix}$
 and $\begin{pmatrix} \gr0 & \gr1 & \gr1 \end{pmatrix}$.
 I will call the latter the \emph{leaf vectors}.
 The intermediate vector $\begin{pmatrix} \gr0 & \gr2 & \gr2 \end{pmatrix}$ can

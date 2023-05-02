@@ -55,32 +55,49 @@ Some of these modifications aim to bring Autosubst into line with
 theoretical basis.
 TODO: more.
 
-\subsection{Fiore et al.}
+\subsection{Second order abstract syntax}\label{sec:fiore}
 
-\todo{This section is currently a random selection of paragraphs.}
 Marcelo Fiore and various collaborators have a long line of work aiming for a
 categorical account of variable-binding~\citep{FPT99,Fiore08,FH13,FH10,FM10}.
-A recent, particularly relevant paper from this line of work is \citet{FS22},
-which mechanises some of this work to obtain a framework similar in scope to
-the work of \citet{AACMM21}.
+A recent, particularly relevant paper from this line of work is that of
+\citet{FS22}, which mechanises some of this work to obtain a framework similar
+in scope to the work of \citet{AACMM21}.
+However, there are several differences between the resulting mechanised
+frameworks, of methodological, mathematical, and technical nature.
 
-Perhaps the main methodological difference between the works by
-\citet{AACMM21} and \citet{FS22} is that \citet{AACMM21} start from typed
-syntaxes and then give them semantics, whereas \citet{FS22} start by
-characterising the category of models of a theory, and then later showing that
-syntaxes form the initial model.
-The latter approach means that \citeauthor{FS22} can do a significant amount of
-theory not mentioning syntax in a compositional and structured style.
-In contrast, the former approach is more lightweight when one wants to write
-programs without a categorical specification.
+Though \citet{AACMM21} did not state their results in categorical terms, it is
+still useful to infer what the category-theoretic statement would have been, and
+compare it to the statement actually given by \citet{FPT99} and \citet{FS22}.
+When we do this, we see that while \citeauthor{FPT99} deal with the category of
+contexts under renaming, and presheaves on that category.
+This means that every model must be shown to respect renaming before touching
+the framework of \citeauthor{FS22}.
+Meanwhile, \citeauthor{AACMM21} make use of the interplay between the discrete
+category of contexts and the category of contexts under renaming.
+For example, the models (\AgdaRecord{Semantics}) of \citet{AACMM21} require only
+that the family of semantic values $\V$ be shown to respect renaming, while the
+fact that the result family $\C$ respects renaming follows as a corollary of the
+traversal function \AgdaFunction{trav}.
+\Citeauthor{FS22} make no distinction between $\V$ and $\C$, essentially only
+having $\C$, but requiring it to respect renaming before getting the morphism
+to that model from the initial model (the syntax).
+In particular, this interplay allows us to derive renaming for terms in the way
+we saw in \cref{sec:gen-syn} --- by making $\V$ the family of variables, which
+trivially respects renaming.
+\todo{Every model is an environment model?}
 
-I chose to base the work of this thesis on that of \citet{AACMM21} for largely
-circumstantial reasons.
-I only became aware of the work of \citet{FS22} when it was published, by which
-time I had already completed the bulk of the work presented in this thesis.
-Also, one of the authors of the former paper is my PhD supervisor, and the other
-authors too were working nearby, so it was easy to discuss their work quickly
-and informally.
+Perhaps the relative complexity of the categorical account of the work of
+\citet{AACMM21} is why the authors decided not to state it in such terms.
+However, it is also likely that \citeauthor{AACMM21} developed their work in
+quite a different style to how \citeauthor{FPT99} did, despite arriving at
+similar theories.
+The work of \citet{AACMM21} is designed first and foremost to facilitate
+programming language mechanisations, and thus pays a lot of attention to syntax
+and traversals of it, making sure that the results compute well in Agda.
+On the other hand, \citeauthor{FPT99} started from theoretical investigations
+about the category of models of theories with binding, and only applied their
+work to the mechanisation of programming languages in the much later work of
+\citet{FS22}.
 
 In terms of the underlying theory, both works extend multi-sorted universal
 algebra\todo{cite} with variable-binding.
@@ -94,8 +111,8 @@ On the other hand, \citeauthor{FS22} recast the existing variables as
 \emph{metavariables}, and introduce a new notion of (bindable) variables
 separately into the syntax.
 The resulting metavariables can then stand for arbitrary \emph{open} terms, and
-thus each one remembers its context and requires a substitution whenever it is
-used.
+thus each one remembers its context and requires an explicit substitution
+whenever it is used.
 
 %Compared to the work of \citet{AACMM21}, which is what I chose to guide this
 %chapter and the rest of this thesis, \citet{FS22} can be understood as providing
@@ -118,7 +135,16 @@ Metavariable substitution is used to instantiate the rules of described
 relations/theories.
 In contrast, \citeauthor{AACMM21} make do with the variables of the metalanguage
 (i.e.\ Agda variables).
-\todo{Congruence once and for all.}
+
+More concrete work by \citet{MMS18}, building on the approach to semantics of
+\citet{ACMM17} and \cref{sec:gen-sem}, also deals with syntactic contexts into
+which terms can be substituted (as part of developing notions of contextual
+equivalence).
+However, this work makes use of several different notions of syntactic context,
+rather than just the one given naturally by metavariables in the framework of
+\citeauthor{FS22}.
+This suggests that more research is needed about the various roles of
+metavariables before any particular approach is standardised.
 
 Technologically, \citeauthor{FS22} provide an external domain-specific language
 for syntax descriptions.
@@ -134,3 +160,148 @@ functorial mapping \AgdaFunction{map-s} specialised to \AgdaFunction{sem}, with
 these two functions being mutually recursive.
 This is a standard solution, where code reuse is traded away in favour of
 satisfying the termination checker and avoiding sized types.
+
+Despite all of these differences,
+I chose to base the work of this thesis on that of \citet{AACMM21} for largely
+circumstantial reasons.
+I only became aware of the work of \citet{FS22} when it was published, by which
+time I had already completed the bulk of the work presented in this thesis.
+Also, one of the authors of the former paper is my PhD supervisor, and the other
+authors too were working nearby, so it was easy to discuss their work quickly
+and informally.
+I think it is clear what it would mean to adapt the later work of this thesis to
+a framework in the style of \citeauthor{FS22} rather than \citeauthor{AACMM21},
+but it may not be obvious how usage restrictions (for ordinary variables) and
+metavariables should interact.
+
+Notably for this thesis, the work of \citet{FPT99} has been extended to
+substructural syntaxes by \citet{TP06}.
+This work gives a mechanism for turning a description of contexts and their
+structural rules (expressed as a pseudo-monad on the 2-category of categories)
+into a framework for defining substructural syntaxes, and more generally a
+category of algebras of which the syntax is the initial object.
+As examples, they give the untyped $\lambda$-calculus, an untyped multiplicative
+linear logic, and a bunched logic.
+These examples show a broad range of substructural disciplines they support ---
+comparable to the work of \citet{LicataSR17} (which I discuss in
+\cref{sec:semirings-conc}), and more than I discuss in this thesis.
+However, they also show two of the limitations of their approach.
+Firstly, this work provides no way to track types, though it should be possible
+to incorporate types at the expense of complicating the categorical
+constructions they use.
+Secondly, it appears to be impossible to encode the syntactic forms used for the
+additive connectives (i.e., the Cartesian product and coproduct) of linear
+logic.
+Essentially, subterms can only be combined into a larger term in the same ways
+as how contexts can be appended together.
+For example, in a bunched logic, contexts can be combined through both sharing
+conjunction (the Cartesian product) and separating conjunction
+(a monoidal product).
+Correspondingly, the syntax descriptions of \citeauthor{TP06} allow for the
+syntax of sharing pairs and separating pairs.
+However, in the case of linear logic, contexts can only be combined via a
+monoidal product, so we only get separating pairs (tensor-products) and not
+sharing pairs (with-products).
+\todo{Maybe this should go in the linearity chapter.}
+
+\subsection{Substitution-based semantics}
+
+A feature shared by the frameworks of \citet{AACMM21} and \citet{FPT99} (and
+the rest of the work described in \cref{sec:fiore}) is that they are both often
+concerned about how renamings act upon semantics/models.
+The basic currency of both systems is presheaves on the category of contexts
+under renaming, and when the user wants to produce a semantics, they must show
+that the desired semantics forms such a presheaf --- amounting to showing that
+the relevant type family respects renamings (in the direction that may introduce
+new, unused variables to the context).
+
+In contrast, the work of \citet{HHLM22} is based around the category of contexts
+under \emph{substitution} or, more precisely, the morphisms given by semantic
+environments of whatever semantics is being defined.
+
+\begin{itemize}
+  \item Hard to bootstrap.
+  \item All terms have the same, countably infinite context.
+\end{itemize}
+
+\subsection{Nominal techniques}
+
+There have been essentially two approaches when it comes to incorporating
+nominal techniques into proof assistants.
+The first is to develop a new foundational theory and develop a new proof
+assistant on top of it.
+The second is to take an existing proof assistant and provide a library,
+possibly based on unsafe features.
+
+The best-developed nominal foundational theory at the time of writing is
+\emph{Fraenkel-Mostowski (FM) set theory}, as introduced by
+\citet{Gabbay-thesis} and \citet{GP02}.
+\citeauthor{Gabbay-thesis}'s thesis presents FM set theory, and then uses it as
+the basis for a proof assistant Isabelle/FM and programming language FreshML\@.
+FM is a variant of ZF set theory containing an infinite set $\mathbb A$ of
+\emph{atoms} or \emph{names}, and the \emph{equivariance axiom}, stating that
+every FM proposition is invariant under consistent permutation of $\mathbb A$.
+In this setting, one can define the quantifier
+$\reflectbox{$\mathsf N$}a.~\phi$,
+read as introducing a \emph{new} or \emph{fresh} name $a$ to be used in the
+proposition $\phi$.
+As a material set theory, FM is unusual in that it refutes the axiom of choice.
+In terms of applications to proof assistants, this means that FM is incompatible
+with much existing Isabelle-based work, including anything using the Hilbert
+$\varepsilon$-operator, which is used liberally in Isabelle/HOL\@.
+For example, if the syntax of a programming language is formalised in FM, then
+there is no formal connection to the kind of foundations in which interesting
+denotational semantics have likely been formalised.
+
+Related to nominal set theories is the recent work of \citet{Pitts23} about
+theories of \emph{locally nameless sets}.
+This behaves quite similarly to nominal theories, in that free variables have
+names, and renaming is given by primitive operations.
+In fact, \citet{Pitts23} shows that every locally nameless set is a nominal set.
+
+The other approach --- implementing a nominal library within an existing proof
+assistant --- is exemplified by the Nominal Isabelle library of \citet{Urban08}.
+This work is based around having a countably infinite discrete type
+\texttt{name} (which could be a type of natural numbers or strings, for example)
+which is treated abstractly, and then defining liftings of permutations on
+\texttt{name} to permutations on any other types involving \texttt{name}s.
+Because these liftings are defined explicitly within Isabelle/HOL, the Nominal
+Isabelle setup amounts to an explicit model of a nominal logic within
+Isabelle/HOL.
+This setup resembles what \citet{AACMM21} did within Agda, and similarly what I
+do later in this thesis --- creating a library within an existing proof
+assistant.
+The main downside, compared to working internally to a nominal set theory, is
+that the external constructions of Nominal Isabelle are more complicated, and
+involve keeping track of more properties that do not come as part of the theory
+the proof assistant understands.
+
+There has also been an effort to replicate the Nominal Isabelle work in Coq by
+\citet{ABW06}.
+However, this work appears to have been abandoned before publication, and the
+approach is unclear from the work-in-progress paper.
+Nominal libraries have also been made in general-purpose programming languages,
+like in Haskell with the nom package~\citep{Gabbay20}.
+
+From a broader perspective, I claim that nominal techniques solve a subtly
+different problem to that solved by the likes of Autosubst, the work of Fiore,
+and the techniques discussed in detail in this chapter.
+The names found in nominal techniques are more general than (names of)
+variables in formal systems.
+This means that nominal techniques have been applicable to problems outside
+standard programming language theory\todo{Find applications}.
+However, in certain ways, this is arguably not a good fit for type systems.
+In a basic nominal formalisation of a syntax with binding, there is no real
+distinction between the context of a term and the collection of that term's free
+variables.
+This, for example, leaves no natural place to put the types of variables, except
+as either a partial function from the set of names to types, or from the
+computed set of free variables to types.
+The discrepancy becomes even more apparent in substructural systems, as we see
+later, where we want tight control over the context, as opposed to the scope.
+
+\subsection{Others}
+
+\begin{itemize}
+  \item JFDI --- \citet{BHKM12}
+\end{itemize}

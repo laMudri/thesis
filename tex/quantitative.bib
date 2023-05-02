@@ -139,7 +139,7 @@
   journal = {Advances in Mathematics}
 }
 
-@article{bhkm12,
+@article{BHKM12,
   title = "Strongly typed term representations in Coq",
   keywords = "Coq proof assistant, typed object languages , de Bruijn indices",
   author = "Nick Benton and Chung-Kil Hur and Andrew Kennedy and Conor McBride",
@@ -330,7 +330,7 @@
 
 
 
-@inproceedings{BentonBPH93,
+@inproceedings{BBdePH93,
   author    = {P. N. Benton and
                Gavin M. Bierman and
                Valeria de Paiva and
@@ -486,6 +486,17 @@ book{Prawitz65,
   year = {2002},
   volume = {13},
   pages = {341--363}
+}
+
+@thesis{Gabbay-thesis,
+  author = {Gabbay, Murdoch J.},
+  institution = {University of Cambridge, UK},
+  url = {http://www.gabbay.org.uk/papers.html\#thesis},
+  year = {2001},
+  date = {2001-03},
+  file = {http://www.gabbay.org.uk/papers/thesis.pdf},
+  title = {\href{http://www.gabbay.org.uk/papers.html\#thesis}{A Theory of Inductive Definitions with alpha-Equivalence}},
+  type = {phdthesis}
 }
 
 @InProceedings{WA21,
@@ -818,7 +829,7 @@ book{Prawitz65,
 @InProceedings{FH10,
   author="Fiore, Marcelo and Hur, Chung-Kil",
   editor="Dawar, Anuj and Veith, Helmut",
-  title="Second-Order Equational Logic (Extended Abstract) ",
+  title="Second-Order Equational Logic (Extended Abstract)",
   booktitle="Computer Science Logic",
   year="2010",
   publisher="Springer Berlin Heidelberg",
@@ -839,4 +850,118 @@ book{Prawitz65,
   pages="368--380",
   abstract="Fiore and Hur [10] recently introduced a conservative extension of universal algebra and equational logic from first to second order. Second-order universal algebra and second-order equational logic respectively provide a model theory and a formal deductive system for languages with variable binding and parameterised metavariables. This work completes the foundations of the subject from the viewpoint of categorical algebra. Specifically, the paper introduces the notion of second-order algebraic theory and develops its basic theory. Two categorical equivalences are established: at the syntactic level, that of second-order equational presentations and second-order algebraic theories; at the semantic level, that of second-order algebras and second-order functorial models. Our development includes a mathematical definition of syntactic translation between second-order equational presentations. This gives the first formalisation of notions such as encodings and transforms in the context of languages with variable binding.",
   isbn="978-3-642-15155-2"
+}
+
+@article{Pitts23,
+  author    = {Andrew M. Pitts},
+  title     = {Locally Nameless Sets},
+  journal   = {Proc. {ACM} Program. Lang.},
+  volume    = {7},
+  number    = {{POPL}},
+  pages     = {488--514},
+  year      = {2023},
+  url       = {https://doi.org/10.1145/3571210},
+  doi       = {10.1145/3571210},
+  timestamp = {Fri, 10 Feb 2023 23:34:54 +0100},
+  biburl    = {https://dblp.org/rec/journals/pacmpl/Pitts23.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{HHLM22,
+  author    = {Andr{\'{e}} Hirschowitz and
+               Tom Hirschowitz and
+               Ambroise Lafont and
+               Marco Maggesi},
+  title     = {Variable binding and substitution for (nameless) dummies},
+  journal   = {CoRR},
+  volume    = {abs/2209.02614},
+  year      = {2022},
+  url       = {https://doi.org/10.48550/arXiv.2209.02614},
+  doi       = {10.48550/arXiv.2209.02614},
+  eprinttype = {arXiv},
+  eprint    = {2209.02614},
+  timestamp = {Mon, 26 Sep 2022 18:12:06 +0200},
+  biburl    = {https://dblp.org/rec/journals/corr/abs-2209-02614.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@InProceedings{ABW06,
+  author =      {Brian Aydemir and Aaron Bohannon and Stephanie Weirich},
+  title =       {Nominal Reasoning Techniques in {Coq}},
+  booktitle =   {International Workshop on Logical Frameworks and
+                  Meta-Languages:Theory and Practice (LFMTP) },
+  year =        2006,
+  address =     {Seattle, WA, USA},
+  month =       aug
+}
+
+@article{Urban08,
+  author    = {Christian Urban},
+  title     = {Nominal Techniques in {Isabelle/HOL}},
+  journal   = {J. Autom. Reason.},
+  volume    = {40},
+  number    = {4},
+  pages     = {327--356},
+  year      = {2008},
+  url       = {https://doi.org/10.1007/s10817-008-9097-2},
+  doi       = {10.1007/s10817-008-9097-2},
+  timestamp = {Wed, 02 Sep 2020 13:30:06 +0200},
+  biburl    = {https://dblp.org/rec/journals/jar/Urban08.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@misc{Gabbay20,
+  author = {Murdoch J. Gabbay},
+  title = {The {nom} package}
+  year = {2020},
+  url = {https://hackage.haskell.org/package/nom-0.1.0.2/docs/Language-Nominal.html}
+}
+
+@article{TP06,
+    author = {Tanaka, Miki and Power, John},
+    title = "{A Unified Category-theoretic Semantics for Binding Signatures in Substructural Logics}",
+    journal = {Journal of Logic and Computation},
+    volume = {16},
+    number = {1},
+    pages = {5-25},
+    year = {2006},
+    month = {02},
+    abstract = "{Generalizing Fiore et al.'s use of the category 𝔽 of finite sets to model untyped Cartesian contexts and Tanaka's use of the category ℙ of permutations to model untyped linear contexts, we let S be an arbitrary pseudo-monad on Cat and let S1 model untyped contexts in general: this generality includes contexts for sub-structural logics such as the Logic of Bunched Implications and variants. Given a pseudo-distributive law of S over the (partial) pseudo-monad for free cocompletions, we define a canonical substitution monoidal structure on the category [(S1)op, Set], generalizing substitution monoidal structures for Cartesian and linear contexts and providing a natural substitution structure for Bunched Implications and its variants. We give a concrete description of the substitution monoidal structure. We then give an axiomatic definition of a binding signature, again extending the definitions for Cartesian and linear contexts. We investigate examples in detail, then prove the central result of the paper, yielding initial algebra semantics for binding signatures at the level of generality we propose.}",
+    issn = {0955-792X},
+    doi = {10.1093/logcom/exi070},
+    url = {https://doi.org/10.1093/logcom/exi070},
+    eprint = {https://academic.oup.com/logcom/article-pdf/16/1/5/3707748/exi070.pdf},
+}
+
+@inproceedings{MMS18,
+  author = {McLaughlin, Craig and McKinna, James and Stark, Ian},
+  title = {Triangulating Context Lemmas},
+  year = {2018},
+  isbn = {9781450355865},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3167081},
+  doi = {10.1145/3167081},
+  abstract = {The idea of a context lemma spans a range of programming-language models: from Milner’s original through the CIU theorem to ‘CIU-like’ results for multiple language features. Each shows that to prove observational equivalence between program terms it is enough to test only some restricted class of contexts: applicative, evaluation, reduction, etc. We formally reconstruct a distinctive proof method for context lemmas based on cyclic inclusion of three program approximations: by triangulating between ‘applicative’ and ‘logical’ relations we prove that both match the observational notion, while being simpler to compute. Moreover, the observational component of the triangle condenses a series of approximations covering variation in the literature around what variable-capturing structure qualifies as a ‘context’. Although entirely concrete, our approach involves no term dissection or inspection of reduction sequences; instead we draw on previous context lemmas using operational logical relations and biorthogonality. We demonstrate the method for a fine-grained call-by-value presentation of the simply-typed lambda-calculus, and extend to a CIU result formulated with frame stacks. All this is formalised and proved in Agda: building on work of Allais et al., we exploit dependent types to specify lambda-calculus terms as well-typed and well-scoped by construction. By doing so, we seek to dispel any lingering anxieties about the manipulation of concrete contexts when reasoning about bound variables, capturing substitution, and observational equivalences.},
+  booktitle = {Proceedings of the 7th ACM SIGPLAN International Conference on Certified Programs and Proofs},
+  pages = {102–114},
+  numpages = {13},
+  keywords = {Dependent types, Context lemma, CIU theorem, Observational equivalence, Agda, Logical relations},
+  location = {Los Angeles, CA, USA},
+  series = {CPP 2018}
+}
+
+@article{Hofmann03,
+  author       = {Martin Hofmann},
+  title        = {Linear types and non-size-increasing polynomial time computation},
+  journal      = {Inf. Comput.},
+  volume       = {183},
+  number       = {1},
+  pages        = {57--85},
+  year         = {2003},
+  url          = {https://doi.org/10.1016/S0890-5401(03)00009-9},
+  doi          = {10.1016/S0890-5401(03)00009-9},
+  timestamp    = {Fri, 12 Feb 2021 22:15:51 +0100},
+  biburl       = {https://dblp.org/rec/journals/iandc/Hofmann03.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
 }

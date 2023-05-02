@@ -15,8 +15,23 @@ multicategory.
 Specifically, in the case of a simple intuitionistic type system, this is the
 composition of a Cartesian multicategory, which allows all of the terms being
 substituted in to share a context.
+\todo{Maybe delete multicategory remark.}
 
-\section{Term representation}
+This chapter almost entirely reviews prior work.
+In \cref{sec:terms}, I use a presentation of the dependently typed encoding of
+the simply typed $\lambda$-calculus from \citet{AR99} to set notational
+conventions.
+\Cref{sec:kits} presents the unpublished work of \citet{McBride05},
+successively deriving simultaneous renaming and simultaneous substitution for
+the terms defined in \cref{sec:terms}.
+The rest of the chapter generalises the shared core of renaming and substitution
+in two dimensions: in \cref{sec:gen-sem} following \citet{ACMM17} to cover
+semantic traversals, and in \cref{sec:gen-syn} following \citet{AACMM21} to
+cover a whole range of simply typed syntaxes with binding, rather than just
+a specific syntax.
+Finally, I review some related work in \cref{sec:mech-related}.
+
+\section{Term representation}\label{sec:terms}
 \input{terms.tex}
 \section{Renaming and substitution}\label{sec:kits}
 \input{kits.tex}
@@ -26,5 +41,5 @@ substituted in to share a context.
 \input{gen-syn.tex}
 %\section{Natural deduction vs sequent calculus}
 %\input{ndsc.tex}
-\section{Related work}
+\section{Related work}\label{sec:mech-related}
 \input{mech-related.tex}
