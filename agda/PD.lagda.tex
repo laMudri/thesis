@@ -1,0 +1,204 @@
+\begin{code}
+{-# OPTIONS --safe --without-K --postfix-projections #-}
+
+module PD where
+
+  data Ty : Set where
+    ι : Ty
+    □ : Ty → Ty
+
+  data Jud : Set where
+    true valid : Ty → Jud
+
+  data True : Jud → Set where
+    true : ∀ {A} → True (true A)
+  data Valid : Jud → Set where
+    valid : ∀ {A} → Valid (valid A)
+
+  data TypeMatch (A : Ty) : Jud → Set where
+    true : TypeMatch A (true A)
+    valid : TypeMatch A (valid A)
+
+  infix 50 _++_
+
+  data Tree (X : Set) : Set where
+    [_] : X → Tree X
+    [] : Tree X
+    _++_ : Tree X → Tree X → Tree X
+
+  data All {X} (T : X → Set) : Tree X → Set where
+    [_] : ∀ {x} → T x → All T [ x ]
+    [] : All T []
+    _++_ : ∀ {xt yt} → All T xt → All T yt → All T (xt ++ yt)
+
+  data Any {X} (T : X → Set) : Tree X → Set where
+    here : ∀ {x} → T x → Any T [ x ]
+    ↙ : ∀ {xt yt} → Any T xt → Any T (xt ++ yt)
+    ↘ : ∀ {xt yt} → Any T yt → Any T (xt ++ yt)
+
+  map-Any : ∀ {X} {T U : X → Set} →
+    (∀ {x} → T x → U x) → (∀ {xt} → Any T xt → Any U xt)
+  map-Any f (here x) = here (f x)
+  map-Any f (↙ i) = ↙ (map-Any f i)
+  map-Any f (↘ i) = ↘ (map-Any f i)
+
+  open import Data.Empty
+
+  Any-⊥ : ∀ {X xt} → Any {X = X} (λ _ → ⊥) xt → ⊥
+  Any-⊥ (↙ i) = Any-⊥ i
+  Any-⊥ (↘ i) = Any-⊥ i
+
+  open import Data.Product as ×
+  open import Data.Sum as ⊎
+  open import Function.Base using (id; _∘_; _|>_; case_of_)
+  open import Relation.Binary.PropositionalEquality as ≡ using (_≡_; refl)
+
+  lookup-All : ∀ {X} {T : X → Set} {xt x} → All T xt → Any (x ≡_) xt → T x
+  lookup-All [ t ] (here refl) = t
+  lookup-All (ttl ++ ttr) (↙ i) = lookup-All ttl i
+  lookup-All (ttl ++ ttr) (↘ i) = lookup-All ttr i
+
+  Ctx : Set
+  Ctx = Tree Jud
+
+  infix 40 _∋_ _⊢_
+
+  _∋_ : Ctx → Ty → Set
+  Γ ∋ A = Any (TypeMatch A) Γ
+
+  view-∋-true-valid : ∀ {Γ A} → Γ ∋ A → Any (true A ≡_) Γ ⊎ Any (valid A ≡_) Γ
+  view-∋-true-valid (here true) = inj₁ (here refl)
+  view-∋-true-valid (here valid) = inj₂ (here refl)
+  view-∋-true-valid (↙ v) = ⊎.map ↙ ↙ (view-∋-true-valid v)
+  view-∋-true-valid (↘ v) = ⊎.map ↘ ↘ (view-∋-true-valid v)
+
+  keep-valid : Ctx → Tree Ty
+  keep-valid [ true A ] = []
+  keep-valid [ valid A ] = [ A ]
+  keep-valid [] = []
+  keep-valid (Γ ++ Δ) = keep-valid Γ ++ keep-valid Δ
+
+  all-valid : Tree Ty → Ctx
+  all-valid [ A ] = [ valid A ]
+  all-valid [] = []
+  all-valid (As ++ Bs) = all-valid As ++ all-valid Bs
+
+  filter-valid : Ctx → Ctx
+  filter-valid = all-valid ∘ keep-valid
+
+  pres-valid : ∀ {Γ A} →
+    Any (valid A ≡_) Γ → Any (valid A ≡_) (filter-valid Γ)
+  pres-valid (here refl) = here refl
+  pres-valid (↙ i) = ↙ (pres-valid i)
+  pres-valid (↘ i) = ↘ (pres-valid i)
+
+  data _⊢_ (Γ : Ctx) : Ty → Set where
+    var : ∀ {A} → Γ ∋ A → Γ ⊢ A
+    □i : ∀ {A} → filter-valid Γ ⊢ A → Γ ⊢ □ A
+    □e : ∀ {A B} → Γ ⊢ □ A → Γ ++ [ valid A ] ⊢ B → Γ ⊢ B
+
+  record Env (T : Ctx → Ty → Set) (Γ Δ : Ctx) : Set where
+    field
+      true-part : ∀ {A} → Any (true A ≡_) Δ → T Γ A
+      valid-part : ∀ {A} → Any (valid A ≡_) Δ → T (filter-valid Γ) A
+  open Env public
+
+  Ren = Env _∋_
+  Sub = Env _⊢_
+
+  view-Env-++ : ∀ {T Γ Δl Δr} → Env T Γ (Δl ++ Δr) → Env T Γ Δl × Env T Γ Δr
+  view-Env-++ ρ .proj₁ .true-part = ρ .true-part ∘ ↙
+  view-Env-++ ρ .proj₁ .valid-part = ρ .valid-part ∘ ↙
+  view-Env-++ ρ .proj₂ .true-part = ρ .true-part ∘ ↘
+  view-Env-++ ρ .proj₂ .valid-part = ρ .valid-part ∘ ↘
+
+  filter-valid-Valid : ∀ {Γ} → All Valid (filter-valid Γ)
+  filter-valid-Valid {Γ = [ true A ]} = []
+  filter-valid-Valid {Γ = [ valid A ]} = [ valid ]
+  filter-valid-Valid {Γ = []} = []
+  filter-valid-Valid {Γ = Γ ++ Δ} = filter-valid-Valid ++ filter-valid-Valid
+
+  -- Valid-in-filter-valid :
+  --   ∀ {Γ A} → Any (valid A ≡_) Γ → Any (valid A ≡_) (filter-valid Γ)
+  -- Valid-in-filter-valid i = {!!}
+
+  filter-valid-⊆ : ∀ {T Γ} → Any T (filter-valid Γ) → Any T Γ
+  filter-valid-⊆ {Γ = [ valid A ]} i = i
+  filter-valid-⊆ {Γ = Γ ++ Δ} (↙ i) = ↙ (filter-valid-⊆ i)
+  filter-valid-⊆ {Γ = Γ ++ Δ} (↘ i) = ↘ (filter-valid-⊆ i)
+
+  filter-valid-idem : ∀ {Γ} → filter-valid (filter-valid Γ) ≡ filter-valid Γ
+  filter-valid-idem {Γ = [ true A ]} = refl
+  filter-valid-idem {Γ = [ valid A ]} = refl
+  filter-valid-idem {Γ = []} = refl
+  filter-valid-idem {Γ = Γ ++ Δ} =
+    ≡.cong₂ _++_ filter-valid-idem filter-valid-idem
+
+  filter-valid-Ren : ∀ {Γ} → Ren Γ (filter-valid Γ)
+  filter-valid-Ren .true-part i = case (lookup-All filter-valid-Valid i) of λ ()
+  filter-valid-Ren .valid-part i = map-Any (λ { refl → valid }) i
+
+  module _ {T : Ctx → Ty → Set}
+    (ren : ∀ {Γ Δ A} → Ren Γ Δ → T Δ A → T Γ A)
+    where
+
+    lookup : ∀ {Γ Δ A} → Env T Γ Δ → Δ ∋ A → T Γ A
+    lookup ρ v = view-∋-true-valid v |>
+      [ ρ .true-part , ren filter-valid-Ren ∘ ρ .valid-part ]′
+
+  module BindEnv {T : Ctx → Ty → Set}
+    (vr : ∀ {Γ A} → Any (TypeMatch A) Γ → T Γ A)
+    (wk : ∀ {Γ A Θ} → T Γ A → T (Γ ++ Θ) A)
+    where
+
+    vt : ∀ {Γ A} → Any (true A ≡_) Γ → T Γ A
+    vt = vr ∘ map-Any (λ { refl → true })
+    vv : ∀ {Γ A} → Any (valid A ≡_) Γ → T Γ A
+    vv = vr ∘ map-Any (λ { refl → valid })
+
+    bindEnv : ∀ {Γ Δ Θ} → Env T Γ Δ → Env T (Γ ++ Θ) (Δ ++ Θ)
+    bindEnv ρ .true-part (↙ i) = wk (ρ .true-part i)
+    bindEnv ρ .true-part (↘ i) = vt (↘ i)
+    bindEnv ρ .valid-part (↙ i) = wk (ρ .valid-part i)
+    bindEnv ρ .valid-part (↘ i) = vv (↘ (pres-valid i))
+
+  module _ {T : Ctx → Ty → Set} where
+
+    Env-filter-valid : ∀ {Γ Δ} →
+      Env T Γ Δ → Env T (filter-valid Γ) (filter-valid Δ)
+    Env-filter-valid ρ .true-part i =
+      case (lookup-All filter-valid-Valid i) of λ ()
+    Env-filter-valid ρ .valid-part i =
+      let t = ρ .valid-part (filter-valid-⊆ i) in
+      ≡.subst (λ ∙ → T ∙ _) (≡.sym filter-valid-idem) t
+
+  module Trav {T : Ctx → Ty → Set}
+    (vr : ∀ {Γ A} → Any (TypeMatch A) Γ → T Γ A)
+    (ren : ∀ {Γ Δ A} → Ren Γ Δ → T Δ A → T Γ A)
+    (tm : ∀ {Γ A} → T Γ A → Γ ⊢ A)
+    where
+
+    wk : ∀ {Γ A Θ} → T Γ A → T (Γ ++ Θ) A
+    wk = ren λ where
+      .true-part i → ↙ (map-Any (λ { refl → true }) i)
+      .valid-part i → ↙ (map-Any (λ { refl → valid }) (pres-valid i))
+
+    open BindEnv vr wk
+
+    trav : ∀ {Γ Δ A} → Env T Γ Δ → Δ ⊢ A → Γ ⊢ A
+    trav ρ (var x) = tm (lookup ren ρ x)
+    trav ρ (□i M) = □i (trav (Env-filter-valid ρ) M)
+    trav ρ (□e M N) = □e (trav ρ M) (trav (bindEnv ρ) N)
+\end{code}
+
+\begin{code}
+  ren^∋ : ∀ {Γ Δ A} → Env _∋_ Γ Δ → Δ ∋ A → Γ ∋ A
+  ren^∋ ρ v = view-∋-true-valid v |>
+    [ ρ .true-part , filter-valid-⊆ ∘ ρ .valid-part ]′
+
+  ren^⊢ : ∀ {Γ Δ A} → Env _∋_ Γ Δ → Δ ⊢ A → Γ ⊢ A
+  ren^⊢ = Trav.trav id ren^∋ var
+
+  sub^⊢ : ∀ {Γ Δ A} → Env _⊢_ Γ Δ → Δ ⊢ A → Γ ⊢ A
+  sub^⊢ = Trav.trav var ren^⊢ id
+\end{code}

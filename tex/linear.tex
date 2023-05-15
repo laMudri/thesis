@@ -22,16 +22,42 @@ calculi, like the simply typed $\lambda$-calculus and its many variants.
 Such core calculi are fairly close to some real intermediate languages,
 \todo{cite} though many intermediate languages also have polymorphism in their
 type systems, which I have not discussed, but has been considered by much prior
-work\todo{cite}.
+work~\citep{POPLmark}.
 
-%Linear logic was introduced by \citet{girard87linear} as a tool of proof theory.
-%Its distinguishing feature is that hypotheses, by default, must be used exactly
-%once.
-%I devote a chapter to introducing linear logic because it is better understood
-%than any individual or general semiring-annotated calculi, and is thus an
-%important point of comparison.
-%Linear logic will be an instance of the semiring-annotated systems we study
-%later.
+Another potential feature --- required for many desired semantics but only
+relatively recently appearing in programming languages --- that is not handled
+by the techniques of \cref{sec:simple} is restrictions on how variables can be
+used.
+In the simple type systems covered in \cref{sec:simple}, the only restriction on
+the use of a variable is that it is used as an expression of the appropriate
+type.
+However, we could also consider having somehow ``guarded'' subexpressions in
+which some variables bound outside cannot occur, or systems in which the use of
+a variable in one part of an expression precludes its use in another part of
+that expression (the variable having been ``used up'').
+I will introduce and motivate some such systems in this chapter, and argue that
+they are impossible to capture directly in the framework presented in
+\cref{sec:gen-syn}.
+
+Languages and systems implementing features inspired by linear logic include
+Rust~\citep{MK14,Rust}, ATS~\citep{Xi04,ZX05}, and various implementations of
+session types~\citep{HLVCCDMPRTVTZ16}.
+Additionally, forms of linearity have been used in theoretical work, for example
+to bound computational complexity~\citep{GSS92,Hofmann03} or maintain
+differentiability~\citep{ER03,Ehrhard18}.
+As for modality, \citet{IMO20} show that common data-flow analyses for
+imperative languages can be recast as modal type systems, though they have
+generally been developed in an ad hoc fashion.
+Such a recasting may be useful to understand the metatheoretic properties of
+programs passing such static analyses.
+More user-facing implementations of modal type systems include the system for
+stack allocation in OCaml~\citep{DW22} and the approach to erasure found in
+Agda and Idris\todo{cite}.
+
+In this chapter\ldots\todo{Chapter map}
+
+\section{Intuitionistic S4 modal logic}\label{sec:modal}
+\input{modal.tex}
 
 \section{Intuitionistic linear logic}\label{sec:ill}
 \input{ill.tex}

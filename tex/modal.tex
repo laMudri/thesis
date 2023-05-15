@@ -1,0 +1,388 @@
+Modal logics, and in particular their modalities, are traditionally presented in
+an axiomatic style.
+For example, the common modal logic S4 may be presented by taking a presentation
+of classical logic, adding a unary $\Box$ (``box'') operator to the formulas,
+keeping the logical rules as-are, and adding all of the axioms and rules
+listed in \cref{fig:S4-axioms}.
+Note that, unlike elsewhere in this thesis, the empty context in the
+necessitation rule \TirName{N} is a true restriction.
+While the axioms hold in any context, thanks to weakening, necessitation only
+holds in the empty context.
+We may apply weakening to the conclusion of \TirName{N} to embed such a
+derivation into a larger derivation, but we may not use hypotheses from the
+outside in such a subderivation.
+
+\begin{figure}
+  \begin{mathpar}
+    \ebrule{%
+      \hypo{\vdash A}
+      \infer1[N]{\vdash \Box A}
+    }
+    \and
+    \ebrule{%
+      \infer0[K]{\vdash \Box\plr{A \to B} \to \plr{\Box A \to \Box B}}
+    }
+    \and
+    \ebrule{%
+      \infer0[T]{\vdash \Box A \to A}
+    }
+    \and
+    \ebrule{%
+      \infer0[4]{\vdash \Box A \to \Box\plr{\Box A}}
+    }
+  \end{mathpar}
+  \caption{The axioms and rules required in a traditional presentation of S4}
+  \label{fig:S4-axioms}
+\end{figure}
+
+In this thesis, I am working intuitionistically, so I start with a base of
+intuitionistic logic, and study intuitionistic S4 (IS4).
+
+The traditional presentation is convenient for talking about semantics, with
+different choices of axioms corresponding fairly directly to natural
+restrictions on models.
+However, the syntax is quite poorly behaved, at least for programming language
+applications.
+As mentioned earlier, the necessitation rule makes requirements of its context,
+which makes it incompatible with the methods discussed in \cref{sec:simple}.
+Essentially, it requires necessitation to be a special case in renaming,
+substitution, and all the other traversals.
+Additionally, axioms require us to modify the notion of canonical form, and redo
+any proofs that rely on all closed terms of function type being
+$\lambda$-abstractions.
+
+The methodology I use to produce a nicer syntax is that of \citet{judgmental}:
+capturing the desired modality in the judgemental structure of the syntax.
+To start, note the following.
+
+\begin{proposition}
+  In NJ + \TirName{N} + \TirName{K} + \TirName{T}, the following principle is
+  admissible.
+  \[
+    \ebrule{%
+      \hypo{\Box B_1, \ldots, \Box B_n \vdash A}
+      \infer1[NKT]{\Box B_1, \ldots, \Box B_n \vdash \Box A}
+    }
+  \]
+\end{proposition}
+\begin{proof}
+  By induction on $n$.
+  When $n = 0$, \TirName{NKT} becomes just the necessitation rule \TirName{N}.
+  For $n = \lvert\Gamma\rvert + 1$, we have the following derivation, where
+  $\Box\Gamma$ abbrevates
+  $\Box\Gamma_1, \ldots, \Box\Gamma_{\lvert\Gamma\rvert}$ and \TirName{T$'$} and
+  \TirName{K$'$} abbrevate the obvious combinations of
+  \TirName{T} and \TirName{K}, respectively, and \TirName{$\to$-E}.
+  I silently apply weakening thoughout the derivation for the sake of concision.
+  \[
+    \begin{prooftree}
+      \hypo{\Box\Gamma, \Box B \vdash A}
+      \infer1[$\to$-I]{\Box\Gamma \vdash \Box B \to A}
+      \infer1[IH]{\Box\Gamma \vdash \Box\plr{\Box B \to A}}
+      \infer0[Var]{\Box B \vdash \Box B}
+      \infer1[T$'$]{\Box B \vdash \Box\Box B}
+      \infer2[K$'$]{\Box\Gamma, \Box B \vdash \Box A}
+    \end{prooftree}
+  \]
+\end{proof}
+
+However, we do not want to add such a rule to our system because it is not
+stable under substitution.
+For example, consider a substitution
+$\sigma : \Box A \wedge \Box B \env\vdash \Box A, \Box B$.
+The domain context contains a single formula headed by $\wedge$, not $\Box$, so
+when we apply $\sigma$ to a derivation ending with an application of
+\TirName{NKT} deriving $\Box A, \Box B \vdash \Box C$, it becomes unclear how to
+conclude $\Box A \wedge \Box B \vdash \Box C$, as \TirName{NKT} does not apply.
+
+Instead of constraining the types of all of the items in the context, the
+solution given by \citet{judgmental} is to diversify the shapes of contexts, and
+constrain those shapes when giving our necessitation rule.
+In this case, we are interested in hypotheses being $\Box$-like, so we introduce
+a judgement form $A~\mathit{valid}$, contrasting with the judgement we had
+previously written just $A$, but will now write $A~\mathit{true}$.
+We construct the system so that $A~\mathit{valid}$ is equivalent to
+$\Box A~\mathit{true}$.
+%Note that, in S4, $\Box\Box A$ is logically equivalent to $\Box A$
+Because the choice of $\mathit{valid}$ or $\mathit{true}$ is part of the
+structure of the context, rather than being part of the type, we are able to
+define substitution between contexts in a way that treats valid and true entries
+differently --- restricting substitution so that it is compatible with an
+adapted version of \TirName{NKT}.
+
+Let us take the natural deduction presentation of the simply typed
+$\lambda$-calculus given in \cref{sec:terms}.
+Where that system has sequents of the form $A_1, \ldots, A_n \vdash B$, we
+instead now write
+$A_1~\mathit{true}, \ldots, A_n~\mathit{true} \vdash B~\mathit{true}$.
+We may also have hypothetical occurrences of $A~\mathit{valid}$, but all logical
+rules will target judgements of the form $A~\mathit{true}$.
+Hypotheses of the form $A~\mathit{valid}$ arise from the elimination rule for
+the $\Box$ operator, \TirName{$\Box$-E}.
+The only special thing about valid hypotheses is that, once they are bound, they
+are preserved by the \TirName{$\Box$-I} rule, which is our recasting of
+\TirName{NKT} as the introduction rule for $\Box$.
+Otherwise, like true hypotheses, an $A~\mathit{valid}$ hypothesis can be used to
+obtain $A~\mathit{true}$, via the \TirName{vVar} rule, as justified by axiom
+\TirName{4}.
+
+The three new rules are listed in \cref{fig:PD}.
+Let $\Gamma_v$ be the context $\Gamma$ but with all true hypotheses removed,
+leaving only valid hypotheses.
+Because I am working with a de Bruijn index-style presentation, weakening needs
+to be admissible.
+Therefore, the \TirName{$\Box$-I} rule needs to remove its true hypotheses,
+rather than only applying in a context in which there are no true hypotheses.
+
+\begin{figure}
+  \begin{mathpar}
+    \ebrule{%
+      \hypo{\Gamma_v \vdash A~\mathit{true}}
+      \infer1[$\Box$-I]{\Gamma \vdash \Box A~\mathit{true}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash \Box A~\mathit{true}}
+      \hypo{\Gamma, A~\mathit{valid} \vdash B~\mathit{true}}
+      \infer2[$\Box$-E]{\Gamma \vdash B~\mathit{true}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \ni \plr{A~\mathit{valid}}}
+      \infer1[vVar]{\Gamma \vdash A~\mathit{true}}
+    }
+  \end{mathpar}
+  \caption{The new rules of the \citeauthor{judgmental} presentation of IS4.}
+  \label{fig:PD}
+\end{figure}
+
+Whereas \citet{judgmental} prove single substitution for both true and valid
+hypotheses (as well as \emph{possible} hypotheses, and for possible judgements,
+in their system dealing with a possibility modality $\Diamond$) separately, I
+build on the simultaneous substitution procedure given in
+\cref{sec:syntactic-kits} to give a unified simultaneous substitution procedure.
+Recall that the basic definition was that of \emph{$\vDash$-environment},
+defined in the intuitionistic case by
+$\Gamma \env\vDash \Delta \coloneqq \Pi A.~\Delta \ni A \to \Gamma \vDash A$.
+Essentially the same formula deals with true hypotheses, but for valid
+hypotheses, we need to think of something new.
+We want to be able to instantiate $\vDash$ to $\vdash$ so as to derive
+substitution, but $\Gamma \vdash A~\mathit{valid}$ is not a valid sequent in our
+system.
+Instead, I consider $\Gamma \vdash \Box A~\mathit{true}$, and in particular the
+canonical way of deriving such a sequent: the \TirName{$\Box$-I} rule.
+\TirName{$\Box$-I} says that we can get
+$\Gamma \vdash \Box A~\mathit{true}$ from $\Gamma_v \vdash A~\mathit{true}$.
+I take the form of latter sequent to replace $\Gamma \vDash A~\mathit{valid}$,
+giving the following definition.
+
+\begin{definition}\label{def:PD-env}
+  A \emph{(modal) $\vDash$-environment} from $\Gamma$ to $\Delta$ is given as
+  follows.
+  \[
+    \Gamma \env\vDash \Delta \coloneqq
+    \Pi A.~\plr{\Delta \ni A~\mathit{true} \to \Gamma \vDash A}
+    \times \plr{\Delta \ni A~\mathit{valid} \to \Gamma_v \vDash A}
+  \]
+\end{definition}
+
+With this definition, I reproduce the kit-based machinery from
+\cref{sec:syntactic-kits}.
+However, I make crucial use of the \emph{stability under renaming} property ---
+rather than \emph{stability under context extension} --- to deal with not just
+context extensions, but also discarding of true hypotheses by the
+\TirName{$\Box$-I} rule.
+To state this property, I firstly need to be precise about what a renaming is.
+
+\begin{definition}\label{def:PD-var}
+  The set of variables in context $\Gamma$ of type $A$, notated $\Gamma \ni A$,
+  is the disjoint union of the sets $\Gamma \ni A~\mathit{true}$ and
+  $\Gamma \ni A~\mathit{valid}$ --- respectively, the true variables and the
+  valid variables in $\Gamma$ of type $A$.
+
+  The set of \emph{renamings} from $\Gamma$ to $\Delta$ is
+  $\Gamma \env\ni \Delta$.
+\end{definition}
+
+\Cref{def:PD-var} allows us to state a unified variable rule: For each
+$x : \Gamma \ni A$, we have a corresponding term
+$x : \Gamma \vdash A~\mathit{true}$.
+However, with the new definition of both environments and variables, we must
+check that they interact in the desired way.
+
+\begin{lemma}[lookup]\label{thm:PD-lookup}
+  If $\vDash$ respects renaming (i.e., we have a function
+  $\mathrm{ren}^\vDash :
+  \Gamma \env\ni \Delta \to \Delta \vDash A \to \Gamma \vDash A$
+  for each $\Gamma$, $\Delta$, and $A$), then
+  from an environment $\rho : \Gamma \env\vDash \Delta$ and a variable
+  $x : \Delta \ni A$, we get a value $\rho(x) : \Gamma \vDash A$.
+\end{lemma}
+\begin{proof}
+  I proceed by cases on whether $x$ is a true or valid variable.
+  In the true case, the result is straightforward.
+  In the valid case, \cref{def:PD-env} gives us a value in $\Gamma_v \vDash A$.
+  We need a renaming of type $\Gamma \env\vDash \Gamma_v$ to get the desired
+  value in $\Gamma \vDash A$.
+  The renaming is the one that, conceptually, discards the true hypotheses.
+\end{proof}
+
+We then need to prove that environments are preserved by everything we do to
+contexts in a derivation.
+One thing we do, like in the simply typed case, is to bind new variables, and
+this is handled by \cref{thm:PD-bindEnv}.
+The other thing, which is new for modal logic, is to discard the true
+hypotheses, as in the \TirName{$\Box$-I} rule, which is handled by
+\cref{thm:PD-vEnv}.
+
+\begin{lemma}[bindEnv]\label{thm:PD-bindEnv}
+  If we have $\mathrm{vr} : \Gamma \ni A \to \Gamma \vDash A$ for all
+  $\Gamma$ and $A$, and
+  $\mathrm{ren}^\vDash :
+  \Gamma \env\ni \Delta \to \Delta \vDash A \to \Gamma \vDash A$
+  for all $\Gamma$, $\Delta$, and $A$,
+  then from an environment $\rho : \Gamma \env\vDash \Delta$
+  we can get an environment of type $\Gamma, \Theta \env\vDash \Delta, \Theta$
+  for all $\Gamma$, $\Delta$, and $\Theta$.
+\end{lemma}
+\begin{proof}
+  I consider separately the part of the environment we are constructing that
+  deals with true hypotheses and the part that deals with valid hypotheses.
+  These cases correspond to the two factors in the expression in
+  \cref{def:PD-env}.
+
+  The case for true hypotheses is essentially the same as in
+  \cref{sec:syntactic-kits}.
+  We take cases on whether the $x : \Delta, \Theta \ni A~\mathit{true}$ is in
+  $\Delta$ or $\Theta$.
+  In the $\Delta$ case, we apply $\rho$ and then rename via
+  $\mathrm{ren}^\vDash$ using the obvious renaming of type
+  $\Gamma, \Theta \env\ni \Gamma$.
+  In the $\Theta$ case, we embed our $z : \Theta \ni A~\mathit{true}$ as
+  $\searrow z : \Gamma, \Theta \ni A~\mathit{true}$, and use $\mathrm{vr}$ to
+  get the required value.
+
+  The case for valid hypotheses is similar.
+  We take the same cases, with the $\Delta$ case differing only in which part of
+  $\rho$ we need to use (the valid part, rather than the true part).
+  In the $\Theta$ case, we have $z : \Theta \ni A~\mathit{valid}$.
+  The $_v$ operation keeps all valid hypotheses, so we have
+  $z_v : \Theta_v \ni A~\mathit{valid}$.
+  Using the fact that $(\Gamma, \Theta)_v = \Gamma_v, \Theta_v$, we have
+  $\searrow z_v : (\Gamma, \Theta)_v \ni A~\mathit{valid}$, and we use
+  $\mathrm{vr}$ to get the required value.
+\end{proof}
+
+\begin{lemma}\label{thm:PD-vEnv}
+  From an environment $\rho : \Gamma \env\vDash \Delta$, we can get an
+  environment $\rho_v : \Gamma_v \env\vDash \Delta_v$.
+\end{lemma}
+\begin{proof}
+  Suppose $x : \Delta_v \ni A$.
+  Because $\Delta_v$ contains only and all of the valid hypotheses from
+  $\Delta$, we actually have $x' : \Delta \ni A~\mathit{valid}$.
+  Applying the second part of $\rho$ on $x'$ gives us a value in
+  $\Gamma_v \vDash A$.
+  We actually wanted a value in $\plr{\Gamma_v}_v \vDash A$, but $_v$ is
+  idempotent, so we already have this.
+\end{proof}
+
+Then, we use all of the previous features to prove the key theorem.
+
+\begin{theorem}[trav]\label{thm:PD-trav}
+  For any notion of value $\vDash$ which is stable under renaming, admits
+  variables (via some $\mathrm{vr}$ as in \cref{thm:PD-bindEnv}), and
+  embeds into terms (via some
+  $\mathrm{tm} : \Gamma \vDash A \to \Gamma \vdash A~\mathit{true}$ for all
+  $\Gamma$ and $A$),
+  an environment $\rho : \Gamma \env\vDash \Delta$ and a term
+  $M : \Delta \vdash A~\mathit{true}$ yield a term
+  $M[\rho] : \Gamma \vdash A~\mathit{true}$.
+\end{theorem}
+\begin{proof}
+  I proceed by induction on the term $M$.
+  Here I consider only variables and the two rules governing the $\Box$
+  connective.
+  It is easy to adapt this procedure to any of the types from simply typed
+  $\lambda$-calculus.
+
+  % var
+  I consider variables being given by the unified variable rule proposed in the
+  paragraph before \cref{thm:PD-lookup}.
+  Given this, from a variable $x : \Delta \ni A$, \cref{thm:PD-lookup} gives us
+  a value $\rho(x) : \Gamma \vDash A$, which $\mathrm{tm}$ turns into a term of
+  the desired form.
+
+  % \Box-I
+  If the term was made from the \TirName{$\Box$-I} rule, we use that rule to
+  produce the resulting term, and need to get from a term
+  $M : \Delta_v \vdash A~\mathit{true}$ to a term in
+  $\Gamma_v \vdash A~\mathit{true}$.
+  It is enough to use the induction hypothesis, updating the environment using
+  \cref{thm:PD-vEnv}.
+
+  % \Box-E
+  If the term was made from the \TirName{$\Box$-E} rule, we again use the same
+  rule to construct the output, but have to get from a term
+  $M : \Delta \vdash \Box A~\mathit{true}$ to a term in
+  $\Gamma \vdash \Box A~\mathit{true}$, and from a term
+  $N : \Delta, A~\mathit{valid} \vdash B~\mathit{true}$ to a term in
+  $\Gamma, A~\mathit{valid} \vdash B~\mathit{true}$.
+  The former follows from a straightforward use of the induction hypothesis,
+  while the latter needs \cref{thm:PD-bindEnv} before applying the induction
+  hypothesis.
+\end{proof}
+
+To get our desired corollaries of simultaneous renaming and substitution, we
+first have to show that variables respect renaming.
+In the pure intuitionistic case of \cref{sec:simple}, this was trivial because
+renamings were precisely functions between sets of variables.
+In the modal case, we have to be careful about the distinction between true and
+valid hypotheses, and how the context is restricted in the valid case.
+
+\begin{lemma}[variables respect renaming]\label{thm:PD-ren-var}
+  Given a renaming $\rho : \Gamma \env\ni \Delta$ and a variable
+  $x : \Delta \ni A$, we get a variable in $\Gamma \ni A$.
+\end{lemma}
+\begin{proof}
+  Note that we cannot use \cref{thm:PD-lookup} with $\vDash$ instantiated to
+  $\ni$ because it would circularly require that variables respect renaming.
+  However, the procedure in this case is similar to that of
+  \cref{thm:PD-lookup}.
+
+  We take cases on whether $x$ is true or valid, and the result in the true case
+  comes immediately by applying the true part of $\rho$.
+  For $x : \Delta \ni A~\mathit{valid}$, $\rho$ gives us a variable in
+  $\Gamma_v \ni A$.
+  This variable must be valid ($\Gamma_v \ni A~\mathit{valid}$), and from there
+  it is easy to get a variable in the larger context $\Gamma$.
+\end{proof}
+
+\begin{corollary}[renaming]\label{thm:PD-ren}
+  Given a renaming $\rho : \Gamma \env\ni \Delta$ and a term
+  $M : \Delta \vdash A~\mathit{true}$, we get a term in
+  $\Gamma \vdash A~\mathit{true}$.
+\end{corollary}
+\begin{proof}
+  We use \cref{thm:PD-trav}, with $\vDash$ being $\ni$, $\mathrm{vr}$ being the
+  identity function, $\mathrm{tm}$ being the unified variable rule, and renaming
+  of $\ni$ being given by \cref{thm:PD-ren-var}.
+\end{proof}
+
+\begin{corollary}[substitution]\label{thm:PD-sub}
+  Given a substitution $\rho : \Gamma \env\vdash \Delta$ and a term
+  $M : \Delta \vdash A~\mathit{true}$, we get a term in
+  $\Gamma \vdash A~\mathit{true}$.
+\end{corollary}
+\begin{proof}
+  We use \cref{thm:PD-trav}, with $\vDash$ being $- \vdash -~\mathit{true}$,
+  $\mathrm{vr}$ being the unified variable rule, $\mathrm{tm}$ being the
+  identity function, and renaming being given by \cref{thm:PD-ren}.
+\end{proof}
+
+With these basic syntactic lemmas proved in a manner largely following the
+proofs of \cref{sec:simple}, it is plausible that this approach could be
+extended to handle generic semantics and generic syntax, following
+\cref{sec:gen-sem,sec:gen-syn}, respectively.
+However, I hold off from developing this until phrasing it more generally in
+\cref{sec:framework}.

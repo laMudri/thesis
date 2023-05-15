@@ -488,7 +488,7 @@ book{Prawitz65,
   pages = {341--363}
 }
 
-@thesis{Gabbay-thesis,
+@phdthesis{Gabbay-thesis,
   author = {Gabbay, Murdoch J.},
   institution = {University of Cambridge, UK},
   url = {http://www.gabbay.org.uk/papers.html\#thesis},
@@ -912,7 +912,7 @@ book{Prawitz65,
 
 @misc{Gabbay20,
   author = {Murdoch J. Gabbay},
-  title = {The {nom} package}
+  title = {The {nom} package},
   year = {2020},
   url = {https://hackage.haskell.org/package/nom-0.1.0.2/docs/Language-Nominal.html}
 }
@@ -963,5 +963,179 @@ book{Prawitz65,
   doi          = {10.1016/S0890-5401(03)00009-9},
   timestamp    = {Fri, 12 Feb 2021 22:15:51 +0100},
   biburl       = {https://dblp.org/rec/journals/iandc/Hofmann03.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{MK14,
+  author = {Matsakis, Nicholas D. and Klock, Felix S.},
+  title = {The Rust Language},
+  year = {2014},
+  issue_date = {December 2014},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {34},
+  number = {3},
+  issn = {1094-3641},
+  url = {https://doi.org/10.1145/2692956.2663188},
+  doi = {10.1145/2692956.2663188},
+  abstract = {Rust is a new programming language for developing reliable and efficient systems. It is designed to support concurrency and parallelism in building applications and libraries that take full advantage of modern hardware. Rust's static type system is safe1 and expressive and provides strong guarantees about isolation, concurrency, and memory safety.Rust also offers a clear performance model, making it easier to predict and reason about program efficiency. One important way it accomplishes this is by allowing fine-grained control over memory representations, with direct support for stack allocation and contiguous record storage. The language balances such controls with the absolute requirement for safety: Rust's type system and runtime guarantee the absence of data races, buffer overflows, stack overflows, and accesses to uninitialized or deallocated memory.},
+  journal = {Ada Lett.},
+  month = {oct},
+  pages = {103–104},
+  numpages = {2},
+  keywords = {memory management, rust, affine type systems, systems programming}
+}
+
+@misc{Rust,
+  author = {The {Rust} team},
+  title = {The {Rust} programming language},
+  year = {2023},
+  url = {https://rust-lang.org/}
+}
+
+@InProceedings{Xi04,
+  author="Xi, Hongwei",
+  editor="Berardi, Stefano
+    and Coppo, Mario
+    and Damiani, Ferruccio",
+  title="Applied Type System",
+  booktitle="Types for Proofs and Programs",
+  year="2004",
+  publisher="Springer Berlin Heidelberg",
+  address="Berlin, Heidelberg",
+  pages="394--408",
+  abstract="The framework Pure Type System ({\$}{\backslash}mathcal{\{}PTS{\}}{\$}) offers a simple and general approach to designing and formalizing type systems. However, in the presence of dependent types, there often exist some acute problems that make it difficult for {\$}{\backslash}mathcal{\{}PTS{\}}{\$}to accommodate many common realistic programming features such as general recursion, recursive types, effects (e.g., exceptions, references, input/output), etc. In this paper, we propose a new framework Applied Type System ({\$}{\backslash}mathcal{\{}ATS{\}}{\$}) to allow for designing and formalizing type systems that can readily support common realistic programming features. The key salient feature of {\$}{\backslash}mathcal{\{}ATS{\}}{\$}lies in a complete separation between statics, in which types are formed and reasoned about, and dynamics, in which programs are constructed and evaluated. With this separation, it is no longer possible for a program to occur in a type as is otherwise allowed in {\$}{\backslash}mathcal{\{}PTS{\}}{\$}. We present not only a formal development of {\$}{\backslash}mathcal{\{}ATS{\}}{\$}but also mention some examples in support of using {\$}{\backslash}mathcal{\{}ATS{\}}{\$}as a framework to form type systems for practical programming.",
+  isbn="978-3-540-24849-1"
+}
+
+@inproceedings{ZX05,
+  author       = {Dengping Zhu and
+                  Hongwei Xi},
+  editor       = {Manuel V. Hermenegildo and
+                  Daniel Cabeza},
+  title        = {Safe Programming with Pointers Through Stateful Views},
+  booktitle    = {Practical Aspects of Declarative Languages, 7th International Symposium,
+                  {PADL} 2005, Long Beach, CA, USA, January 10-11, 2005, Proceedings},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {3350},
+  pages        = {83--97},
+  publisher    = {Springer},
+  year         = {2005},
+  url          = {https://doi.org/10.1007/978-3-540-30557-6\_8},
+  doi          = {10.1007/978-3-540-30557-6\_8},
+  timestamp    = {Tue, 14 May 2019 10:00:42 +0200},
+  biburl       = {https://dblp.org/rec/conf/padl/ZhuX05.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{HLVCCDMPRTVTZ16,
+  author = {H\"{u}ttel, Hans and Lanese, Ivan and Vasconcelos, Vasco T. and Caires, Lu\'{\i}s and Carbone, Marco and Deni\'{e}lou, Pierre-Malo and Mostrous, Dimitris and Padovani, Luca and Ravara, Ant\'{o}nio and Tuosto, Emilio and Vieira, Hugo Torres and Zavattaro, Gianluigi},
+  title = {Foundations of Session Types and Behavioural Contracts},
+  year = {2016},
+  issue_date = {March 2017},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {49},
+  number = {1},
+  issn = {0360-0300},
+  url = {https://doi.org/10.1145/2873052},
+  doi = {10.1145/2873052},
+  abstract = {Behavioural type systems, usually associated to concurrent or distributed computations, encompass concepts such as interfaces, communication protocols, and contracts, in addition to the traditional input/output operations. The behavioural type of a software component specifies its expected patterns of interaction using expressive type languages, so types can be used to determine automatically whether the component interacts correctly with other components. Two related important notions of behavioural types are those of session types and behavioural contracts. This article surveys the main accomplishments of the last 20 years within these two approaches.},
+  journal = {ACM Comput. Surv.},
+  month = {apr},
+  articleno = {3},
+  numpages = {36},
+  keywords = {Behavioural types}
+}
+
+@article{GSS92,
+  author       = {Jean{-}Yves Girard and
+                  Andre Scedrov and
+                  Philip J. Scott},
+  title        = {Bounded Linear Logic: {A} Modular Approach to Polynomial-Time Computability},
+  journal      = {Theor. Comput. Sci.},
+  volume       = {97},
+  number       = {1},
+  pages        = {1--66},
+  year         = {1992},
+  url          = {https://doi.org/10.1016/0304-3975(92)90386-T},
+  doi          = {10.1016/0304-3975(92)90386-T},
+  timestamp    = {Wed, 17 Feb 2021 21:57:01 +0100},
+  biburl       = {https://dblp.org/rec/journals/tcs/GirardSS92.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{ER03,
+  title = {The differential lambda-calculus},
+  journal = {Theoretical Computer Science},
+  volume = {309},
+  number = {1},
+  pages = {1-41},
+  year = {2003},
+  issn = {0304-3975},
+  doi = {https://doi.org/10.1016/S0304-3975(03)00392-X},
+  url = {https://www.sciencedirect.com/science/article/pii/S030439750300392X},
+  author = {Thomas Ehrhard and Laurent Regnier},
+  keywords = {Lambda-calculus, Linear logic, Denotational semantics, Linear head reduction},
+}
+
+@article{Ehrhard18,
+  title = {An introduction to differential linear logic: proof-nets, models and antiderivatives},
+  volume = {28},
+  DOI = {10.1017/S0960129516000372},
+  number = {7},
+  journal = {Mathematical Structures in Computer Science},
+  publisher = {Cambridge University Press},
+  author = {Ehrhard, Thomas},
+  year = {2018},
+  pages = {995–1060}
+}
+
+@InProceedings{IMO20,
+  author = {Andrej Iva{\v{s}}ković and Alan Mycroft and Dominic Orchard},
+  title = {{Data-Flow Analyses as Effects and Graded Monads}},
+  booktitle = {5th International Conference on Formal Structures for Computation and Deduction (FSCD 2020)},
+  pages = {15:1--15:23},
+  series = {Leibniz International Proceedings in Informatics (LIPIcs)},
+  ISBN = {978-3-95977-155-9},
+  ISSN = {1868-8969},
+  year = {2020},
+  volume = {167},
+  editor = {Zena M. Ariola},
+  publisher = {Schloss Dagstuhl--Leibniz-Zentrum f{\"u}r Informatik},
+  address = {Dagstuhl, Germany},
+  URL = {https://drops.dagstuhl.de/opus/volltexte/2020/12337},
+  URN = {urn:nbn:de:0030-drops-123376},
+  doi = {10.4230/LIPIcs.FSCD.2020.15},
+  annote = {Keywords: data-flow analysis, effect systems, graded monads, correctness}
+}
+
+
+
+@inproceedings{POPLmark,
+  author       = {Brian E. Aydemir and
+                  Aaron Bohannon and
+                  Matthew Fairbairn and
+                  J. Nathan Foster and
+                  Benjamin C. Pierce and
+                  Peter Sewell and
+                  Dimitrios Vytiniotis and
+                  Geoffrey Washburn and
+                  Stephanie Weirich and
+                  Steve Zdancewic},
+  editor       = {Joe Hurd and
+                  Thomas F. Melham},
+  title        = {Mechanized Metatheory for the Masses: The PoplMark Challenge},
+  booktitle    = {Theorem Proving in Higher Order Logics, 18th International Conference,
+                  TPHOLs 2005, Oxford, UK, August 22-25, 2005, Proceedings},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {3603},
+  pages        = {50--65},
+  publisher    = {Springer},
+  year         = {2005},
+  url          = {https://doi.org/10.1007/11541868\_4},
+  doi          = {10.1007/11541868\_4},
+  timestamp    = {Tue, 14 May 2019 10:00:48 +0200},
+  biburl       = {https://dblp.org/rec/conf/tphol/AydemirBFFPSVWWZ05.bib},
   bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
