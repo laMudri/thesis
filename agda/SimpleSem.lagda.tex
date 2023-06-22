@@ -280,10 +280,10 @@ module Box where
 
 %<*kit>
 \begin{code}
-    KitSem : ∀ {𝓥} → Kit 𝓥 → Semantics 𝓥 _⊢_
-    KitSem K .ren^𝓥 = K .ren^𝓥
-    KitSem K .⟦var⟧ = K .tm
-    KitSem K .⟦app⟧ = app
-    KitSem K .⟦lam⟧ b = lam (b ↙ᵛ (K .vr (↘ᵛ hereᵛ)))
+    kit→sem : ∀ {𝓥} → Kit 𝓥 → Semantics 𝓥 _⊢_
+    kit→sem K .ren^𝓥 = K .ren^𝓥
+    kit→sem K .⟦var⟧ = K .tm
+    kit→sem K .⟦app⟧ = app
+    kit→sem K .⟦lam⟧ b = lam (b ↙ᵛ (K .vr (↘ᵛ hereᵛ)))
 \end{code}
 %</kit>

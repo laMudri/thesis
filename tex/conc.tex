@@ -1,5 +1,8 @@
 \chapter{Conclusions}\label{sec:conc}
 
+In this thesis, I have developed a foundation for semiring-annotated calculi in
+natural deduction style.
+
 FIXME: this chapter is directly from the ESOP22 paper.
 
 We have presented a framework for doing metatheory for a class of substructural
@@ -20,9 +23,16 @@ We could imagine that a similar notion of morphism is found for the kind of
 annotations found in \citet{LicataSR17}, allowing a framework to consider
 finer substructural systems.
 
-Is this a reusable library?
-
-Fitch-style systems (can't do).
+\begin{itemize}
+  \item Novel simultaneous substitution for linear type theories
+  \item Generalise \citet{AACMM21} work to substructural logics
+  \item Is this a reusable library? Yes, examples
+  \item Fitch-style systems (can't do).
+  \item Methodology for metatheory of new calculi
+  \item Semirings have been a reasonably robust basis.
+  \item Can the code be directly generalised?
+    Abstract away the algebraic structure of contexts.
+\end{itemize}
 
 \section{Addendum: (lack of) partiality}\label{sec:part}
 \input{part.tex}

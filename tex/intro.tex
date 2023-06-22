@@ -1,6 +1,6 @@
 \chapter{Introduction}
 
-FIXME: this chapter is directly from the ESOP22 paper.
+FIXME: the start of this chapter is directly from the ESOP22 paper.
 
 In this paper, we treat the metatheory of a class of substructural type
 systems related to linear logic~\cite{girard87linear}.
@@ -53,23 +53,72 @@ Meanwhile, we leave syntax design to the user, and consequently can only
 guarantee substitution (which we can only get because of our commitment to
 natural deduction).
 
-This paper proceeds as follows.
-In \cref{sec:algebra}, we review and fix conventions pertaining to partially
-ordered semirings and vectors over them.
-In \cref{sec:bunched-rules}, we introduce an informal meta-syntax allowing us
-to state substructural typing rules succinctly and without explicit reference
-to contexts.
-In \cref{sec:syntax}, we mechanise that meta-syntax, giving a type of
-\emph{descriptions} of type systems, and interpreting those descriptions as
-types of intrinsically typed terms.
-In \cref{sec:env}, we discuss usage-aware environments: a generalisation of
-the structures used in simultaneous renaming and substitution proofs.
-We use environments in \cref{sec:semantics} to state an alternative
-elimination principle for terms, and give examples of such eliminations in
-\cref{sec:examples}.
-The examples are syntax-generic renaming and substitution, a specific
-denotational semantics, and a syntax-generic usage elaborator.
-Finally, we conclude and discuss future work in \cref{sec:conc}
+\section{Naming and notation conventions}
 
-The work presented in this paper has been mechanised in Agda,
-with the code available for building upon~\cite{generic-lr}.
+I assume familiarity with the Curry-Howard correspondence throughout this
+thesis.
+I make no distinction between logics and type theories, and use terminology from
+each interchangeably.
+Each following bullet point lists a collection of synonyms.
+
+\begin{itemize}
+  \item assumption, hypothesis, variable
+  \item derivation, proof, term
+  \item proposition, formula, type
+  \item connective, type former
+\end{itemize}
+
+I carry out mechanised constructions and proofs in the proof assistant and
+programming language Agda~\citep{Agda}.
+Agda is based on Martin-L\"{o}f's intensional dependent type theory, so I
+similarly present non-mechanised constructions and proofs assuming a foundation
+given by dependent type theory, in a style inspired by the HoTT
+Book~\citep{hottbook}.
+
+\section{Outline of the thesis}
+
+This thesis proceeds as follows.
+The next two chapters, \cref{sec:simple,sec:linearity}, are introductory in
+nature, and cover two largely independent strands of prior work.
+In \cref{sec:simple}, I introduce existing methods of representing and reasoning
+about type systems in proof assistants based on dependent type theory.
+I start from well established representations of well scoped and well typed
+terms, and develop these towards a recent approach to environment-based
+semantics given by \citet{AACMM21}.
+In \cref{sec:linearity}, I discuss the challenges faced when one extends a
+treatment of a simple type system, such as that given in \cref{sec:simple}, to
+modal and linear type systems.
+We see that modal and linear type systems apparently violate some of the nice
+properties of the simply typed $\lambda$-calculus we required in
+\cref{sec:simple}.
+I present a solution for intuitionistic S4 modal logic, but leave a solution for
+linear logic to the following chapters.
+
+In the following two chapters, \cref{sec:semirings,sec:ren-sub-lr}, I present a
+calculus $\name$ parametrised by a partially ordered semiring of \emph{usage
+annotations}.
+In \cref{sec:semirings}, I define the calculus, give some possible extensions,
+and show that it subsumes intuitionistic S4 modal logic and Intuitionistic
+Linear Logic.
+In \cref{sec:ren-sub-lr}, I show that $\name$ enjoys generalised versions of the
+nice properties required in \cref{sec:simple}, and I proceed to give novel
+definitions of simultaneous substitutions and their action on $\name$ terms.
+These two chapters are adapted from the work of \citet{WA21}.
+
+The remaining three main chapters,
+\cref{sec:framework,sec:semantics,sec:example-semantics}, adapt the syntactic
+and semantic framework of \citet{AACMM21}, as presented at the end of
+\cref{sec:simple}, to semiring-annotated calculi.
+\Cref{sec:framework,sec:semantics} generalise the work on $\name$ presented in
+\cref{sec:semirings,sec:ren-sub-lr}, respectively.
+\Cref{sec:framework} shows how to formally describe the syntax of an arbitrary
+semiring-annotated calculus, following the constructions used in
+\cref{sec:semirings}.
+\Cref{sec:semantics} then provides the generic environment-based semantic
+traversal on such syntaxes, providing renaming and substitution as per
+\cref{sec:ren-sub-lr} for all syntaxes as special cases of the generic
+traversal.
+\Cref{sec:examples} then gives further example uses of the generic traversal.
+
+Finally, I conclude with \cref{sec:conc}, which discusses the achievements of
+this thesis and openings for future work.
