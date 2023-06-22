@@ -1,213 +1,160 @@
-We can express Benton's linear/non-linear logic~\cite{Benton94} in the
-framework.
-There are two apparent discrepancies between L/nL and what we have seen so far
-to be expressible in the framework: the existence of multiple judgement modes
-and the restriction on the kinds of assumptions based on the mode.
-We will start by addressing these discrepancies, before presenting the encoding
-in full and proving the resulting system logically equivalent to
-$\lambda\gr{\mathcal R}$.
+In \cref{sec:dup-lnl}, I gave what I claimed to be an encoding of
+Linear/non-Linear logic~\citep{Benton94} as a syntax description.
+In this section, I rigorously state and prove the correspondence between
+\citeauthor{Benton94}'s definition of L/nL and my encoding of it.
+Then, I give translations from this encoding to my encoding of $\name$, and
+vice versa, using two generic semantic traversals.
+These results together should give us confidence that the encoding of L/nL is
+correct up to logical equivalence.
 
-\subsection{Encoding L/nL}
+\subsection{Encoding L/nL}\label{sec:encoding-LnL}
 
-In L/nL, we have a \emph{linear} and an \emph{intuitionistic} mode, with
-separate types (respectively $A$ and $X$) and typing judgements (respectively
-$\vdash_{\mathcal L}$ and $\vdash_{\mathcal C}$) connected by modalities $F$ and
-$G$.
-The mode of the conclusion type is the same as the mode of the judgement, so
-only a distinction in the conclusion mode is necessary.
-To achieve this distinction in the types, I have an indexed type family
-$\mathrm{Ty} : \mathrm{Frag} \to \mathrm{Set}$, and set the framework types to
-be the type $(f : \mathrm{Frag}) \times \mathrm{Ty}\,f$.
-% \AgdaDatatype{Ty}\AgdaSymbol{:}\AgdaDatatype{Frag}\AgdaSymbol{$\to$}
-% \AgdaDatatype{Set}
-I present these judgements in a standard paper style in \cref{fig:lnl-types}.
+I will present translations between the systems given by
+\cref{fig:LnL-orig,fig:LnL-bunched}.
 
-In L/nL, while linear judgements can have both linear and intuitionistic
-assumptions, intuitionistic judgements can only have intuitionistic assumptions.
-I encode this invariant on intuitionistic judgements using the $\Box$
-premise combinator on all intuitionistic conclusions and wherever
-intuitionistic premises occur for linear conclusions, as seen in
-\cref{fig:lnl-desc}.
-This scheme means that the rules contain the maximal number of boxes, which is
-convenient when consuming terms.
-For ease of \emph{producing} terms, we would want a ``garbage in; garbage out''
-style with a minimal number of boxes, which could be achieved in two different
-ways:
-\begin{itemize}
-  \item Ensure that $\Gamma, \gr1\,\lin A \vdash \intu X$ is never derivable.
-    This leaves boxes only on rules $1$-I and $G$-I.
-  \item Ensure that, when working bottom-up, we never transition from a linear
-    to an intuitionistic conclusion with linear assumptions present.
-    This leaves boxes only on rules $F$-I and $G$-E.
-\end{itemize}
-It would be interesting to show the equivalence of these three approaches, but
-that is left to future work.
+I use $S$ to range over both linear and intuitionistic variables.
+In this section, I use the notations $\Gamma \vdash A$ and $\Gamma \vdash X$
+without subscripts on the turnstile to refer to the encoded version of the
+calculus.
+This notation keeps the encoded calculus distinct from the reference L/nL
+calculus I am translating from and to.
 
-\begin{figure}
-  \begin{align*}
-    A, B, C &\Coloneqq I \mid A \otimes B \mid A \multimap B \mid FX \\
-    X, Y, Z &\Coloneqq 1 \mid X \times Y \mid X \to Y \mid GA \\
-    \mathcal J &\Coloneqq \lin A \mid \intu X
-  \end{align*}
-  \caption{Types and judgement forms of L/nL}
-  \label{fig:lnl-types}
-\end{figure}
+The main difference between the original L/nL calculus and the encoded version
+is that the encoded version contains some extra ``junk'', not corresponding to
+anything in the original L/nL calculus.
+This junk includes all of the wrinkles we saw when translating to and from DILL
+in \cref{sec:trans-dill} --- where in the semiring-annotated system, variables
+annotated $\gr\omega$ (corresponding to intuitionistic variables) can slip into
+having annotation $\gr1$ or $\gr0$ whenever there are any algebraic
+manipulations of the context.
+In linear/non-linear logic, this slipping causes extra problems because
+intuitionistic variables are supposed to be of a distinct sort to other
+(i.e., linear) variables.
+Additionally, we have no means in the framework to correlate types with usage
+annotations, so we must deal with free variables carefully to ensure the
+required correlation between linear and intuitionistic types and annotations.
 
-\begin{figure}
-  \begin{mathpar}
-    % lin rules
-    \ebrule[comb]{%
-      \hypo{I^*}
-      \infer1[$I$-I]{\vdash \lin I}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\vdash \lin I}
-      \hypo{*}
-      \hypo{\vdash \lin C}
-      \infer3[$I$-E]{\vdash \lin C}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\vdash \lin A}
-      \hypo{*}
-      \hypo{\vdash \lin B}
-      \infer3[$\otimes$-I]{\vdash \lin A \otimes B}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\vdash \lin A \otimes B}
-      \hypo{*}
-      \hypo{\gr1\,\lin A, \gr1\,\lin B \vdash \lin C}
-      \infer3[$\otimes$-E]{\vdash \lin C}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\gr1\,\lin A \vdash \lin B}
-      \infer1[$\multimap$-I]{\vdash \lin A \multimap B}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\vdash \lin A \multimap B}
-      \hypo{*}
-      \hypo{\vdash \lin A}
-      \infer3[$\multimap$-E]{\vdash \lin B}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\Box\plr{\vdash \intu X}}
-      \infer1[$F$-I]{\vdash \lin FX}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\vdash \lin FX}
-      \hypo{*}
-      \hypo{\gr\omega\,\intu X \vdash \lin C}
-      \infer3[$F$-E]{\vdash \lin C}
-    }
-    \and
-    % int rules
-    \ebrule[comb]{%
-      \hypo{\Box\plr{\dot1}}
-      \infer1[$1$-I]{\vdash \intu 1}
-    }
-    \and
-    \text{(no $1$-E)}
-    \and
-    \ebrule[comb]{%
-      \hypo{\Box(\vdash \intu X}
-      \hypo{\dottimes}
-      \hypo{\vdash \intu Y)}
-      \infer3[$\times$-I]{\vdash \intu X \times Y}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\Box\plr{\vdash \intu X \times Y}}
-      \infer1[$\times$-El]{\vdash \intu X}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\Box\plr{\vdash \intu X \times Y}}
-      \infer1[$\times$-Er]{\vdash \intu Y}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\Box\plr{\gr\omega\,\intu A \vdash \intu B}}
-      \infer1[$\to$-I]{\vdash \intu A \to B}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\Box(\vdash \intu A \to B}
-      \hypo{\dottimes}
-      \hypo{\vdash \intu A)}
-      \infer3[$\to$-E]{\vdash \intu B}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\Box\plr{\vdash \lin A}}
-      \infer1[$G$-I]{\vdash \intu GA}
-    }
-    \and
-    \ebrule[comb]{%
-      \hypo{\Box\plr{\vdash \intu GA}}
-      \infer1[$G$-E]{\vdash \lin A}
-    }
-  \end{mathpar}
-  \caption{Description of the logical rules of L/nL}
-  \label{fig:lnl-desc}
-\end{figure}
+With the above remarks in mind, I take it as clear how to translate the original
+L/nL calculus into the encoded version, and just state the type of the
+translation in \cref{thm:lnl-to-enc} without including a proof.
+In contrast, I spend most of this subsection on the reverse translation, which
+I provide a proof sketch of in \cref{thm:enc-to-lnl}.
 
-\begin{proposition}
+\begin{proposition}\label{thm:lnl-to-enc}
   We can construct the following translations.
   \begin{align}
-    (\Theta \vdash_{\mathcal C} X) &\to (\gr\omega\Theta \vdash \intu X) \\
-    (\Theta; \Gamma \vdash_{\mathcal L} A) &\to
-    (\gr\omega\Theta, \gr1\Gamma \vdash \lin A)
+    (\Theta \vdashC X) &\to (\gr\omega\Theta \vdash X) \\
+    (\Theta; \Gamma \vdashL A) &\to (\gr\omega\Theta, \gr1\Gamma \vdash A)
   \end{align}
 \end{proposition}
 
-\begin{proposition}
-  We can construct the following translations, where $\Gamma_{\gr r}$ is the
-  list of types in $\Gamma$ that are annotated $\gr r$.%
-  \todo{I'm not sure the resultant contexts are well formed.}
+The key property needed to sensibly do the reverse translation is
+\emph{linear well-formedness}, as given by \cref{def:lin-well-formed}.
+Linear well-formedness says that variables of linear type have linear usage
+annotations.
+It does not say anything about intuitionistic types and usage annotations for
+two reasons.
+First, talking about $\gr\omega$ is not sufficiently stable.
+As we work up a derivation, the ``slip'' described earlier says that usage
+annotations will tend to get larger, i.e.\ more precise.
+Therefore, it makes more sense to make conditions of being greater than or equal
+to some collection of usage annotations.
+Second, it turns out to be unnecessary to add any conditions on variables with
+intuitionistic type, because we can just treat them as if they were annotated
+$\gr\omega$.
+We can forget the specificness of annotations $\gr0$ and $\gr1$ when not needed,
+because whatever a specifically annotated variable can do can be done by an
+$\gr\omega$-annotated variable.
+
+\begin{definition}\label{def:lin-well-formed}
+  A semiring-annotated context for L/nL is \emph{linearly well formed} when all
+  linear variables are annotated either $\gr0$ or $\gr1$.
+\end{definition}
+
+\begin{lemma}\label{thm:lwf}
+  If $\Gamma$ is linearly well formed and $M : \plr{\Gamma \vdash S}$, then the
+  context of every subterm of $M$ is linearly well formed.
+\end{lemma}
+\begin{proof}
+  This lemma follows by inspection of the syntax description
+  (\cref{fig:LnL-bunched}).
+  In the subterms, the linear variables in $\Gamma$ are only changed by binding
+  new variables (all instances of which maintain linear well formedness) and by
+  existing variables being shared out or coerced (which never produces
+  $\gr\omega$ annotations from $\gr0$ or $\gr1$).
+\end{proof}
+
+Linear well-formedness is the only condition needed for the translation given by
+\cref{thm:enc-to-lnl}.
+We can translate a derivation with any such context, with no further
+specification of its shape.
+In particular, the shape is not calculated from an original L/nL context.
+
+\begin{proposition}\label{thm:enc-to-lnl}
+  Let $\Gamma_{\mathcal C}$ be the list of variables of intuitionistic type in
+  $\Gamma$.
+  Let $\Gamma_{\mathcal L}$ be the list of variables of linear type in $\Gamma$
+  with usage annotation $\gr1$.
+  Then, whenever $\Gamma$ is linearly well formed, we can construct the
+  following translations.
   \begin{align}
-    (\Gamma \vdash \intu X) &\to (\Gamma_{\gr\omega} \vdash_{\mathcal C} X) \\
-    (\Gamma \vdash \lin A) &\to
-    (\Gamma_{\gr\omega}; \Gamma_{\gr1} \vdash_{\mathcal L} A)
+    (\Gamma \vdash X) &\to \plr{\Gamma_{\mathcal C} \vdashC X} \\
+    (\Gamma \vdash A) &\to
+      \plr{\Gamma_{\mathcal C}; \Gamma_{\mathcal L} \vdashL A}
   \end{align}
 \end{proposition}
+\begin{proof}
+  We proceed by mutual induction on the derivations.
+
+  First, I consider variables.
+  Suppose we have $\Gamma \sqni S$.
+  If $S$ is a linear type $A$, then $\Gamma$ contains one variable of type $A$
+  annotated $\gr1$, while all of the other linear variables are annotated $\gr0$
+  (by linear well formedness, we have no linear variables annotated
+  $\gr\omega$).
+  Therefore, $\Gamma_{\mathcal L} = A$, and \TirName{$\mathcal L$-var} applies.
+  Otherwise, if $S$ is an intuitionistic type $X$, then
+  \TirName{$\mathcal C$-var} applies to yield $\Gamma_{\mathcal C} \vdashC X$.
+
+  For the logical rules, linear well formedness means that all variables of
+  linear type act linearly.
+  Additionally, every L/nL rule requiring there to be no linear variables in
+  scope is guarded by $\Boxzpt$ or $I^*$ in the syntax description, excluding
+  linear variables.
+  Given these behaviours, the two calculi correspond closely, and it is a matter
+  of inspection (and use of \cref{thm:lwf} when using the induction hypothesis)
+  to complete the proof.
+\end{proof}
 
 \subsection{Translating between L/nL and $\lambda\gr{\mathcal R}$}
 
-The translations largely follow Benton's originals.
-In this section, I take $\name$ to be the system described in
-\cref{fig:lr-bunched} instantiated to the $\{\gr0 > \gr\omega < \gr1\}$
-posemiring and restricted to the fragment with only connectives $I$, $\otimes$,
-$\multimap$, and $\oc\gr\omega$.
-Notably, this excludes $\oc\gr0$ and $\oc\gr1$.
+\Citet[\S 3.3]{Benton94} gives syntactic translations back and forth between
+Linear/non-Linear logic and the presentation of intuitionistic linear logic
+given by \citet{BBdePH93}.
+In this section, I give analogous translations between my encodings of L/nL and
+$\name$ as instances of the generic traversal \AgdaFunction{semantics}.
+More precisely, I instantiate $\name$ to the $\{\gr0 > \gr\omega < \gr1\}$
+posemiring and restrict it to the fragment containing connectives $I$,
+$\otimes$, $\multimap$, and $\oc\gr\omega$, matching the fragment of L/nL
+presented by \citeauthor{Benton94} and in this section.
+Notably, this fragment of $\name$ excludes $\oc\gr0$ and $\oc\gr1$.
 I write $\oc\gr\omega$ as just $\oc$, as in traditional linear logic.
-Under these restrictions, Benton's translations of types can be used verbatim
-(\cref{fig:lnl-lr-types}).
+
+Under the above restrictions and conventions, \citeauthor{Benton94}'s
+translations between the types of ILL and L/nL can be used verbatim,
+and are reproduced in \cref{fig:lnl-lr-types}.
+Notably, the image of each ILL type under the $\plr{-}^o$-translation falls in
+the \emph{linear} types of L/nL.
+In the other direction (the $\plr{-}^*$-translation), we make extensive use of
+the $\oc$-type former to translate the intuitionistic types of L/nL.
 
 \begin{figure}
   \centering
   \begin{subfigure}{.49\linewidth}
     \centering
     \begin{align*}
-      (-)^\circ : \mathrm{Ty}_{\name} \to \mathrm{Ty}_{\lin} \\
-      \begin{aligned}
-        I^\circ &= I \\
-        \plr{A \otimes B}^\circ &= A^\circ \otimes B^\circ \\
-        \plr{A \multimap B}^\circ &= A^\circ \multimap B^\circ \\
-        \plr{\oc A}^\circ &= GFA^\circ
-      \end{aligned}
-    \end{align*}
-  \end{subfigure}
-  \begin{subfigure}{.49\linewidth}
-    \centering
-    \begin{align*}
-      (-)^* : \mathrm{Ty}_\lnl \to \mathrm{Ty}_{\name} \\
-      \begin{aligned}
+      &(-)^* : \mathrm{Ty}_\lnl \to \mathrm{Ty}_{\name} \\
+      &\begin{aligned}
         I^* &= I \\
         \plr{A \otimes B}^* &= A^* \otimes B^* \\
         \plr{A \multimap B}^* &= A^* \multimap B^* \\
@@ -218,34 +165,323 @@ Under these restrictions, Benton's translations of types can be used verbatim
         \plr{GA}^* &= A^*
       \end{aligned}
     \end{align*}
+    \begin{align*}
+      &(-)^* : \mathrm{Ctx}_\lnl \to \mathrm{Ctx}_{\name} \\
+      &\plr{\plr{\grR\gamma}^*}_i = \grR_i\gamma_i^*
+    \end{align*}
+  \end{subfigure}
+  \begin{subfigure}{.49\linewidth}
+    \centering
+    \begin{align*}
+      &(-)^\circ : \mathrm{Ty}_{\name} \to \mathrm{Ty}_{\lin} \\
+      &\begin{aligned}
+        I^\circ &= I \\
+        \plr{A \otimes B}^\circ &= A^\circ \otimes B^\circ \\
+        \plr{A \multimap B}^\circ &= A^\circ \multimap B^\circ \\
+        \plr{\oc A}^\circ &= GFA^\circ
+      \end{aligned}
+    \end{align*}
+    \begin{align*}
+      &(-)^\circ : \oiw \times \mathrm{Ty}_{\name} \to \Sigma_f~\mathrm{Ty}_f \\
+      &\begin{aligned}
+        \plr{\gr0A}^\circ &= \plr{\lin, A^\circ} \\
+        \plr{\gr1A}^\circ &= \plr{\lin, A^\circ} \\
+        \plr{\gr\omega A}^\circ &= \plr{\intu, GA^\circ}
+      \end{aligned}
+    \end{align*}
+    \begin{align*}
+      &(-)^\circ : \mathrm{Ctx}_{\name} \to \mathrm{Ctx}_\lnl \\
+      &\plr{\plr{\grR\gamma}^\circ}_i = \grR_i\plr{\grR_i\gamma_i}^\circ
+    \end{align*}
   \end{subfigure}
   \caption{Translation of types between L/nL and $\name$}
   \label{fig:lnl-lr-types}
 \end{figure}
 
-We extend both $(-)^\circ$ and $(-)^*$ to contexts pointwise on the types.
-For $(-)^\circ$, this means that the translation lands outside what is usually
-expressible in L/nL whenever the context contains annotation $\gr\omega$.
-For example, $\plr{\gr\omega I}^\circ = \plr{\gr\omega\,\lin I}$, and we do not
-see ``$\gr\omega\,\lin$'' in translations from Benton's L/nL.
-This could be fixed by inserting $G$ in such cases.
-As for $(-)^*$, note that we do not insert a $\oc$ on intuitionistic assumptions
-as Benton does.
-Instead, the annotation $\gr\omega$ achieves the same effect for us.
-This discrepancy essentially amounts to the fact that $\name$ is more like DILL
-than Girard's ILL, and Benton's translations act upon the latter.
+I extend $\plr{-}^*$ to contexts pointwise on the type context.
+Note that this differs from \citeauthor{Benton94}'s translation of contexts in
+that the intuitionistic variables of $\lnl$ are translated using usage
+annotation $\gr\omega$, rather than type former $\oc$.
+A translation from $\lnl$ to DILL would probably similarly use DILL's
+intuitionistic variables rather than $\oc$.
 
-\begin{theorem}
-  We can translate from $\name$ to the linear fragment of L/nL.
+For $\plr{-}^\circ$, I use an extra step to avoid producing contexts
+that are not linearly well formed per \cref{def:lin-well-formed}.
+Specifically, wherever there is an annotation $\gr\omega$ in a $\name$ context,
+the corresponding type is wrapped in a $G$ to make it intuitionistic.
+For example, $\plr{\gr0A, \gr1B, \gr\omega C}^\circ =
+\plr{\gr0A^\circ, \gr1B^\circ, \gr\omega GC^\circ}$.
+
+In Agda code, I define the $\plr{-}^\circ$ operator on
+$\oiw \times \mathrm{Ty}_{\name}$ (the one that introduces a $G$ for each
+$\gr\omega$) via a \emph{view} \AgdaDatatype{LIView}~\citep{MM04}.
+I define usage annotations $\gr0$ and $\gr1$ (\AgdaInductiveConstructor{u0} and
+\AgdaInductiveConstructor{u1} in Agda) to be \emph{linear}, with only
+$\gr\omega$ (\AgdaInductiveConstructor{u$\upomega$}) being
+\emph{intuitionistic}.
+\AgdaDatatype{LIView} is a view because of the existence of
+\ExecuteMetaData[\LinIntViewtex]{liview-type}, and well behaved in the sense
+that any two views of the same usage annotation are equal (witnessed by
+\AgdaFunction{liview-prop}, not shown here).
+The translation from $\name$ to $\lnl$ takes cases between linear and non-linear
+annotations at many points, so having these cases expressed as a view avoids
+duplication of arguments between the cases for $\gr0$ and $\gr1$.
+
+\ExecuteMetaData[\LinIntViewtex]{Linear}
+\ExecuteMetaData[\LinIntViewtex]{LIView}
+
+\begin{theorem}\label{thm:lnl-to-lr}
+  Let $S$ be an $\lnl$ type, either linear or intuitionistic.
+  Then, we can translate any L/nL term to a $\name$ term as follows.
   \begin{align}
-    (\Gamma \vdash_{\name} A) \to (\Gamma^\circ \vdash_\lnl \lin A^\circ)
+    (\Gamma \vdash_\lnl S) &\to (\Gamma^* \vdash_{\name} S^*)
   \end{align}
 \end{theorem}
+\begin{proof}
+  The proof is mostly straightforward, largely following Benton's translation.
+  Similarly to the denotational semantics of \cref{sec:den-sem}, we may use a
+  \AgdaRecord{Semantics} with $\V$ set to $\sqni_{\lnl}$, and then set
+  $\C\,\Gamma\,S \coloneqq \Gamma^* \vdash_{\name} S^*$.
+  Whenever we have induction hypotheses of \AgdaFunction{Kripke} type, we use
+  the \AgdaFunction{reify} function for $\name$ to get $\name$ terms.
+  Therefore, we are essentially just doing a proof by induction on the structure
+  of the input term.
 
-\begin{theorem}
-  We can translate any L/nL term to a $\name$ term as follows.
+  Translating the \TirName{$F$i} rule into \TirName{$\oc$i} relies
+  on the equivalence between duplicability (as expressed by the $\Box$ premise
+  connective) and having been scaled by $\gr\omega$ (as expressed by the
+  $\gr\omega \cdot {}$ premise connective).
+  This holds of the $\oiw$ semiring, but not of general semirings (and is not
+  even stateable for general semirings because of the mention of $\gr\omega$).
+  The same reasoning is needed when translating the introduction rules for
+  intuitionistic connectives, because they always have $\Box$ed premises and
+  are translated using $\oc$.
+
+  As an example of translating an intuitionistic elimination rule, let us
+  consider the \TirName{$\times$e$_0$} rule.
+  I reproduce it here with explicit contexts.
+  \[
+    \ebrule{%
+      \hypo{\Gamma' \leq \Gamma}
+      \hypo{\Gamma\text{ duplicable}}
+      \hypo{\Gamma \vdash_{\lnl} X \times Y}
+      \infer3[$\times$e$_0$]{\Gamma' \vdash_{\lnl} X}
+    }
+  \]
+
+  Recall that $\plr{X \times Y}^* = \oc X^* \otimes \oc Y^*$.
+  This means that we must pattern-match the hypothesis to get variables
+  $\gr\omega X^*, \gr\omega Y^*$ so as to be able to use the $X^*$ for the
+  conclusion and discard the $Y^*$.
+  The formal derivation is as follows.
+  We are able to copy $\Gamma^*$ between all of these subterms because its usage
+  annotations are the same as those of $\Gamma$, which is duplicable by the
+  assumption in \TirName{$\times$e$_0$}.
+  The distinction between $\Gamma'$ and $\Gamma$ is minor.
+  When we apply the \TirName{$\otimes$e} rule, we use the fact that
+  $\Gamma' \leq \Gamma + \Gamma$, by the fact that $\Gamma' \leq \Gamma$ and
+  $\Gamma \leq \Gamma + \Gamma$.
+  From then on, we need only think about $\Gamma$, which behaves well because it
+  is duplicable.
+
+  \begin{align*}
+    &\ebrule{%
+      \hypo{\text{IH}}
+      \infer[no rule]1{\Gamma^* \vdash_{\name} \oc X^* \otimes \oc Y^*}
+      \infer0[Var]{\Gamma^*, \gr1\oc X^*, \gr0\oc Y^* \vdash_{\name} \oc X^*}
+      \hypo{\nabla}
+      \infer2[$\oc$e]{\Gamma^*, \gr1\oc X^*, \gr1\oc Y^* \vdash_{\name} X^*}
+      \infer2[$\otimes$e]{\Gamma^* \vdash_{\name} X^*}
+    }
+    \\
+    &\text{where }\nabla \coloneqq
+    \\
+    &\ebrule{%
+      \infer0[Var]{\Gamma^*, \gr0\oc X^*, \gr1\oc Y^*, \gr\omega X^* \vdash_{\name} \oc Y^*}
+      \infer0[Var]{\Gamma^*, \gr0\oc X^*, \gr0\oc Y^*, \gr\omega X^*, \gr\omega Y^* \vdash_{\name} X^*}
+      \infer2[$\oc$e]{\Gamma'^*, \gr0\oc X^*, \gr1\oc Y^*, \gr\omega X^* \vdash_{\name} X^*}
+    }
+  \end{align*}
+
+  In the Agda proof, renaming is required to perform lots of minor functions
+  that we would ignore on paper.
+  For example, the equation $\plr{\Gamma, \Delta}^* = \Gamma^*, \Delta^*$ ---
+  required when induction hypotheses have newly bound variables --- is not true
+  definitionally.
+  Furthermore, because of the functional representation I use for contexts, it
+  is not even provable without function extensionality.
+  Therefore, renaming is the simplest way to get the required coercion.
+  Such renamings perhaps could be avoided in most cases if contexts were
+  represented as non-functional lists.
+\end{proof}
+
+\begin{theorem}\label{thm:lr-to-lnl}
+  We can translate from $\name$ to the linear fragment of $\lnl$.
   \begin{align}
-    (\Gamma \vdash_\lnl \intu X) &\to (\Gamma^* \vdash_{\name} X^*) \\
-    (\Gamma \vdash_\lnl \lin A) &\to (\Gamma^* \vdash_{\name} A^*)
+    (\Gamma \vdash_{\name} A) \to (\Gamma^\circ \vdash_\lnl A^\circ)
   \end{align}
 \end{theorem}
+\begin{proof}
+  We use the same simple induction scheme as in \cref{thm:lnl-to-lr}, but with
+  the places of $\name$ and $\lnl$ switched.
+  However, some of the rule translations are more complex, mainly caused by the
+  complexity of the $\plr{-}^\circ$ translation on contexts.
+
+  For variables, we must consider separately the cases where the variable being
+  used is annotated $\gr1$ and $\gr\omega$.
+  The case for a variable $\gr1A$ is straightforward, and translates directly
+  to an $\lnl$ variable $\gr1A^\circ$.
+  A variable $\gr\omega A$, however, is translated to $\gr\omega GA^\circ$, so
+  we must eliminate the $G$ in order to get the conclusion $A^\circ$.
+  The \TirName{$G$e} rule requires its context to be duplicable, which is true
+  by the fact that all of the unused variables are annotated either $\gr0$ or
+  $\gr\omega$ (because they are all less than or equal to $\gr0$), and the
+  variable being used is annotated $\gr\omega$.
+
+  Most logical rules are handled very similarly to each other, so I will just
+  translate the \TirName{$\otimes$i} rule as an example.
+  I reproduce it here with explicit contexts (split into their usage and typing
+  contexts).
+
+  \[
+    \ebrule{%
+      \hypo{\grR \leq \grP + \grQ}
+      \hypo{\grP\gamma \vdash_{\name} A}
+      \hypo{\grQ\gamma \vdash_{\name} B}
+      \infer3[$\otimes$i]{\grR\gamma \vdash_{\name} A \otimes B}
+    }
+  \]
+
+  We cannot do a na\"{i}ve translation to the corresponding application of the
+  \TirName{$\otimes$i} rule of $\lnl$ because $\plr{\grR\gamma}^\circ$,
+  $\plr{\grP\gamma}^\circ$, and $\plr{\grQ\gamma}^\circ$ may all have different
+  typing contexts.
+  For example, consider the following instance.
+  There are two problems.
+  First, our induction hypotheses give us contexts
+  containing $C^\circ$, where our conclusion wants a context containing
+  $GC^\circ$.
+  Second, $\gr1GC^\circ$ is not linearly well formed, because an intuitionistic
+  type is given a linear annotation.
+  It is therefore difficult to work with such a sequent.
+
+  \[
+    \ebrule{%
+      \hypo{\gr1 C \vdash_{\name} A}
+      \hypo{\gr1 C \vdash_{\name} B}
+      \infer2[$\otimes$i]{\gr\omega C \vdash_{\name} A \otimes B}
+    }
+    \quad\rightsquigarrow\quad
+    \ebrule{%
+      \hypo{\gr1C^\circ \vdash_{\lnl} A^\circ}
+      \ellipsis{?}{\gr1 GC^\circ \vdash_{\lnl} A^\circ}
+      \hypo{\gr1C^\circ \vdash_{\lnl} B^\circ}
+      \ellipsis{?}{\gr1 GC^\circ \vdash_{\lnl} B^\circ}
+      \infer2[$\otimes$i]{\gr\omega GC^\circ \vdash_{\lnl} A^\circ \otimes B^\circ}
+    }
+  \]
+
+  To fix these issues, firstly I overwrite the context-splitting given by the
+  input term to conform to the bottom-up style of \cref{def:DILL-bottom-up}.
+  This means precisely that wherever $\gr\omega$ appears in the context of the
+  conclusion, it will also appear in the context of all the hypotheses.
+  This gives the following partial derivation.
+
+  \[
+    \ebrule{%
+      \hypo{\gr1C^\circ \vdash_{\lnl} A^\circ}
+      \ellipsis{?}{\gr\omega GC^\circ \vdash_{\lnl} A^\circ}
+      \hypo{\gr1C^\circ \vdash_{\lnl} B^\circ}
+      \ellipsis{?}{\gr\omega GC^\circ \vdash_{\lnl} B^\circ}
+      \infer2[$\otimes$i]{\gr\omega GC^\circ \vdash_{\lnl} A^\circ \otimes B^\circ}
+    }
+  \]
+
+  Then, I fix the discrepancy in types using substitution.
+  In the running example, the substitution needed for both subterms is of the
+  type $\gr\omega GC^\circ \env{\vdash_{\lnl}} \gr1C^\circ$, which amounts to a
+  term of type $\gr\omega GC^\circ \vdash_{\lnl} C^\circ$, as follows.
+  Note that \TirName{$G$e} is only applicable thanks to changing the usage
+  annotation from $\gr1$ to $\gr\omega$ in the previous step.
+
+  \[
+    \ebrule{%
+      \infer0[Var]{\gr\omega GC^\circ \vdash_{\lnl} GC^\circ}
+      \infer1[$G$e]{\gr\omega GC^\circ \vdash_{\lnl} C^\circ}
+    }
+  \]
+
+  More generally, we may have to produce substitutions of type
+  $$\gr0A^\circ, \gr1B^\circ, \gr\omega GC^\circ, \gr\omega GD^\circ
+  \env{\vdash_{\lnl}}
+  \gr0A^\circ, \gr1B^\circ, \gr1C^\circ, \gr\omega GD^\circ.$$
+  These can be produced pointwise, from substitutions of types
+  $\gr0A^\circ \env{\vdash_{\lnl}} \gr0A^\circ$ and
+  $\gr1B^\circ \env{\vdash_{\lnl}} \gr1B^\circ$ and
+  $\gr\omega GC^\circ \env{\vdash_{\lnl}} \gr1C^\circ$ and
+  $\gr\omega GD^\circ \env{\vdash_{\lnl}} \gr\omega GD^\circ$.
+  We have just seen how to produce the third of these, and the rest are
+  identity substitutions.
+
+  The two sui generis rules to translate are the rules for the $\oc$-modality,
+  with the $\oc$ of intuitionistic linear logic becoming the composite $FG$ in
+  linear/non-linear logic.
+  The way of handling \TirName{$\oc$i} is similar to the way of handling rules
+  like \TirName{$\otimes$i}, but involving multiplication/scaling by $\gr\omega$
+  rather than addition.
+  We have a similar difficult instance, shown below, where an $\gr\omega$ gets
+  specialised to a $\gr1$ via the algebraic operation.
+
+  \[
+    \ebrule{%
+      \hypo{\gr\omega \leq \gr\omega \cdot \gr1}
+      \hypo{\gr1 C \vdash_{\name} A}
+      \infer2[$\oc$i]{\gr\omega C \vdash_{\name} \oc A}
+    }
+  \]
+
+  Again, the solution is to fix up the operation to keep the more general
+  $\gr\omega$, allowing us to apply \TirName{$F$i} and \TirName{$G$i}, and
+  the same substitution as before possibly including an application of
+  \TirName{$G$e} as necessary.
+
+  Finally, the translation of \TirName{$\oc$e} is simple, but worth checking.
+  I reproduce the rule below with explicit contexts.
+
+  \[
+    \ebrule{%
+      \hypo{\grR \leq \grP + \grQ}
+      \hypo{\grP\gamma \vdash_{\name} \oc A}
+      \hypo{\grQ\gamma, \gr\omega A \vdash_{\name} B}
+      \infer3[$\oc$e]{\grR\gamma \vdash_{\name} B}
+    }
+  \]
+
+  The main thing to note is that the translation of the context of the
+  right-hand premise, $\grQ\gamma, \gr\omega A$, is
+  $\plr{\grQ\gamma}^\circ, \gr\omega GA^\circ$ --- i.e., the translation of
+  contexts gives us a $G$ thanks to the $\gr\omega$ usage annotation.
+  Therefore, we do not have to eliminate the $G$, because the right-hand subterm
+  is expected to do it for us.
+  Indeed, we have seen in previous cases many uses of \TirName{$G$e} already.
+
+  I translate the \TirName{$\oc$e} rule as follows.
+  As in the \TirName{$\otimes$i} case, I pick $\grPprime$ and $\grQprime$ to fit
+  bottom-up form, and use the same substitutions as in that case to mend the
+  terms arriving from the induction hypotheses.
+  Then, just \TirName{$F$e} suffices.
+
+  \[
+    \ebrule{%
+      \infer0{\grR \leq \grPprime + \grQprime}
+      \hypo{}
+      \ellipsis{}{\plr{\grPprime\gamma}^\circ \vdash_{\lnl} FGA^\circ}
+      \hypo{}
+      \ellipsis{}{\plr{\grQprime\gamma}^\circ, \gr\omega GA^\circ \vdash_{\lnl} B^\circ}
+      \infer3[$F$e]{\plr{\grR\gamma}^\circ \vdash_{\lnl} B^\circ}
+    }
+  \]
+
+  %In the Agda version of the translation, manipulations are complicated by the
+  %fact that the $\plr{-}^\circ$ translation for contexts does not distribute
+\end{proof}

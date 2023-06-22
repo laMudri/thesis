@@ -528,7 +528,6 @@ variables in the intuitionistic judgement forms of the L/nL
 calculus~\citep{Benton94}.
 I will explain this in detail in due course.
 
-\todo{Maybe partially merge with the later L/nL section.}
 Linear/non-Linear Logic has two sorts of types: linear types $A, B, C$ and
 intuitionistic types $X, Y, Z$.
 I encode these two sorts in the Agda types
@@ -547,7 +546,7 @@ a product \AgdaInductiveConstructor{\_t$\times$\_}, and
 an intuitionistic function space \AgdaInductiveConstructor{\_t$\to$\_};
 and adjoint type formers \AgdaInductiveConstructor{tF} and
 \AgdaInductiveConstructor{tG}.
-I also throw in a linear base type \AgdaInductiveConstructor{$\iota$}.
+I also include a linear base type \AgdaInductiveConstructor{$\iota$}.
 
 \ExecuteMetaData[\LnLtex]{Frag}
 \ExecuteMetaData[\LnLtex]{Ty}
@@ -556,50 +555,16 @@ I also throw in a linear base type \AgdaInductiveConstructor{$\iota$}.
 As in the other examples, I define a data type of rule labels
 \AgdaDatatype{`LnL} before defining the type system \AgdaFunction{LnL}.
 The system \AgdaFunction{LnL} has types \AgdaFunction{$\Sigma$Ty} and usage
-annotations $\{\gr0, \gr1, \gr\omega\}$, as we have used before for linear
+annotations $\{\gr0, \gr1, \gr\omega\}$, as I have used before for linear
 systems.
 For reference, I give a standard presentation of the rules of L/nL in
-\cref{fig:LnL-orig}
-
-We want to be able to embed the L/nL judgement forms
-$\Theta; \Gamma \vdash_{\mathcal L} A$ and $\Theta \vdash_{\mathcal C} X$, where
-$\Theta$ is made of intuitionistic variables and $\Gamma$ is made of linear
-variables.
-Following allowed usage patterns, intuitionistic variables will all have usage
-annotation $\gr\omega$, while linear variables will each be annotated
-either $\gr1$ or $\gr0$.
-These assignments of usage annotations are enforced wherever the rules bind new
-variables.
-By usage subsumption, intuitionistic variables may also end up with annotation
-$\gr1$ or $\gr0$, but we see this as a (meaningless) refinement of the
-$\gr\omega$ annotation, not causing a soundness problem.
-The key invariant is that linear variables never get annotation $\gr\omega$.
-
-The framework already tells us what variables and contexts we can
-have --- namely that we can make any assumption in any context.
-This means that we can propose ill formed sequents like
-$\gr1A \vdash X$.
-To make sure that this is not a problem, we want to maintain the invariant that
-any \emph{derivation} of a well formed sequent contains only well formed
-sequents.
-I enforce this locally using the $\Box^{0{+}{*}}$ bunched modality:
-Every rule targeting an intuitionistic judgement has its premises wrapped in a
-$\Box^{0{+}{*}}$ to restrict the usage annotations to $\gr0$ and $\gr\omega$.
-Additionally, rules \TirName{$F$i} and \TirName{$G$e}, which target linear
-judgements but have intuitionistic premises, similarly get a $\Box^{0{+}{*}}$.
-Note that having the annotation $\gr0$ means that well formed intuitionistic
-sequents can contain linear variables annotated $\gr0$, but these variables are
-not usable.
-
-The rules are presented in Agda code below, and also using bunched inference
-rule notation in \cref{fig:LnL-bunched}
-
-\ExecuteMetaData[\LnLtex]{quoteLnL}
-\ExecuteMetaData[\LnLtex]{LnL}
+\cref{fig:LnL-orig}.
 
 \begin{figure}
   \begin{align*}
-    \mathcal J \Coloneqq \; \Theta; \Gamma \vdashL A \; \mid \; \Theta \vdashC X
+    A, B, C &\Coloneqq I \mid A \otimes B \mid A \multimap B \mid FX \\
+    X, Y, Z &\Coloneqq 1 \mid X \times Y \mid X \to Y \mid GA \\
+    \mathcal J &\Coloneqq \; \Theta; \Gamma \vdashL A \; \mid \; \Theta \vdashC X
   \end{align*}
   \begin{mathpar}
     \ebrule{%
@@ -678,6 +643,64 @@ rule notation in \cref{fig:LnL-bunched}
   \caption{Linear/non-Linear Logic in traditional sequent notation}
   \label{fig:LnL-orig}
 \end{figure}
+
+We want to be able to embed the L/nL judgement forms
+$\Theta; \Gamma \vdashL A$ and $\Theta \vdashC X$, where
+$\Theta$ is made of intuitionistic variables and $\Gamma$ is made of linear
+variables.
+I take the subscript on $\vdashL$ and $\vdashC$ to be a redundant annotation of
+whether the conclusion type is \AgdaInductiveConstructor{lin} or
+\AgdaInductiveConstructor{int}, so it does not appear in the Agda code, but I
+retain it in all non-mechanised presentations.
+
+I will generally ensure that all intuitionistic variables will all have usage
+annotation $\gr\omega$, while linear variables will each be annotated
+either $\gr1$ or $\gr0$.
+These assignments of usage annotations are enforced wherever the rules bind new
+variables.
+By usage subsumption, intuitionistic variables may also end up with annotation
+$\gr1$ or $\gr0$, but we see this as a (meaningless) refinement of the
+$\gr\omega$ annotation, not causing a soundness problem.
+The key invariant is that linear variables never get annotation $\gr\omega$.
+
+The key difference in form between linear and intuitionistic sequents is that
+intuitionistic sequents cannot contain linear variables.
+However, syntax descriptions give us no ability to directly state such a
+restriction on the kinds of variables.
+Therefore, any encoded syntax will allow us to propose ill formed sequents like
+$\gr1A \vdashC X$, where a linear variable is to be used for an intuitionistic
+conclusion.
+To make sure that this is not a problem I use the $\Boxzpt$ bunched modality to
+guard many of the rules, making sure that variables with usage annotation $\gr1$
+cannot occur in \emph{provable} intuitionistic sequents.
+Specifically, every rule targeting an intuitionistic judgement has its premises
+wrapped in a $\Boxzpt$.
+Additionally, rules \TirName{$F$i} and \TirName{$G$e}, which target linear
+judgements but have intuitionistic premises, similarly get a $\Boxzpt$.
+Note that having the annotation $\gr0$ means that well formed intuitionistic
+sequents can contain linear variables annotated $\gr0$, but these variables are
+not usable.
+
+For ease of \emph{producing} terms, we may prefer a ``garbage in; garbage out''
+style with a minimal number of uses of $\Boxzpt$, which could be achieved in two
+different ways:
+\begin{itemize}
+  \item
+    Ensure that no sequent of the form $\Gamma, \gr1A \vdashC X$ is derivable.
+    This leaves boxes only on rules \TirName{$1$-I} and \TirName{$G$-I} --- the
+    two logical rules where an intuitionistic conclusion is derived without any
+    intuitionistic premises.
+  \item
+    Ensure that any rule targeting a well formed conclusion has only well formed
+    premises.
+    This leaves boxes only on rules \TirName{$F$-I} and \TirName{$G$-E} --- the
+    two rules where a linear conclusion is derived from intuitionistic premises.
+\end{itemize}
+It would be interesting to show the equivalence of these two approaches with the
+one I have taken in this thesis, but that is left to future work.
+
+The rules are presented in Agda code below, and also using bunched inference
+rule notation in \cref{fig:LnL-bunched}.
 
 \begin{figure}
   \begin{mathpar}
@@ -763,8 +786,12 @@ rule notation in \cref{fig:LnL-bunched}
   \label{fig:LnL-bunched}
 \end{figure}
 
-Later,\todo{When?} I will give translations between this encoding of L/nL and
-$\name$, providing some assurance that the correct logic has been encoded.
+\ExecuteMetaData[\LnLtex]{quoteLnL}
+\ExecuteMetaData[\LnLtex]{LnL}
+
+In \cref{sec:lnl}, I will give translations between the original L/nL system,
+this encoding of L/nL, and $\name$, providing some assurance that the correct
+logic has been encoded.
 
 %There is one more bunched combinator we have experimented with adding to the
 %framework:

@@ -1,123 +1,12 @@
-In this section, we provide three example uses of semantic traversals: generic
-renaming and substitution, a usage elaborator, and a denotational semantics.
+In this chapter, I provide three example uses of semantic traversals: generic
+renaming and substitution\todo{Moved}, a usage elaborator, and a denotational semantics.
 The reader is also encouraged to see the far greater range of examples in the
 work of \citet{AACMM21}, which should adapt to our usage-annotated setting.
 Renaming and substitution are essential results, while the latter two examples
 focus on usage annotations.
 
-A result we will use throughout this section is \emph{reification}.
-When we have an index-preserving mapping from usage-checked variables to
-$\V$-environments, we can construct environments of the form
-$\Gamma \env\V \Gamma$ (identity environments) for all $\Gamma$.
-This lets us write the \AgdaFunction{reify} function, which  simplifies our
-obligations in giving a \AgdaRecord{Semantics} by coercing
-\AgdaFunction{Kripke} functions into just
-\AgdaBound{$\C$}-values in an extended context.
 
-%To show this, we instantiate the Kripke function with the renaming
-%$\swarrow^r : \Gamma, \gr0\delta \env\sqni \Gamma$ to extend the scope, and
-%pass it an argument environment
-%$\plr{\id^\V; \searrow^r} : \gr0\gamma, \Delta \env\V \Delta$ to fill in the
-%extended part.
-%Post-composition of a renaming onto an environment comes from
-%\cref{thm:env-postren}.
-
-%\ExecuteMetaData[\Syntactictex]{reify}
-
-\begin{lemma}[\AgdaFunction{reify}]\label{thm:reify}
-  If $\V$ is an open family such that there is a function
-  $v : \forallb{{\sqni} \dotto \V}$, we get a function of type
-  $\forallb{\mathrm{Kripke}\,\V\,\C \dotto \mathrm{Scope}\,\C}$ for any $\C$.
-\end{lemma}
-\begin{proof}
-  Let $b : \mathrm{Kripke}\,\V\,\C\,\Delta\,\Gamma\,A$.
-  That is, $b$ is a Kripke function yielding $\C$-computations
-  We want to apply $b$ so as to get a $\C\,\plr{\Gamma, \Delta}\,A$.
-  Let $\grP\gamma = \Gamma$ and $\grQ\delta = \Delta$.
-  The $\Box^r$ in the type of $b$ allows us to reverse-rename $\Gamma$ to
-  $\Gamma, \gr0\delta$.
-  Then we give the $\wand$-function an argument in context
-  $\gr0\gamma, \Delta$, noting that
-  $\plr{\Gamma, \gr0\delta} + \plr{\gr0\gamma, \Delta} = \plr{\Gamma, \Delta}$,
-  as we wanted from the result.
-  The argument needs type $\gr0\gamma, \Delta \env\V \Delta$.
-  We produce this via \cref{thm:env-postren} from an environment
-  $\rho : \gr0\gamma, \Delta \env\V \gr0\gamma, \Delta$ created using $v$
-  and a renaming which is the complement to that used on $\Box^r$.
-\end{proof}
-
-All of the $\V$s used in examples in this paper support identity environments.
-However, \citet[p.~27]{AACMM21} give some important examples that do not
-support identity environments, and thus cannot use \AgdaFunction{reify}
-(\cref{thm:reify}).
-The feature that causes the lack of support for identity environments is that
-a semantics can make use of the fact that only variables of particular kinds
-are bound by the syntax.
-In the examples of \citeauthor{AACMM21}, a bidirectionally typed language only
-binds variables that synthesise their type, as opposed to those whose type is
-checked.
-The semantics of type-checking and elaboration rely on variables synthesising
-their type, so \AgdaBound{$\V$} is chosen to cover only those variables.
-Instead of using \AgdaFunction{reify}, we must observe that each syntactic form
-only binds such synthesising variables.
-Similar phenomena would appear in, say, a call-by-value language where
-variables are values (not computations), or a polarised language where
-variables always have a polarity matching their type.
-
-
-\subsection{Renaming and substitution}\label{sec:kit-to-sem}
-
-In an unpublished note, \citet{McBride05} gives a parametrised traversal
-yielding homomorphisms of syntax, the canonical examples of which are
-simultaneous renaming and simultaneous substitution.
-The parameters are collected in the record \AgdaRecord{Kit}.
-We make a minor change to the original presentation, where instead of our
-\AgdaField{ren\textasciicircum{}$\V$} field, \citeauthor{McBride05} has the
-field \AgdaField{wk} allowing only context extensions.
-As for the other two fields, \AgdaField{vr} allows us to map variables to
-$\V$-values, so as to put newly bound variables in environments; and
-\AgdaField{tm} allows us to extract terms from $\V$-values, as required when
-we use the environment to handle a free variable.
-
-\ExecuteMetaData[\Syntactictex]{Kit}
-
-Where \citeauthor{McBride05} gave the traversal explicitly, we go via our
-generic semantic traversal.
-The first two fields of \AgdaRecord{Semantics} derive directly from fields of
-\AgdaRecord{Kit}.
-Meanwhile, to handle term constructors, we first \AgdaFunction{reify} to get a
-collection of traversed subterms, and then use \AgdaInductiveConstructor{`con}
-to assemble these subterms into a similarly shaped syntactic form as we started
-with.
-The \AgdaField{vr} field is used implicitly in \AgdaFunction{reify}, as it is
-used to show that $\V$-identity environments exist.
-
-\ExecuteMetaData[\Syntactictex]{kit-to-sem}
-
-The action of a syntactic traversal on logical rules is basically fixed: we
-preserve the logical rule and extend the environment with any newly bound
-variables according to \AgdaField{vr}.
-Meanwhile, the action on variables is relatively unconstrained: we look up the
-variable in the environment to get a $\V$-value, then transform that $\V$-value
-into a term using \AgdaField{tm}.
-
-The idea of simultaneous renaming is that variables replace variables, whereas
-with simultaneous substitution, terms replace variables.
-This translates to environments for renaming containing $\sqni$-values
-(variables), and environments for substitution containing $\vdash$-values
-(terms).
-
-%To implement renaming and substitution for terms, we now just implement
-%syntactic kits for variables and terms, respectively.
-
-\ExecuteMetaData[\Syntactictex]{Ren-Kit}
-
-Notice that \AgdaFunction{ren\textasciicircum$\vdash$}, witnessing the fact
-that terms are renameable, is a corollary of \AgdaFunction{Ren-Kit}.
-
-\ExecuteMetaData[\Syntactictex]{Sub-Kit}
-
-\subsection{A usage elaborator}\label{sec:usage-elaborator}
+\section{A usage elaborator}\label{sec:usage-elaborator}
 
 Using the constructs we have seen so far, producing example terms soon becomes
 extremely tedious.
@@ -128,10 +17,11 @@ syntax.
 The size of each of these proofs is roughly proportional to the number of free
 variables, so the amount of proof we have to write grows roughly quadratically
 with the size of terms.
-An additional factor, which we can't see on paper, is that type checking time
+An additional factor, which we can't see on paper but is nonetheless
+significant, is that type checking time
 for these proofs soon becomes prohibitive to interactive development.
 
-Our aim in this subsection is to automate usage constraint proofs, making terms
+Our aim in this section is to automate usage constraint proofs, making terms
 both easier to write and more performant to check.
 We invoke the automation by writing terms in a syntax where usage constraints
 have been trivialised, and then use a semantic traversal over the simplified
@@ -269,7 +159,7 @@ convenience for converting statically known natural numbers,
 representing de Bruijn \emph{levels}, into variable terms.
 
 
-\subsection{A denotational semantics}
+\section{A denotational semantics}\label{sec:den-sem}
 
 Standard denotational semantics falls out as a somewhat trivial case of
 \AgdaRecord{Semantics}.
@@ -451,3 +341,6 @@ Then, the semantics of terms is given by the function
 
   %\ExecuteMetaData[\Monotonicitytex]{thm}
 \end{example}
+
+\section{Translating between $\name$ and L/nL}\label{sec:lnl}
+\input{lnl.tex}

@@ -303,7 +303,9 @@ post-composition:
 
 We can now state the data required to implement a traversal assigning
 semantics to terms. For open families $\V$ and $\C$, interpreting
-variables and terms respectively, we assume that $\V$ is renameable,
+variables and terms respectively, we assume that $\V$ is renameable
+(i.e., that $\sdtstile{}\V A \rightarrowtriangle \Box\plr{\sdtstile{}\V A}$ for
+all $A$),
 that $\V$ is embeddable in $\C$, and that we have an algebra for a
 layer of syntax, where bound variables are handled using the Kripke
 function space:
@@ -380,3 +382,106 @@ acting with it on \AgdaBound{M}.
 % We can think of \AgdaFunction{extend} as our best effort to extend an
 % environment by \AgdaBound{$\Theta$} without access to an identity environment
 % at \AgdaBound{$\Theta$}.
+
+\AgdaFunction{semantics} is the fundamental lemma of the framework.
+With it proven, I move onto corollaries and specific applications.
+
+\section{Reifying the Kripke function space}
+
+A result I will use throughout the rest of this thesis is \emph{reification}.
+When we have an index-preserving mapping from usage-checked variables to
+$\V$-environments, we can construct environments of the form
+$\Gamma \env\V \Gamma$ (identity environments) for all $\Gamma$.
+This lets us write the \AgdaFunction{reify} function, which  simplifies our
+obligations in giving a \AgdaRecord{Semantics} by coercing
+\AgdaFunction{Kripke} functions into just
+\AgdaBound{$\C$}-values in an extended context.
+
+\begin{lemma}[\AgdaFunction{reify}]\label{thm:reify}
+  If $\V$ is an open family such that there is a function
+  $v : {\sqni} \rightarrowtriangle \V$, we get a function of type
+  $\mathrm{Kripke}\,\V\,\C \rightarrowtriangle \mathrm{Scope}\,\C$ for any $\C$.
+\end{lemma}
+\begin{proof}
+  Let $b : \mathrm{Kripke}\,\V\,\C\,\Delta\,\Gamma\,A$.
+  That is, $b$ is a Kripke function yielding $\C$-computations
+  We want to apply $b$ so as to get a $\C\,\plr{\Gamma, \Delta}\,A$.
+  Let $\grP\gamma = \Gamma$ and $\grQ\delta = \Delta$.
+  The $\Box^r$ in the type of $b$ allows us to reverse-rename $\Gamma$ to
+  $\Gamma, \gr0\delta$.
+  Then we give the $\wand$-function an argument in context
+  $\gr0\gamma, \Delta$, noting that
+  $\plr{\Gamma, \gr0\delta} + \plr{\gr0\gamma, \Delta} = \plr{\Gamma, \Delta}$,
+  as we wanted from the result.
+  The argument needs type $\gr0\gamma, \Delta \env\V \Delta$.
+  We produce this via \cref{thm:env-postren} from an environment
+  $\rho : \gr0\gamma, \Delta \env\V \gr0\gamma, \Delta$ created using $v$
+  and a renaming which is the complement to that used on $\Box^r$.
+\end{proof}
+
+All of the $\V$s used in examples in this paper support identity environments.
+However, \citet[p.~27]{AACMM21} give some important examples that do not
+support identity environments, and thus cannot use \AgdaFunction{reify}
+(\cref{thm:reify}).
+The feature that causes the lack of support for identity environments is that
+a semantics can make use of the fact that only variables of particular kinds
+are bound by the syntax.
+In the examples of \citeauthor{AACMM21}, a bidirectionally typed language only
+binds variables that synthesise their type, as opposed to those whose type is
+checked.
+The semantics of type-checking and elaboration rely on variables synthesising
+their type, so \AgdaBound{$\V$} is chosen to cover only those variables.
+Instead of using \AgdaFunction{reify}, we must observe that each syntactic form
+only binds such synthesising variables.
+Similar phenomena would appear in, say, a call-by-value language where
+variables are values (not computations), or a polarised language where
+variables always have a polarity matching their type.
+
+\section{Renaming and substitution}\label{sec:kit-to-sem}
+
+The final completely syntax-generic result I present is simultaneous
+substitution.
+I derive this as I did in the simply typed case in \cref{sec:gen-sem}:
+I first show that a syntactic kit can be turned into a semantics, and then by
+instantiating the notion of kit for, in turn, renaming and substitution, the
+general semantic traversal gives the result we want.
+
+The notion of \AgdaRecord{Kit} is essentially the same as in the simply typed
+case, once we allow for changes to the basic definitions of variables, terms,
+and environments (in particular, renamings).
+
+\ExecuteMetaData[\Syntactictex]{Kit}
+
+The first two fields of \AgdaRecord{Semantics} derive directly from fields of
+\AgdaRecord{Kit}.
+Meanwhile, to handle term constructors, we first \AgdaFunction{reify} to get a
+collection of traversed subterms, and then use \AgdaInductiveConstructor{`con}
+to assemble these subterms into a similarly shaped syntactic form as we started
+with.
+The \AgdaField{vr} field is used implicitly in \AgdaFunction{reify}, as it is
+used to show that $\V$-identity environments exist.
+
+\ExecuteMetaData[\Syntactictex]{kit-to-sem}
+
+The action of a syntactic traversal on logical rules is basically fixed: we
+preserve the logical rule and extend the environment with any newly bound
+variables according to \AgdaField{vr}.
+Meanwhile, the action on variables is relatively unconstrained: we look up the
+variable in the environment to get a $\V$-value, then transform that $\V$-value
+into a term using \AgdaField{tm}.
+
+The idea of simultaneous renaming is that variables replace variables, whereas
+with simultaneous substitution, terms replace variables.
+This translates to environments for renaming containing $\sqni$-values
+(variables), and environments for substitution containing $\vdash$-values
+(terms).
+
+%To implement renaming and substitution for terms, we now just implement
+%syntactic kits for variables and terms, respectively.
+
+\ExecuteMetaData[\Syntactictex]{Ren-Kit}
+
+Notice that \AgdaFunction{ren\textasciicircum$\vdash$}, witnessing the fact
+that terms are renameable, is a corollary of \AgdaFunction{Ren-Kit}.
+
+\ExecuteMetaData[\Syntactictex]{Sub-Kit}
