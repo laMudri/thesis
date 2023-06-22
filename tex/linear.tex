@@ -1,22 +1,5 @@
 \chapter{Linearity and modality}\label{sec:linearity}
 
-\begin{itemize}
-  \item Motivation via prior work:
-    \begin{itemize}
-      \item Rust
-      \item Session types
-      \item ATS
-      \item Complexity \citep{Hofmann03}
-      \item Modal\ldots
-    \end{itemize}
-  \item Can \citet{AACMM21} capture linearity/modality?
-    It's unclear based on standard presentations.
-    Let's find one that looks good (DILL/PD), and see whether it works.
-  \item In-depth introduction of DILL and PD
-  \item It's close to working, but doesn't.
-  \item Mention \citet{BBdePH93}, problems with substitution.
-\end{itemize}
-
 The techniques of \cref{sec:simple} were developed to handle idealised core
 calculi, like the simply typed $\lambda$-calculus and its many variants.
 Such core calculi are fairly close to some real intermediate languages,
@@ -43,27 +26,33 @@ Languages and systems implementing features inspired by linear logic include
 Rust~\citep{MK14,Rust}, ATS~\citep{Xi04,ZX05}, and various implementations of
 session types~\citep{HLVCCDMPRTVTZ16}.
 Additionally, forms of linearity have been used in theoretical work, for example
-to bound computational complexity~\citep{GSS92,Hofmann03} or maintain
-differentiability~\citep{ER03,Ehrhard18}.
+to bound computational complexity~\citep{GSS92,Hofmann03} or to write programs
+which support incremental updates to computations~\citep{ER03,Ehrhard18}.
 As for modality, \citet{IMO20} show that common data-flow analyses for
 imperative languages can be recast as modal type systems, though they have
 generally been developed in an ad hoc fashion.
 Such a recasting may be useful to understand the metatheoretic properties of
 programs passing such static analyses.
 More user-facing implementations of modal type systems include the system for
-stack allocation in OCaml~\citep{DW22} and the approach to erasure found in
-Agda and Idris\todo{cite}.
+stack allocation in OCaml~\citep{DW22} and the approach to programmer-annotated
+erasure found in Agda and Idris~\citep{Atkey18}.
 
-In this chapter\ldots\todo{Chapter map}
+In this chapter, I look at two standard type-theoretic features that motivate
+considering calculi going beyond simple type theories as deliniated in
+\cref{sec:simple} or equivalently by \citet{AACMM21}.
+The first feature is a $\Box$-modality --- specifically, the $\Box$-modality of
+intuitionistic S4, which I discuss in \cref{sec:modal}.
+The second feature is linearity, which I discuss in \cref{sec:ill}.
+In particular, I discuss possible syntaxes for each, with a mind to
+being able to apply the techniques described in \cref{sec:simple}.
+Then, I\ldots
 
 \section{Intuitionistic S4 modal logic}\label{sec:modal}
 \input{modal.tex}
 
-\section{Intuitionistic linear logic}\label{sec:ill}
+\section{Intuitionistic Linear Logic}\label{sec:ill}
 \input{ill.tex}
 
-\section{DILL}\label{sec:dill}
-\input{dill.tex}
-
-\section{Mechanisation survey}
+\section{Mechanisations and systemitisations of substructural logics}
+\label{sec:linmech}
 \input{linmech.tex}

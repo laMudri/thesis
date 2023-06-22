@@ -1,31 +1,36 @@
-Linear logic is a good starting point for our investigations into usage
-restrictions because it is well known, well understood, and exhibits most of the
-difficulties we will come across.
-Linear logic's lack of general weakening and contraction will be a typical
-feature of the calculi we will see, and the exponential modality $\oc$ (bang)
-will be the prototype for a range of modalities I will consider.
+Where modal logics can be seen as additions to an underlying classical or
+intuitionistic logic, linear logic is a much more radical change.
+Formally, many modal logics, including (I)S4, are conservative extensions of
+the underlying classical or intuitionistic logic, meaning that statements not
+mentioning the modal operators $\Box$ and $\Diamond$ are provable in modal logic
+if and only if they are provable in the underlying non-modal logic.
+In linear logic, however, we a priori severely restrict provability of basic
+formulae, and then use modalities to recover the strength of classical or
+intuitionistic logic.
+
+In this thesis, I consider intuitionistic linear logic (ILL).
+ILL can be understood as a logic of resources.
+Whereas in classical logic we read a proposition $A$ to implicitly mean ``$A$ is
+true'', we may read a proposition $A$ of linear logic to implicitly mean ``I
+have an $A$''.
+A sequent $A \vdash B$ can then be understood as saying ``if I have an $A$, I
+can give it up so as to have a $B$'', and the corresponding implication
+$A \multimap B$ can be understood as saying ``I have a \emph{mechanism} for
+having a $B$ if I have and am willing to give up an $A$''.
+\todo{Camels example}
+In this section, I will carefully introduce intuitionistic linear logic so as to
+make the intuitive readings more precise.
+
+%Linear logic is a good starting point for our investigations into usage
+%restrictions because it is well known, well understood, and exhibits most of the
+%difficulties we will come across.
+%Linear logic's lack of general weakening and contraction will be a typical
+%feature of the calculi we will see, and the exponential modality $\oc$ (bang)
+%will be the prototype for a range of modalities I will consider.
 
 \subsection{Motivation of linearity}
 
-While classical linear logic is perhaps better understood, for the sake of this
-thesis I focus on intuitionistic linear logic.
-The syntactic difference between the two is analogous to the difference between
-classical and intuitionistic logic: The latter restricts the former by only
-allowing one formula on the right of a sequent.
-Classical linear logic is not irrelevant to this thesis, and appears as an
-instance of the framework presented in \cref{sec:framework}.
-However, the connection of this work to intuitionistic linear logic is more
-direct, and reflects the basis of existing semiring-annotated calculi on
-(intuitionistic) typed $\lambda$-calculi.
-
-Intuitionistic linear logic is often motivated by its sensitivity to resources.
-The fact that, in intuitionistic (and classical) logic, \emph{any} hypothesis
-can be discarded or duplicated means that propositions cannot be used to model
-things that may be ``possessed'' or ``spent'', despite hypotheses often being
-described as things we ``have''.
-In contrast, linear logic allows propositions to behave like physical objects,
-being moved around but not being created or destroyed (a priori).
-
+\todo{Incorporate into chapter introduction.}
 Programming applications of linearity include stateful protocols
 \citep{Wadler12}, mutually exclusive capabilities (TODO: cite),
 and mutation (TODO: cite).
@@ -42,136 +47,26 @@ Such a protocol naturally also supports a \emph{freezing} operation, by which we
 relinquish the ability to mutate the value in return for an immutable reference
 to the value produced.
 
-%In LJ, two distinct, but equiderivable, canonical definitions of $\wedge$ can
-%be given.
-%
-%In the first approach, $\wedge^-$ is conceived to be a
-%\emph{categorial product}.
-%Such a product is constructed by providing two maps in from the same antecedents
-%$\Gamma$.
-%It is used by projecting out one of the sides.
-%
-%\begin{mathpar}
-%  \inferrule*[right=$\wedge^-$-r]
-%  {\Gamma \vdash A \\ \Gamma \vdash B}
-%  {\Gamma \vdash A \wedge^- B}
-%
-%  \and
-%
-%  \inferrule*[right=$\wedge^-$-l$_0$]
-%  {\Gamma, A \vdash C}
-%  {\Gamma, A \wedge^- B \vdash C}
-%
-%  \and
-%
-%  \inferrule*[right=$\wedge^-$-l$_1$]
-%  {\Gamma, B \vdash C}
-%  {\Gamma, A \wedge^- B \vdash C}
-%\end{mathpar}
-%
-%In the second approach, $\wedge^+$ is conceived to be a \emph{tensor product}.
-%Intuitively, $\wedge^+$ internalises the comma of context concatenation.
-%Such a product is used by giving access to both sides simultaneously.
-%It is constructed by constructing both sides and combining the antecedents
-%required by each side.
-%
-%\begin{mathpar}
-%  \inferrule*[right=$\wedge^+$-r]
-%  {\Gamma \vdash A \\ \Delta \vdash B}
-%  {\Gamma, \Delta \vdash A \wedge^+ B}
-%
-%  \and
-%
-%  \inferrule*[right=$\wedge^+$-l]
-%  {\Gamma, A, B \vdash C}
-%  {\Gamma, A \wedge^+ B \vdash C}
-%\end{mathpar}
-%
-%When we prove the logical equivalence of these two formulations, we notice that
-%the structural rules of weakening and contraction are essential.
-%When we remove weakening and contraction, $\wedge^-$ and $\wedge^+$ become
-%logically distinct connectives, which we notate $\&$ and $\otimes$,
-%respectively.
-%
-%\begin{mathpar}
-%  \inferrule*[right=$\wedge^-$-r]
-%  {%
-%    \inferrule*[right=Weak$^*$,fraction={\cdot\cdots\cdot}]
-%    {\Gamma \vdash A}
-%    {\Gamma, \Delta \vdash A}
-%    \\
-%    \inferrule*[Right=Weak$^*$,fraction={\cdot\cdots\cdot}]
-%    {\Delta \vdash B}
-%    {\Gamma, \Delta \vdash B}
-%  }
-%  {\Gamma, \Delta \vdash A \wedge^- B}
-%
-%  \and
-%
-%  \inferrule*[right=Contr]
-%  {%
-%    \inferrule*[Right=$\wedge^-$-l$_0$]
-%    {%
-%      \inferrule*[Right=$\wedge^-$-l$_1$]
-%      {\Gamma, A, B \vdash C}
-%      {\Gamma, A, A \wedge^- B \vdash C}
-%    }
-%    {\Gamma, A \wedge^- B, A \wedge^- B \vdash C}
-%  }
-%  {\Gamma, A \wedge^- B \vdash C}
-%\end{mathpar}
-%
-%\begin{mathpar}
-%  \inferrule*[right=Contr$^*$,fraction={\cdot\cdots\cdot}]
-%  {%
-%    \mprset{defaultfraction}
-%    \inferrule*[Right=$\wedge^+$-r]
-%    {\Gamma \vdash A \\ \Gamma \vdash B}
-%    {\Gamma, \Gamma \vdash A \wedge^+ B}
-%  }
-%  {\Gamma \vdash A \wedge^+ B}
-%
-%  \and
-%
-%  \inferrule*[right=$\wedge^+$-l]
-%  {%
-%    \inferrule*[Right=Weak]
-%    {\Gamma, A \vdash C}
-%    {\Gamma, A, B \vdash C}
-%  }
-%  {\Gamma, A \wedge^+ B \vdash C}
-%
-%  \and
-%
-%  \inferrule*[right=$\wedge^+$-l]
-%  {%
-%    \inferrule*[Right=Weak]
-%    {\Gamma, B \vdash C}
-%    {\Gamma, A, B \vdash C}
-%  }
-%  {\Gamma, A \wedge^+ B \vdash C}
-%\end{mathpar}
-
 \subsection{The multiplicative-additive fragment}
 
 The multiplicative-additive fragment of linear logic (MALL) is the fragment
 where all hypotheses are linear (must be used exactly once).
-We will extend MALL with the \emph{exponential} modality in
+I will extend MALL with the \emph{exponential} modality in
 \cref{sec:bang-modality}.
-MALL is unable to embed intuitionistic or classical logic (collectively
-known as \emph{structural logics}), as MALL is unable to reflect any of the
-discarding or duplication that can be done in proofs in structural logics.
+MALL is unable to embed intuitionistic or classical logic, as MALL is unable to
+reflect any of the discarding or duplication that can be done in proofs using
+weakening or contraction.
 
 In short, the syntax of intuitionistic MALL can be described as intuitionistic
 logic with the structural rules of \emph{weakening} and \emph{contraction}
 removed.
 However, without the presence of weakening and contraction, we have to be more
-careful about the rules we state, so as not to accidentally introduce weakening
-and contraction admissibly.
+careful about the rules we state, so as not to accidentally admit weakening
+and contraction.
 The lack of these structural rules also allows us to observe a new phenomenon:
 the distinction (at the level of provability) between \emph{additive} and
-\emph{multiplicative} formulations of existing connectives (in particular, in
-the intuitionistic case, the conjunction connective).
+\emph{multiplicative} formulations of existing connectives (in particular, the
+conjunction connective).
 
 I present MALL in \cref{fig:mall} in a sequent calculus style, as it was
 presented by \citet{girard87linear}.
@@ -205,8 +100,8 @@ all of the hypotheses, or each of the conjuncts \emph{individually} uses all of
 the hypotheses.
 The former choice gives us the tensor-product ($\otimes$), and the latter choice
 gives us the with-product ($\with$).
-These products are equivalent up to provability in structural logics but
-distinct in linear logic.
+These products are equivalent up to provability in logics with weakening and
+contraction, but distinct in linear logic.
 
 \begin{figure}
   \begin{align*}
@@ -340,35 +235,44 @@ products and closure.
 
 \subsection{The $\oc$-modality}\label{sec:bang-modality}
 
-\begin{mathpar}
-  \ebrule{%
-    \hypo{\oc\Gamma \vdash A}
-    \infer1[Promotion]{\oc\Gamma \vdash \oc A}
-  }
+\begin{figure}
+  \begin{align*}
+    A, B, C &\Coloneqq \dots \mid \oc A
+  \end{align*}
+  \begin{mathpar}
+    \ebrule{%
+      \hypo{\oc\Gamma \vdash A}
+      \infer1[Promotion]{\oc\Gamma \vdash \oc A}
+    }
 
-  \and
+    \and
 
-  \ebrule{%
-    \hypo{\Gamma, A \vdash B}
-    \infer1[Dereliction]{\Gamma, \oc A \vdash B}
-  }
+    \ebrule{%
+      \hypo{\Gamma, A \vdash B}
+      \infer1[Dereliction]{\Gamma, \oc A \vdash B}
+    }
 
-  \and
+    \and
 
-  \ebrule{%
-    \hypo{\Gamma \vdash B}
-    \infer1[Weakening]{\Gamma, \oc A \vdash B}
-  }
+    \ebrule{%
+      \hypo{\Gamma \vdash B}
+      \infer1[Weakening]{\Gamma, \oc A \vdash B}
+    }
 
-  \and
+    \and
 
-  \ebrule{%
-    \hypo{\Gamma, \oc A, \oc A \vdash B}
-    \infer1[Contraction]{\Gamma, \oc A \vdash B}
-  }
-\end{mathpar}
+    \ebrule{%
+      \hypo{\Gamma, \oc A, \oc A \vdash B}
+      \infer1[Contraction]{\Gamma, \oc A \vdash B}
+    }
+  \end{mathpar}
+  \caption{The sequent calculus rules for the $\oc$-modality}
+  \label{fig:bang-seq}
+\end{figure}
 
-In the intuitionistic linear logic sequent calculus ILL, $\oc A$ is defined
+\Cref{fig:bang-seq} shows the rules we can add to MALL to get the full sequent
+calculus for intuitionistic linear logic (ILL).
+In ILL, $\oc A$ is defined
 to be a proposition whose occurrences as antecedents can be deleted
 (\TirName{Weakening}) and duplicated (\TirName{Contraction}), from which we can
 extract $A$ (\TirName{Dereliction}), and which we can form from a conclusion
@@ -378,38 +282,114 @@ In short, $\oc A$ can be seen as an intuitionistic version of $A$, supporting
 all of the structural rules of LJ, and only being able to be formed when it
 does not depend on anything linear.
 
-While this definition of $\oc$ works, in the sense that it gives the intended
-class of models and cut elimination is maintained, it has some disadvantages.
-Firstly, while the multiplicative and additive connectives are all characterised
-by universal properties, $\oc$ is not.
+The \TirName{Dereliction} rule is comparable to the \TirName{T} axiom we saw in
+\cref{sec:modal}.
+The \TirName{Promotion} rule is exactly like the \TirName{Promotion} rule we saw
+in \cref{sec:modal}, and for the same reasons we want to avoid having such a
+rule in a natural deduction system for intuitionistic linear logic.
+Note that \TirName{Promotion} is not problematic in the sequent calculus, at
+least insofar as it maintains \TirName{Cut}-elimination.
+
+Additional to the problems with \TirName{Promotion} in a natural deduction
+system, defining the $\oc$-modality as in \cref{fig:bang-seq} has the odd
+feature that, unlike all of the other connectives of ILL, $\oc$ is not
+characterised by a universal property.
 This can be seen by the fact that taking the rules for $\oc$ and replacing each
 occurrence of $\oc$ by a fresh connective $\oc'$ produces a logically distinct
 connective.
 One cannot produce any derivation of $\oc' A \vdash \oc A$ because
 \TirName{Promotion} does not apply when there are antecedents not of the form
 $\oc X$.
-Finally, while $\oc$ is supposed to be a positive connective, it sometimes
-behaves like a negative connective.
-For example, for a positive connective like $\otimes$, the normal form proof
-of the identity sequent $P \otimes Q \vdash P \otimes Q$ starts (from the
-bottom) with a left rule and then, with the left in a more amenable form,
-applies the right rule.
-In contrast, the normal form proof of $\oc P \vdash \oc P$ starts with the
-right rule, as it needs to have everything on the left be of the form $\oc X$.
+This lack of characterisation also holds of the rule and axioms we first gave to
+the $\Box$-modality in \cref{fig:S4-axioms}, and essentially any presentation
+that does not encorporate the modality into the judgemental structure of the
+calculus.
 
-\begin{mathpar}
-  \ebrule{%
-    \infer0[Id]{P \vdash P}
-    \infer0[Id]{Q \vdash Q}
-    \infer2[$\otimes$-r]{P, Q \vdash P \otimes Q}
-    \infer1[$\otimes$-l]{P \otimes Q \vdash P \otimes Q}
-  }
+A noteworthy solution to the substitution problem of \TirName{Promotion} is
+given by \citet{BBdePH93}.
+The solution they give is compatible with the form of sequents introduced above,
+but works purely in terms of right-rules like standard natural deduction
+calculi.
+I give their rules for the $\oc$-modality in \cref{fig:BBdePH}.
+The \TirName{Weakening} and \TirName{Contraction} rules are reminiscent of
+pattern-matching elimination principles, allowing us to form an inhabitant of
+the type of interest ($\oc A$) and then continue producing the originally
+desired result ($B$) in an updated context.
+However, somewhat unusually, we can choose which of the two ``pattern-matching''
+principles to use, depending on whether we want to delete or duplicate the
+value of type $\oc A$.
+Another elimination-like rule is \TirName{Dereliction}, which straightforwardly
+lets us derive $A$ from $\oc A$ similarly to the corresponding sequent calculus
+rule from \cref{fig:bang-seq}, but on the right.
 
-  \and
+\begin{figure}
+  \begin{mathpar}
+    \ebrule{%
+      \hypo{\Delta_1 \vdash \oc A_1}
+      \hypo{\cdots}
+      \hypo{\Delta_n \vdash \oc A_n}
+      \hypo{\oc A_1, \ldots, \oc A_n \vdash B}
+      \infer4[Promotion]{\Delta_1, \ldots, \Delta_n \vdash \oc B}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash \oc A}
+      \infer1[Dereliction]{\Gamma \vdash A}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash \oc A}
+      \hypo{\Delta \vdash B}
+      \infer2[Weakening]{\Gamma, \Delta \vdash B}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash \oc A}
+      \hypo{\Delta, \oc A, \oc A \vdash B}
+      \infer2[Contraction]{\Gamma, \Delta \vdash B}
+    }
+  \end{mathpar}
+  \caption{The \citet{BBdePH93} rules for the $\oc$-modality}
+  \label{fig:BBdePH}
+\end{figure}
 
-  \ebrule{%
-    \infer0[Id]{P \vdash P}
-    \infer1[Der]{\oc P \vdash P}
-    \infer1[Pro]{\oc P \vdash \oc P}
-  }
-\end{mathpar}
+The \citeauthor{BBdePH93} \TirName{Promotion} rule is more formally complex, but
+can be understood as follows.
+We notice that the problem with the \TirName{Promotion} rule of
+\TirName{fig:bang-seq} when added to a natural deduction system is that it
+restricts the types of assumptions in the concluding sequent.
+In other words, the sequent calculus \TirName{Promotion} rule is acting like
+both a right-rule and, problematically, a left-rule, to some degree.
+Acting on the context in a natural deduction system risks making substitution
+inadmissible, as happens in this case.
+Instead, \citeauthor{BBdePH93} paraphrase this restriction on the context as the
+construction of a \emph{new} context $\oc A_1, \ldots, \oc A_n$ for the primary
+subderivation.
+Heuristically, this new \TirName{Promotion} rule admits substitution because any
+substitution will pass into the relevant premises deriving $\oc A_1$ to
+$\oc A_n$.
+More abstractly, we can notice that the first $n$ premises essentially form an
+explicit substitution from $\Delta_1, \ldots, \Delta_n$ to
+$\oc A_1, \ldots, \oc A_n$, so any further substitution applied
+to a \TirName{Promotion}-headed term is precomposed onto this explicit
+substitution~\citep{ACCL91}.
+
+The \citeauthor{BBdePH93} \TirName{Promotion} rule is a clever solution to the
+substitution problem of (intuitionistic) linear logic, but the resulting system
+comes with its own problems.
+If we were to write programs in a language directly implementing the
+\citeauthor{BBdePH93} calculus, then the \TirName{Promotion} rule would be a
+pain point because it makes us rebind all of the $oc$-typed variables we need to
+new variables.
+Additionally, we have to be explicit everywhere about weakening and contraction,
+potentially making working with $\oc$-typed variables much more fiddly than the
+corresponding variables would be in a non-substructural programming language.
+These syntactic annoyances may be worked around in a realistic implementation by
+some new elaboration procedures, but we would prefer not to rely on such
+elaboration if there is an acceptable core calculus which more closely matches
+the programs we want to write.
+Therefore, I investigate such a system, Dual Intuitionistic Linear Logic, in the
+following subsection.
+
+\subsection{Dual Intuitionistic Linear Logic}\label{sec:dill}
+\input{dill.tex}

@@ -1,23 +1,33 @@
 In this section, I give an overview of techniques which have been used in
-previous work to encode linear logic in proof assistants.
-To my knowledge, there have been no other significant attempts to mechanise
-semiring-annotated logics.
+previous work to mechanise linear logic in proof assistants.
+Na\"{i}ve approaches often struggle to represent concatenation of contexts in a
+way which is amenable to the way dependent type theory-based proof assistants
+work.
+Problems even arise when working rigorously on paper when trying to avoid an
+explicit exchange rule, such as how \cref{def:DILL-split} is not a precise
+definition of a binary operator on lists.
 
 \subsection{Typing with leftovers}
 
-Typing with leftovers~\cite{allais17} is a technique developed to capture a
-straightforward approach to linearity checking.
-The idea is to, at any point, consider an input context, a term, and an output
-context.
-The input context contains all of the variables in scope, while the output
+Typing with leftovers, introduced by \citet{allais17}, is a technique developed
+to specify an algorithm for linear type checking as a declarative type system.
+The idea is to consider an input context, a term, and an output context, where
+the input context contains all of the variables in scope, and the output
 context is the same minus any variables used by the term.
-Checking of adjacent terms, for example in a $\otimes$-introduction, is done by
+Type-checking of adjacent subterms of, for example, an application of
+the $\otimes$-introduction rule, is done by
 threading the context through from the output of the first term to the input of
 the second.
 Bound variables are introduced in the input context of the term in which they
 are bound, and are expected to be absent in the output context of that term.
-\Cref{fig:twl,fig:twl-mult} give rules in this style for the multiplicative
-fragment of intuitionistic linear logic.
+
+\Cref{fig:twl,fig:twl-mult} give rules in the typing-with-leftovers style for
+the multiplicative fragment of intuitionistic linear logic.
+Where \citeauthor{allais17} marks \emph{fresh} and \emph{stale} variables, I use
+the notation I will use starting in \cref{sec:semirings}, labelling such
+variables with $\gr 1$ and $\gr 0$, respectively.
+Intuitively, the number describes how many more times that variable is to be
+used.
 
 \begin{figure}
   \begin{align*}
@@ -80,14 +90,23 @@ The original paper extends the logic covered to binary additives --- $\with$ and
 $\oplus$ --- with rules that check that terms agree on output contexts, as seen
 in \cref{fig:twl-add}.
 However, it is less clear how to handle nullary additives --- $\top$ and $0$ ---
-as we would have 0 (rather than 2) candidates for the output context.
+as we would have 0 (rather than 2) potential candidates for the output context.
 At some level, this problem is unavoidable in a system modelling linearity
 checking because any checking strategy will expose the ambiguity in sequents
-like $\gr1x : A \vdash (\{\}, \{\}) : \top \otimes \top$ of whether the variable
-$x$ was used in the left half or the right half.
-As such, we may expect uses of $\top$-introduction (and similarly
-$0$-elimination) to be annotated with which variables they use, in which case we
-get a viable typing with leftovers rule.
+like $\gr1x : A \vdash (\langle\rangle, \langle\rangle) : \top \otimes \top$ of
+whether the variable
+$x$ was consumed in the left half or the right half.
+Such an example is also considered in related work on proof seach for linear
+logics, such as the work of \citet[p.\ 11]{WH94} and \citet[p.\ 150]{CHP00}.
+It is not immediately clear whether the different solutions proposed by these
+papers will apply to \citeauthor{allais17}' and my settings, given that they
+both act on a set of formulas restricted to facilitate proof search.
+The solutions also add significant, seemingly somewhat ad hoc, structure to the
+syntax of sequents, with no semantic justification (rather being justified by
+making their respective proof search algorithms efficient).
+%As such, we may expect uses of $\top$-introduction (and similarly
+%$0$-elimination) to be annotated with which variables they consume, in which case we
+%get a viable typing with leftovers rule.
 
 \begin{figure}
   \begin{mathpar}
@@ -111,15 +130,15 @@ get a viable typing with leftovers rule.
 
 The original paper also does not show how to capture the exponential modality
 $\oc$.
-We could perhaps, inspired by DILL, distinguish between linear variables and
-intuitionistic variables.
+The solution given by both \citet{WH94} and \citet{CHP00} is, as in DILL, to
+distinguish between linear variables and intuitionistic variables.
 This gives rules like those of \cref{fig:twl-exp}.
 The important invariant is that linear and intuitionistic variables stay
 distinct, so any intuitionistic variable in the input context (annotated by
 $\gr\omega$) must be intuitionistic in the output context.
-In the $\oc$-introduction rule, there are several choices we could make, but I
-have chosen to keep all the linear variables in scope but used so as to match
-the general style of variables staying in scope with the $\gr0$ annotation..
+%In the $\oc$-introduction rule, there are several choices we could make, but I
+%have chosen to keep all the linear variables in scope but used so as to match
+%the general style of variables staying in scope with the $\gr0$ annotation.
 
 \begin{figure}
   \begin{mathpar}
@@ -175,13 +194,18 @@ This means that if we want to implement substitution, which involves putting a
 term into an unknown surrounding, we have to navigate these different forms via
 the \emph{framing property}.
 
-The unusal form of sequents also somewhat obscures the denotational semantics of
-a typing with leftovers system.
+The unusual form of sequents also somewhat obscures any attempt to interpret the
+terms of a typing-with-leftovers system.
 Though the $\boxtimes$ notation suggests a semantics into symmetric monoidal
 closed categories where terms are morphisms from one iterated tensor product
 (the input context) to another (the type and output context), the syntax is
 incomplete for this semantics because we cannot produce anything interesting in
 the output context.
+
+Another piece of related work using a typing-with-leftovers style is that of
+\citet{polakow15}.
+There, \citeauthor{polakow15} encodes a linear embedded domain-specific language
+inside Haskell using typeclass constraints.
 
 \subsection{Yalla}
 
@@ -196,12 +220,14 @@ separately from scratch.
 The style used in Yalla is to realise sequents as lists of formulas.
 The active formula tends to be forced to be the first formula in such a list,
 with an explicit exchange rule being used to move such formulas into place.
-\Citet{laurent18} explains why explicit permutations are necessary in such a
-system, and why using multisets instead of lists would conflate distinct proofs
-when there are repeated formulas in a sequent.
-The system I will present in the next chapter avoids permutations essentially by
-being a refinemet of the system presented in the previous chapter, which has an
-ordered context and specific references (de Bruijn indices) into it.
+\Citet{laurent18} points out that using multisets, as do some less formal
+presentations of linear logic, is insufficient at distinguishing certain proofs
+involving repeated assumptions or conclusions.
+For example, we expect there to be two distinct derivations of
+$A \otimes A \vdash A \otimes A$ (up to the appropriate equational theory):
+the one that keeps the pair in the same order and the one that flips the order.
+But if the \TirName{$\otimes$-L} rule unpacks the formula $A \otimes A$ into the
+\emph{multiset} $\{A, A\}$, then we forget the order of the input pair.
 
 Despite making sure to distinguish distinct proofs, the Yalla library does not
 define any equational theories of proofs, so does not prove any results relying
@@ -216,25 +242,262 @@ in the equational theory are $\beta$- and $\eta$-rules (i.e.\ computationally
 interesting rules).
 I will restore this property of the representation in \cref{sec:semirings}.
 
-\begin{itemize}
-  \item Sequent calculus
-  \item Specialised to linear logic
-\end{itemize}
+The relevance of Yalla to the work in this thesis is limited by the fact that
+Yalla is based entirely on sequent calculi, whereas I am considering only
+natural deduction calculi.
 
-\section{Systematisations of substructural logics}
+\subsection{Co-de-Bruijn syntax}
 
-\subsection{Linear LF}
+\Citet{McBride18} presents a mechanisation of the simply typed
+$\lambda$-calculus in what he calls \emph{co-de-Bruijn} style.
+He notes that syntax based on de Bruijn indices, as presented in
+\cref{sec:simple}, finds a canonical way to place contractions and weakenings
+by eagerly placing contractions wherever they could be needed (i.e., whenever a
+rule has multiple premises) and leaving weakening as late as possible (i.e., at
+the variable rule and at rules with no premises).
+Co-de-Bruijn syntax, by contrast, finds a canonical way to place contractions
+and weakenings by doing the reverse: weakening as early as possible (i.e., as
+soon as the variable is bound) and contracting only where necessary.
 
-\subsection{Encoding linearity in LF}
-
-Includes linearity in Haskell.
-
-\subsection{Licata-Shulman-Riley}
-
-Greg Restall's approach in Substructural Logic.
-
-\subsection{Granule}
-
-Brunel et al, Ghica-Smith, \ldots
+Such a scheme straightforwardly adapts to multiplicative linear logic by
+modifying the data structures presented by \citet{McBride18} to disallow all
+contraction and weakening.
+With the additive rules, however, we get cases where variables appear multiple
+times syntactically in a term but are still considered linear by the type
+system, the simplest example being
+$x : A \vdash \langle x, x\rangle : A \with A$.
+Such rules are perhaps a new kind compared to what \citeauthor{McBride18}
+considers, but it seems likely that just copying the same context to all the
+premises would not be too hard to accommodate.
+Meanwhile, we may consider implementing the $\oc$-modality as in DILL, with
+intuitionistic variables handled using the regular co-de-Bruijn machinery from
+the paper.
+In summary, the co-de-Bruijn approach is promising for capturing linearity, but
+has not been thoroughly investigated.
 
 \subsection{Fitch-style modalities}
+
+An alternative to the approach of \citet{judgmental} to adapt modal logics (and
+particularly IS4) to natural deduction is using Fitch-style calculi.
+Fitch-style calculi, as codified and studied by \citet{Borghuis-thesis}, are
+distinguished by allowing for contexts containing \emph{locks}, written $\Lock$,
+with the variable rule being restricted so that only variables not behind locks
+are immediately accessible.
+
+Below I give the main rules of Fitch-style IK (intuitionistic logic K).
+Other normal modal logics are obtained by strengthening the $\Box$-elimination
+rule to remove varying numbers of locks.
+For example, we can add axiom \TirName{T} by allowing for 0 or 1 locks to be
+removed, axiom \TirName{4} by allowing 1 or more locks to be removed, or both
+axioms together by allowing any number of locks to be removed from the
+right-hand end of the context (together with any variables to the right of a
+removed lock).
+The \TirName{$\Box$-I} rule stays the same, and forms part of an adjunction of
+the form ``$\Lock \dashv \Box$''.
+
+\begin{mathpar}
+  \ebrule{%
+    \hypo{\Lock \notin \Gamma'}
+    \infer1[Var]{\Gamma, A, \Gamma' \vdash A}
+  }
+  \and
+  \ebrule{%
+    \hypo{\Gamma, \Lock \vdash A}
+    \infer1[$\Box$-I]{\Gamma \vdash \Box A}
+  }
+  \and
+  \ebrule{%
+    \hypo{\Lock \notin \Gamma'}
+    \hypo{\Gamma \vdash \Box A}
+    \infer2[$\Box$-E$_K$]{\Gamma, \Lock, \Gamma' \vdash A}
+  }
+\end{mathpar}
+
+A syntactic advantage of Fitch-style calculi over the calculus introduced by
+\citet{judgmental} is that Fitch-style calculi support a projection-style
+eliminator for $\Box$, which makes it easier to use than the pattern-matching
+eliminator of \citeauthor{judgmental}.
+A disadvantage is that $\Lock$ cannot be understood as a kind of hypothetical
+judgement like the rest of the context, so many of the heuristics we relied on
+in \cref{sec:simple} and \cref{sec:modal} fail.
+In fact, the addition of locks represents a large change to the judgemental
+structure of the calculus, apparently requiring a complete overhaul of the basic
+metatheory.
+
+\Citet{VRC22} have completed a significant mechanisation of the metatheory of
+a Fitch-style calculus in Agda.
+This work shows that, despite the change in the structure of the metatheory,
+Fitch-style calculi are amenable to mechanised proofs.
+
+I am not aware of any work discussing linear Fitch-style calculi.
+
+\subsection{Systematisations of substructural logics}
+
+Several pieces of prior work have aimed to give general accounts of a range of
+substructural calculi, in a similar vein to existing accounts of aspects of
+non-substructural calculi.
+I review some of these, particularly as a way to give a comparison to the
+adaptation of the methods of \cref{sec:simple} that I spend the rest of this
+thesis on.
+
+\paragraph{Linear Logical Framework}
+In \cref{sec:lf}, I discussed logical frameworks based on the
+$\lambda^\Pi$-calculus, and their use in the mechanisation of non-substructural
+programming languages.
+\Citet{CP02} extend $\lambda^\Pi$ to a calculus
+$\lambda^{\Pi\multimap\with\top}$, and use that to create a logical framework
+supporting linear logics: the Linear Logical Framework (LLF).
+The $\Pi$ type former still forms intuitionistic weak dependent function spaces,
+while the new $\multimap$ forms linear weak non-dependent function spaces.
+They handle the distinction between intuitionistic and linear variables thus
+introduced in the same style as DILL, with the argument of an intuitionistic
+application having the same intuitionistic restriction as we saw in DILL's
+\TirName{$\oc$-I} rule.
+
+The additive connectives $\with$ and $\top$ provide a way to state rules whose
+premises respectively share and arbitrarily consume linear variables, like in
+the rules for additive connectives in linear logic.
+I will revisit this method of stating typing rules in terms of \emph{sharing}
+and \emph{separating} (as given by right-nested sequences of $\multimap$s)
+conjunctions of premises in \cref{sec:lnd}, though in \cref{sec:bunched-logic}
+I argue that there is a closer connection to bunched logics than linear logics.
+
+The main focus of the original paper is to represent mutation in an ML-like
+language via state updates mediated by $\multimap$, though they also mention
+having mechanised some metatheory of linear calculi.
+Some example programs are currently available at
+\url{https://www.cs.cmu.edu/~iliano/projects/LLF/index.html}.
+
+\paragraph{Encoding linearity in LF}
+\Citet{crary10} gives a method of encoding linearity constraints in a
+conventional, non-substructural, logical framework.
+He implements this approach in the LF-based proof assistant Twelf~\citep{Twelf}.
+He uses a predicate \texttt{linear : (term -> term) -> type}, where
+\texttt{term} is a type of preterms, and thus \texttt{term -> term} is (thanks
+to the weak function space of LF) the type of preterms with one free variable.
+The predicate \texttt{linear} then says that that free variable is used linearly
+in its term, which is defined inductively on the structure of preterms.
+The \texttt{linear} predicate is used by the typing relation wherever variables
+are bound.
+The development handles all of intuitionistic linear logic, with the
+$\oc$-modality treated with a DILL-style distinction between linear and
+intuitionistic variables.
+Intuitionistic variables are implemented simply by not checking for linearity in
+the \TirName{$\oc$-E} rule.
+\Citet[\S 4]{crary10} also shows how to adapt this technique to a PD-style
+presentation of IS4.
+
+As an example, let us look at the typing and linearity rules for the binary
+tensor product.
+Typing is given by a relation \texttt{of : term -> tp -> type}, where
+\texttt{tp} is the type of object-level types.
+Each syntactic form has a typing rule and potentially several linearity rules,
+understood disjunctively as logic programming clauses.
+The rules for the introduction form are listed below.
+The typing relation is just like it would be for pairs in the simply typed
+$\lambda$-calculus: $(M, N) : A \otimes B$ if $M : A$ and $N : B$.
+The linearity rules are symmetric, so I will just consider
+\texttt{linear/tpair1}.
+It says that $x \vdash (M[x], N)$ is linear if $x \vdash M[x]$ is linear.
+This rule is subtle in that not applying \texttt{x} to \texttt{N} implies that
+\texttt{x} is fresh (and therefore unused) in \texttt{N}.
+Where $\otimes$-pairs have two linearity rules, the $I$-unit, and also the
+introduction form for $\oc$, have no linearity rules, meaning that no linear
+variables can be used in or by them.
+
+\begin{verbatim}
+of/tpair : of (tpair M N) (tensor A B) <- of M A <- of N B.
+linear/tpair1 : linear ([x] tpair (M x) N) <- linear ([x] M x).
+linear/tpair2 : linear ([x] tpair M (N x)) <- linear ([x] N x).
+\end{verbatim}
+
+Meanwhile, the rules for the eliminator are somewhat more involved, thanks to
+the bound variables.
+First, the typing rule shows how \texttt{of} relies on \texttt{linear}, checking
+each bound variable for linearity.
+Because we have two bound variables, we need to check that the term \texttt{N}
+is linear in both.
+We do this by checking that, for all \texttt{y}, \texttt{N} is linear in
+\texttt{x}, and that for all \texttt{x}, \texttt{N} is linear in \texttt{y}.
+The linearity rules have the same choice and careful management of free
+variables as they did for the introduction form.
+In addition, in the rule \texttt{linear/lett2}, the bound variables in
+\texttt{N} have to be universally quantified while we check for linearity in the
+free variable \texttt{z}.
+
+\begin{verbatim}
+of/lett : of (lett M ([x] [y] N x y)) C
+  <- of M (tensor A B) <- ({x} of x A -> {y} of y B -> of (N x y) C)
+  <- ({y} linear ([x] N x y)) <- ({x} linear ([y] N x y))
+linear/lett1 : linear ([z] lett (M z) ([x] [y] N x y))
+  <- linear ([z] M z)
+linear/lett2 : linear ([z] lett M ([x] [y] N z x y))
+  <- ({x} {y} linear ([z] N z x y))
+\end{verbatim}
+
+\Citet{crary10} goes on to extend this encoding with intuitionistic dependent
+$\Pi$-types, producing an object theory comparable to the
+$\lambda^{\Pi\multimap\with\top}$ metatheory developed by \citet{CP02}.
+If one wants to mix linearity and dependency following the methodology of
+\citet{Atkey18}, then it is crucial that linear variables are still free in
+subterms from which they have been discarded.
+At first sight, it appears that \citeauthor{crary10}'s encoding violates this
+because of its use of ``does not appear free'' to mean ``is not used'' in many
+linearity rules.
+However, one could imagine introducing an \texttt{unused} predicate similar to
+\texttt{linear} in order to handle unused free variables, at the cost of a few
+extra rules and a somewhat heavier encoding (scaling with the \emph{size} of the
+term, rather than the depth).
+Indeed, one could imagine parametrising the \texttt{linear} predicate so as to
+encode the semiring-annotated systems I discuss in \cref{sec:semirings}.
+
+The approach of \citet{crary10} removes the objection to the work of
+\citet{CP02} that each new substructural discipline would need a new proof
+assistant by encoding linearity in a standard intuitionistic logical framework.
+However, the encoding makes linear variables second-class compared to
+intuitionistic variables.
+While intuitionistic variables are just there thanks to the metatheory, linear
+variables must essentially be explicitly quantified.
+
+\paragraph{Licata-Shulman-Riley}
+\Citet{LicataSR17} describe a framework for specifying and working with a wide
+range of substructural logics.
+I discuss exactly what this range is in \cref{sec:semirings-conc}, in relation
+to the calculi I describe in the rest of this thesis.
+For now, it suffices to say that this framework is specified in enough detail
+that it should be possible to mechanise it directly, but I am not aware of
+anyone having done so.
+\Citet{Restall1999} describes a similar approach.
+
+\paragraph{Tanaka-Power}
+The work of \citet{FPT99}, which I discussed in \cref{sec:fiore}, has been
+extended to substructural syntaxes by \citet{TP06}.
+This work gives a mechanism for turning a description of contexts and their
+structural rules (expressed as a pseudo-monad on the 2-category of categories)
+into a framework for defining substructural syntaxes, and more generally a
+category of algebras of which the syntax is the initial object.
+As examples, they give the untyped $\lambda$-calculus, an untyped multiplicative
+linear logic, and a bunched logic.
+These examples show a broad range of substructural disciplines they support ---
+comparable to the work of \citet{LicataSR17} (which I discuss in
+\cref{sec:semirings-conc}), and more than I discuss in this thesis.
+However, they also show two of the limitations of their approach.
+Firstly, this work provides no way to track types, though it should be possible
+to incorporate types at the expense of complicating the categorical
+constructions they use.
+Secondly, it appears to be impossible to encode the syntactic forms used for the
+additive connectives (i.e., the Cartesian product and coproduct) of linear
+logic.
+Essentially, subterms can only be combined into a larger term in the same ways
+as how contexts can be appended together.
+For example, in a bunched logic, contexts can be combined through both sharing
+conjunction (the Cartesian product) and separating conjunction
+(a monoidal product).
+Correspondingly, the syntax descriptions of \citeauthor{TP06} allow for the
+syntax of sharing pairs and separating pairs.
+However, in the case of linear logic, contexts can only be combined via a
+monoidal product, so we only get separating pairs (tensor-products) and not
+sharing pairs (with-products).
+
+\paragraph{Granule}
+\citet{BrunelGMZ14}, \citet{GhicaS14}, \ldots

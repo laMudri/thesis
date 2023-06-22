@@ -1,63 +1,196 @@
-Dual intuitionistic linear logic is a syntax for intuitionistic linear logic
-introduced by \citet{Barber1996}.
-Its key feature is sequents with \emph{dual contexts} --- splitting assumptions
-into \emph{linear} assumptions and \emph{intuitionistic} assumptions.
-The idea of the intuitionistic assumptions is that they will behave like the
-variables of simply typed $\lambda$-calculus, in contrast to the linear
-assumptions, which behave as in the linear calculus we saw in \autoref{sec:ill}.
+Dual Intuitionistic Linear Logic (DILL) is a syntax for intuitionistic linear
+logic introduced by \citet{Barber1996}.
+Its key feature is splitting assumptions into \emph{linear} assumptions and
+\emph{intuitionistic} assumptions --- sometimes called the \emph{dual context}
+approach.
+Intuitionistic assumptions behave like the variables of simply typed
+$\lambda$-calculus.
+In contrast, the linear assumptions behave as in the linear calculus we saw in
+\cref{sec:ill}.
 For example, an intuitionistic assumption of $A$ in an instance of the
 $\otimes$-introduction rule is automatically copied to both premises.
-In contrast, an assumption of $\oc A$ in the purely linear calculus must first
+This contrasts with an assumption of $\oc A$ in the purely linear calculus,
+which must first
 be contracted into two assumptions, with one going to each premise.
+Compared to the modal system we saw in \cref{sec:modal}, linear assumptions
+correspond to true assumptions, and intuitionistic assumptions correspond to
+valid assumptions.
 
-The high-level purpose of intuitionistic assumptions is to universally
-characterise the connective $\oc$.
-That is to say, the existence of intuitionistic assumptions, differentiated from
-linear assumptions, gives rise to $\oc$ in the same way that the existence of
-multiple (linear) assumptions gives rise to $\otimes$.
-We informally express the latter as ``$\otimes$ is the internalisation of
-context concatenation (comma)'', and we can similarly express the former as
-``$\oc$ is the internalisation of intuitionistic assumptions''.
-
-The rules witnessing the characterisations of $\otimes$ and $\oc$ are listed
-below.
-In particular, these are elimination rules, as found in the intro-elim system
-given by \citeauthor{Barber1996}.
-I take $\uplus$ to be a partial function, with $\Gamma_0 \uplus \Gamma_1$
-defined only when $\Gamma_0$ and $\Gamma_1$ have the same intuitionistic
-entries (these being the same intuitionistic entries as in
-$\Gamma_0 \uplus \Gamma_1$).
-Linear assumptions are accumulated by $\uplus$.
-The use of $\uplus$ in these two rules separates the eliminand from the
-eliminator/continuation, rather than having anything particular to do with
-the connectives $\otimes$ and $\oc$.
-
-\begin{mathpar}
-  \ebrule{%
-    \hypo{\Gamma_0 \vdash A \otimes B}
-    \hypo{\Gamma_1, \mathbf{lin}\,A, \mathbf{lin}\,B \vdash C}
-    \infer2[$\otimes$-E]{\Gamma_0 \uplus \Gamma_1 \vdash C}
-  }
-  \and
-  \ebrule{%
-    \hypo{\Gamma_0 \vdash \oc A}
-    \hypo{\Gamma_1, \mathbf{int}\,A \vdash C}
-    \infer2[$\oc$-E]{\Gamma_0 \uplus \Gamma_1 \vdash C}
-  }
-\end{mathpar}
-
-The introduction rule for $\oc$ follows the pattern of Promotion, allowing us
-to conclude $\oc A$ from $A$ only when that proof of $A$ does not use linear
+The new feature when dealing with linear logic, compared to modal logic, is that
+linear and intuitionistic assumptions satisfy different structural rules.
+In our de Bruijn index style, where every multi-premise rule does the maximal
+contraction and weakening occurs in the leafwardmost possible position,
+this means that all of the rules have to manage the substructurality of linear
 assumptions.
-Now that the distinction between linear and intuitionistic assumptions is part
-of the structure of the \emph{sequent}, we do not check the \emph{types} of any
-assumptions in this rule.
-I write $\mathbf{int}\,\Gamma$, where $\Gamma = A_1, \ldots, A_n$, for the
-context $\mathbf{int}\,A_1, \ldots, \mathbf{int}\,A_n$.
+To help manage linear assumptions, I introduce three pieces of notation.
 
-\[
-  \begin{prooftree}
-    \hypo{\mathbf{int}\,\Gamma \vdash A}
-    \infer1[$\oc$-I]{\mathbf{int}\,\Gamma \vdash \oc A}
-  \end{prooftree}
-\]
+\begin{definition}\label{def:DILL-empty}
+  I write $\Gamma~\mathit{int}$ to state that context $\Gamma$ contains only
+  intuitionistic assumptions, i.e., no linear assumptions.
+\end{definition}
+
+\begin{definition}\label{def:DILL-split}
+  I write $\Gamma + \Delta$ to stand for a context combining $\Gamma$ and
+  $\Delta$.
+  Specifically, the operation is only defined when $\Gamma$ and $\Delta$ contain
+  the same intuitionistic assumptions, and in that case the result contains the
+  same intuitionistic assumptions.
+  The linear assumptions of the result are the disjoint union of the linear
+  assumptions of each of $\Gamma$ and $\Delta$.
+\end{definition}
+
+\begin{definition}\label{def:DILL-var}
+  I write $\Gamma \ni A$, like in \cref{sec:modal}, to stand for the set of
+  variables of type $A$ we can get from $\Gamma$.
+  Specifically, if $\Gamma$ contains an assumption $x : A~\mathit{int}$, then
+  $x$ gives rise to an inhabitant of $\Gamma \ni A$ if and only if
+  $\Gamma~\mathit{int}$; and if $\Gamma$ contains an assumption
+  $x : A~\mathit{lin}$, then $x$ gives rise to an inhabitant of $\Gamma \ni A$
+  if and only if $x$ is the only linear assumption in $\Gamma$.
+  These restrictions essentially encode the fact that we do not allow linear
+  variables to be discarded via the use of another variable.
+\end{definition}
+
+\Citet{Barber1996} uses the notational convenience of dividing linear and
+intuitionistic assumptions into two separate contexts, hence the name of the
+\emph{dual context} approach.
+I choose not to do this so as to draw out the connection with the approach of
+\citet{judgmental}, as well as the approach I will take in later chapters.
+I also think that it is more instructive to treat the context as a single
+unified thing, so that we can clearly see what operations on the context have
+to be preserved by environments (for use in renaming, substitution, and other
+traversals).
+
+I list the complete rules of DILL in \cref{fig:dill}.
+Given \cref{def:DILL-empty,def:DILL-split,def:DILL-var}, the rules for
+multiplicative and additive connectives look not too dissimilar to those in
+\cref{fig:mall}.
+However, their treatment of intuitionistic assumptions (contraction and
+weakening automatically, as in non-substructural calculi) is new.
+Meanwhile, the rules for the $\oc$-modality are the same as those for
+the $\Box$-modality given in \cref{fig:PD}, except for the implicit structural
+rules applying to linear assumptions.
+For example, where the \TirName{$\Box$-I} rule discards true assumptions, the
+\TirName{$\oc$-I} rule cannot discard linear assumptions, but instead requires
+that there are no linear assumptions in the context when the rule is applied, so
+that no linear assumptions can be used in the subproof.
+
+\begin{figure}
+  \begin{align*}
+    A, B, C &\Coloneqq X \mid I \mid A \otimes B \mid A \multimap B
+              \mid 0 \mid A \oplus B \mid \top \mid A \with B \mid \oc A \\
+    \Gamma, \Delta, \Theta &\Coloneqq {\cdot} \mid \Gamma, A~\mathit{lin}
+                             \mid \Gamma, A~\mathit{int} \\
+    \mathcal S &\Coloneqq \Gamma \vdash A~\mathit{lin}
+  \end{align*}
+  \begin{mathpar}
+    \ebrule{%
+      \hypo{\Gamma \ni A}
+      \infer1[Var]{\Gamma \vdash A~\mathit{lin}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash I~\mathit{lin}}
+      \hypo{\Delta \vdash C~\mathit{lin}}
+      \infer2[$I$-E]{\Gamma + \Delta \vdash C~\mathit{lin}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma~\mathit{int}}
+      \infer1[$I$-I]{\Gamma \vdash I~\mathit{lin}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash A \otimes B~\mathit{lin}}
+      \hypo{\Delta, A~\mathit{lin}, B~\mathit{lin} \vdash C~\mathit{lin}}
+      \infer2[$I$-E]{\Gamma + \Delta \vdash C~\mathit{lin}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash A~\mathit{int}}
+      \hypo{\Delta \vdash B~\mathit{int}}
+      \infer2[$\otimes$-I]{\Gamma + \Delta \vdash A \otimes B~\mathit{lin}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash A \multimap B~\mathit{int}}
+      \hypo{\Delta \vdash A~\mathit{int}}
+      \infer2[$\multimap$-E]{\Gamma + \Delta \vdash B~\mathit{lin}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma, A~\mathit{lin} \vdash B~\mathit{int}}
+      \infer1[$\multimap$-I]{\Gamma \vdash A \multimap B~\mathit{lin}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash 0~\mathit{lin}}
+      \infer1[$0$-E]{\Gamma + \Delta \vdash C~\mathit{lin}}
+    }
+    \and
+    \text{(no \TirName{$0$-I})}
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash A \oplus B~\mathit{lin}}
+      \hypo{\Delta, A~\mathit{lin} \vdash C~\mathit{lin}}
+      \hypo{\Delta, B~\mathit{lin} \vdash C~\mathit{lin}}
+      \infer3[$\oplus$-E]{\Gamma + \Delta \vdash C~\mathit{lin}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash A_i~\mathit{lin}}
+      \infer1[$\oplus$-I$_i$]{\Gamma \vdash A_0 \oplus A_1~\mathit{lin}}
+    }
+    \and
+    \text{(no \TirName{$\top$-E})}
+    \and
+    \ebrule{%
+      \infer0[$\top$-I]{\Gamma \vdash \top~\mathit{lin}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash A_0 \with A_1~\mathit{lin}}
+      \infer1[$\with$-E$_i$]{\Gamma \vdash A_i~\mathit{lin}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash A~\mathit{lin}}
+      \hypo{\Gamma \vdash B~\mathit{lin}}
+      \infer2[$\with$-I]{\Gamma \vdash A \with B~\mathit{lin}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash \oc A~\mathit{lin}}
+      \hypo{\Delta, A~\mathit{int} \vdash \oc C~\mathit{lin}}
+      \infer2[$\oc$-E]{\Gamma + \Delta \vdash C~\mathit{lin}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\Gamma \vdash A~\mathit{lin}}
+      \hypo{\Gamma~\mathit{int}}
+      \infer2[$\oc$-I]{\Gamma \vdash \oc A~\mathit{lin}}
+    }
+  \end{mathpar}
+  \caption{Dual Intuitionistic Linear Logic}
+  \label{fig:dill}
+\end{figure}
+
+I will not give a direct substitution procedure for DILL like the one I gave for
+the modal system of \cref{sec:modal}.
+Suffice to say, where environments for the modal calculus had to be preserved by
+binding of variables and pruning of all true variables, environments for DILL
+have to be preserved by similar plus the operations of
+\cref{def:DILL-empty,def:DILL-split}.
+These definitions themselves are somewhat technical, and I do not believe that
+delving into the further technicalities of how they interact with environments
+will provide useful enough intuitions to justify including here.
+However, I will revisit the idea of environments for linear calculi in a more
+general semiring-annotated setting in \cref{sec:ren-sub-lr}.
+
+Finally, notice that the rules given in \cref{fig:dill} characterise $\oc$ up to
+logical equivalence.
+The main feature ensuring this property is that each logical rule contains
+exactly one occurrence of a logical connective, meaning that each logical rule
+is only defining that connective in that place.
+For the full characterisation result, we also require local soundness and
+completeness of $\oc$, as discussed by \citet{judgmental} in the modal setting.
