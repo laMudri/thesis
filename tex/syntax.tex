@@ -248,6 +248,168 @@ techniques for syntaxes more exotic than ST$\lambda$C and $\name$.
 As well as the variations presented in \cref{sec:variant}, we can represent a
 usage-annotated $\mu\tilde\mu$-calculus and a Linear/non Linear system.
 
+\subsection{An encoding of graphs}
+
+As a non-logical example of a syntax that can be encoded using linear syntax
+descriptions, I consider a language of directed acyclic hypergraphs, which can
+be used as string diagrams for symmetric monoidal categories.
+I want to represent hypergraphs like the following, made up of operators
+$\{
+\tikz{\node (n) [circle,draw,minimum size=2mm,inner sep=0] {};%
+  \draw[->] (n) to (0,-3mm)},
+\tikz{\node (n) [circle,draw,minimum size=2mm,inner sep=0] {};%
+  \draw[->] (2.12mm,2.12mm) to (n); \draw[->] (-2.12mm,2.12mm) to (n);%
+  \draw[->] (n) to (0,-3mm)},
+\tikz{\node (n) [circle,fill,minimum size=2mm,inner sep=0] {};%
+  \draw[->] (0,3mm) to (n)},
+\tikz{\node (n) [circle,fill,minimum size=2mm,inner sep=0] {};%
+  \draw[->] (n) to (2.12mm,-2.12mm); \draw[->] (n) to (-2.12mm,-2.12mm);%
+  \draw[->] (0,3mm) to (n)}
+\}$
+and wires between them with no fan-in or fan-out.
+I have given the wires names (a, b, w, x, y, and z), which I use in a textual
+representation of the graph on the right.
+The textual representation is in A-normal form, where the two nullary operators
+have names beginning with \texttt{eta}, the two binary operators have names
+beginning with \texttt{mu}, and names having the suffix \texttt{white} or
+\texttt{black} based on the corresponding operator's colour.
+
+\noindent
+\begin{minipage}[t]{0.5\textwidth}
+  \begin{tikzpicture}[baseline]
+    \node (i0) {};
+    \node[right=2cm of i0] (i1) {};
+    \node[below=1cm of i0] (mub) [circle,fill] {};
+    \node[below right=1cm of mub] (muw) [circle,draw] {};
+    \node[below left=1cm of muw] (etaw) [circle,draw] {};
+    \node[below right=1cm of etaw] (etab) [circle,fill] {};
+    \node[below left=1cm of etab] (o0) {};
+    \node[below right=1cm of etab] (o1) {};
+    \draw[->] (i0) to node[auto] {a} (mub);
+    \draw[->] (i1) to[out=-90,in=45] node[auto] {b} (muw);
+    \draw[->] (mub) to node[auto] {x} (muw);
+    \draw[->] (muw) to node[above right] {y} (etab);
+    \draw[->] (etaw) to node[auto] {z} (o0);
+    \draw[->] (mub) to[out=-135,in=90] node[left,near start] {w} (o1);
+  \end{tikzpicture}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+  \vspace{1.5em}
+\begin{verbatim}
+a, b |-
+let w, x := mu_black(a) in
+let y := mu_white(x, b) in
+let z := eta_white() in
+let := eta_black(y) in
+z, w
+\end{verbatim}
+\end{minipage}
+
+In the textual representation, I treat inputs a and b as free variables, while
+outputs z and w are listed on the final line.
+The rest of the expression is a series of \texttt{let}-expressions binding zero
+or more variables to the results of an operator applied to other variables.
+All of the variables are used linearly, avoiding any fan-out.
+
+To turn this representation into a type system, I do the following.
+First, I fix the usage annotation semiring as the
+$\{\gr0, \gr1, \gr\omega\}$-semiring to achieve linearity.
+Then, I set \AgdaBound{Ty} to be the following type.
+All of the variables get type \AgdaInductiveConstructor{wire}, with a context
+full of \AgdaInductiveConstructor{wire}-type variables corresponding to the
+inputs of the graph.
+Meanwhile, the whole expression has type
+\AgdaInductiveConstructor{bundle}\AgdaSpace{}\AgdaBound{s}, where \AgdaBound{s}
+gives the shape of the outputs.
+
+\ExecuteMetaData[\Graphtex]{Sort}
+
+The type system itself is as follows.
+Each operator gets its own syntactic construct, with essentially the same naming
+conventions as for the textual representation above.
+Each of these constructs is an entire \texttt{let}-expression.
+There is also an \AgdaInductiveConstructor{`end} construct, allowing us to
+finish and list the outputs.
+
+To see how the encodings of the operations work, let us look at the
+\AgdaInductiveConstructor{`$\upmu\bullet$}-construct
+($\tikz{\node (n) [circle,fill,minimum size=2mm,inner sep=0] {};%
+  \draw[->] (n) to (2.12mm,-2.12mm); \draw[->] (n) to (-2.12mm,-2.12mm);%
+  \draw[->] (0,3mm) to (n)}$).
+It has two premises conjoined by $\sep$ (in fact, all premises in this language
+are separated, with no use of sharing conjunction).
+The first premise expects a simple value, corresponding to the input of the
+operator.
+The second premise is more complex, and represents the body/continuation of the
+\texttt{let}-expression.
+It binds two variables, corresponding to the two outputs, which can then be used
+in later \texttt{let}-expressions or the outputs.
+The bound variables all have type \AgdaInductiveConstructor{wire} and usage
+annotation $\gr1$ (written \AgdaInductiveConstructor{u1} in Agda) to make them
+behave linearly.
+
+\ExecuteMetaData[\Graphtex]{qGraphL}
+\ExecuteMetaData[\Graphtex]{GraphL}
+
+The required premises of the \AgdaInductiveConstructor{`end}-rule are calculated
+by \AgdaFunction{end-premises}.
+This follows the tree structure of the shape, requiring a
+\AgdaInductiveConstructor{wire}-term in an unextended context for each leaf.
+
+\ExecuteMetaData[\Graphtex]{end-premises}
+
+A graph is a term of the graph language.
+Specifically, a graph with inputs of shape \AgdaBound{s} and outputs of shape
+\AgdaBound{t} has the following type --- a term in a context of shape
+\AgdaBound{s}, all of whose entries are wire variables with annotation $\gr1$,
+whose result type is \AgdaInductiveConstructor{bundle}\AgdaSpace{}\AgdaBound{t}.
+
+\ExecuteMetaData[\Graphtex]{Graph}
+
+Finally, I give an example term \AgdaFunction{myGraph}.
+As I said at the end of \cref{sec:terms}, writing a term out in full is tedious,
+so I instead choose to use the machinery I discuss in detail in
+\cref{sec:usage-elaborator}.
+The \AgdaFunction{elab-unique} tool elaborates a well typed term into a well
+typed and usage-correct term as long as it can infer assignments of usage
+annotations that satisfy the constraints.
+I add the prefix \texttt{u} to signify the unannotated (just well typed) terms.
+All of the checks required by the elaboration procedure are done at Agda's type
+checking time, so we know that the program listed below can be elaborated by
+virtue of the whole Agda definition being type-checked.
+
+The \AgdaFunction{uvar\#} tool is like the \AgdaFunction{var\#} tool I used
+earlier --- allowing us to refer to variables by counting from the lefthand end
+of the context.
+I add these numbers to the picture of the graph for convenience.
+Variables never go out of scope, despite being used, so these numbers do not
+change with any bindings.
+
+\noindent
+\begin{minipage}[t]{0.33\textwidth}
+  \begin{tikzpicture}[baseline]
+    \node (i0) {};
+    \node[right=2cm of i0] (i1) {};
+    \node[below=1cm of i0] (mub) [circle,fill] {};
+    \node[below right=1cm of mub] (muw) [circle,draw] {};
+    \node[below left=1cm of muw] (etaw) [circle,draw] {};
+    \node[below right=1cm of etaw] (etab) [circle,fill] {};
+    \node[below left=1cm of etab] (o0) {};
+    \node[below right=1cm of etab] (o1) {};
+    \draw[->] (i0) to node[auto] {0} (mub);
+    \draw[->] (i1) to[out=-90,in=45] node[auto] {1} (muw);
+    \draw[->] (mub) to node[auto] {3} (muw);
+    \draw[->] (muw) to node[above right] {4} (etab);
+    \draw[->] (etaw) to node[auto] {5} (o0);
+    \draw[->] (mub) to[out=-135,in=90] node[left,near start] {2} (o1);
+  \end{tikzpicture}
+\end{minipage}
+\begin{minipage}[t]{0.67\textwidth}
+  \AgdaNoSpaceAroundCode{}
+  \ExecuteMetaData[\Graphtex]{myGraph}
+  \AgdaSpaceAroundCode{}
+\end{minipage}
+
 \subsection{The system $\mu\tilde\mu$}
 I encode a usage-annotated version of System $L$/the
 $\mu\tilde\mu$-calculus~\citep{CH00} --- a syntax for classical logic --- in
