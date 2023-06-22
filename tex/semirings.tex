@@ -207,7 +207,29 @@ of usage restrictions).
 Together, these form a \emph{partially ordered semiring} (posemiring), the laws
 of which are both supported by examples and necessary for the syntax to be well
 behaved.
-%\todo{Refer back to preliminaries for definition of posemiring}
+
+\begin{definition}
+  A \emph{semiring} is a monoid in the multicategory of commutative monoids and
+  multilinear maps.
+  Unpacked, this means that we have a set $\mathscr R$ together with elements
+  $0$ and $1$ and binary operators $+$ and $\cdot$ (with $\cdot$ usually written
+  as juxtaposition) such that the following hold for all
+  $x, y, z \in \mathscr R$.
+  \begin{itemize}
+    \item $0 + x = x$; $x + 0 = x$; $(x + y) + z = x + (y + z)$; $x + y = y + x$
+    \item $1x = x$; $x1 = x$; $(xy)z = x(yz)$
+    \item $0x = 0$; $x0 = 0$; $(x + y)z = xz + yz$; $x(y + z) = xy + xz$
+  \end{itemize}
+\end{definition}
+\begin{definition}
+  A \emph{posemiring} is a semiring in the category of partially ordered sets
+  (posets).
+  Unpacked, this means that we have a semiring (in the category of sets)
+  $(\mathscr R, 0, +, 1, \cdot)$ such that $\mathscr R$ has a partial order
+  (written $\leq$) and addition and multiplication are monotonic with respect
+  to $\leq$ in both arguments.
+\end{definition}
+
 For concreteness, I collect together the definition of the
 $\{\gr0, \gr1, \gr\omega\}$ posemiring I have been using so far.
 
