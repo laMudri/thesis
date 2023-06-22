@@ -174,36 +174,6 @@ a framework in the style of \citeauthor{FS22} rather than \citeauthor{AACMM21},
 but it may not be obvious how usage restrictions (for ordinary variables) and
 metavariables should interact.
 
-Notably for this thesis, the work of \citet{FPT99} has been extended to
-substructural syntaxes by \citet{TP06}.
-This work gives a mechanism for turning a description of contexts and their
-structural rules (expressed as a pseudo-monad on the 2-category of categories)
-into a framework for defining substructural syntaxes, and more generally a
-category of algebras of which the syntax is the initial object.
-As examples, they give the untyped $\lambda$-calculus, an untyped multiplicative
-linear logic, and a bunched logic.
-These examples show a broad range of substructural disciplines they support ---
-comparable to the work of \citet{LicataSR17} (which I discuss in
-\cref{sec:semirings-conc}), and more than I discuss in this thesis.
-However, they also show two of the limitations of their approach.
-Firstly, this work provides no way to track types, though it should be possible
-to incorporate types at the expense of complicating the categorical
-constructions they use.
-Secondly, it appears to be impossible to encode the syntactic forms used for the
-additive connectives (i.e., the Cartesian product and coproduct) of linear
-logic.
-Essentially, subterms can only be combined into a larger term in the same ways
-as how contexts can be appended together.
-For example, in a bunched logic, contexts can be combined through both sharing
-conjunction (the Cartesian product) and separating conjunction
-(a monoidal product).
-Correspondingly, the syntax descriptions of \citeauthor{TP06} allow for the
-syntax of sharing pairs and separating pairs.
-However, in the case of linear logic, contexts can only be combined via a
-monoidal product, so we only get separating pairs (tensor-products) and not
-sharing pairs (with-products).
-\todo{Maybe this should go in the linearity chapter.}
-
 \subsection{Substitution-based semantics}
 
 A feature shared by the frameworks of \citet{AACMM21} and \citet{FPT99} (and
@@ -300,8 +270,55 @@ computed set of free variables to types.
 The discrepancy becomes even more apparent in substructural systems, as we see
 later, where we want tight control over the context, as opposed to the scope.
 
-\subsection{Others}
+\subsection{Logical frameworks}\label{sec:lf}
 
-\begin{itemize}
-  \item JFDI --- \citet{BHKM12}
-\end{itemize}
+Logical frameworks based on higher order abstract syntax are another approach
+which has been used to mechanise the metatheory of logics and programming
+languages.
+Primary among logical frameworks in recent study is the Edinburgh Logical
+Framework~\citep{HHP93}, also known as \emph{LF}.
+The underlying theory of LF is a dependent type theory $\lambda^\Pi$ featuring
+\emph{weak} function spaces.
+Weak function spaces differs from the usual strong function spaces in that
+functions in a weak function space cannot inspect their arguments --- only
+place them whole in their result.
+Therefore, variables of the logical framework can be used as if they were the
+variables of the object language.
+
+Below I give two example constructors of a type family $\mathrm{tm}$.
+These declarations are similar to the rule descriptions I gave in
+\cref{fig:app-lam} for their lack of explicit contexts.
+In this example, $\Pi$ is the type former for dependent weak function spaces,
+with $\to$ being the non-dependent specialisation of $\Pi$.
+The quoted arrow $\qto$ is a type former of the object language, as in the
+previous examples in this chapter.
+
+\begin{align*}
+  \mathrm{lam} &: \Pi A,B.~\plr{\mathrm{tm}\,A \to \mathrm{tm}\,B} \to
+                 \mathrm{tm}\,\plr{A \qto B} \\
+  \mathrm{app} &: \Pi A,B.~\mathrm{tm}\,\plr{A \qto B} \to
+                 \mathrm{tm}\,A \to \mathrm{tm}\,B
+\end{align*}
+
+Like several other approaches I have described in this chapter, logical
+frameworks aim to manage variables, variable binding, and contexts in a generic
+way, giving the user only the choice of what logical rules they want to add to a
+basic calculus.
+In fact, logical frameworks go further than any other approach I have described,
+never giving the user reified access to the context of object language terms,
+and giving immediate access to (single) substitution simply as application of
+weak functions.
+LF also natively supports more complex calculi than the simply typed
+$\lambda$-calculus --- for example allowing us to implement and reason about
+System F.
+
+The main drawback of logical frameworks is that making one requires making a new
+proof assistant, typically with no compatibility with existing proof assistants
+and their libraries of useful mathematical definitions and proofs.
+Particularly, if you want to consider calculi not (conveniently) expressible in
+$\lambda^\Pi$ (as I do, with substructural calculi), then you need to make a new
+logical framework which is probably also incompatible with existing logical
+frameworks.
+As such, no single logical framework acts as a convenient and natural foundation
+upon which to build a broad range of mathematics including substructural logics
+and their metatheory.
