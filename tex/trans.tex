@@ -29,76 +29,87 @@ The types of DILL are the same as the types of \name, except for the
 restriction of $\oc\gr{r}$ to just $\oc\gr\omega$.
 I will write the latter simply as $\oc$ when it appears in DILL\@.
 I add sums and with-products to the calculus of \cite{Barber1996}, with the
-obvious rules (stated fully in \cref{fig:dill}).
+obvious rules (stated fully in \cref{fig:dill2}).
 These additive type formers present no additional difficulty to the translation.
 
 \begin{figure}
   \begin{mathpar}
-    \inferrule*[right=Int-Ax]{ }
-    {\gamma, A; \cdot \vdash A}
-    \and
-    \inferrule*[right=Lin-Ax]{ }
-    {\gamma; A \vdash A}
-    \and
-    \inferrule*[right=$I$-I]{ }
-    {\gamma; \cdot \vdash I}
-    \and
-    \inferrule*[right=$I$-E]
-    {\gamma; \delta_1 \vdash I \\ \gamma; \delta_2 \vdash A}
-    {\gamma; \delta_1, \delta_2 \vdash A}
-    \and
-    \inferrule*[right=$\otimes$-I]
-    {\gamma; \delta_1 \vdash A \\ \gamma, \delta_2 \vdash B}
-    {\gamma; \delta_1, \delta_2 \vdash A \otimes B}
-    \and
-    \inferrule*[right=$\otimes$-E]
-    {\gamma; \delta_1 \vdash A \otimes B \\ \gamma; \delta_2, A, B \vdash C}
-    {\gamma; \delta_1, \delta_2 \vdash C}
-    \and
-    \inferrule*[right=$\multimap$-I]
-    {\gamma; \delta, A \vdash B}
-    {\gamma; \delta \vdash A \multimap B}
-    \and
-    \inferrule*[right=$\multimap$-E]
-    {\gamma; \delta_1 \vdash A \multimap B \\ \gamma; \delta_2 \vdash A}
-    {\gamma; \delta_1, \delta_2 \vdash B}
-    \and
-    \inferrule*[right=$\oc$-I]
-    {\gamma; \cdot \vdash A}
-    {\gamma; \cdot \vdash \oc A}
-    \and
-    \inferrule*[right=$\oc$-E]
-    {\gamma; \delta_1 \vdash \oc A \\ \gamma, A; \delta_2 \vdash B}
-    {\gamma; \delta_1, \delta_2 \vdash B}
-    \and
-    \inferrule*[right=$\top$-I]{ }
-    {\gamma; \delta \vdash \top}
-    \and
-    \inferrule*[right=$\with$-I]
-    {\gamma; \delta \vdash A \\ \gamma, \delta \vdash B}
-    {\gamma; \delta \vdash A \with B}
-    \and
-    \inferrule*[right=$\with$-E$_i$]
-    {\gamma; \delta \vdash A_0 \with A_1}
-    {\gamma; \delta \vdash A_i}
-    \and
-    \inferrule*[right=$0$-E]
-    {\gamma; \delta_1 \vdash 0}
-    {\gamma; \delta_1, \delta_2 \vdash A}
-    \and
-    \inferrule*[right=$\oplus$-I$_i$]
-    {\gamma; \delta \vdash A_i}
-    {\gamma; \delta \vdash A_0 \oplus A_1}
-    \and
-    \inferrule*[right=$\oplus$-E]
-    {
-      \gamma; \delta_1 \vdash A \oplus B \\
-      \gamma; \delta_2, A \vdash C \\
-      \gamma; \delta_2, B \vdash C
+    \ebrule{\infer0[Int-Ax]{\gamma, A; {\cdot} \vdash A}} \and
+    \ebrule{\infer0[Lin-Ax]{\gamma; A \vdash A}} \and
+    \ebrule{\infer0[$I$-I]{\gamma; {\cdot} \vdash I}} \and
+    \ebrule{%
+      \hypo{\gamma; \delta_1 \vdash I}
+      \hypo{\gamma; \delta_2 \vdash A}
+      \infer2[$I$-E]{\gamma; \delta_1, \delta_2 \vdash A}
     }
-    {\gamma; \delta_1, \delta_2 \vdash C}
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta_1 \vdash A}
+      \hypo{\gamma, \delta_2 \vdash B}
+      \infer2[$\otimes$-I]{\gamma; \delta_1, \delta_2 \vdash A \otimes B}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta_1 \vdash A \otimes B}
+      \hypo{\gamma; \delta_2, A, B \vdash C}
+      \infer2[$\otimes$-E]{\gamma; \delta_1, \delta_2 \vdash C}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta, A \vdash B}
+      \infer1[$\multimap$-I]{\gamma; \delta \vdash A \multimap B}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta_1 \vdash A \multimap B}
+      \hypo{\gamma; \delta_2 \vdash A}
+      \infer2[$\multimap$-E]{\gamma; \delta_1, \delta_2 \vdash B}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \cdot \vdash A}
+      \infer1[$\oc$-I]{\gamma; \cdot \vdash \oc A}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta_1 \vdash \oc A}
+      \hypo{\gamma, A; \delta_2 \vdash B}
+      \infer2[$\oc$-E]{\gamma; \delta_1, \delta_2 \vdash B}
+    }
+    \and
+    \ebrule{%
+      \infer0[$\top$-I]{\gamma; \delta \vdash \top}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta \vdash A}
+      \hypo{\gamma, \delta \vdash B}
+      \infer2[$\with$-I]{\gamma; \delta \vdash A \with B}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta \vdash A_0 \with A_1}
+      \infer1[$\with$-E$_i$]{\gamma; \delta \vdash A_i}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta_1 \vdash 0}
+      \infer1[$0$-E]{\gamma; \delta_1, \delta_2 \vdash A}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta \vdash A_i}
+      \infer1[$\oplus$-I$_i$]{\gamma; \delta \vdash A_0 \oplus A_1}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta_1 \vdash A \oplus B}
+      \hypo{\gamma; \delta_2, A \vdash C}
+      \hypo{\gamma; \delta_2, B \vdash C}
+      \infer3[$\oplus$-E]{\gamma; \delta_1, \delta_2 \vdash C}
+    }
   \end{mathpar}
-  \label{fig:dill}
+  \label{fig:dill2}
   \caption{The rules of DILL, extended with additive connectives}
 \end{figure}
 
@@ -147,33 +158,28 @@ These additive type formers present no additional difficulty to the translation.
   Weakening is used when splitting linear variables between two premises.
   For example, \TirName{$\otimes$-I} in DILL is as follows.
   \[
-    \inferrule*[right=$\otimes$-I]
-    {\gamma; \delta_t \vdash t : A \\ \gamma; \delta_u \vdash u : B}
-    {\gamma; \delta_t, \delta_u \vdash t \otimes u : A \otimes B}
+    \ebrule{%
+      \hypo{\gamma; \delta_t \vdash t : A}
+      \hypo{\gamma; \delta_u \vdash u : B}
+      \infer2[$\otimes$-I]%
+      {\gamma; \delta_t, \delta_u \vdash t \otimes u : A \otimes B}
+    }
   \]
   From this, our new derivation is as follows.
   \[
-    \inferrule*[right=$\otimes$-I]
-    {
-      \inferrule*[right=Weak]
-      {\mathit{ih}_t \\\\
-        \gr\omega\gamma, \gr1\delta_t
-        \vdash M_t : A}
-      {\gr\omega\gamma, \gr1\delta_t,
-        \gr0\delta_u
-        \vdash M_t : A}
-      \\
-      \inferrule*[right=Weak]
-      {\mathit{ih}_u \\\\
-        \gr\omega\gamma, \gr1\delta_u
-        \vdash M_u : A}
-      {\gr\omega\gamma, \gr0\delta_t,
-        \gr1\delta_u
-        \vdash M_u : A}
+    \ebrule{%
+      \hypo{\mathit{ih}_t}
+      \infer[no rule]1{\gr\omega\gamma, \gr1\delta_t \vdash M_t : A}
+      \infer1[Weak]%
+      {\gr\omega\gamma, \gr1\delta_t, \gr0\delta_u \vdash M_t : A}
+      \hypo{\mathit{ih}_u}
+      \infer[no rule]1{\gr\omega\gamma, \gr1\delta_u \vdash M_u : A}
+      \infer1[Weak]%
+      {\gr\omega\gamma, \gr0\delta_t, \gr1\delta_u \vdash M_u : A}
+      \infer2[$\otimes$-I]%
+      {\gr\omega\gamma, \gr1\delta_t, \gr1\delta_u
+        \vdash \plr{M_t, M_u} : A \otimes B}
     }
-    {\gr\omega\gamma, \gr1\delta_t,
-      \gr1\delta_u
-      \vdash \plr{M_t, M_u} : A \otimes B}
   \]
 \end{proof}
 
@@ -186,17 +192,12 @@ variable in the premises.
 Such a move is admissible in DILL, but does not come naturally.
 
 \[
-  \inferrule*[right=$\otimes$-I]
-  {
-    \inferrule*[right=var]{ }
-    {\gr1A : x \vdash A}
-    \\
-    \inferrule*[right=var]{ }
-    {\gr1A : x \vdash A}
-    \\
-    \gr\omega \leq \gr1 + \gr1
+  \ebrule{%
+    \infer0[Var]{\gr1A : x \vdash A}
+    \infer0[Var]{\gr1A : x \vdash A}
+    \hypo{\gr\omega \leq \gr1 + \gr1}
+    \infer3[$\otimes$-I]{\gr\omega A : x \vdash A \otimes A}
   }
-  {\gr\omega A : x \vdash A \otimes A}
 \]
 
 To avoid such situations, and therefore manipulations on DILL derivations, I
@@ -208,7 +209,7 @@ Bottom-up style corresponds to a (non-deterministic) form of
 \emph{usage checking}, and the following lemma can be understood as saying
 that that form of usage checking is sufficiently general.
 
-\begin{definition}
+\begin{definition}\label{def:DILL-bottom-up}
   A derivation is said to be \emph{$\instDILL$-bottom-up} if only the following
   facts about addition and multiplication are used, and all proofs of
   inequalities not at leaves are by reflexivity (i.e, not using the facts that
@@ -300,63 +301,67 @@ The main difference is the algebra at which \name{} is instantiated.
 
 \begin{figure}
   \begin{mathpar}
-    \inferrule*[right=hyp]{ }
-    {\gamma; \delta, A\;\mathit{true} \vdash A\;\mathit{true}}
-    \and
-    \inferrule*[right=hyp*]{ }
-    {\gamma, A\;\mathit{valid}; \delta \vdash A\;\mathit{true}}
-    \and
-    \inferrule*[right=$\supset$I]
-    {\gamma; \delta, A\;\mathit{true} \vdash B\;\mathit{true}}
-    {\gamma; \delta \vdash A \supset B\;\mathit{true}}
-    \and
-    \inferrule*[right=$\supset$E]
-    {
-      \gamma; \delta \vdash A \supset B\;\mathit{true} \\
-      \gamma; \delta \vdash A\;\mathit{true}
+    \ebrule{%
+      \infer0[hyp]{\gamma; \delta, A\;\mathit{true} \vdash A\;\mathit{true}}
     }
-    {\gamma; \delta \vdash B\;\mathit{true}}
     \and
-    \inferrule*[right=$\Box$I]
-    {\gamma; \cdot \vdash A\;\mathit{true}}
-    {\gamma; \delta \vdash \Box A\;\mathit{true}}
-    \and
-    \inferrule*[right=$\Box$-E]
-    {
-      \gamma; \delta \vdash \Box A\;\mathit{true} \\
-      \gamma, A\;\mathit{valid}; \delta \vdash B\;\mathit{true}
+    \ebrule{%
+      \infer0[hyp*]{\gamma, A\;\mathit{valid}; \delta \vdash A\;\mathit{true}}
     }
-    {\gamma; \delta \vdash B\;\mathit{true}}
     \and
-    \inferrule*[right=$\top$-I]{ }
-    {\gamma; \delta \vdash \top\;\mathit{true}}
-    \and
-    \inferrule*[right=$\wedge$-I]
-    {
-      \gamma; \delta \vdash A\;\mathit{true} \\
-      \gamma, \delta \vdash B\;\mathit{true}
+    \ebrule{%
+      \hypo{\gamma; \delta, A\;\mathit{true} \vdash B\;\mathit{true}}
+      \infer1[$\supset$I]{\gamma; \delta \vdash A \supset B\;\mathit{true}}
     }
-    {\gamma; \delta \vdash A \wedge B\;\mathit{true}}
     \and
-    \inferrule*[right=$\wedge$-E$_i$]
-    {\gamma; \delta \vdash A_0 \wedge A_1\;\mathit{true}}
-    {\gamma; \delta \vdash A_i\;\mathit{true}}
-    \and
-    \inferrule*[right=$\bot$-E]
-    {\gamma; \delta \vdash \bot\;\mathit{true}}
-    {\gamma; \delta \vdash A\;\mathit{true}}
-    \and
-    \inferrule*[right=$\vee$-I$_i$]
-    {\gamma; \delta \vdash A_i\;\mathit{true}}
-    {\gamma; \delta \vdash A_0 \vee A_1\;\mathit{true}}
-    \and
-    \inferrule*[right=$\vee$-E]
-    {
-      \gamma; \delta \vdash A \vee B\;\mathit{true} \\
-      \gamma; \delta, A \vdash C\;\mathit{true} \\
-      \gamma; \delta, B \vdash C\;\mathit{true}
+    \ebrule{%
+      \hypo{\gamma; \delta \vdash A \supset B\;\mathit{true}}
+      \hypo{\gamma; \delta \vdash A\;\mathit{true}}
+      \infer2[$\supset$E]{\gamma; \delta \vdash B\;\mathit{true}}
     }
-    {\gamma; \delta \vdash C\;\mathit{true}}
+    \and
+    \ebrule{%
+      \hypo{\gamma; \cdot \vdash A\;\mathit{true}}
+      \infer1[$\Box$I]{\gamma; \delta \vdash \Box A\;\mathit{true}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta \vdash \Box A\;\mathit{true}}
+      \hypo{\gamma, A\;\mathit{valid}; \delta \vdash B\;\mathit{true}}
+      \infer2[$\Box$-E]{\gamma; \delta \vdash B\;\mathit{true}}
+    }
+    \and
+    \ebrule{%
+      \infer0[$\top$-I]{\gamma; \delta \vdash \top\;\mathit{true}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta \vdash A\;\mathit{true}}
+      \hypo{\gamma, \delta \vdash B\;\mathit{true}}
+      \infer2[$\wedge$-I]{\gamma; \delta \vdash A \wedge B\;\mathit{true}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta \vdash A_0 \wedge A_1\;\mathit{true}}
+      \infer1[$\wedge$-E$_i$]{\gamma; \delta \vdash A_i\;\mathit{true}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta \vdash \bot\;\mathit{true}}
+      \infer1[$\bot$-E]{\gamma; \delta \vdash A\;\mathit{true}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta \vdash A_i\;\mathit{true}}
+      \infer1[$\vee$-I$_i$]{\gamma; \delta \vdash A_0 \vee A_1\;\mathit{true}}
+    }
+    \and
+    \ebrule{%
+      \hypo{\gamma; \delta \vdash A \vee B\;\mathit{true}}
+      \hypo{\gamma; \delta, A \vdash C\;\mathit{true}}
+      \hypo{\gamma; \delta, B \vdash C\;\mathit{true}}
+      \infer3[$\vee$-E]{\gamma; \delta \vdash C\;\mathit{true}}
+    }
   \end{mathpar}
   \label{fig:pd}
   \caption{The rules of PD, extended with several standard connectives}
