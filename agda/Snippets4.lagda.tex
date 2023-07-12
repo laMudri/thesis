@@ -1,0 +1,56 @@
+\begin{code}
+module Snippets4 where
+\end{code}
+
+\begin{code}
+open import Data.Product
+open import Level using (Level; 0ℓ; suc; _⊔_)
+open import Relation.Binary.PropositionalEquality
+\end{code}
+
+%<*Semigroup>
+\begin{code}
+record Semigroup ℓ : Set (suc ℓ) where
+  infix 5 _∙_
+  field
+    Carrier : Set ℓ
+    _∙_ : Carrier → Carrier → Carrier
+    assoc : ∀ x y z → (x ∙ y) ∙ z ≡ x ∙ (y ∙ z)
+\end{code}
+%</Semigroup>
+
+\begin{code}
+_ : (A : Set) → (A → Set) → Set
+_ = λ A B →
+\end{code}
+%<*Sigma-syntax>
+\begin{code}[inline]
+  Σ[ x ∈ A ] B x
+\end{code}
+%</Sigma-syntax>
+
+\begin{code}
+_ : (A : Set) → (A → Set) → Set
+_ = λ A B →
+\end{code}
+%<*exists>
+\begin{code}[inline]
+  ∃ \ x → B x
+\end{code}
+%</exists>
+
+%<*Lift>
+\begin{code}
+record Lift {a} ℓ (A : Set a) : Set (a ⊔ ℓ) where
+  constructor lift
+  field lower : A
+\end{code}
+%</Lift>
+
+%<*Wrap>
+\begin{code}
+record Wrap {a ℓ} {A : Set a} (F : A → Set ℓ) (x : A) : Set ℓ where
+  constructor mk
+  field get : F x
+\end{code}
+%</Wrap>

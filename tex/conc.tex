@@ -1,9 +1,43 @@
 \chapter{Conclusions}\label{sec:conc}
 
-In this thesis, I have developed a foundation for semiring-annotated calculi in
-natural deduction style.
+In this thesis, I have developed a foundation for semiring-annotated calculi
+presented in natural deduction style.
+I have given a consolidated account of the semiring-annotated calculus $\name$,
+including its relations to existing linear and modal calculi.
+As part of this, I have adapted what I call \emph{bunched connectives} from
+\cite{RPKV20} as a way to state the typing rules of the calculus as well as to
+work with the metatheory.
+The distinction between sharing and separating conjunction given by the bunched
+connectives corresponds well to the notions of \emph{additive} and
+\emph{multiplicative} connectives in the object language, respectively.
+Following this, I have given a novel linear algebra-based definition of
+\emph{environment} for semiring-annotated calculi, together with a motivation
+which may serve as a basis for the corresponding definition for other
+substructural systems.
+The adequacy of this definition of environment is shown by my implementation of
+simultaneous renaming and substitution, as well as other operations on
+environments, like composition of renamings and substitutions.
 
-FIXME: this chapter is directly from the ESOP22 paper.
+With the details of $\name$ worked out, I then moved on to adapting the work of
+\citet{AACMM21} so as to make it able to capture semiring-based usage
+restrictions, as found in $\name$.
+The syntax descriptions of the resulting system are based on the bunched
+connectives, and are shown to be expressive enough to encode calculi of a
+variety of forms.
+In adapting the semantics, I am forced to be precise about \emph{sharing} and
+\emph{separating} bunched connectives, but largely add these as a refinement of
+the work of \citet{AACMM21}.
+I provide the renaming and substitution operations for all expressible calculi.
+I also provide more specialised examples of semantic traversals:
+a usage elaborator, an NbE algorithm, a denotational semantics, and translations
+between different calculi.
+The usage elaborator gives an unexpected example of generic programming, which
+one could not write without syntax descriptions.
+% Other examples...
+Together, these examples show the applicability and versatility of the framework
+I have developed.
+
+FIXME: the next two paragraphs are directly from the ESOP22 paper.
 
 We have presented a framework for doing metatheory for a class of substructural
 type systems in Agda.
@@ -27,12 +61,124 @@ finer substructural systems.
   \item Novel simultaneous substitution for linear type theories
   \item Generalise \citet{AACMM21} work to substructural logics
   \item Is this a reusable library? Yes, examples
-  \item Fitch-style systems (can't do).
   \item Methodology for metatheory of new calculi
   \item Semirings have been a reasonably robust basis.
   \item Can the code be directly generalised?
     Abstract away the algebraic structure of contexts.
 \end{itemize}
 
-\section{Addendum: (lack of) partiality}\label{sec:part}
+\section{Future work}
+
+\begin{itemize}
+  \item Fitch-style systems (can't do).
+\end{itemize}
+
+\subsection{Further work}
+
+\paragraph{Equality}
+Perhaps the most fundamental missing piece from the metatheoretic account of
+semiring-annotated calculi I have given in this thesis is equations between
+terms.
+Reasoning about equality between terms and environments is a problem I have
+tried to solve, but I have not arrived at a satisfactory solution in the time
+available to me.
+
+I believe that the basic difficulty of giving an account for equality in a
+linear setting is the proliferation of $\Sigma$-types.
+For example, describing equality between two applications of
+\TirName{$\with$-I} is immediate: $\Gamma \vdash (M, N) = (M', N') : A \with B$
+if and only if $\Gamma \vdash M = M' : A$ and $\Gamma \vdash N = N' : B$.
+However, to do the same with \TirName{$\otimes$-I} requires us to be careful
+about the contexts of the subterms.
+The two applications of \TirName{$\otimes$-I} may a priori split the context in
+different ways, and should only be equated when those splittings are equal
+(in the appropriate sense).
+If the splittings are equal, then the contexts of the subterms will line up, and
+only then can the subterms themselves be compared for equality.
+These multiple stages come about because $\plr{T * U}\,\Gamma$ is a
+$\Sigma$-type, and equality of elements of $\Sigma$-types always follows this
+pattern.
+Such reasoning becomes even more complex for environments, which are equivalent
+to iterated $*$-families.
+Additionally, it is unclear what effect subsumption of contexts (like subusaging
+in this thesis or explicit structural rules in other calculi) should have on
+equality, particularly when the subsumption commutes with parts of the subterms.
+
+Previous work on linear logic has preferred to deal with equations only on
+untyped terms. \todo{Check this.}
+
+\paragraph{Polymorphism}
+An important feature of most contemporary statically typed programming languages
+is polymorphism.
+In particular, parametric polymorphism over types can be used to significantly
+improve code reuse, and is well undestood theoretically via System $F$ and its
+variants.
+I have not considered polymorphism in this thesis, and neither did
+\citet{AACMM21} in their paper, so whether it can be supported in the framework
+presented earlier is an open question.
+However, \citet{Autosubst15} did apply their related system to System $F_{<:}$,
+so it may be possible to support polymorphic systems using their techniques.
+
+A separate but related question concerns polymorphism over usage annotations.
+The status of polymorphism over usage annotations is less well established both
+in practice and in theory.
+\Citet{Granule18} present an implementation allowing for polymorphism of usage
+annotations, and even polymorphism over semirings, but provide no more than
+example programs to justify the feature.
+This thesis provides no advance on understanding annotation polymorphism, unless
+it can be encoded into a semiring to fit the framework.
+
+%\subsection{Further generalisations}
+
+\paragraph{Structure of contexts}
+As I have presented it, the work of \citet{AACMM21} has two axes in which it is
+generic: the syntax, which can be controlled through syntax descriptions to
+produce a wide range of calculi and features; and the semantics, where we can
+produce a wide range of maps out of terms with the help of environments.
+To this, the work of this thesis has added a third axis of genericity: the usage
+discipline of variables, as described by a partially ordered semiring.
+
+Starting at least with the bunched connectives in \cref{sec:lnd}, if not earlier
+when talking about usage contexts forming modules over the semiring of
+annotations, I have made productive use of abstractions over the basic usage
+annotations throughout this thesis.
+These abstractions suggest a next step of completely abstracting away much of
+the representation of contexts and their individual entries.
+One may imagine that it is possible to develop a framework in which the required
+operations and properties of contexts are axiomatised, similar to how usage
+annotations are axiomatised to form a semiring in this thesis, and to how
+categories-with-families models are defined~\citep{Dybjer95,CCD19}.
+Instances of such a framework would include the work of \citet{RPKV20}, which
+uses a very similar bunched connective abstraction over a very different
+representation of contexts, based on relational interleaving of lists.
+
+The use of semirings is motivated in this thesis and elsewhere largely because
+they are general enough to cover a wide range of examples.
+However, I cannot claim to have a derivation from first principles of why we
+should choose partially ordered semirings over any of a range of similar
+algebraic structures.
+Additionally, some of the specific constructions done in this thesis fit
+somewhat unnaturally with the semiring-based approach.
+For example, when translating semiring-annotated systems to traditional systems,
+I tended to need to make a \emph{bottom-up} assumption
+(\cref{def:DILL-bottom-up,def:PD-bottom-up}) so as to avoid some ``junk'' facts
+given by the semiring.
+Meanwhile, the usage elaborator of \cref{sec:usage-elaborator} eschews the
+``forward'' computation of semiring operations in favour of non-deterministic
+backwards computation, e.g., from a sum to the collection of possible summands.
+Possibly consciously working more abstractly, as described in the previous
+paragraph, would make a more natural structure appear.
+
+If we are to retain an annotation-based approach to usage restrictions, then a
+possible feature request that falls out of the encoding of linear/non-linear
+logic is to have some sort of kinding system by which different kinds of types
+are annotated using different sets of annotations.
+In the L/nL example, we would want linear types to be annotated with $\gr0$ and
+$\gr1$, and intuitionistic types to be annotated with $\gr\omega$ (as the sole
+element of a trivial instance of an algebraic structure), with no crossover
+between the two kinds.
+Algebraic means to handle such mixed-kind usage vectors may be inspired by the
+work of \citet{Hart95,MF21} on dimensional analysis in linear algebra.
+
+\subsubsection{Partiality}\label{sec:part}
 \input{part.tex}

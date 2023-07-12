@@ -67,6 +67,19 @@ data _⊢_ (Γ : Ctx) : Ty → Set where
 %</Term>
 
 \begin{code}
+module Example where
+\end{code}
+
+%<*two>
+\begin{code}
+  two : []ᶜ ⊢ (ι `→ ι) `→ (ι `→ ι)
+  two = lam (lam
+    (app (var (el (↙ (↘ here)) refl))
+      (app (var (el (↙ (↘ here)) refl)) (var (el (↘ here) refl)))))
+\end{code}
+%</two>
+
+\begin{code}
 module Basic where
 \end{code}
 

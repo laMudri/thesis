@@ -13,9 +13,10 @@ This makes substitution the most general possible traversal.
 If we want to capture a broader range of traversals, including not just
 syntactic but also \emph{semantic} operations, we must be able to target things
 other than terms, and act in an interesting way on term constructors.
-Doing a straight generalisation of the type of \AgdaFunction{trav}, this
-suggests that we want a function with the following type, where
+\Citet{ACMM17} show how to do this generalisation of \AgdaFunction{trav} to a
+function \AgdaFunction{sem} with the following type, where
 \AgdaBound{$\C$} is the type family we are targeting.
+In this section, I discuss the assumptions needed to implement such a function.
 
 \ExecuteMetaData[\SimpleSem]{semType}
 
@@ -36,7 +37,7 @@ result.
 \ExecuteMetaData[\SimpleSem]{semVarApp}
 
 However, we want to treat binding constructs specially, particularly because
-there are semanticses with no notion of binding.
+there are semantics with no notion of binding.
 We instead provide a function from values to computations that works in any
 \emph{extension} of the current context.
 Keeping \AgdaField{$\swarrow^k$} as before, we get the following semantic

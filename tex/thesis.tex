@@ -71,6 +71,7 @@
 
 \input{macros.tex}
 \input{lagda.tex}
+\sloppy
 
 % Page Margins - Strath Requirement
 \usepackage[left=4cm,right=2.5cm,top=2cm,bottom=4cm,includehead,includefoot,headheight=15pt]{geometry}
@@ -146,6 +147,29 @@
 
 \chapter{Abstract}
 
+The use of proof assistants as a tool for programming language theorists is
+becoming ever more practical and widespread.
+There is a range of satisfactory implementations of simply typed calculi in
+proof assistants based on dependent type theory.
+
+In this thesis, I extend an account of Simply Typed $\lambda$-calculus so as to
+be able to represent and reason about calculi whose variables have restricted
+usage patterns.
+Examples of such calculi include a logic with an S4 $\Box$-modality, in which
+certain variables cannot be used ``inside'' a box ($\Box$); and Linear Logic, in
+which linear variables have to be used exactly once.
+While there are existing implementations of some of these calculi in proof
+assistants, many of these implementations share little with the best
+presentations of simply typed calculi without variable usage restrictions, and
+thus end up being poorly understood or suboptimal in facilitating mechanised
+reasoning.
+
+\begin{itemize}
+  \item At least one satisfying account of simply typed calculi
+    (via de Bruijn indices)
+  \item Usage restrictions enrich the logic.
+  \item I develop an account of usage-restricted calculi.
+\end{itemize}
 
 
 \tableofcontents
@@ -158,7 +182,7 @@
 
 
 
-\chapter{Preface/Acknowledgements}
+\chapter{Acknowledgements}
 I would like to acknowledge...
 
 This document is adapted from the template by Jethro Browell
@@ -173,7 +197,7 @@ which was licensed under CC BY 4.0.
 
 
 \include{intro}
-\include{prelim}
+%\include{prelim}
 \include{simple}
 \include{linear}
 \include{semirings}

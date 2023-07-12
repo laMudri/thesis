@@ -159,6 +159,205 @@ convenience for converting statically known natural numbers,
 representing de Bruijn \emph{levels}, into variable terms.
 
 
+\section{Normalisation by evaluation}\label{sec:nbe}
+
+To give an example of a common operation on programming languages, I present a
+normalisation by evaluation (NbE) algorithm~\citep{BS91} for a fragment of
+$\name$.
+The algorithm contains not only a structural induction on a term using an
+environment, but also functions which create terms.
+It therefore gives an example of various parts of the framework.
+
+Though it is easy to define a syntax of normal and neutral forms, I do not do so
+here.
+Converting between terms and normal/neutral forms introduces significant
+overheads, and the syntax of normal/neutral forms is somewhat complicated by the
+invariant that all variables are of neutral type.
+It would be worthwhile future work to work out this refinement, thereby showing
+that the normaliser presented in this section actually puts terms into normal
+form.
+Another limitation is that I do no reasoning about equivalence of terms, so
+there is no proof that the resultant term is equivalent to the original.
+
+For the sake of simplicity and conciseness, I consider just the fragment
+containing a unary function type, but whose argument carries a usage annotation.
+The partially ordered semiring of usage annotations is arbitrary throughout.
+I also include an arbitrary set of base types \AgdaBound{BaseTy} via constructor
+\AgdaInductiveConstructor{$\iota$}.
+
+\ExecuteMetaData[\NbESimpletex]{Ty}
+
+With only function types, the only term formers are application and
+$\lambda$-abstraction.
+These are similar to the corresponding term formers in $\name$, but application
+scales its argument in accordance with the usage annotation of the function
+type, and $\lambda$-abstraction binds a variable with the given usage
+annotation.
+For convenience, I define an alias \AgdaFunction{Term} for the open family of
+terms in this type system of unspecified (\AgdaPostulate{$\infty$}) size.
+
+\ExecuteMetaData[\NbESimpletex]{system}
+
+The NbE model of types is given by \AgdaFunction{\_$\vDash$\_}.
+It is defined by induction on the type.
+The base type is interpreted by terms of base type, while
+the function type is interpreted by the Kripke function space (essentially a
+special case of \AgdaFunction{Kripke} with $\Delta = \gr rA$, though reusing
+the \AgdaFunction{Kripke} definition causes difficulty for the termination
+checker).
+The interpretation of the base type additionally requires a \AgdaRecord{Lift}
+of its universe level, because \AgdaFunction{$\Box^r$} produces a large type
+(a type in \AgdaPrimitive{Set$_1$}).
+The largeness of \AgdaFunction{$\Box^r$} comes from the largeness of
+environments, and hence renamings, because of the relationally specified linear
+map.
+
+\ExecuteMetaData[\NbESimpletex]{vDash}
+
+\AgdaFunction{\_$\vDash$\_} is a renameable family, as can be seen by cases on
+the type.
+It is renameable at the base type because terms are renameable, and it is
+renameable at function type because any open type formed using
+\AgdaFunction{$\Box^r$} is renameable by composition of renamings.
+I refer to this proof of renameability as
+\AgdaFunction{ren\textasciicircum$\vDash$}.
+
+Now that I am working with a specific syntax, I introduce the function
+\AgdaFunction{reify[]}.
+This is a variant of the \AgdaFunction{reify} function given in \cref{sec:reify}
+usable only for rules that bind no new variables --- i.e., the parameter
+\AgdaBound{$\Delta$} to \AgdaFunction{Kripke} is the empty context.
+
+\begin{lemma}[\AgdaFunction{reify[]}]
+  We have a function of type
+  $\mathrm{Kripke}\,\V\,\C\,\plr{\cdot} \rightarrowtriangle \C$ for any open
+  families $\V$ and $\C$.
+\end{lemma}
+\begin{proof}
+  Let $b : \mathrm{Kripke}\,\V\,\C\,\plr{\cdot}\,\Gamma\,A$.
+  We give $b$ the identity renaming (corresponding to no extension of the
+  context), yielding
+  $b\,1 : \plr{\plr{-} \env\V {\cdot} \wand \plr{-} \sdtstile{}\C A}\,\Gamma$.
+  By \cref{thm:construct-env}, we have that $\plr{-} \env\V {\cdot}$ is
+  equivalent to $I^*$, and by monoidal closure,
+  $\plr{I^* \wand \plr{-} \sdtstile{}\C A}$ is equivalent to
+  $\plr{-} \sdtstile{}\C A$, so the result follows.
+\end{proof}
+
+The first part of the NbE algorithm I give is the evaluator.
+The evaluator interprets terms into the model via an environment of values from
+the model, making it a clear instance of the generic semantic traversal.
+Specifically, I fix both \AgdaBound{$\V$} and \AgdaBound{$\C$} to
+\AgdaFunction{\_$\vDash$\_} (allowing the conversion from semantic values to
+semantic terms to be given by the identity function \AgdaFunction{id}), and
+provide the other required data as below.
+The case for $\lambda$-abstraction is almost trivial, given that its job is to
+convert the Kripke function \AgdaBound{M} coming from the generic traversal into
+a value in the model of function type (i.e.\ a Kripke function).
+The main thing we need to do is to wrap the argument to the function into a
+singleton environment using \AgdaFunction{[-]$^e$}.
+In the case for function application, we use \AgdaFunction{reify[]} to get rid of
+the extraneous Kripke functions coming from the generic traversal.
+Having done so for both subterms, we apply the value corresponding to
+\AgdaBound{M} (which is a Kripke function) to the value corresponding to
+\AgdaBound{N} in an unextended context (\AgdaFunction{1$^r$}), with usage
+information divided up as in the original application.
+
+\ExecuteMetaData[\NbESimpletex]{evalSem}
+
+The function \AgdaFunction{eval} is given by the appropriate instantiation of
+the generic traversal \AgdaFunction{semantics}.
+Note that we have not yet shown that \AgdaFunction{\_$\vDash$\_} supports
+identity environments (which requires the reify and reflect functions), so we
+cannot yet evaluate arbitrary open terms.
+
+\ExecuteMetaData[\NbESimpletex]{eval}
+
+The final pieces of NbE are the \emph{reify} and \emph{reflect} functions.
+I give these the names \AgdaFunction{nbeReify} and \AgdaFunction{nbeReflect}
+respectively to disambiguate from the \AgdaFunction{reify} and
+\AgdaFunction{reify[]} functions of the framework.
+\AgdaFunction{nbeReify} and \AgdaFunction{nbeReflect} are defined mutually by
+recursion on the type, as is standard in NbE.
+Therefore, neither uses the generic semantic traversal, though both make use of
+some of the general components I have developed in this thesis.
+
+At base type, values in the model are terms (modulo \AgdaRecord{Lift}), so the
+conversion between these and terms is trivial.
+At function type, \AgdaFunction{nbeReify} is given a Kripke function
+\AgdaBound{v} and aims to turn it into a normal form of function type.
+It does so in the canonical way --- introducing a $\lambda$-abstraction --- and
+then aims to produce a term in an extended context.
+Because of the context extension, we apply \AgdaBound{v} using the renaming
+\AgdaFunction{$\swarrow^r$}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaBound{$\Gamma$}\AgdaSpace{}\AgdaFunction{++$^c$}\AgdaSpace{}%
+\AgdaFunction{[}\AgdaSpace{}\AgdaField{0\#}\AgdaSpace{}\AgdaFunction{$\bullet$}%
+\AgdaSpace{}\AgdaBound{A}\AgdaSpace{}\AgdaFunction{]$^c$}
+to get it ``back'' to the original context.
+The splitting \AgdaBound{sp+} adds together $\Gamma, \gr0A$ and
+$\gr0\Gamma, \gr rA$ to get $\Gamma, \gr rA$, while \AgdaBound{sp*} scales down
+$\gr0\Gamma, \gr rA$ to $\gr0\Gamma, \gr1A$.
+Semantic value \AgdaBound{v} then wants a semantic value of type $A$, which it
+gets from reflecting the newly bound variable into the model.
+Finally, \AgdaBound{v} produces a semantic value, which a recursive call to
+\AgdaFunction{nbeReify} at the smaller type \AgdaBound{B} converts into a term
+(in fact, a normal form).
+Meanwhile, \AgdaFunction{nbeReflect} at function type is given a syntactic
+function (in fact, a neutral form) and aims to turn it into a Kripke function.
+To produce a Kripke function, we consider a renaming \AgdaBound{$\rho$} into
+\AgdaBound{$\Gamma$}, splittings of the resultant context, and a semantic value
+\AgdaBound{N} of type \AgdaBound{A}.
+To produce the value of type \AgdaBound{B}, we recursively call
+\AgdaFunction{nbeReflect} at smaller type \AgdaBound{B}, but with a larger term
+formed by reifying \AgdaBound{N} (again of smaller type) and applying it to the
+term \AgdaBound{M}.
+To make the application work, we must rename both \AgdaBound{M} and
+\AgdaBound{N} to ignore the (empty) context extensions introduced by the
+application rule, and we must also rename \AgdaBound{M} by \AgdaBound{$\rho$} to
+put \AgdaBound{M} into the extended context the reflection is being done at.
+
+\ExecuteMetaData[\NbESimpletex]{reify-reflect}
+
+Finally, we compose \AgdaFunction{eval}, \AgdaFunction{nbeReify}, and
+\AgdaFunction{nbeReflect} to get the normaliser \AgdaFunction{nbe}.
+The definition of \AgdaFunction{nbe} uses \AgdaFunction{eval} to interpret the
+term into the model, and then uses \AgdaFunction{nbeReify} to read the semantic
+value back as a term (a normal form).
+However, as noted earlier, we need to give an environment of type
+$\Gamma \env\vDash \Gamma$ to \AgdaFunction{eval} in order to interpret an open
+term in its own context.
+I provide this environment via \cref{thm:env-id}, which says that if we have a
+mapping from variables in $\Gamma$ to values in $\Gamma$, we can get the desired
+identity environment.
+The required map is given in
+\AgdaFunction{identityEnv\textasciicircum{}$\vDash$}
+by turning the variable into a term using \AgdaInductiveConstructor{`var} and
+then applying \AgdaFunction{nbeReflect}.
+The definition \AgdaFunction{identityEnv\textasciicircum{}$\vDash$} is marked as
+an \AgdaKeyword{instance} so that it is picked up by
+\AgdaFunction{id\textasciicircum{}Env}.
+
+\ExecuteMetaData[\NbESimpletex]{nbe}
+
+The main limitation of this example is that the results are not specified as
+being in normal form by their type.
+Ideally, we would have a syntax of normal and neutral forms for
+\AgdaFunction{nbe} and supporting functions to target.
+We can produce such a syntax --- similarly to how \citet{AACMM21} produce a
+syntax for bidirectional type checking --- but this syntax is difficult to work
+with because of the crucial restriction on the allowable kind of variables ---
+namely that variables can only appear as neutral forms, and not normal forms.
+I believe that this difficulty could be worked around via carefully placed
+assertions that various contexts are well formed --- and in particular that the
+extended context introduced by a \AgdaFunction{$\Box^r$} is well formed.
+
+Also, I have not given an account of many of the connectives of $\name$.
+Of particular interest would be the types with pattern-matching eliminators ---
+$I$, $\otimes$, $0$, $\oplus$, and $\oc$.
+I believe these could be handled by ordinary techniques for NbE for sums ---
+probably not doing $\eta$-expansion for these types.
+
+
 \section{A denotational semantics}\label{sec:den-sem}
 
 Standard denotational semantics falls out as a somewhat trivial case of
@@ -166,44 +365,45 @@ Standard denotational semantics falls out as a somewhat trivial case of
 A lot of work is done in the generic traversal \AgdaFunction{semantics} to
 maintain a $\V$-environment, where $\V$ is a reasonably variable-like semantic
 family.
+For a simple denotational semantics, we set $\V$ to be variables
 
-{\color{red}Old stuff below\ldots}
-
-To justify the name \emph{semantics}, we give an example traversal that is a
-denotational semantics in the usual sense.
-The semantics we take is a refinement of that of \citet{AbelBernardy2020},
+As an example denotational semantics for a semiring-annotated calculus, I take
+a semantics in world-indexed relations.
+This is a refinement of the semantics given by \citet{AbelBernardy2020},
 which gives a way to extract parametricity theorems from substructurally typed
 programs.
 Example theorems are that all linear terms act as permutations on some fixed
 set of resources, and all monotonically typed terms are really monotonic in the
 way the typing suggests they are.
 
-To abbreviate this section, we use a simplified syntax compared to \name{}.
-We allow for an arbitrary family of base types \AgdaBound{BaseTy}, and a single
-type former \mbox{\ExecuteMetaData[\WReltex]{rAToB}}, equivalent to
-\mbox{\ExecuteMetaData[\PaperExamplestex]{BangrAToB}} from the earlier system.
+For the sake of brevity, I use the same term language as in \cref{sec:nbe}, with
+a set of base types and function types with a usage-annotated domain type.
 
-\ExecuteMetaData[\WReltex]{Ty}
-
-In the term syntax, $\lambda$-abstraction now binds a variable with annotation
-\AgdaBound{r}, while application needs to scale its argument by \AgdaBound{r}
-(both in accordance with the function type they are acting on).
-
-\ExecuteMetaData[\WReltex]{AnnArr}
-
-As a running example, we take the usage annotations to be the 4-element
-variance posemiring (\cref{thm:variance}).
-We establish the property that all terms are monotonic in their free variables.
+As a running example, I take the usage annotations to be the 4-element
+variance posemiring (\cref{def:monotonicity-posemiring}).
+I establish the property that all terms are monotonic in their free variables.
 This monotonicity can be covariant or contravariant (or neither or both)
-depending on the annotation of each free variable.
-This provides an additional example to those of \citeauthor{AbelBernardy2020}.
+depending on the annotation of each free variable (respectively,
+\AgdaInductiveConstructor{$\uparrow\uparrow$},
+\AgdaInductiveConstructor{$\downarrow\downarrow$},
+\AgdaInductiveConstructor{$\wn\wn$}, and
+\AgdaInductiveConstructor{\textasciitilde\textasciitilde}).
+This provides an additional example to those of \citet{AbelBernardy2020}.
 
-We will take semantics of this system into
-\emph{world-indexed relations}~\cite{AbelBernardy2020,context-constrained}.
+In the semantics of this section, types are interpreted as
+\emph{world-indexed relations}~\citep{AbelBernardy2020,context-constrained}.
 A world-indexed relation (\AgdaRecord{WRel}) over a poset of worlds
-\AgdaBound{W} is a set over which
-we have a \AgdaBound{W}-indexed binary relation satisfying a presheaf-like
-property with respect to the order on \AgdaBound{W}.
+\AgdaBound{W} is a set \AgdaField{set} over which
+we have a \AgdaBound{W}-indexed binary relation \AgdaField{ren} satisfying a
+presheaf-like property \AgdaBound{subres} with respect to the order on
+\AgdaBound{W}.
+I declare the record type \AgdaRecord{WRel} to have
+\AgdaKeyword{no-eta-equality} so that the usual $\eta$-law of records does not
+apply to it.
+The lack of an $\eta$-law allows the connectives on \AgdaRecord{WRel}
+(e.g.\ \AgdaFunction{\_$\otimes^R$\_} and \AgdaFunction{\_$\multimap^R$\_},
+defined below) to be definitionally injective, helping the unification in Agda's
+elaborator.
 
 \ExecuteMetaData[\WReltex]{WRel}
 
@@ -213,9 +413,11 @@ property with respect to the order on \AgdaBound{W}.
 \end{example}
 
 Morphisms (\AgdaRecord{WRelMor}) between world-indexed relations \AgdaBound{R}
-and \AgdaBound{S} consist of a mapping between the underlying sets such that, at
-each fixed world \AgdaBound{w}, the mapping preserves relatedness from
-\AgdaBound{R} to \AgdaBound{S}.
+and \AgdaBound{S} consist of a mapping \AgdaField{set$\Rightarrow$} between the
+underlying sets such that, at each world \AgdaBound{w}, the mapping preserves
+relatedness from \AgdaBound{R} to \AgdaBound{S}.
+In the type of the field \AgdaField{rel$\Rightarrow$}, the world index is
+handled implicitly via \AgdaFunction{\_$\rightarrowtriangle$\_}.
 
 \ExecuteMetaData[\WReltex]{WRelMor}
 
@@ -226,9 +428,14 @@ objects denoted \AgdaFunction{I$^R$},
 \AgdaFunction{\AgdaUnderscore{}$\multimap^R$\AgdaUnderscore{}},.
 These reuse the bunched connectives \AgdaRecord{$I^*$}, \AgdaRecord{$\sep$}, and
 \AgdaRecord{$\wand$}, now over worlds rather than contexts.
+Their definitions are listed below.
+
+\ExecuteMetaData[\WReltex]{IR}
+\ExecuteMetaData[\WReltex]{tensorR}
+\ExecuteMetaData[\WReltex]{lollyR}
 
 The final piece of semantics we need is a \emph{bang} operator.
-We allow the
+I allow the
 semantic \emph{bang} to be an arbitrary annotation-indexed functor on
 world-indexed relations.
 This functor must respect all of the structure on the indices, making it a
@@ -236,6 +443,22 @@ graded comonad over multiplication, as well as being lax monoidal at any
 particular index \AgdaBound{r}.
 
 \ExecuteMetaData[\WReltex]{Bang}
+
+The properties required of the semantic \emph{bang} operator are slightly
+weaker than those given by \citet{AbelBernardy2020}.
+Specifically, the morphisms given by \AgdaField{!$^R$-1}, \AgdaField{!$^R$-I},
+and \AgdaField{!$^R$-$\otimes$} only go one way, rather than being
+bi-implications as they are for \citet{AbelBernardy2020}.
+\citeauthor{AbelBernardy2020} need the stronger laws because of their strong
+eliminator for tensor products, discussed in \cref{sec:alt}.
+Also, I do not use the \emph{non-idempotent intersection} operators (which
+handle worlds in the same way as \AgdaFunction{I$^R$} and
+\AgdaFunction{\AgdaUnderscore{}$\otimes^R$\AgdaUnderscore{}}, but keep the
+underlying set the same, rather than using products of the underlying sets),
+and thus do not have axioms for them.
+I avoid the need for non-idempotent intersections by giving the semantics all at
+once, rather than first giving a $\mathrm{Set}$-semantics and then giving a
+$\mathrm{WRel}$-semantics on top of it.
 
 \begin{example}
   With \AgdaBound{W} being the 1-element set and annotations coming from the
@@ -245,6 +468,7 @@ particular index \AgdaBound{r}.
   to achieve both covariance and contravariance.
   When we want neither covariance nor contravariance, we use the always true
   predicate on worlds \AgdaFunction{$\dot1$}.
+  With the worlds being trivial, so too is the property \AgdaField{subres}.
 
   \ExecuteMetaData[\Monotonicitytex]{BangR}
 \end{example}
@@ -262,19 +486,35 @@ particular index \AgdaBound{r}.
 %
 %\ExecuteMetaData[\WReltex]{sem-vdash}
 
-The semantics of a type is given by \AgdaFunction{$\llbracket$\_$\rrbracket$},
-which maps into world-indexed relations.
-The function type is interpreted using \AgdaFunction{$\multimap^R$} and
+Let us assume that we have a mapping
+\AgdaBound{$\upiota\llbracket$\_$\rrbracket$} from base types to world-indexed
+relations.
+We extend this interpretation to all types via
+\AgdaFunction{$\llbracket$\_$\rrbracket$}, shown below, with
+the function type being interpreted using \AgdaFunction{$\multimap^R$} and
 \AgdaField{!$^R$}.
 Contexts are interpreted by \AgdaFunction{$\llbracket$\_$\rrbracket^c$}, using
-\AgdaFunction{$\otimes^R$} and \AgdaFunction{I$^R$}.
+\AgdaFunction{$\otimes^R$} and \AgdaFunction{I$^R$}, and \AgdaField{!$^R$}
+for singleton contexts.
 Terms are interpreted as morphisms by the open family
 \AgdaFunction{$\llbracket$\_$\vdash$\_$\rrbracket$}.
 Variables are interpreted by \AgdaFunction{lookup$^R$} (definition omitted).
 
+\ExecuteMetaData[\WReltex]{sem}
+\ExecuteMetaData[\WReltex]{sem-vdash}
 \ExecuteMetaData[\WReltex]{lookupR-type}
 
-Now we give a \AgdaRecord{Semantics}.
+The laws \AgdaField{!$^R$-0}, \AgdaField{!$^R$-+}, and \AgdaField{!$^R$-*} lift
+from singleton contexts to all contexts via lemmas \AgdaFunction{ctx-0},
+\AgdaFunction{ctx-+}, and \AgdaFunction{ctx-*}, with the latter saying that we
+have morphisms of type
+\mbox{$\sem{\plr{\gr r\grP}\gamma} \to \oc^R\gr r\sem{\grP\gamma}$}.
+We can see each of these three lemmas as ways to turn the algebraic structure of
+contexts into structured world-indexed relations --- allowing us to use general
+facts about \AgdaFunction{I$^R$}, \AgdaFunction{\_$\otimes^R$\_}, and
+\AgdaField{!$^R$}, respectively.
+
+Now I give a \AgdaRecord{Semantics}.
 The choice of \AgdaBound{$\V$} as
 \AgdaRecord{\AgdaUnderscore{}$\sqni$\AgdaUnderscore{}} is somewhat arbitrary,
 given that a standard denotational semantics would not use intermediate
@@ -283,15 +523,56 @@ reuse the standard facts that variables support renaming and identity
 environments.
 With this choice of \AgdaBound{$\V$} and \AgdaBound{$\C$}, we interpret
 environment entries by \AgdaFunction{lookup$^R$}.
+
 Meanwhile, for the logical rules, we ignore environments by using
-\AgdaFunction{reify} to just deal with morphisms in an extended context.
-As such, $\lambda$-abstractions are easy to interpret, while applications
-require some massaging to remove the extension by an empty context, followed by
-some plumbing to split the interpretation of the context according to the usage
-constraints and feed the interpretation of the argument \AgdaBound{n$'$} into
-the interpretation of the function \AgdaBound{m$'$}.
+\AgdaFunction{reify} and \AgdaFunction{reify[]} to just deal with morphisms in
+an extended context.
+The crucial structure of world-indexed relations is given by lemmas
+\AgdaFunction{curry$^R$} and \AgdaFunction{uncurry$^R$}, which translate between
+\mbox{\AgdaRecord{WRelMor}\AgdaSpace{}\AgdaSymbol(\AgdaBound{R}\AgdaSpace{}%
+\AgdaFunction{$\otimes^R$}\AgdaSpace{}\AgdaBound{S}\AgdaSymbol)%
+\AgdaSpace{}\AgdaBound{T}} and
+\mbox{\AgdaRecord{WRelMor}\AgdaSpace{}\AgdaBound{R}\AgdaSpace{}\AgdaSymbol(%
+\AgdaBound{S}\AgdaSpace{}\AgdaFunction{$\multimap^R$}\AgdaSpace{}\AgdaBound{T}%
+\AgdaSymbol)}.
+Also, \AgdaFunction{map-$\otimes^R$} implements the tensor
+product of world-indexed relation morphisms.
+With these lemmas, the interpretations of $\lambda$-abstraction and application
+are straightforward.
+For $\lambda$-abstraction, we have
+\mbox{$\sem{\Gamma, \gr rA} = \sem\Gamma \otimes^R \oc^R\gr r\sem{A}$},
+so we just need to use \AgdaFunction{curry$^R$} to get the desired semantic
+function in the original context.
+For application, we are producing the composition pictured in
+\cref{fig:Wrel-app}.
+In this picture, I ignore the possible subusaging between $\grP + \gr r\grQ$ and
+the original context for the sake of notational suggestiveness.
 
 \ExecuteMetaData[\WReltex]{Wrel}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \node(0) {$\sem{\plr{\grP + \gr r\grQ}\gamma}$};
+    \node(1) [right=of 0] {$\otimes$};
+    \node(2) [above=1em of 1] {$\sem{\grP\gamma}$};
+    \node(3) [below=1em of 1] {$\sem{\gr r\grQ\gamma}$};
+    \node(4) [right=of 3] {$\oc\gr r\sem{\grQ\gamma}$};
+    \node(5) [right=of 4] {$\oc\gr r\sem{A}$};
+    \node(6) [above=1em of 5] {$\otimes$};
+    \node(7) [above=1em of 6] {$\sem{\grP\gamma}$};
+    \node(8) [right=of 6] {$\sem{B}$};
+
+    \draw[->] (0) to node[above] {\AgdaFunction{ctx-+}} (1);
+    \draw[->] (2) to node[above] {\AgdaFunction{id$^R$}} (7);
+    \draw[->] (3) to node[below] {\AgdaFunction{ctx-*}} (4);
+    \draw[->] (4) to node[below] {\AgdaBound{n}} (5);
+    \draw[->] (6) to node[above] {\AgdaBound{m}} (8);
+  \end{tikzpicture}
+  \caption{Interpretation of application in the world-indexed relation
+    semantics}
+  \label{fig:Wrel-app}
+\end{figure}
 
 Then, the semantics of terms is given by the function
 \AgdaFunction{semantics}\AgdaSpace{}\AgdaFunction{Wrel}\AgdaSpace{}%

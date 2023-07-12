@@ -30,9 +30,8 @@ setting in \cref{sec:kripke}.
 Then I apply the \AgdaFunction{Kripke} function space, along with much of the
 machinery I have introduced in previous chapters, to give the
 \AgdaFunction{semantics} function in \cref{sec:traversal}.
-Finally, I give some example uses of \AgdaFunction{semantics} in
-\cref{sec:example-semantics}.
-\todo{What are the examples?}
+Finally, I give the syntax-generic simultaneous renaming and substitution
+operations in \cref{sec:kit-to-sem}.
 
 % Our goal in this section is to define \AgdaFunction{semantics}, a
 % recursor that turns a term into a \AgdaBound{$\C$}-value using a
@@ -386,7 +385,7 @@ acting with it on \AgdaBound{M}.
 \AgdaFunction{semantics} is the fundamental lemma of the framework.
 With it proven, I move onto corollaries and specific applications.
 
-\section{Reifying the Kripke function space}
+\section{Reifying the Kripke function space}\label{sec:reify}
 
 A result I will use throughout the rest of this thesis is \emph{reification}.
 When we have an index-preserving mapping from usage-checked variables to

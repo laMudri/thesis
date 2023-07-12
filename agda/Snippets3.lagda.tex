@@ -1,0 +1,114 @@
+\begin{code}
+module Snippets3 where
+\end{code}
+
+%<*Bool>
+\begin{code}
+data Bool : Set where
+  true false : Bool
+\end{code}
+%</Bool>
+
+%<*Nat>
+\begin{code}
+data ℕ : Set where
+  zero : ℕ
+  suc : ℕ → ℕ
+\end{code}
+%</Nat>
+
+\begin{code}
+infix 4 _≡_
+\end{code}
+
+%<*Eq>
+\begin{code}
+data _≡_ {X : Set} (x : X) : X → Set where
+  refl : x ≡ x
+\end{code}
+%</Eq>
+
+%<*suc-injective>
+\begin{code}
+suc-injective : ∀ {m n : ℕ} → suc m ≡ suc n → m ≡ n
+suc-injective refl = refl
+\end{code}
+%</suc-injective>
+
+%<*List>
+\begin{code}
+data List (X : Set) : Set where
+  [] : List X
+  _∷_ : X → List X → List X
+\end{code}
+%</List>
+
+%<*NestedList>
+\begin{code}
+data NestedList (X : Set) : Set where
+  [] : NestedList X
+  _∷_ : X → NestedList (List X) → NestedList X
+\end{code}
+%</NestedList>
+
+%<*Fin>
+\begin{code}
+data Fin : ℕ → Set where
+  zero : ∀ {n} → Fin (suc n)
+  suc : ∀ {n} → Fin n → Fin (suc n)
+\end{code}
+%</Fin>
+
+%<*ScopedTerm>
+\begin{code}
+data ScopedTerm (s : ℕ) : Set where
+  var : Fin s → ScopedTerm s
+  lam : ScopedTerm (suc s) → ScopedTerm s
+  app : (M N : ScopedTerm s) → ScopedTerm s
+\end{code}
+%</ScopedTerm>
+
+%<*lemma>
+\begin{code}
+lemma : ∀ {A : Set} {x y z : A} → x ≡ y → z ≡ y → x ≡ z
+lemma refl refl = refl
+\end{code}
+%</lemma>
+
+%<*elim-Fin-zero>
+\begin{code}
+elim-Fin-zero : ∀ {A : Set} → Fin zero → A
+elim-Fin-zero ()
+\end{code}
+%</elim-Fin-zero>
+
+\begin{code}
+_+_ : ℕ → ℕ → ℕ
+zero + n = n
+suc m + n = suc (m + n)
+
+double : ℕ → ℕ
+double =
+\end{code}
+%<*double>
+\begin{code}[inline]
+  λ (n : ℕ) → n + n
+\end{code}
+%</double>
+
+\begin{code}
+open import Level
+\end{code}
+
+%<*Sigma>
+\begin{code}
+record Σ {a b} (A : Set a) (B : A → Set b) : Set (a ⊔ b) where
+  constructor _,_
+  field
+    proj₁ : A
+    proj₂ : B proj₁
+\end{code}
+%</Sigma>
+\begin{code}
+open Σ public
+\end{code}

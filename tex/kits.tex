@@ -86,15 +86,15 @@ rule below, deriving $B$ and $C \to C$ from $A \to B, A$.
 
 \subsection{Proofs of admissibility of renaming and substitution}
 
-For this syntax, a renaming from \AgdaBound{$\Gamma$} to \AgdaBound{$\Delta$}
+A renaming from \AgdaBound{$\Gamma$} to \AgdaBound{$\Delta$}
 is a map from variables in \AgdaBound{$\Delta$} to variables in
-\AgdaBound{$\Gamma$}.
-Substitutions instead map into terms in \AgdaBound{$\Gamma$}.
+\AgdaBound{$\Gamma$}, represented in Agda as follows.
 
 \Ren{}
-\Sub{}
 
-We define \AgdaFunction{ren} as the action of a renaming on terms.
+The action of a renaming \AgdaBound{$\rho$} on terms is given by
+\AgdaFunction{ren}\AgdaSpace{}\AgdaBound{$\rho$}, with \AgdaFunction{ren}
+defined below.
 The idea of simultaneous renaming is to preserve the structure of the term, but
 replace all of the variables from \AgdaBound{$\Delta$} by variables from
 \AgdaBound{$\Gamma$}, with the mapping given by the renaming \AgdaBound{$\rho$}.
@@ -138,6 +138,14 @@ into \GTh{}.
 The second case is for new variables from \AgdaBound{$\Theta$}, which embed
 straight into \GTh{}.
 
+Meanwhile, a substitution from \AgdaBound{$\Gamma$} to \AgdaBound{$\Delta$} is
+an inhabitant of \AgdaFunction{Sub}\AgdaSpace{}\AgdaBound{$\Gamma$}\AgdaSpace{}%
+\AgdaBound{$\Delta$}, as defined below.
+This definition is identical to the definition of \AgdaFunction{Ren}, except
+that it gives us \emph{terms} in \AgdaBound{$\Gamma$} rather than variables.
+
+\Sub{}
+
 The \AgdaFunction{sub} function below gives the action of a substitution.
 Similarly to renaming, we want to preserve the structure of the term, except
 now variables in the original term are replaced by \emph{terms} in the new
@@ -180,9 +188,11 @@ of renaming.
 
 \subsection{Syntactic kits}\label{sec:syntactic-kits}
 
-The statements of simultaneous renaming and simultaneous substitution are
+As observed by \citet{McBride05,BHKM12},
+the statements of simultaneous renaming and simultaneous substitution are
 very similar, with substitution being the generalisation that allows
-replacement by terms rather than just variables.
+replacement of variables by terms rather than just other variables.
+Following \citet{McBride05},
 I will introduce a type family \AgdaFunction{Env} of \emph{environments}, and
 redefine \AgdaFunction{Ren} and \AgdaFunction{Sub} as environments of
 variables and terms, respectively.
@@ -195,7 +205,7 @@ renaming and substitution were also similar.
 Indeed, when we line up the resulting functions, \AgdaFunction{ren} and
 \AgdaFunction{sub}, and their auxiliaries, \AgdaFunction{bindRen} and
 \AgdaFunction{bindSub}, we notice only three key
-differences:~\cite{McBride05,BHKM12}
+differences:
 
 \begin{itemize}
   \item In the first cases of \AgdaFunction{bindRen} and \AgdaFunction{bindSub},

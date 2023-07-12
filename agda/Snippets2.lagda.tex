@@ -3,6 +3,7 @@ module Snippets2 where
 
 open import Data.List
 open import Data.Nat
+open import Level
 open import Relation.Binary.PropositionalEquality as ≡
   using (_≡_; module ≡-Reasoning)
 
@@ -24,3 +25,17 @@ sum-reduction = let open ≡-Reasoning in begin
 \begin{code}
   ∎
 \end{code}
+
+%<*id0>
+\begin{code}
+id₀ : {X : Set} → X → X
+id₀ x = x
+\end{code}
+%</id0>
+
+%<*id>
+\begin{code}
+id : {ℓ : Level} {X : Set ℓ} → X → X
+id x = x
+\end{code}
+%</id>
