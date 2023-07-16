@@ -15,7 +15,7 @@
 
 \documentclass[a4paper,oneside,11pt]{book}
 
-%\includeonly{prelim}
+%\includeonly{linear}
 
 \usepackage{amsbsy}
 \usepackage{amsmath}
@@ -24,7 +24,6 @@
 \usepackage{multirow}
 \usepackage{mathrsfs}
 \usepackage{xcolor}
-\usepackage[hidelinks]{hyperref}
 \usepackage{cite}
 \usepackage{enumitem}
 \usepackage{epsfig}
@@ -35,7 +34,6 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{catchfilebetweentags}
-\usepackage[capitalize]{cleveref}
 \usepackage{cmll}
 \usepackage{ebproof}
 \usepackage{ebproof-rules}
@@ -108,7 +106,10 @@
 }
 \posttitle{\end{center}}
 
-\title{A Framework for Quantitative Simply Typed Systems \\ PhD Thesis}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
+
+\title{A Framework for Semiring-Annotated Typed Systems \\ PhD Thesis}
 \author{James Wood
 \\ \small Mathematically Structured Programming\\[-0.8ex]
 \small Computer and Information Sciences\\[-0.8ex]
@@ -203,14 +204,14 @@ which was licensed under CC BY 4.0.
 \include{semirings}
 \include{rensub}
 %\include{weighted-multicategories}
-\include{wrel}
+%\include{wrel}
 \include{framework}
 \include{conc}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\appendix
-\chapter{Stuff That Didn't Fit Anywhere Else}
+%\appendix
+%\chapter{Stuff That Didn't Fit Anywhere Else}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

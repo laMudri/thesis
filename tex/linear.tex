@@ -2,15 +2,12 @@
 
 The techniques of \cref{sec:simple} were developed to handle idealised core
 calculi, like the simply typed $\lambda$-calculus and its many variants.
-Such core calculi are fairly close to some real intermediate languages,
-\todo{cite} though many intermediate languages also have polymorphism in their
-type systems, which I have not discussed, but has been considered by much prior
-work~\citep{POPLmark}.
-
-Another potential feature --- required for many desired semantics but only
-relatively recently appearing in programming languages --- that is not handled
-by the techniques of \cref{sec:simple} is restrictions on how variables can be
-used.
+Such core calculi can be seen as simplified models of real programming languages
+and/or their intermediate representations.
+A potential programming language feature --- required for many desired semantics
+but only relatively recently appearing in programming languages --- that is not
+handled by the techniques of \cref{sec:simple} is restrictions on how variables
+can be used.
 In the simple type systems covered in \cref{sec:simple}, the only restriction on
 the use of a variable is that it is used as an expression of the appropriate
 type.
@@ -29,8 +26,8 @@ Additionally, forms of linearity have been used in theoretical work, for example
 to bound computational complexity~\citep{GSS92,Hofmann03} or to write programs
 which support incremental updates to computations~\citep{ER03,Ehrhard18}.
 As for modality, \citet{IMO20} show that common data-flow analyses for
-imperative languages can be recast as modal type systems, though they have
-generally been developed in an ad hoc fashion.
+imperative languages can be recast as modal type systems, though such analyses
+have generally been developed in an ad hoc fashion.
 Such a recasting may be useful to understand the metatheoretic properties of
 programs passing such static analyses.
 More user-facing implementations of modal type systems include the system for
@@ -45,7 +42,9 @@ intuitionistic S4, which I discuss in \cref{sec:modal}.
 The second feature is linearity, which I discuss in \cref{sec:ill}.
 In particular, I discuss possible syntaxes for each, with a mind to
 being able to apply the techniques described in \cref{sec:simple}.
-Then, I\ldots
+After having introduced these topics, I finish this chapter with a survey of
+prior work on representing such type theories in proof assistants in
+\cref{sec:linmech}.
 
 \section{Intuitionistic S4 modal logic}\label{sec:modal}
 \input{modal.tex}

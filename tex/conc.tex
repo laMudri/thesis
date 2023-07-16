@@ -17,6 +17,9 @@ substructural systems.
 The adequacy of this definition of environment is shown by my implementation of
 simultaneous renaming and substitution, as well as other operations on
 environments, like composition of renamings and substitutions.
+The definition of environments, and hence simultaneous renaming/substitution, is
+novel, but acts like the appropriate generalisation of environments for simply
+typed theories.
 
 With the details of $\name$ worked out, I then moved on to adapting the work of
 \citet{AACMM21} so as to make it able to capture semiring-based usage
@@ -33,47 +36,15 @@ a usage elaborator, an NbE algorithm, a denotational semantics, and translations
 between different calculi.
 The usage elaborator gives an unexpected example of generic programming, which
 one could not write without syntax descriptions.
-% Other examples...
-Together, these examples show the applicability and versatility of the framework
+Meanwhile, the NbE algorithm gives further justification that I have the correct
+notion of environment for semiring-annotated type systems.
+Together, the examples show the applicability and versatility of the framework
 I have developed.
-
-FIXME: the next two paragraphs are directly from the ESOP22 paper.
-
-We have presented a framework for doing metatheory for a class of substructural
-type systems in Agda.
-The framework gives us renaming, substitution, and a usage elaborator for new
-syntaxes for free, which we hope can facilitate prototyping and the
-mechanisation of more interesting semantic results.
-Beside the mechanised framework itself, we believe its methodology --- the use
-of bunched premise combinators --- can guide and simplify the development of
-(potentially unmechanised) substructural type systems.
-
-Our account of substructurality is based on the linear algebraic
-principles described by \citet{WA21}.
-However, these details only really affect the definition of environment,
-in which the use of linear maps is motivated by them being the standard notion
-of morphism between vectors.
-We could imagine that a similar notion of morphism is found for the kind of
-annotations found in \citet{LicataSR17}, allowing a framework to consider
-finer substructural systems.
-
-\begin{itemize}
-  \item Novel simultaneous substitution for linear type theories
-  \item Generalise \citet{AACMM21} work to substructural logics
-  \item Is this a reusable library? Yes, examples
-  \item Methodology for metatheory of new calculi
-  \item Semirings have been a reasonably robust basis.
-  \item Can the code be directly generalised?
-    Abstract away the algebraic structure of contexts.
-\end{itemize}
 
 \section{Future work}
 
-\begin{itemize}
-  \item Fitch-style systems (can't do).
-\end{itemize}
-
-\subsection{Further work}
+To conclude, I discuss various possible future directions of the work started in
+this thesis.
 
 \paragraph{Equality}
 Perhaps the most fundamental missing piece from the metatheoretic account of
@@ -116,8 +87,9 @@ variants.
 I have not considered polymorphism in this thesis, and neither did
 \citet{AACMM21} in their paper, so whether it can be supported in the framework
 presented earlier is an open question.
-However, \citet{Autosubst15} did apply their related system to System $F_{<:}$,
-so it may be possible to support polymorphic systems using their techniques.
+However, both \citet{Autosubst15} and \citet{Autosubst18} have applied similar
+work to polymorphic calculi via special support, suggesting that it would be
+possible to modify the framework of this thesis in a similar way.
 
 A separate but related question concerns polymorphism over usage annotations.
 The status of polymorphism over usage annotations is less well established both
@@ -180,5 +152,56 @@ between the two kinds.
 Algebraic means to handle such mixed-kind usage vectors may be inspired by the
 work of \citet{Hart95,MF21} on dimensional analysis in linear algebra.
 
-\subsubsection{Partiality}\label{sec:part}
+\paragraph{Partiality}\label{sec:part}
 \input{part.tex}
+
+\paragraph{A separate variable sort}
+\Citet{AACMM21} mention as a limitation of their work the fact that variables
+can have unrestricted type.
+This limitation carries over to the work of this thesis.
+In many languages --- for example, the $\mu\tilde\mu$-calculus of
+\cref{sec:mu-mu-tilde} and the normal/neutral forms of a $\lambda$-calculus ---
+we would like to be able to restrict the syntax so as to disallow variables of
+certain kinds.
+Such a restriction would make it easier to construct traversals over these
+syntaxes, which I have not attempted in this thesis.
+
+In private communication, Allais has suggested a simple solution to this problem
+by which the type of variable types and the type of term types are distinct, and
+related by an arbitrary relation $R$.
+Each use of the \AgdaInductiveConstructor{`var} constructor then requires a
+proof that $R$ relates the type of the variable picked to the type of the
+conclusion desired.
+For example, in the syntax of normal/neutral forms, we let the variable types be
+just the types, while the term types are types tagged with whether the term is
+normal or neutral.
+The relation $R$ relates equal types where the term type is marked neutral.
+Allais also suggests that such a scheme could be used to bind patterns in the
+context, with the relatedness proof serving as a path through the pattern to a
+variable of the desired type.
+It remains non-trivial to work out the appropriate notion of renaming, and more
+generally the appropriate notion of environment, in this setting, which I leave
+to future work.
+
+\paragraph{Logical frameworks}
+I discussed in \cref{sec:lin-sys} two previous approaches to representing linear
+languages in logical frameworks.
+The work of this thesis should help in adapting the first approach --- making a
+new logical framework with direct support for linearity --- to a broader range
+of substructural calculi.
+In particular, the bunched premise connectives give candidates for the required
+type formers in such a logical framework.
+On the other hand, the second approach --- to use an existing non-linear logical
+framework but include a \texttt{linear} predicate --- should be easy to adapt to
+semiring-annotated systems by replacing the \texttt{linear} predicate by a
+relation between semiring elements and \texttt{term -> term} weak functions.
+
+\paragraph{Fitch-style systems}
+I mentioned in \cref{sec:fitch} an alternative way to present modal logics,
+namely Fitch-style natural deduction systems.
+These appear to be largely irreconcilable with the work of this thesis due to
+the fact that the $\Box$-elimination rule is very sensitive to the context.
+A general treatment of Fitch-style syntaxes, comparable to the treatment of
+semiring-indexed syntaxes given in this thesis, would probably have to assume a
+$\Box$ connective whose behaviour was determined as part of the structural rules
+of the calculus.

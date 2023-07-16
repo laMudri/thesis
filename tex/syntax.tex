@@ -107,7 +107,7 @@ is that we do not include a counterpart to the
 \AgdaRecord{System}. Variables are common to all the systems
 representable in our framework.
 
-\section{Terms of a \AgdaRecord{System}}\label{sec:terms}
+\section{Terms of a \AgdaRecord{System}}\label{sec:terms-of-system}
 
 The next thing we want to do is to build terms in the described type system.
 The following definitions are useful for talking about types indexed over
@@ -116,7 +116,9 @@ respectively.
 
 \ExecuteMetaData[\Syntaxtex]{OpenFam}
 
-To specify the meaning of descriptions, we assume some \AgdaBound{X} : \AgdaFunction{ExtOpenFam},
+To specify the meaning of descriptions, we assume some
+\AgdaBound{X}\AgdaSpace{}\AgdaSymbol:\AgdaSpace{}\AgdaFunction{ExtOpenFam}%
+\AgdaSpace{}\AgdaSymbol{\_},
 % \ExecuteMetaData[\Interpretationtex]{X},
 over which we form one layer of syntax, using the function
 \AgdaFunction{$\llbracket$\_$\rrbracket$p} that interprets
@@ -133,13 +135,7 @@ have been changed by connectives like
 type of subterm required.
 
 The remainder of the clauses of \AgdaFunction{$\llbracket$\_$\rrbracket$p}
-are the interpretation into bunched combinators.
-The superscript \AgdaFunction{$^c$} on the bunched connectives denotes that
-they have been lifted from predicates on usage vectors to predicates on
-contexts, with the type component of the context shared throughout.
-Additive connectives \AgdaFunction{$\dot1$} and \AgdaFunction{$\dottimes$} are
-already polymorphic (not relying on anything specific about usage vectors), so
-do not need a \AgdaFunction{$^c$} variant.
+are given by the bunched connectives, as listed below.
 
 \ExecuteMetaData[\Interpretationtex]{semp}
 
@@ -160,9 +156,12 @@ conclusion.
 
 \ExecuteMetaData[\Interpretationtex]{sems}
 
-The most obvious way to make such an \AgdaBound{X} is to use some existing
+The most obvious way to make an
+\AgdaBound{X}\AgdaSpace{}\AgdaSymbol:\AgdaSpace{}\AgdaFunction{ExtOpenFam}%
+\AgdaSpace{}\AgdaSymbol{\_}
+is to use some existing
 \AgdaFunction{OpenFam} on an extended context.
-We defined \AgdaFunction{Scope} to do this: take the new variables
+I define \AgdaFunction{Scope} to do this: take the new variables
 \AgdaBound{$\Delta$}, concatenate them onto the existing context
 \AgdaBound{$\Gamma$}, and pass the extended context onto the judgement
 \AgdaBound{T}.
@@ -171,30 +170,31 @@ We defined \AgdaFunction{Scope} to do this: take the new variables
 
 %{\color{red}(Forward ref: for now, we could have inlined \texttt{Scope}.)}
 
-We use \AgdaFunction{Scope} to deal with new variables in syntax.
+I use \AgdaFunction{Scope} to deal with new variables in syntax.
 Terms resemble the free monad over a layer-of-syntax functor, though
 that picture is complicated by variable binding.  A term is either a
 variable or a use of a logical rule together with terms for each of
-the required subterms. The \AgdaFunction{Size} argument is a use of
+the required subterms.
+The \AgdaFunction{Size} argument \AgdaBound{sz} is a use of
 Agda's sized types to record that subterms are smaller than the
 surrounding term for the termination checker.
 
 \ExecuteMetaData[\Termtex]{Term}
 
-This definition uses \AgdaFunction{$\dotto$}, which, analogously to
-\AgdaFunction{$\dottimes$}, is an index-preserving version of the function
-space.
-We take \AgdaFunction{$\dotto$} to handle $n$ many indices --- in this
-case two (the context and the type).
-The notation
-\AgdaFunction{$\forall[$}\AgdaSpace{}\AgdaBound{T}\AgdaSpace{}\AgdaFunction{]}
-stands for
-\AgdaSymbol{$\forall$}\AgdaSpace{}\AgdaSymbol{\{}%
-\AgdaBound{x$_1$}\AgdaSpace{}\AgdaSymbol{$\ldots$}\AgdaSpace{}\AgdaBound{x$_n$}%
-\AgdaSymbol{\}}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaBound{T}%
-\AgdaSpace{}%
-\AgdaBound{x$_1$}\AgdaSpace{}\AgdaSymbol{$\ldots$}\AgdaSpace{}\AgdaBound{x$_n$},
-where \AgdaBound{T} is a type family with $n$ many indices.
+%This definition uses \AgdaFunction{$\dotto$}, which, analogously to
+%\AgdaFunction{$\dottimes$}, is an index-preserving version of the function
+%space.
+%We take \AgdaFunction{$\dotto$} to handle $n$ many indices --- in this
+%case two (the context and the type).
+%The notation
+%\AgdaFunction{$\forall[$}\AgdaSpace{}\AgdaBound{T}\AgdaSpace{}\AgdaFunction{]}
+%stands for
+%\AgdaSymbol{$\forall$}\AgdaSpace{}\AgdaSymbol{\{}%
+%\AgdaBound{x$_1$}\AgdaSpace{}\AgdaSymbol{$\ldots$}\AgdaSpace{}\AgdaBound{x$_n$}%
+%\AgdaSymbol{\}}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaBound{T}%
+%\AgdaSpace{}%
+%\AgdaBound{x$_1$}\AgdaSpace{}\AgdaSymbol{$\ldots$}\AgdaSpace{}\AgdaBound{x$_n$},
+%where \AgdaBound{T} is a type family with $n$ many indices.
 
 Terms in this data type are difficult to write by hand, due to the
 need for proofs that the usage contexts are handled correctly. For
@@ -367,8 +367,8 @@ whose result type is \AgdaInductiveConstructor{bundle}\AgdaSpace{}\AgdaBound{t}.
 \ExecuteMetaData[\Graphtex]{Graph}
 
 Finally, I give an example term \AgdaFunction{myGraph}.
-As I said at the end of \cref{sec:terms}, writing a term out in full is tedious,
-so I instead choose to use the machinery I discuss in detail in
+As I said at the end of \cref{sec:terms-of-system}, writing a term out in full
+is tedious, so I instead choose to use the machinery I discuss in detail in
 \cref{sec:usage-elaborator}.
 The \AgdaFunction{elab-unique} tool elaborates a well typed term into a well
 typed and usage-correct term as long as it can infer assignments of usage
@@ -410,7 +410,7 @@ change with any bindings.
   \AgdaSpaceAroundCode{}
 \end{minipage}
 
-\subsection{The system $\mu\tilde\mu$}
+\subsection{The system $\mu\tilde\mu$}\label{sec:mu-mu-tilde}
 I encode a usage-annotated version of System $L$/the
 $\mu\tilde\mu$-calculus~\citep{CH00} --- a syntax for classical logic --- in
 such a way that contexts capture the undistinguished parts of the sequent.

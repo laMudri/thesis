@@ -1,9 +1,20 @@
-In this chapter, I provide three example uses of semantic traversals: generic
-renaming and substitution\todo{Moved}, a usage elaborator, and a denotational semantics.
+In this chapter, I provide four example uses of semantic traversals:
+a usage elaborator, a normalisation by evaluation algorithm, a denotational
+semantics, and translations between calculi.
 The reader is also encouraged to see the far greater range of examples in the
 work of \citet{AACMM21}, which should adapt to our usage-annotated setting.
-Renaming and substitution are essential results, while the latter two examples
-focus on usage annotations.
+The usage elaborator (\cref{sec:usage-elaborator}) gives an example of a program
+that is generic in both syntax and usage annotations, as well as being an
+essential tool for practical use of the framework.
+The normalisation by evaluation algorithm (\cref{sec:nbe}) is for a specific
+syntax, but exercises parts of the generic semantic traversal --- particularly,
+its handling of environments --- to good effect.
+The denotational semantics in terms of world-indexed relations
+(\cref{sec:den-sem}) presents an interesting semantics for semiring-annotated
+type systems, but with minimal use of operations provided by the framework.
+Finally, the translations between $\name$ and L/nL (\cref{sec:lnl}) both justify
+the encoding of L/nL given in \cref{sec:dup-lnl} and give examples of syntactic
+work benefitting from the generic renaming and substitution operations.
 
 
 \section{A usage elaborator}\label{sec:usage-elaborator}
@@ -31,7 +42,7 @@ avoiding repetition and facilitating the prototyping of new type systems.
 
 The type of syntax descriptions depends on the type of usage annotations because
 of variable binding.
-For example, in the $\oc{\gr r}$-E rule of \cref{fig:lr-comb}, the right
+For example, in the $\oc{\gr r}$-E rule of \cref{fig:lr-bunched}, the right
 premise binds a new variable with annotation $\gr r$, where $\gr r$ is drawn
 from the ambient posemiring.
 The scaling combinator also makes direct reference to the posemiring.
@@ -134,8 +145,8 @@ The candidate usage vector \AgdaBound{R} will be \AgdaFunction{[]} for closed
 terms, and otherwise we have to supply the intended usage annotations.
 
 We can now use the elaborator to automatically infer the usage
-annotations for the example at the end of \cref{sec:terms}. This
-allows us to write:
+annotations for the example at the end of \cref{sec:terms-of-system}.
+This allows us to write:
 \ExecuteMetaData[\PaperExamplestex]{cojoin}
 We have instantiated the usage elaborator so that:
 \AgdaField{0\#$^{-1}$} is a singleton on $\gr0$ and $\gr\omega$, and

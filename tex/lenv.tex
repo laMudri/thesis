@@ -350,35 +350,57 @@ some specific examples (e.g.\ for renaming and substitution) below them.
   \grQprime\plr{\rho.\gr\Psi}$.
 \end{proof}
 
-\begin{example}
-  We can derive the following instances of environment composition.
-  \begin{description}
-    \item[Composition of renamings.]
-      If $\U = \V = \W = {\sqni}$, then we can take
-      $\mathrm{lift}\,\rho\,x \coloneqq \rho(x)$.
-      This allows us to compose two renamings into a single renaming.
-    \item[Post-composition with a renaming.]
-      More generally, if $\V = {\sqni}$ and $\U = \W$, we can still use
-      the action of $\rho$ as $\mathrm{lift}$.
-      This means that we can do a composition
-      $\Gamma \env\U \Delta \env\sqni \Theta$ to get an environment of type
-      $\Gamma \env\U \Theta$.
-    \item[Composition of substitutions.]
-      If $\V = \W = {\vdash}$, then $\mathrm{lift}$ is given by a
-      syntactic traversal (in the sense of \cref{sec:syntactic-kits} and
-      \cref{sec:lrsub}).
-      For example, if $\U = {\sqni}$, we need the action of renaming on terms
-      to show that a renaming followed by a substitution composes to a
-      substitution.
-      If $\U = {\vdash}$, then the action of substitution on terms gives us that
-      substitutions compose.
-    \item[Composing semantics with substitution.]
-      More generally, if $\V = {\vdash}$ and we have a semantics (in the sense of
-      \cref{sec:gen-sem} and \cref{sec:framework}) from
-      $\U$ to $\W$, then $\mathrm{lift}$ can be given by the semantic traversal
-      of terms.
-  \end{description}
-\end{example}
+We can derive the following corollaries as instances of environment composition.
+
+\begin{corollary}[Composition of renamings]\label{thm:ren-comp}
+  Given renamings $\rho : \Gamma \env\sqni \Delta$ and
+  $\sigma : \Delta \env\sqni \Theta$, we can form their composite
+  $\rho; \sigma : \Gamma \env\sqni \Theta$.
+\end{corollary}
+\begin{proof}
+  Take $\U = \V = \W = {\sqni}$ in \cref{thm:env-comp}.
+  Then let $\mathrm{lift}\,\rho\,x \coloneqq \rho(x)$.
+\end{proof}
+
+\begin{corollary}[Post-composition with a renaming]\label{thm:ren-env-comp}
+  Given an environment $\rho : \Gamma \env\U \Delta$ and a renaming
+  $\sigma : \Delta \env\sqni \Theta$, we can form their composite
+  $\rho; \sigma : \Gamma \env\U \Theta$.
+\end{corollary}
+\begin{proof}
+  As in \cref{thm:ren-comp}.
+\end{proof}
+
+\begin{corollary}[Pointwise renaming of an environment]\label{thm:env-ren}
+  If $\sdtstile{}\V$ respects renaming, then so does $\env\V$ (on the left).
+\end{corollary}
+\begin{proof}
+  Suppose we have $\rho : \Gamma \env\sqni \Delta$ and
+  $\sigma : \Delta \env\V \Theta$.
+  We want to compose these via \cref{thm:env-comp} with $U = {\sqni}$ and
+  $\V = \W$.
+  The function $\mathrm{lift}$ is given exactly by the fact that $\V$ respects
+  renaming.
+\end{proof}
+
+\begin{corollary}[Composition of substitutions]\label{thm:sub-comp}
+  Given substitutions $\rho : \Gamma \env\vdash \Delta$ and
+  $\sigma : \Delta \env\vdash \Theta$, we can form their composite
+  $\rho; \sigma : \Gamma \env\vdash \Theta$.
+\end{corollary}
+\begin{proof}
+  Take $\U = \V = \W = {\vdash}$ in \cref{thm:env-comp}.
+  Then, $\mathrm{lift}$ is given by the action of a substitution on a term
+  (see \AgdaFunction{sub} in the following section).
+\end{proof}
+
+\begin{corollary}[Composing semantics with substitution]
+  If we have a semantics (in the sense of \cref{sec:gen-sem} and
+  \cref{sec:traversal}) from $\U$ to $\W$, then from an environment
+  $\rho : \Gamma \env\U \Delta$ and a substitution
+  $\sigma : \Delta \env\vdash \Theta$, we can form the composite
+  $\rho; \sigma : \Gamma \env\W \Theta$.
+\end{corollary}
 
 % Concatenation is difficult; save to after I've talked about renamings.
 

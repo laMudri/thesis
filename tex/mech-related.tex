@@ -48,12 +48,15 @@ thanks to $\Lambda$ terms.
 and it is unclear how well their work can handle polymorphic calculi.
 
 \citet{Autosubst18} propose some modifications to Autosubst which, as far as I
-can tell, have not yet been incorporated, but are presented in mechanised form
-for the paper.
-Some of these modifications aim to bring Autosubst into line with
-\citeauthor{AACMM21}'s work, in particular taking semantic traversals as a
-theoretical basis.
-TODO: more.
+can tell, have not yet been incorporated, although all of the case studies in
+the paper are mechanised in Coq.
+In the paper, they adapt and extend the work of \citeauthor{ACMM17} on generic
+semantic traversals to cover a variant of system F.
+They use the term \emph{multivariate traversal} for the generalisation of
+heterogeneous substitution to semantic traversals.
+It appears that this work could be followed through to produce syntax
+descriptions covering polymorphic calculi, which would provide a route for this
+work to be incorporated into the Autosubst library.
 
 \subsection{Second order abstract syntax}\label{sec:fiore}
 
@@ -84,7 +87,7 @@ to that model from the initial model (the syntax).
 In particular, this interplay allows us to derive renaming for terms in the way
 we saw in \cref{sec:gen-syn} --- by making $\V$ the family of variables, which
 trivially respects renaming.
-\todo{Every model is an environment model?}
+%\todo{Every model is an environment model?}
 
 Perhaps the relative complexity of the categorical account of the work of
 \citet{AACMM21} is why the authors decided not to state it in such terms.
@@ -100,7 +103,8 @@ work to the mechanisation of programming languages in the much later work of
 \citet{FS22}.
 
 In terms of the underlying theory, both works extend multi-sorted universal
-algebra\todo{cite} with variable-binding.
+algebra%\todo{cite}
+with variable-binding.
 However, the two extensions are subtly different.
 Universal algebra already has a notion of variable, which supports renaming and
 substitution, and which allows a given term to be evaluated when the free
@@ -237,7 +241,7 @@ which is treated abstractly, and then defining liftings of permutations on
 \texttt{name} to permutations on any other types involving \texttt{name}s.
 Because these liftings are defined explicitly within Isabelle/HOL, the Nominal
 Isabelle setup amounts to an explicit model of a nominal logic within
-Isabelle/HOL.
+Isabelle/HOL\@.
 This setup resembles what \citet{AACMM21} did within Agda, and similarly what I
 do later in this thesis --- creating a library within an existing proof
 assistant.
@@ -259,7 +263,8 @@ and the techniques discussed in detail in this chapter.
 The names found in nominal techniques are more general than (names of)
 variables in formal systems.
 This means that nominal techniques have been applicable to problems outside
-standard programming language theory\todo{Find applications}.
+standard programming language theory, such as in the representation of graphs
+and in topology~\citep{GG17}.
 However, in certain ways, this is arguably not a good fit for type systems.
 In a basic nominal formalisation of a syntax with binding, there is no real
 distinction between the context of a term and the collection of that term's free

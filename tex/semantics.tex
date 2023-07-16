@@ -198,7 +198,6 @@ systems, do not involve any changes in the usage contexts.
 The linearity of relation \AgdaBound{$\Psi$} is given by fields
 \AgdaField{rel-0$_m$}, \AgdaField{rel-+$_m$}, and \AgdaField{rel-*$_m$} (with
 the subscript-m being a mnemonic for \emph{module}, as opposed to scalar).
-\todo{Refer to preliminaries}
 
 \ExecuteMetaData[\Maptex]{map-p}
 
@@ -214,7 +213,7 @@ deterministic).
 
 At this point I introduce a minor generalisation to
 \AgdaFunction{OpenFam} and \AgdaFunction{ExtOpenFam} (as defined in
-\cref{sec:terms}):
+\cref{sec:terms-of-system}):
 \AgdaBound{I}\AgdaSpace{}\AgdaFunction{---OpenFam} and
 \AgdaBound{I}\AgdaSpace{}\AgdaFunction{---ExtOpenFam}.  We obtain the
 definition of \AgdaBound{I}\AgdaSpace{}\AgdaFunction{---OpenFam} by
@@ -226,8 +225,7 @@ The main value I am interested in \AgdaBound{I} taking, other than
 $\V$-environments, for a given $\V$, is a
 \AgdaRecord{Ctx}\AgdaSpace{}\AgdaFunction{---OpenFam}%
 \AgdaSpace{}\AgdaSymbol{\_}.
-However, I only use this generalisation much later.
-\todo{When?}
+I use this generality in the type of \AgdaFunction{extend} in the next section.
 
 \ExecuteMetaData[\Syntaxtex]{dashOpenFam}
 
@@ -279,7 +277,6 @@ variables have usage annotations that are added to the existing
 variables, not shared with them. The use of the
 \AgdaFunction{$\Box^r$} modality ensures that we can still use it in
 the presence of additional variables introduced by weakening.
-\todo{Is wand defined?}
 
 \AgdaFunction{Kripke} is functorial in the \AgdaBound{$\C$} argument,
 as witnessed by the \AgdaFunction{mapK$\C$} function, which is essentially

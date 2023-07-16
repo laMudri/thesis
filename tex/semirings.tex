@@ -11,7 +11,36 @@ As such, one of the aims of this chapter will be to find a form of weakening
 applicable to variables of any type, while essentially retaining linearity
 (as opposed to affineness).
 
-As explained by \citet{McBride16}, the first insight is to, instead of
+This chapter proceeds as follows.
+In \cref{sec:semiring-motivation}, I give an intuitive introduction to semiring
+annotations on variables, based on replicating features of DILL (introduced in
+\cref{sec:dill}).
+Then, \cref{sec:lr} formalises the ideas of \cref{sec:semiring-motivation} into
+a calculus $\name$.
+This calculus has
+appeared in my previous work~\citep{WA21}, and can be seen as a
+simply typed version of Atkey's dependently typed calculus QTT~\citep{Atkey18}.
+%The idea of \name{} is to augment the simply typed $\lambda$-calculus with
+%annotations on free variables, and give enough types to manipulate these
+%annotations.
+Given this new calculus $\name$, the first goal is to apply the techniques of
+\cref{sec:simple} to it, yielding a simultaneous substitution operation.
+To do this, I use \cref{sec:lnd} to introduce notation that allows us to restate
+the typing rules of \name{} to not mention contexts explicitly, as was the style
+in \cref{sec:simple}.
+This new notation --- the \emph{bunched connectives} --- is versatile at
+defining simply typed usage-aware syntaxes, and I give further non-$\name$
+examples in \cref{sec:variant}.
+Finally, I justify connections to linear logic and modal logic in
+\cref{sec:translation}, where I translate $\name$ terms to and from
+DILL~\citep{Barber1996} and the modal calculus of \citet{judgmental}.
+
+\section{Motivation for semiring annotations}\label{sec:semiring-motivation}
+
+The question of defining calculi which do not semantically admit weakening and
+contraction but also do not rely on variables going out of scope is directly
+addressed by \citet{McBride16}.
+The first technique suggested is to, instead of
 removing variables from the context of certain subterms, add an annotation to
 free variables saying whether or not they are to be used.
 I use an annotation $\gr0$ on variables that are not to be used, and an
@@ -273,27 +302,6 @@ $\{\gr0, \gr1, \gr\omega\}$ posemiring I have been using so far.
 %and $\cdot$ in \cref{sec:lnd}, allowing for the modes of usage exhibited in
 %the introduction rules for $I$, $\otimes$, and $\oc$, respectively.
 
-The rest of this chapter proceeds as follows.
-In \cref{sec:lr}, I define the usage-annotated calculus \name{}, which has
-appeared in my previous work~\citep{WA21}, and can be seen as a
-simply typed version of Atkey's dependently typed calculus QTT~\citep{Atkey18}.
-The idea of \name{} is to augment the simply typed $\lambda$-calculus with
-annotations on free variables, and give enough types to manipulate these
-annotations.
-Given this new calculus $\name$, the first goal is to apply the techniques of
-\cref{sec:simple} to it, yielding a simultaneous substitution operation.
-To do this, I use \cref{sec:lnd} to introduce notation that allows us to restate
-the typing rules of \name{} to not mention contexts explicitly, as was the style
-in \cref{sec:simple}.
-This new notation --- the \emph{bunched connectives} --- is versatile at
-defining simply typed usage-aware syntaxes, and I give further non-$\name$
-examples in \cref{sec:rec}.
-Finally, I justify connections to linear logic and modal logic in
-\cref{sec:translation}, where I translate $\name$ terms to and from
-DILL~\citep{Barber1996} and the modal calculus of \citet{judgmental}.
-%The application of the techniques of \cref{sec:simple} is left to
-%\cref{sec:ren-sub-lr}.
-
 \section{A usage-annotated calculus $\name$}\label{sec:lr}
 \input{lr.tex}
 \section{Bunched connectives}\label{sec:lnd}
@@ -323,7 +331,8 @@ Therefore, we cannot talk about more interesting spatial relationships between
 variables, as required by bunched logic.
 This property also precludes us from capturing calculi without exchange
 (non-commutative logics), such as Lambek calculus~\citep{Lambek58}.
-Fitch-style systems\todo{cite} probably also are precluded similarly.
+Fitch-style systems~\citep{Borghuis-thesis} probably also are precluded
+similarly.
 
 The work I present here has some methodological similarities with the earlier
 work of \citet{LicataSR17}.

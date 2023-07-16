@@ -178,18 +178,20 @@ Also, the unusual form of sequents can cause some problems when working with a
 typing with leftovers system.
 For example, a traditional intuitionistic linear logic sequent
 $\Gamma \vdash M : A$ corresponds to many different typing with leftovers
-sequents:
+sequents, including:
 \begin{itemize}
   \item $\gr1\Gamma \vdash M : A \boxtimes \gr0\Gamma$
   \item $\gr1\Gamma, \gr1x : B \vdash M : A \boxtimes \gr0\Gamma, \gr1x : B$
   \item $\gr1\Gamma, \gr0x : B \vdash M : A \boxtimes \gr0\Gamma, \gr0x : B$
-  \item \&c.
 \end{itemize}
 
 Generally, any variable not used in the term can be added to both the input and
 the output context with the same annotation.
 Many of these variations are likely to appear in various typing derivations,
 depending on what terms surround a given subterm.
+In particular, many different variations can appear for the same term in
+different subterms of the same derivation, even when the scope of the two
+occurrences is the same.
 This means that if we want to implement substitution, which involves putting a
 term into an unknown surrounding, we have to navigate these different forms via
 the \emph{framing property}.
@@ -261,7 +263,7 @@ soon as the variable is bound) and contracting only where necessary.
 
 Such a scheme straightforwardly adapts to multiplicative linear logic by
 modifying the data structures presented by \citet{McBride18} to disallow all
-contraction and weakening.
+contraction and weakening, as presented by \citet{RPKV20}.
 With the additive rules, however, we get cases where variables appear multiple
 times syntactically in a term but are still considered linear by the type
 system, the simplest example being
@@ -275,7 +277,13 @@ the paper.
 In summary, the co-de-Bruijn approach is promising for capturing linearity, but
 has not been thoroughly investigated.
 
-\subsection{Fitch-style modalities}
+The other relevant contribution from \citet{RPKV20} is to recast the
+context-splitting relations via connectives inspired by bunched
+logic~\citet{oHP99}.
+I adapt this method in \cref{sec:lnd}, but with a different notion of
+context-splitting.
+
+\subsection{Fitch-style modalities}\label{sec:fitch}
 
 An alternative to the approach of \citet{judgmental} to adapt modal logics (and
 particularly IS4) to natural deduction is using Fitch-style calculi.
@@ -331,7 +339,7 @@ Fitch-style calculi are amenable to mechanised proofs.
 
 I am not aware of any work discussing linear Fitch-style calculi.
 
-\subsection{Systematisations of substructural logics}
+\subsection{Systematisations of substructural logics}\label{sec:lin-sys}
 
 Several pieces of prior work have aimed to give general accounts of a range of
 substructural calculi, in a similar vein to existing accounts of aspects of
@@ -499,5 +507,17 @@ However, in the case of linear logic, contexts can only be combined via a
 monoidal product, so we only get separating pairs (tensor-products) and not
 sharing pairs (with-products).
 
-\paragraph{Granule}
-\citet{BrunelGMZ14}, \citet{GhicaS14}, \ldots
+\paragraph{Semiring-annotated systems}
+There have been several appearances in the literature of calculi in which
+variables are annotated with some algebraic usage information which is reflected
+in the types of the calculus.
+Such calculi appear in the work of \citet{abadi99core} and
+\citet{reed10distance}, where annotations are used to control information flow
+and sensitivity to perturbations, respectively.
+Following these disparate calculi, the work of \citet{BrunelGMZ14},
+\citet{GhicaS14}, and \citet{POM14} sought to unify these calculi using
+(variations on) partially ordered semirings as the source of annotations.
+Each of these papers also provided further examples of calculi with semiring
+usage annotations.
+I discuss calculi based on partially ordered semiring annotations further in the
+following chapter, as it provides the basis for the rest of this thesis.

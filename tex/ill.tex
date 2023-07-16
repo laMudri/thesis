@@ -17,35 +17,49 @@ A sequent $A \vdash B$ can then be understood as saying ``if I have an $A$, I
 can give it up so as to have a $B$'', and the corresponding implication
 $A \multimap B$ can be understood as saying ``I have a \emph{mechanism} for
 having a $B$ if I have and am willing to give up an $A$''.
-\todo{Camels example}
+
+The resource interpretation of intuitionistic linear logic is often explained by
+analogy with a vending machine.
+Suppose we have a vending machine which takes pound coins and sells bottles of
+water for \pounds{}1 and chocolate bars for \pounds{}2.
+We can represent the latter two facts by the judgements
+$\textrm{\pounds}1 \vdash \mathrm{water}$ and
+$\textrm{\pounds}1, \textrm{\pounds}1 \vdash \mathrm{bar}$, respectively.
+Notice that having two \pounds{}1 coins is very different from having just one
+\pounds{}1 coin.
+We can represent having compound objects using $\otimes$-products
+(tensor-products), so that having a \pounds{}1 coin together with a chocolate
+bar is represented as $\textrm{\pounds}1\otimes\mathrm{bar}$, and the mechanism
+for getting a chocolate bar from the vending machine is described by
+$\plr{\textrm{\pounds}1 \otimes \textrm{\pounds}1} \multimap \mathrm{bar}$.
+The entire protocol of one transaction with the vending machine is represented
+as
+$\plr{\textrm{\pounds}1 \multimap \mathrm{water}} \with
+\plr{\plr{\textrm{\pounds}1 \otimes \textrm{\pounds}1} \multimap \mathrm{bar}}$,
+where the $\with$-product (with-product) represents giving the user a choice of
+which of the two conjuncts to have.
+Finally, that we can do multiple transactions with the vending machine is
+represented as
+$\oc\plr{\plr{\textrm{\pounds}1 \multimap \mathrm{water}} \with
+\plr{\plr{\textrm{\pounds}1 \otimes \textrm{\pounds}1} \multimap \mathrm{bar}}}
+$, where the $\oc$-modality (read ``bang'' or ``of course'') represents having
+an arbitrary number of copies of its argument.
+
+Such reasoning is useful in computer science because it allows us to distinguish
+what we had before some event with what we got after it.
+In both intuitionistic and classical logic, if we had a \pounds{}1 coin and a
+way to turn a \pounds{}1 coin into a bottle of water, we'd be able to have both
+the \pounds{}1 coin and the bottle of water at once.
+Instead, linear logic acknowledges that the \pounds{}1 coin was spent, so at one
+time we had just the \pounds{}1 coin, and at a later time we had just the bottle
+of water.
+In real applications, such reasoning is useful in, for example, dealing with
+mutable state~\citep{MK19} --- in which, when we mutate the state, we forget the
+old value and have only the new value --- and producing a session type system~%
+\citep{Wadler12} --- in which the protocol progresses as messages are sent.
+
 In this section, I will carefully introduce intuitionistic linear logic so as to
 make the intuitive readings more precise.
-
-%Linear logic is a good starting point for our investigations into usage
-%restrictions because it is well known, well understood, and exhibits most of the
-%difficulties we will come across.
-%Linear logic's lack of general weakening and contraction will be a typical
-%feature of the calculi we will see, and the exponential modality $\oc$ (bang)
-%will be the prototype for a range of modalities I will consider.
-
-\subsection{Motivation of linearity}
-
-\todo{Incorporate into chapter introduction.}
-Programming applications of linearity include stateful protocols
-\citep{Wadler12}, mutually exclusive capabilities (TODO: cite),
-and mutation (TODO: cite).
-In each of these cases, the act of using up a hypothesis allows us to divide
-time into ``before'' and ``after'', with lack of duplication avoiding confusion
-over which half we are in, and lack of deletion allowing us to know whether the
-corresponding action actually happened.
-For example, when modelling mutation, a variable refers to a single state of a
-mutable value.
-The \texttt{write} operation uses up such a variable, making the old state
-inaccessible, and returns a new linear value to represent the new state of the
-mutable value.
-Such a protocol naturally also supports a \emph{freezing} operation, by which we
-relinquish the ability to mutate the value in return for an immutable reference
-to the value produced.
 
 \subsection{The multiplicative-additive fragment}
 

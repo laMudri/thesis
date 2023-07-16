@@ -177,7 +177,7 @@ the original term.
 Therefore, a na\"{i}vely written \AgdaFunction{sem} will fail Agda's termination
 check.
 
-To make \AgdaFunction{sem} pass the termination check, we have three major
+To make \AgdaFunction{sem} pass the termination check, we have four major
 options:
 \begin{enumerate}
   \item Assert \AgdaFunction{sem} to be terminating, bypassing the termination
@@ -186,6 +186,8 @@ options:
   \item Avoid sized types, and index terms over some user-defined type (for
     example, natural numbers or ordinal notations) which is structurally smaller
     at subterms.
+  \item Inline a new, instantiated version of \AgdaFunction{map-s} wherever it
+    is used.
 \end{enumerate}
 
 Each of these approaches has drawbacks.
@@ -196,10 +198,14 @@ make the system inconsistent~\citep{AgdaIssue1201}.
 Meanwhile, approach 3 is safe, but entails a lot of manually extracted and
 supplied extra arguments, which I think would distract from the presentation and
 make the resulting code harder to use.
+Finally, approach 4 is safe, but limits code reuse (both of the function
+\AgdaFunction{map-s} itself and any lemmas we may prove about it).
 I choose to follow \citet{AACMM21} in using sized types, justified by the idea
 that Agda may eventually have a sound implementation of sized types, at which
 point I would want my code to be as easy to update for that new version of Agda
 as possible.
+\Citet{FS22} use approach 4, and in fact have only one use of (their equivalent
+of) \AgdaFunction{map-s} in their development.
 
 Using sized types, my type family of \AgdaRecord{System}-generic terms is as
 below.

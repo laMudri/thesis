@@ -10,17 +10,18 @@ The representation of terms relies on indexing on both a context --- giving the
 types of all the free variables --- and a type for the term itself.
 A basic operation on terms is \emph{simultaneous substitution}, which replaces
 each variable in the context by a term in another context.
-This simultaneous substitution operation fits the form of composition in a
-multicategory.
-Specifically, in the case of a simple intuitionistic type system, this is the
-composition of a Cartesian multicategory, which allows all of the terms being
-substituted in to share a context.
-\todo{Maybe delete multicategory remark.}
+%This simultaneous substitution operation fits the form of composition in a
+%multicategory, giving us a connection to categorical logic~\citep{}.
+%Specifically, in the case of a simple intuitionistic type system, this is the
+%composition of a Cartesian multicategory, which allows all of the terms being
+%substituted in to share a context.
 
 This chapter almost entirely reviews prior work.
-In \cref{sec:terms}, I use a presentation of the dependently typed encoding of
-the simply typed $\lambda$-calculus from \citet{AR99} to set notational
-conventions.
+First, in \cref{sec:agda-primer}, I give an introduction to Agda, the proof
+assistant I work in throughout this thesis.
+Then, in \cref{sec:terms}, I use a presentation of the dependently typed
+encoding of the simply typed $\lambda$-calculus from \citet{AR99} to set
+notational conventions.
 \Cref{sec:kits} presents the unpublished work of \citet{McBride05},
 successively deriving simultaneous renaming and simultaneous substitution for
 the terms defined in \cref{sec:terms}.
@@ -31,6 +32,7 @@ cover a whole range of simply typed syntaxes with binding, rather than just
 a specific syntax.
 Finally, I review some related work in \cref{sec:mech-related}.
 
+\input{agda-primer.tex}
 \section{Term representation}\label{sec:terms}
 \input{terms.tex}
 \section{Renaming and substitution}\label{sec:kits}

@@ -4,13 +4,14 @@ Models of separation logic typically use \emph{partial} commutative monoids to
 model a heap, so it is tempting to generalise the commutative monoid of
 addition in our semirings to a \emph{partial} commutative monoid.
 However, we find that the most natural notion of \emph{partial semiring} is
-degenerate, in that all partial semirings are actually (total) semirings.
+degenerate, in the sense that all partial semirings are actually (total)
+semirings.
 
 Recall that a commutative monoid (or commutative monoid object) can be
 defined in any symmetric monoidal category.
 A partial commutative monoid is exactly a commutative monoid object in the
-category of sets and partial functions with the usual monoidal product
-\todo{Define this monoidal product somewhere.}.
+category of sets and partial functions with the usual monoidal product given
+by pairing of objects and morphisms (like the Cartesian product in $\Set$).
 However, semirings need a Cartesian category in order to state the interaction
 equations between addition and multiplication.
 While the category of sets and partial functions is not Cartesian, the
@@ -23,6 +24,13 @@ map $\delta : M \to M \otimes M$ which are coherent with respect to each other.
 All morphisms in $\mathrm{CComon}(\mathcal C)$ must respect $\eta$ and
 $\delta$; in particular, both addition and multiplication must separately
 form bimonoids in $\mathcal C$ together with the cocommutative comonoid.
+
+The distributivity laws of semirings are stated below.
+I include these to show that the cocommutative comonoids of a monoidal category
+give enough structure to state these laws.
+The other laws --- that all morphisms respect $\eta$ and $\delta$, that addition
+forms a commutative monoid, and that multiplication forms a monoid --- are
+standard in symmetric monoidal category theory.
 
 \[
   \begin{tikzpicture}[baseline]
@@ -43,7 +51,7 @@ form bimonoids in $\mathcal C$ together with the cocommutative comonoid.
     (0,0) node(0) {0}
     (0,2) node(x) {}
     (0,-1) node(res) {}
-    (0,1) node[circle,draw](del) {}
+    (0,1) node(del) {$\eta$}
     ;
 
     \draw (0) -- (res);
@@ -87,7 +95,7 @@ form bimonoids in $\mathcal C$ together with the cocommutative comonoid.
       (-2,3) node(x) {}
       (-1,3) node(y) {}
       (0,3) node(z) {}
-      (0,2) node[circle,draw](dup) {}
+      (0,2) node(dup) {$\delta$}
       (-1,1) node(x*) {*}
       (0,1) node(y*) {*}
       (-0.5,0) node(+) {+}
@@ -97,7 +105,7 @@ form bimonoids in $\mathcal C$ together with the cocommutative comonoid.
       \draw (z) -- (dup);
       \draw (x) to[out=270,in=135] (x*);
       \draw (y) to[out=270,in=135] (y*);
-      \draw (dup) to[out=180,in=45] (x*);
+      \draw (dup) to[out=-150,in=45] (x*);
       \draw (dup) -- (y*);
       \draw (x*) to[out=270,in=135] (+);
       \draw (y*) to[out=270,in=45] (+);
@@ -126,7 +134,7 @@ form bimonoids in $\mathcal C$ together with the cocommutative comonoid.
       (2,3) node(x) {}
       (1,3) node(y) {}
       (0,3) node(z) {}
-      (0,2) node[circle,draw](dup) {}
+      (0,2) node(dup) {$\delta$}
       (1,1) node(x*) {*}
       (0,1) node(y*) {*}
       (0.5,0) node(+) {+}
@@ -136,7 +144,7 @@ form bimonoids in $\mathcal C$ together with the cocommutative comonoid.
       \draw (z) -- (dup);
       \draw (x) to[out=270,in=45] (x*);
       \draw (y) to[out=270,in=45] (y*);
-      \draw (dup) to[out=0,in=135] (x*);
+      \draw (dup) to[out=-30,in=135] (x*);
       \draw (dup) -- (y*);
       \draw (x*) to[out=270,in=45] (+);
       \draw (y*) to[out=270,in=135] (+);
@@ -145,32 +153,63 @@ form bimonoids in $\mathcal C$ together with the cocommutative comonoid.
   \end{matrix}
 \end{displaymath}
 
-\begin{lemma}
-  For each object $X$ in $(\mathrm{Set}_{\mathrm{part}}, {\otimes})$, there is
+It is well known that all commutative comonoids in $(\Set, \times)$, and indeed
+any Cartesian monoidal category, are trivial, in the sense that every object of
+$\Set$ gives rise to exactly one commutative comonoid.
+We find in the following two lemmas that this property also holds of
+$\plr{\Set_{\mathrm{part}}, \otimes}$.
+
+\begin{lemma}\label{thm:ccomon-exists}
+  For each object $X$ in $\plr{\Set_{\mathrm{part}}, {\otimes}}$, there is
   a cocommutative comonoid over $X$.
 \end{lemma}
 \begin{proof}
   Let $\eta(x) \coloneq ()$ and $\delta(x) \coloneq (x, x)$, with both
   being defined for all $x$.
-  Checking that these satisfy the laws is routine.
+  Checking that these satisfy the cocomutative comonoid laws is routine.
   Alternatively, we can see that both $\eta$ and $\delta$, being total, are
   morphisms in $\mathrm{Set}$, where it is well known that they form a
   cocommutative comonoid.
   The equations in $\mathrm{Set}$ carry over to $\mathrm{Set}_{\mathrm{part}}$.
 \end{proof}
 
-\begin{lemma}
-  For each object $X$ in $(\mathrm{Set}_{\mathrm{part}}, {\otimes})$, any
-  comonoid over $X$ is the one described in the previous lemma.
+\begin{lemma}\label{thm:ccomon-unique}
+  For each object $X$ in $\plr{\Set_{\mathrm{part}}, {\otimes}}$, any
+  comonoid over $X$ is the one described in \cref{thm:ccomon-exists}.
 \end{lemma}
 \begin{proof}
   The left unit law says that, for all $x$ and $x'$, we have
   $\exists y.~\delta(x) = (y, x') \land \eta(y) = ()$ if and only if $x = x'$.
   Letting $x'$ be $x$ and reading from right to left, we get that there is
   some $y$ such that $\delta(x) = (y, x)$ and $\eta(y) = ()$.
-  Symmetrically, from the right unit law, there is some $z$ such that
+  Symmetrically, from the right unit law, we get some $z$ such that
   $\delta(x) = (x, z)$ and $\eta(z) = ()$.
-  But because $\delta$, as a partial function, is deterministic, we have
+  But because $\delta$, being a partial function, is deterministic, we have
   $(y, x) = (x, z)$, giving us that $y = z = x$, and $\delta(x) = (x, x)$.
-  Moreover, $\eta(x) = \eta(y) = ()$.
+  Moreover, because the chosen $y$ is equal to $x$, we have for all $x$ that
+  $\eta(x) = ()$.
 \end{proof}
+
+That a morphism $f$ respects the $\eta$ given in \cref{thm:ccomon-exists} is
+equivalent to saying that $f$ is total.
+Therefore, all possible semiring operators in
+$\mathrm{CComon}\plr{\Set_{\mathrm{part}}, \otimes}$ are total, meaning that
+there is a corresponding semiring in $\plr{\Set, \times}$.
+
+The above reasoning shows that semirings in the category of sets and partial
+functions are not worth studying.
+If we want partiality, there appear to be two options.
+The first option is to give up on multiplication.
+We could imagine replacing the binary multiplication operator by a set of
+unary modalities satisfying fewer laws.
+In particular, I make little use of addition on the left of a multiplication,
+and multiplying by $\gr0$ on the left (as done by $\oc\gr0$) is unwanted in some
+cases (such as when encoding DILL and PD, as in \cref{sec:translation}).
+With unary modalities, we could expect all of the required laws to be
+expressible in a symmetric monoidal category.
+The second option is to use a different notion of partiality.
+The notion of partiality given by the category of sets and partial functions is
+``strict'', in that composing with an everywhere-undefined function yields an
+everywhere-undefined function.
+With a non-strict notion of partial function, we may be able to have interesting
+partial semirings.

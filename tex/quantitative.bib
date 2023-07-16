@@ -24,7 +24,7 @@
   bibsource = {dblp computer science bibliography, http://dblp.org}
 }
 
-@inproceedings{PetricekOM14,
+@inproceedings{POM14,
   author    = {Tomas Petricek and
                Dominic A. Orchard and
                Alan Mycroft},
@@ -624,24 +624,6 @@
   timestamp = {Tue, 14 May 2019 10:00:37 +0200},
   biburl    = {https://dblp.org/rec/conf/itp/SchaferTS15.bib},
   bibsource = {dblp computer science bibliography, https://dblp.org}
-}
-
-@inproceedings{Autosubst17,
-  author = {Kaiser, Jonas and Sch\"{a}fer, Steven and Stark, Kathrin},
-  title = {Autosubst 2: Towards Reasoning with Multi-Sorted de Bruijn Terms and Vector Substitutions},
-  year = {2017},
-  isbn = {9781450353748},
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
-  url = {https://doi.org/10.1145/3130261.3130263},
-  doi = {10.1145/3130261.3130263},
-  abstract = {Formalising metatheory in the Coq proof assistant is tedious as native support for reasoning about languages with binders is marginal at best. The Autosubst framework [9] automates working with de Brujin terms: for each annotated inductive type, it generates a corresponding substitution operation and a decision procedure for assumption-free substitution lemmas. A key part of the equational theory are parallel substitutions which combine multiple single-variable substitutions. However, due to its separate treatment of sorts Autosubst lacks support for mutual inductive types. This restriction is removed in our prototype implementation of Autosubst 2: second-order HOAS specifications are translated into potentially mutual inductive term sorts. Again, parallelising substitutions is the key: we introduce vector substitutions to combine the application of multiple parallel substitutions into exactly one instantiation operation for each sort. The resulting equational theory is both simpler and more expressive than that of the original Autosubst framework.},
-  booktitle = {Proceedings of the Workshop on Logical Frameworks and Meta-Languages: Theory and Practice},
-  pages = {10–14},
-  numpages = {5},
-  keywords = {multisorted terms, parallel substitutions, σ-calculus, de Bruijn representation},
-  location = {Oxford, United Kingdom},
-  series = {LFMTP '17}
 }
 
 @inproceedings{Autosubst18,
@@ -1458,5 +1440,66 @@
   doi          = {10.1145/3331554.3342604},
   timestamp    = {Mon, 12 Jul 2021 15:34:15 +0200},
   biburl       = {https://dblp.org/rec/conf/icfp/Allais19.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@InProceedings{MK19,
+  author = {Dhruv C. Makwana and Neelakantan R. Krishnaswami},
+  title = {{NumLin: Linear Types for Linear Algebra}},
+  booktitle = {33rd European Conference on Object-Oriented Programming (ECOOP 2019)},
+  pages = {14:1--14:25},
+  series = {Leibniz International Proceedings in Informatics (LIPIcs)},
+  ISBN = {978-3-95977-111-5},
+  ISSN = {1868-8969},
+  year = {2019},
+  volume = {134},
+  editor = {Alastair F. Donaldson},
+  publisher = {Schloss Dagstuhl--Leibniz-Zentrum fuer Informatik},
+  address = {Dagstuhl, Germany},
+  URL = {http://drops.dagstuhl.de/opus/volltexte/2019/10806},
+  URN = {urn:nbn:de:0030-drops-108069},
+  doi = {10.4230/LIPIcs.ECOOP.2019.14},
+  annote = {Keywords: numerical, linear, algebra, types, permissions, OCaml}
+}
+
+@misc{DW22,
+  author = {Stephen Dolan and Leo White},
+  title = {Stack allocation for OCaml},
+  booktitle = {OCaml Users and Developers Workshop 2022},
+  year = {2022},
+  url = {http://stedolan.net/talks/ocaml22}
+}
+
+@article{BH94,
+  author       = {Fran{\c{c}}oise Bellegarde and
+                  James Hook},
+  title        = {Substitution: {A} Formal Methods Case Study Using Monads and Transformations},
+  journal      = {Sci. Comput. Program.},
+  volume       = {23},
+  number       = {2-3},
+  pages        = {287--311},
+  year         = {1994},
+  url          = {https://doi.org/10.1016/0167-6423(94)00022-0},
+  doi          = {10.1016/0167-6423(94)00022-0},
+  timestamp    = {Mon, 25 Apr 2022 13:11:14 +0200},
+  biburl       = {https://dblp.org/rec/journals/scp/BellegardeH94.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{GG17,
+  author       = {Murdoch James Gabbay and
+                  Michael Gabbay},
+  title        = {Representation and duality of the untyped {\(\lambda\)}-calculus in
+                  nominal lattice and topological semantics, with a proof of topological
+                  completeness},
+  journal      = {Ann. Pure Appl. Log.},
+  volume       = {168},
+  number       = {3},
+  pages        = {501--621},
+  year         = {2017},
+  url          = {https://doi.org/10.1016/j.apal.2016.10.001},
+  doi          = {10.1016/j.apal.2016.10.001},
+  timestamp    = {Mon, 26 Oct 2020 08:45:08 +0100},
+  biburl       = {https://dblp.org/rec/journals/apal/GabbayG17.bib},
   bibsource    = {dblp computer science bibliography, https://dblp.org}
 }

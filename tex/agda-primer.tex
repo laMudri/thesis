@@ -1,0 +1,717 @@
+\section{Agda primer}\label{sec:agda-primer}
+
+I use the proof assistant and programming language Agda throughout this thesis,
+with Agda code being used particularly in this chapter and
+\cref{sec:framework,sec:semantics,sec:example-semantics}.
+As such, it is important for the reader to be able to read basic Agda syntax in
+order to benefit from the parts of the exposition that reside in code listings.
+The syntax of Agda is broadly similar to that of Haskell, and relatively close
+to that of Standard ML, OCaml, and Coq's Gallina sublanguage.
+I will assume that the reader is able to read basic Haskell code, and spend most
+time explaining differences thereof.
+
+\subsection{Lexing and parsing}
+
+Agda is extremely liberal in its set of allowed names.
+There is just a single lexical class (unlike in Haskell, where, for example,
+constructors start with a capital letter and definitions start with a lowercase
+letter), and names can be any string of Unicode characters except whitespace and
+special characters \verb|.;{}()@"|, apart from those strings reserved as
+keywords or literals.
+Therefore, we can introduce names like
+\AgdaFunction{0x-+-$\uplambda\rightarrow$}
+to stand for any kind of identifiable thing.
+With such free-form names, ample spacing is required between identifiers.
+For example, while \AgdaNumber{0}\AgdaSpace{}\AgdaDatatype{$\leq$}\AgdaSpace{}%
+\AgdaNumber{1} is a possible expression containing three
+identifiers, \AgdaInductiveConstructor{0$\leq$1} is a single
+valid identifier.
+Only the special characters may appear next to names without being separated by
+whitespace.
+
+A character with unique behaviour in Agda's syntax is the underscore
+(\AgdaSymbol{\_}).
+Within a name, an underscore signifies that the name will function as a mixfix
+operator, allowing for an argument in the position of the underscore.
+For example, the full name of the \AgdaDatatype{$\leq$} operator used in the
+previous paragraph is \AgdaDatatype{\_$\leq$\_}, signifying that it can take an
+argument to its left and its right.
+We can also introduce closed operators, like \AgdaDatatype{[\_]}, which can take
+an argument between the square brackets (e.g.\ \AgdaDatatype{[}\AgdaSpace{}%
+\AgdaNumber{1}\AgdaSpace{}\AgdaDatatype{]}, with spaces still being important).
+Mixfix operators can be partially applied by leaving underscores in the name in
+the application.
+For example, \AgdaDatatype{\_$\leq$}\AgdaSpace{}\AgdaNumber{1} could be the
+predicate asserting that a number is less than or equal to 1.
+
+On its own, an underscore has a completely different meaning, which can depend
+on context.
+In patterns, an underscore has the same meaning as it has in Haskell and ML ---
+it holds the place of a pattern variable, but does not name that variable.
+In expressions, an underscore stands for an unspecified subterm which will be
+solved by unification.
+The solving of unspecified terms is canonical and respects $\beta\eta$-equality,
+unlike in Coq.
+
+Spacing is important particularly important when dealing with underscores.
+For example,
+\AgdaDatatype{\_$\leq$}\AgdaSpace{}\AgdaSymbol{\_} (with a space after the
+\AgdaDatatype{$\leq$} but not before) standing for the predicate asserting that
+a number is less than or equal to some unspecified number.
+
+Like Haskell, Agda's syntax is indentation-sensitive.
+The distinctions conveyed by indentation are largely obvious or intuitive to
+human readers (for example, allowing for line-continuation or delineating nested
+modules), so I will not discuss them explicitly here.
+
+\subsection{Functions, $\Pi$-types}\label{sec:pi-types}
+
+Simple function types take the form
+\AgdaArgument{A}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaArgument{B},
+coinciding with Haskell's syntax.
+Also as in Haskell and ML, the function arrow nests to the right.
+However, Agda has a termination checker ensuring that all defineable functions
+are total, so many Haskell functions do not have a corresponding Agda function.
+
+The key feature distinguishing Agda from Haskell is the presence of arbitrary
+dependent types, including dependent function types ($\Pi$-types).
+The basic syntax for $\Pi$-types is
+\AgdaSymbol{(}\AgdaBound{x}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaArgument{A}\AgdaSymbol{)}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}%
+\AgdaArgument{B},
+where variable \AgdaBound{x} can occur free in expression \AgdaArgument{B}.
+However, there are several syntactic conveniences I use throughout the code
+listings.
+For one, iterated $\Pi$-types can be abbreviated so that
+\AgdaSymbol{(}\AgdaBound{x}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaArgument{A}\AgdaSymbol{)}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaBound{y}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaArgument{B}\AgdaSymbol{)}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}%
+\AgdaArgument{C}
+is written just
+\AgdaSymbol{(}\AgdaBound{x}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaArgument{A}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaBound{y}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaArgument{B}\AgdaSymbol{)}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}%
+\AgdaArgument{C},
+omitting the first arrow.
+For another, prefixing an arrow with the \AgdaSymbol{$\forall$} symbol allows us
+to omit domain types.
+For example,
+\AgdaSymbol{$\forall$}\AgdaSpace{}\AgdaBound{x}\AgdaSpace{}\AgdaSymbol{$\to$}%
+\AgdaSpace{}\AgdaArgument{B}
+is equivalent to
+\AgdaSymbol{(}\AgdaBound{x}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaSymbol{\_}\AgdaSymbol{)}\AgdaSpace{}\AgdaSymbol{$\to$}%
+\AgdaSpace{}\AgdaArgument{B}.
+Notice that this is a very different type to
+\AgdaBound{x}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaArgument{B},
+which is a non-dependent function type equivalent to
+\AgdaSymbol{(}\AgdaSymbol{\_}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaBound{x}\AgdaSymbol{)}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}%
+\AgdaArgument{B}.
+When writing
+\AgdaSymbol{$\forall$}\AgdaSpace{}\AgdaBound{x}\AgdaSpace{}\AgdaSymbol{$\to$}%
+\AgdaSpace{}\AgdaArgument{B},
+we assume that the occurrence of \AgdaBound{x} in \AgdaArgument{B} tells us what
+type \AgdaBound{x} should have (i.e.\ there is enough information to solve the
+underscore in
+\AgdaSymbol{(}\AgdaBound{x}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaSymbol{\_}\AgdaSymbol{)}\AgdaSpace{}\AgdaSymbol{$\to$}%
+\AgdaSpace{}\AgdaArgument{B}).
+
+Just like in Haskell, functions in Agda can be introduced via
+\AgdaSymbol{$\uplambda$}-abstractions and clausal definitions, and are applied
+by juxtaposition.
+Agda also includes \emph{extended} \AgdaSymbol{$\uplambda$}-abstractions,
+introduced via equivalent syntaxes
+\AgdaSymbol{$\uplambda$}\AgdaSpace{}\AgdaKeyword{where}\AgdaSpace{}%
+\AgdaBound{x}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaArgument{M} and
+\AgdaSymbol{$\uplambda$}\AgdaSpace{}\AgdaSymbol{\{}\AgdaSpace{}%
+\AgdaBound{x}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaArgument{M}%
+\AgdaSpace{}\AgdaSymbol{\}},
+which allow for pattern-matching on the variable \AgdaBound{x} (or all of the
+variables, if there are multiple variables).
+
+Agda allows for arbitrary function arguments to be marked as \emph{implicit} by
+replacing the round brackets in the type by curly braces.
+For example, if we have
+\AgdaBound{f}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaSymbol{\{}\AgdaBound{x}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaArgument{A}\AgdaSymbol{\}}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}%
+\AgdaArgument{B},
+then the argument to \AgdaBound{f} is implicit.
+Being implicit means that an occurrence of \AgdaBound{f} is treated as if it has
+been applied to an underscore, giving the expression \AgdaBound{f} the type
+$\AgdaArgument{B}[\AgdaSymbol{\_}/\AgdaBound{x}]$ (i.e.\ \AgdaArgument{B} with
+\AgdaSymbol{\_} substituted in for \AgdaBound{x}; the substitution syntax is not
+part of Agda syntax).
+An implicit argument can also be given explicitly in two ways.
+The first of a series of implicit arguments can be given by surrounding the
+argument in curly braces, and any other implicit arguments in the series can be
+given by including the name of the argument.
+For example,
+\AgdaBound{f}\AgdaSpace{}\AgdaSymbol{\{}\AgdaSymbol{\_}\AgdaSymbol{\}},
+\AgdaBound{f}\AgdaSpace{}\AgdaSymbol{\{}\AgdaArgument{x}\AgdaSpace{}%
+\AgdaSymbol{=}\AgdaSpace{}\AgdaSymbol{\_}\AgdaSymbol{\}}, and just
+\AgdaBound{f} are all equivalent expressions, and the underscore can be filled
+in in either of the first two expressions to provide an actual value for the
+implicit argument.
+Implicit arguments are usually left out of \AgdaSymbol{$\uplambda$}-abstractions
+and clausal definitions, but can be bound to names and pattern-matched on using
+the same syntax as in expressions.
+
+There are a few other places in the syntax using single curly braces, all of
+which have meanings related to implicit arguments.
+I also make a small amount of use of double curly braces
+(\AgdaSymbol{\{\{} and \AgdaSymbol{\}\}}), which denote arguments which are to
+be solved by instance resolution.
+Instance resolution is very similar to Haskell's typeclass resolution ---
+finding non-canonical solutions based on the instances in scope.
+
+Agda uses $\Pi$-types where in Haskell we would use polymorphism.
+For example, we can define an identity function as below.
+The definition relies on quantifying over terms of type \AgdaPrimitive{Set},
+i.e.\ (small) types.
+This definition also gives an example of defining a function with an implicit
+argument (\AgdaBound{X}), which can typically be inferred from either the
+kargument type or the return type, so can be omitted.
+
+\ExecuteMetaData[\SnippetsTwotex]{id0}
+
+An unfortunate feature of the definition \AgdaFunction{id$_0$} is that we cannot
+apply it to the expression \AgdaPrimitive{Set}, because \AgdaPrimitive{Set}
+contains only small types, and itself is a large type.
+We can work around these size issues using \emph{universe level polymorphism},
+as in the following definition.
+
+\ExecuteMetaData[\SnippetsTwotex]{id}
+
+Universe levels start at \AgdaPrimitive{0$\ell$}, with \AgdaPrimitive{Set} being
+an alias for \AgdaPrimitive{Set}\AgdaSpace{}\AgdaPrimitive{0$\ell$} (and also
+\AgdaPrimitive{Set$_0$}).
+Larger levels can be produced with the successor operator \AgdaPrimitive{suc},
+and we can take the least upper bound of two levels using the operator
+\AgdaPrimitive{\_$\sqcup$\_}.
+
+\subsection{Data types}
+
+Agda's \AgdaKeyword{data}-declarations are similar in scope to Haskell's, with
+the addition of indexing by terms of arbitrary type.
+\AgdaKeyword{data}-declarations give us indexed inductive sum-of-product types.
+
+All \AgdaKeyword{data}-declarations use GADT syntax.
+The body of a declaration comprises a list of constructor names paired with
+their types.
+Where two constructors have the same type, they may be written on the same line
+with their names separated by whitespace, as I do with the two constructors of
+\AgdaDatatype{Bool} below.
+\AgdaDatatype{Bool} has two constructors --- \AgdaInductiveConstructor{true} and
+\AgdaInductiveConstructor{false} --- both of which have type
+\AgdaDatatype{Bool}.
+\AgdaDatatype{$\mathbb N$} also has two constructors, where
+\AgdaInductiveConstructor{zero} has type \AgdaDatatype{$\mathbb N$} and
+\AgdaInductiveConstructor{suc} is inductive, with type
+\AgdaDatatype{$\mathbb N$}\AgdaSpace{}\AgdaKeyword{$\to$}\AgdaSpace{}%
+\AgdaDatatype{$\mathbb N$}.
+
+\noindent
+\begin{minipage}[t]{0.5\textwidth}
+  \ExecuteMetaData[\SnippetsThreetex]{Bool}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+  \ExecuteMetaData[\SnippetsThreetex]{Nat}
+\end{minipage}
+
+\AgdaDatatype{Bool} and \AgdaDatatype{$\mathbb N$} are both types, and indeed
+small types, as we can see by the fact that they are annotated to have type
+\AgdaPrimitive{Set}.
+We can also use \AgdaKeyword{data}-declarations to define type \emph{families}
+in various ways.
+The simplest is to add \emph{parameters}, as in the type family
+\AgdaDatatype{List} below.
+Parameters always appear to the left of the colon of the first line of the
+\AgdaKeyword{data}-declaration, and are constant throughout the
+\AgdaKeyword{data}-declaration.
+Variables to the left of the colon can appear in the body of the
+\AgdaKeyword{data}-declaration without further quantification.
+
+\ExecuteMetaData[\SnippetsThreetex]{List}
+
+Slightly more flexible than parameters are \emph{Protestant indices}%
+\footnote{The terminology of Protestant/Catholic indices comes orally from Conor
+McBride. I am not aware of a written reference.}.
+Protestant indices also appear to the left of the colon, and also must appear
+unmodified in the \emph{return type} of all of the constructors.
+However, they may take different values in inductive appearances of the type
+family in the argument types of constructors.
+Protestant indices give a generalisation of polymorphic
+recursion to indices of arbitrary type~\citep{Mycroft84,Henglein93}.
+
+I give two examples of type families with Protestant indices.
+The first, \AgdaDatatype{NestedList} is standard from the polymorphic recursion
+literature.
+It is worth noting at this point that Agda permits overloading of constructors,
+which are disambiguated by the type family they are being used to construct.
+This overloading allows \AgdaDatatype{List} and \AgdaDatatype{NestedList} to
+have constructors with the same names without confusion.
+The second example, \AgdaDatatype{ScopedTerm} is a data structure representing
+well scoped untyped $\lambda$-calculus terms.
+The Protestant index \AgdaBound{s} describes the number of variables in scope,
+which increases by 1 when we introduce a $\lambda$-abstraction.
+I will introduce \AgdaDatatype{Fin}, a type family with a specified natural
+number of inhabitants, in the next set of examples.
+As a syntactic note, in the type of the \AgdaInductiveConstructor{app}
+constructor, I use the two variable names \AgdaBound{M} and \AgdaBound{N}
+separated by whitespace to name two arguments with the same type.
+
+\ExecuteMetaData[\SnippetsThreetex]{NestedList}
+\ExecuteMetaData[\SnippetsThreetex]{ScopedTerm}
+
+The most general way to make a type family is to introduce a
+\emph{Catholic index}.
+The types of Catholic indices are specified to the right of the colon, and can
+be instantiated arbitrarily throughout the \AgdaKeyword{data}-declaration.
+Catholic indices are not in scope for the body of the
+\AgdaKeyword{data}-declaration, so the values filling them may need to be
+quantified over in each constructor.
+When this quantification is over a large type, like \AgdaPrimitive{Set}, the
+type family being defined will itself need to be large, e.g.\ inhabiting
+\AgdaPrimitive{Set$_1$}.
+This is a major reason for not defining types like \AgdaDatatype{List} and
+\AgdaDatatype{NestedList} using Catholic indices.
+
+I give two examples of type families with Catholic indices.
+The first is the \AgdaDatatype{Fin} family, as used in \AgdaDatatype{ScopedTerm}
+above.
+By inspection of the return types of the constructors, there is no way to
+produce a canonical inhabitant of
+\AgdaDatatype{Fin}\AgdaSpace{}\AgdaInductiveConstructor{zero}.
+For
+\AgdaDatatype{Fin}\AgdaSpace{}\AgdaSymbol(\AgdaInductiveConstructor{suc}%
+\AgdaSpace{}\AgdaBound{n}\AgdaSymbol),
+we can potentially use either of the constructors.
+Either we use \AgdaInductiveConstructor{zero} to get a canonical inhabitant, or
+if we can make a number with a smaller bound (i.e.\ an inhabitant of
+\AgdaDatatype{Fin}\AgdaSpace{}\AgdaBound{n}), we can use
+\AgdaInductiveConstructor{suc} to produce a larger number.
+
+\ExecuteMetaData[\SnippetsThreetex]{Fin}
+
+The second example of a type family with Catholic indices is more general in
+nature.
+Below I define \emph{propositional equality}, written
+\AgdaDatatype{\_$\equiv$\_}.
+It has two parameters and one Catholic index (though the standard library
+version of propositional equality I use throughout this thesis has an extra
+level parameter for the sake of universe level polymorphism).
+The constructor \AgdaInductiveConstructor{refl} constructs an inhabitant of
+\AgdaArgument{M}\AgdaSpace{}\AgdaDatatype{\_$\equiv$\_}\AgdaSpace{}%
+\AgdaArgument{N} only when \AgdaArgument{N} is definitionally equal to
+\AgdaArgument{M} (because terms are considered ``the same'' to the type checker
+exactly when they are definitionally equal).
+Notice that \AgdaInductiveConstructor{refl} does not quantify over \AgdaBound{x}
+because \AgdaBound{x} is already in scope as a parameter.
+
+\ExecuteMetaData[\SnippetsThreetex]{Eq}
+
+It is through type families like \AgdaDatatype{\_$\equiv$\_} that we can state
+and prove mathematical theorems in Agda.
+In the following subsection, I show how to use such indexed type families.
+
+\subsection{Clausal definitions}
+
+Clausal definitions of functions in Agda look very similar to their equivalents
+in Haskell.
+However, definitions in Agda regularly make use of
+\emph{dependent pattern matching}, which is our primary way of using indexed
+data types.
+Recursive definitions are also conservatively checked for termination.
+
+I will explain the salient aspects of clausal function definitions via two
+examples.
+The first, unimaginatively named \AgdaFunction{lemma}, shows a simple case where
+pattern matching modifies the context through unification of Catholic indices.
+The second, named \AgdaFunction{elim-Fin-zero}, gives an example of proper
+dependent pattern matching.
+
+In the following definition \AgdaFunction{lemma}, we want to chase equations in
+order to prove that \AgdaBound{x} is propositionally equal to \AgdaBound{z}.
+We start with the following incomplete definition, where the expression
+\AgdaHole{\{ \}0} marks an interation point, or \emph{hole}, in the program, to
+which we can apply interactive commands to complete the program.
+
+\begin{code}
+\>[0]\AgdaFunction{lemma}\AgdaSpace{}%
+\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaSymbol{∀}\AgdaSpace{}%
+\AgdaSymbol{\{}\AgdaBound{A}\AgdaSpace{}%
+\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaPrimitive{Set}\AgdaSymbol{\}}\AgdaSpace{}%
+\AgdaSymbol{\{}\AgdaBound{x}\AgdaSpace{}%
+\AgdaBound{y}\AgdaSpace{}%
+\AgdaBound{z}\AgdaSpace{}%
+\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaBound{A}\AgdaSymbol{\}}\AgdaSpace{}%
+\AgdaSymbol{→}\AgdaSpace{}%
+\AgdaBound{x}\AgdaSpace{}%
+\AgdaOperator{\AgdaDatatype{≡}}\AgdaSpace{}%
+\AgdaBound{y}\AgdaSpace{}%
+\AgdaSymbol{→}\AgdaSpace{}%
+\AgdaBound{z}\AgdaSpace{}%
+\AgdaOperator{\AgdaDatatype{≡}}\AgdaSpace{}%
+\AgdaBound{y}\AgdaSpace{}%
+\AgdaSymbol{→}\AgdaSpace{}%
+\AgdaBound{x}\AgdaSpace{}%
+\AgdaOperator{\AgdaDatatype{≡}}\AgdaSpace{}%
+\AgdaBound{z}\<%
+\\
+\>[0]\AgdaFunction{lemma}\AgdaSpace{}%
+\AgdaBound{p}\AgdaSpace{}%
+\AgdaBound{q}\AgdaSpace{}%
+\AgdaSymbol{=}\AgdaSpace{}%
+\AgdaHole{\{ \}0}\<%
+\end{code}
+
+As a first step, I choose to match on the variable
+\AgdaBound{p}\AgdaSpace{}\AgdaSymbol:\AgdaSpace{}%
+\AgdaBound{x}\AgdaSpace{}%
+\AgdaOperator{\AgdaDatatype{≡}}\AgdaSpace{}%
+\AgdaBound{y}.
+The only applicable pattern is \AgdaInductiveConstructor{refl}.
+Doing this match has the effect of unifying \AgdaBound{y} --- which is taking
+the position of the Catholic index of \AgdaDatatype{\_$\equiv$\_} --- with
+\AgdaBound{x} --- which is the value of the index specified in the type of
+\AgdaInductiveConstructor{refl}.
+Local variables act as unification variables, so the unification succeeds with
+most general unifier $[x \coloneqq x, y \coloneqq x]$.
+Therefore, the type of \AgdaBound{q} becomes
+\AgdaBound{z}\AgdaSpace{}%
+\AgdaOperator{\AgdaDatatype{≡}}\AgdaSpace{}%
+\AgdaBound{x}.
+
+\begin{code}
+\>[0]\AgdaFunction{lemma}\AgdaSpace{}%
+\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaSymbol{∀}\AgdaSpace{}%
+\AgdaSymbol{\{}\AgdaBound{A}\AgdaSpace{}%
+\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaPrimitive{Set}\AgdaSymbol{\}}\AgdaSpace{}%
+\AgdaSymbol{\{}\AgdaBound{x}\AgdaSpace{}%
+\AgdaBound{y}\AgdaSpace{}%
+\AgdaBound{z}\AgdaSpace{}%
+\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaBound{A}\AgdaSymbol{\}}\AgdaSpace{}%
+\AgdaSymbol{→}\AgdaSpace{}%
+\AgdaBound{x}\AgdaSpace{}%
+\AgdaOperator{\AgdaDatatype{≡}}\AgdaSpace{}%
+\AgdaBound{y}\AgdaSpace{}%
+\AgdaSymbol{→}\AgdaSpace{}%
+\AgdaBound{z}\AgdaSpace{}%
+\AgdaOperator{\AgdaDatatype{≡}}\AgdaSpace{}%
+\AgdaBound{y}\AgdaSpace{}%
+\AgdaSymbol{→}\AgdaSpace{}%
+\AgdaBound{x}\AgdaSpace{}%
+\AgdaOperator{\AgdaDatatype{≡}}\AgdaSpace{}%
+\AgdaBound{z}\<%
+\\
+\>[0]\AgdaFunction{lemma}\AgdaSpace{}%
+\AgdaInductiveConstructor{refl}\AgdaSpace{}%
+\AgdaBound{q}\AgdaSpace{}%
+\AgdaSymbol{=}\AgdaSpace{}%
+\AgdaHole{\{ \}0}\<%
+\end{code}
+
+The next step is to match on \AgdaBound{q}.
+This similarly unifies \AgdaBound{z} and \AgdaBound{x}, making the conclusion
+type
+\AgdaBound{z}\AgdaSpace{}%
+\AgdaOperator{\AgdaDatatype{≡}}\AgdaSpace{}%
+\AgdaBound{z}.
+Finally, this conclusion type is in the image of the
+\AgdaInductiveConstructor{refl} constructor, so we may fill the hole with
+\AgdaInductiveConstructor{refl}.
+
+\ExecuteMetaData[\SnippetsThreetex]{lemma}
+
+Full \emph{dependent} pattern matching, as described by \citet{MM04}, is when
+the unification of indices described above takes account of constructors.
+In particular, the constructors of a data type satisfy the ``no confusion''
+property --- constructors are injective and mutually disjoint.
+Where we encounter disjoint constructors during unification, we may dismiss the
+corresponding case as impossible.
+Consider the following example (\AgdaFunction{elim-Fin-zero}).
+We start with an argument
+\AgdaBound{i}\AgdaSpace{}\AgdaSymbol:\AgdaSpace{}\AgdaDatatype{Fin}\AgdaSpace{}%
+\AgdaInductiveConstructor{zero}, and consider which constructors could possibly
+construct such a value.
+However, as noted earlier, both constructors of \AgdaDatatype{Fin} target
+successor values of the index, from which \AgdaInductiveConstructor{zero} is
+disjoint.
+Therefore, both cases are impossible.
+The notation when all cases are impossible is to place empty round brackets
+\AgdaSymbol{()} in the place of the impossible argument, and to not provide a
+righthand side to the clause.
+
+\ExecuteMetaData[\SnippetsThreetex]{elim-Fin-zero}
+
+As an example of the injectivity of constructors, the obvious example is to
+internalise the proof of injectivity for a given constructor, as I do in
+\AgdaFunction{suc-injective}.
+We start with an argument
+\AgdaBound{p}\AgdaSpace{}\AgdaSymbol:\AgdaSpace{}%
+\AgdaInductiveConstructor{suc}\AgdaSpace{}\AgdaBound{m}%
+\AgdaSpace{}\AgdaOperator{\AgdaDatatype{$\equiv$}}\AgdaSpace{}%
+\AgdaInductiveConstructor{suc}\AgdaSpace{}\AgdaBound{n}
+and match on it.
+This time, we do have a possible pattern --- \AgdaInductiveConstructor{refl} ---
+but working out how to change the context relies on unifying
+\AgdaInductiveConstructor{suc}\AgdaSpace{}\AgdaBound{m} with
+\AgdaInductiveConstructor{suc}\AgdaSpace{}\AgdaBound{n}.
+We are justified in doing this, with most general unifier
+$[m \coloneqq m, n \coloneqq m]$, because \AgdaInductiveConstructor{suc} is
+injective (with respect to propositional equality).
+If the checker for dependent pattern matching did not know that
+\AgdaInductiveConstructor{suc} was injective --- for example, if it were instead
+a defined function --- then the unification would fail.
+This leads to the intuition that constructors and variables are well behaved
+with respect to dependent pattern matching, while other expressions are not.
+
+\ExecuteMetaData[\SnippetsThreetex]{suc-injective}
+
+Ordinarily, each clause of a definition gives rise to a \emph{definitional}
+equation between its lefthand side and righthand side.
+In intensional type theory, as implemented by Agda, definitional and
+propositional equality are contrasted to each other.
+Definitional equality corresponds to a decidable fragment of the natural
+equational theory of the type theory.
+As such, definitional equality is an entirely metatheoretic notion, and we can
+neither assume nor prove directly definitional equations within the language.
+Definitional equality is sometimes also called \emph{judgemental equality},
+because it forms a judgement which plays a part in the rules of the type theory.
+As well as from the clauses of definitions, we also get definitional equations
+from $\beta$-reductions of $\lambda$-abstractions and $\eta$-laws of functions
+and records.
+Because the type checker treats definitionally equal terms equivalently, we are
+able to refactor up to definitional equality without changing any downstream
+code.
+
+On the other hand, propositional equality is a notion internal to the language,
+as we have seen by defining propositional equality (\AgdaDatatype{\_$\equiv$\_})
+and proving things about it (\AgdaFunction{lemma}).
+Propositional equality is sometimes known as \emph{typal equality} or
+\emph{mathematical equality}.
+The latter name comes from the fact that propositional equality is the closest
+notion to what mathematicians usually call \emph{equality}, because, for
+example, it allows us to prove things like
+\AgdaBound{m}\AgdaSpace{}\AgdaFunction{+}\AgdaSpace{}\AgdaBound{n}%
+\AgdaSpace{}\AgdaDatatype{$\equiv$}\AgdaSpace{}%
+\AgdaBound{n}\AgdaSpace{}\AgdaFunction{+}\AgdaSpace{}\AgdaBound{m} for all
+natural numbers \AgdaBound{m} and \AgdaBound{n}.
+Propositional equality satisfies Leibniz' law, meaning that an inhabitant of a
+type \AgdaBound{A} can be coerced into an inhabitant of any type propositionally
+equal to \AgdaBound{A}.
+However, this cast requires marking in the code, so is less convenient to use
+than definitional equality.
+
+Definitional equality between two terms implies their propositional equality,
+because exactly when two terms are definitionally equal, the type checker is
+happy to accept \AgdaInductiveConstructor{refl} as a proof.
+This relationship between the two is simple, but can still be deceptive.
+For example, consider the notion of injectivity with respect to definitional
+and propositional equality.
+A function $f$ is injective (with respect to some notion of equality $\approx$)
+when, for all $x$ and $y$, we have $f\,x \approx f\,y \to x \approx y$.
+Because $\approx$ appears both covariantly and contravariantly in this
+definition, we have implications in neither direction between definitional
+injectivity and propositional injectivity.
+Indeed, we can find examples of all four possibilities:
+constructors are injective in both senses; type formers, like \AgdaDatatype{Fin}
+and \AgdaDatatype{List}, are definitionally injective but not propositionally
+injective;
+\ExecuteMetaData[\SnippetsThreetex]{double}\ can be proven to be
+propositionally injective, but is not definitionally injective because
+\AgdaFunction{\_+\_} is not injective;
+and nearly everything else is not injective in either sense.
+
+Because the notions of definitional and propositional injectivity are
+incomparable, so too are the corresponding unification procedures.
+Propositional unification (using only the injectivity of constructors) is used
+during dependent pattern matching, while solving of implicit arguments and
+underscores in expressions is done by definitional unification.
+
+\subsection{Records, $\Sigma$-types}
+
+While Agda provides built-in basic $\Pi$-types, with special syntax described in
+\cref{sec:pi-types}, it does not do the same for $\Sigma$-types.
+Instead, the default way to get the functionality of $\Sigma$-types is to
+declare record types, similarly to how we get sums via
+\AgdaKeyword{data}-declarations.
+However, the standard library does provide $\Sigma$-types, via record types,
+using the following declaration.
+
+\ExecuteMetaData[\SnippetsThreetex]{Sigma}
+
+As does the standard library, I will begin to use universe level polymorphism in
+these example definitions.
+Here, \AgdaBound{a} and \AgdaBound{b} are the levels of the two projections.
+The level of the record type must be at least the level of the type of each
+field, and in this case, the smallest such level is
+\AgdaBound{a}\AgdaSpace{}\AgdaOperator{\AgdaPrimitive{$\sqcup$}}\AgdaSpace{}%
+\AgdaBound{b}.
+As for the main points of interest in this \AgdaKeyword{record}-declaration, it
+contains two fields.
+The first, \AgdaField{proj$_1$}, simply has type \AgdaBound{A}.
+The second, \AgdaField{proj$_2$}, then has a type dependent on the value of the
+first field.
+Additionally, we give this record type a named constructor
+\AgdaInductiveConstructor{\_,\_}.
+Any record type can also be constructed using the more verbose syntax
+\begin{code}[inline]%
+\>[0]\AgdaKeyword{record}\AgdaSpace{}%
+\AgdaSymbol{\{}\AgdaSpace{}%
+\AgdaField{proj$_1$}\AgdaSpace{}%
+\AgdaSymbol{=}\AgdaSpace{}%
+\AgdaHole{\{ \}1}\AgdaSpace{}%
+\AgdaSymbol{;}\AgdaSpace{}%
+\AgdaField{proj$_2$}\AgdaSpace{}%
+\AgdaSymbol{=}\AgdaSpace{}%
+\AgdaHole{\{ \}2}\AgdaSpace{}%
+\AgdaSymbol{\}}\<%
+\end{code}.
+
+The standard library provides various notations for
+\AgdaRecord{$\Upsigma$}-types, useful in various situations.
+In this thesis, I use \ExecuteMetaData[\SnippetsFourtex]{Sigma-syntax}\ and
+\ExecuteMetaData[\SnippetsFourtex]{exists}\ as equivalent notations for
+\AgdaRecord{$\Upsigma$}\AgdaSpace{}\AgdaBound{A}\AgdaSpace{}\AgdaBound{B}.
+Indeed, the $\eta$-contracted form can be used with \AgdaFunction{$\exists$}, as
+in \AgdaFunction{$\exists$}\AgdaSpace{}\AgdaBound{B} (\AgdaSymbol{\textbackslash}
+is an alternative notation for \AgdaSymbol{$\uplambda$}, as in Haskell).
+\AgdaRecord{$\Upsigma$} also specialises to non-dependent products, as given by
+the infix operator \AgdaFunction{\_$\times$\_}.
+This is achieved by setting the parameter \AgdaBound{B} to be a constant type
+family.
+The resulting operator \AgdaFunction{\_$\times$\_}, as well as the non-dependent
+function type, behave better than their dependent counterparts with respect to
+unification because they allow us to remain in the first order fragment of
+higher order unification.
+
+There are two main ways of using the fields of a record.
+The first is to put the projections into scope using
+\AgdaKeyword{open}\AgdaSpace{}\AgdaRecord{$\Upsigma$}, and then to use the field
+names to project out of arbitrary terms of \AgdaRecord{$\Upsigma$}-type.
+This is what I will always do when using the \AgdaRecord{$\Upsigma$}-type
+family.
+Within this paradigm, there are two further notational choices.
+Either, we can use the field names as functions, so that
+\AgdaBound{z}\AgdaSpace{}\AgdaSymbol{=}\AgdaSpace{}\AgdaField{proj$_1$}%
+\AgdaSpace{}\AgdaBound{z}\AgdaSpace{}\AgdaOperator{\AgdaInductiveConstructor,}%
+\AgdaSpace{}\AgdaField{proj$_2$}\AgdaSpace{}\AgdaBound{z},
+or we can use postfix projections via the space-dot notation, as in
+\AgdaBound{z}\AgdaSpace{}\AgdaSymbol{=}\AgdaSpace{}\AgdaBound{z}%
+\AgdaSpace{}\AgdaSymbol.\AgdaField{proj$_1$}\AgdaSpace{}%
+\AgdaOperator{\AgdaInductiveConstructor,}\AgdaSpace{}\AgdaBound{z}%
+\AgdaSpace{}\AgdaSymbol.\AgdaField{proj$_2$}.
+I tend to prefer the latter, also using it occasionally in ordinary mathematical
+notation (without the space).
+Both notations can also be used on the lefthand side of a clausal definition as
+\emph{copatterns}.
+Copatterns let us think of records as being function-like, with the fields of a
+record type being the possible arguments we can pass to such a function.
+
+The second way of using the fields of a record requires a motivating example.
+Consider the below definition of the type of semigroups at universe level
+\AgdaBound{$\ell$}.
+A semigroup has a carrier set, a binary operation on that set, and an
+associativity law for that binary operation.
+
+\ExecuteMetaData[\SnippetsFourtex]{Semigroup}
+
+In order to use the fields of \AgdaRecord{Semigroup} in the intended way, we
+do not open them into global scope.
+Doing so would mean that, for example, \AgdaField{\_$\bullet$\_} would take
+three arguments: the semigroup and its two intended arguments.
+Instead, we get to the point where we have a semigroup \AgdaBound{G} in scope
+and use
+\AgdaKeyword{open}\AgdaSpace{}\AgdaRecord{Semigroup}\AgdaSpace{}\AgdaBound{G}
+to put into scope the components \emph{of \AgdaBound{G}}.
+Then, the name \AgdaField{Carrier} in scope will refer to the carrier set of
+\AgdaBound{G}, the name \AgdaField{\_$\bullet$\_} will refer to the binary
+operator (which really takes two arguments), et cetera.
+Doing this gives the impression of working ``inside'' \AgdaBound{G}, which is
+the way I typically work with algebraic sets with structure.
+
+By $\eta$-equality, two inhabitants of a record type are definitionally equal
+exactly when they agree definitionally on all fields.
+This often makes record types much more convenient to work with than the
+corresponding single-constructor data types, which do not enjoy any $\eta$-laws.
+Notably, all inhabitants of the record type \AgdaRecord{$\top$} with no fields
+are definitionally equal.
+
+Along with \AgdaRecord{$\Upsigma$} and \AgdaRecord{$\top$}, there are two more
+general-purpose record types I need to cover which take advantage of two special
+features of \AgdaKeyword{record}-declarations (and also
+\AgdaKeyword{data}-delcarations, but I use \AgdaKeyword{record}-declarations for
+the convenience reason given in the previous paragraph).
+The first feature is that the universe level of a record type has a lower bound
+(the level of each field) but no upper bound.
+Therefore, we can introduce the following declaration \AgdaRecord{Lift}, which
+takes a type \AgdaBound{A} at level \AgdaBound{a} and produces an equivalent
+type at a potentially higher level
+\AgdaBound{a}\AgdaSpace{}\AgdaOperator{\AgdaPrimitive{$\sqcup$}}\AgdaSpace{}%
+\AgdaBound{$\ell$}.
+This type former is useful in situations which require a type at a specific
+level, such as when constructing a type using a function.
+
+\ExecuteMetaData[\SnippetsFourtex]{Lift}
+
+The other interesting property we get from \AgdaKeyword{record}-declarations is
+that the resulting type family is definitionally injective in its parameters.
+Therefore, record types behave well in the form of unification that solves
+implicit arguments.
+We can use this property to take any type family \AgdaBound{F} and produce an
+equivalent family \AgdaRecord{Wrap}\AgdaSpace{}\AgdaBound{F} which is
+definitionally injective.
+
+\ExecuteMetaData[\SnippetsFourtex]{Wrap}
+
+As an example, if we have a variable
+\AgdaBound{f}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}\AgdaRecord{Wrap}%
+\AgdaSpace{}\AgdaFunction{F}\AgdaSpace{}\AgdaBound{y}
+and pass it to a function with a type of the form
+\AgdaSymbol{$\forall$}\AgdaSpace{}\AgdaSymbol\{\AgdaBound{x}\AgdaSymbol\}%
+\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaRecord{Wrap}\AgdaSpace{}%
+\AgdaFunction{F}\AgdaSpace{}\AgdaBound{x}\AgdaSpace{}\AgdaSymbol{$\to$}%
+\AgdaSpace{}\AgdaSymbol{\_},
+Agda will successfully unify the type of \AgdaBound{f} with the expected type of
+the argument, setting $[x \coloneqq y]$.
+However, without the \AgdaRecord{Wrap}, we would need to unify
+\AgdaFunction{F}\AgdaSpace{}\AgdaBound{y} with
+\AgdaFunction{F}\AgdaSpace{}\AgdaBound{x}, which would fail if \AgdaFunction{F}
+were not injective, because there may be multiple acceptable values of
+\AgdaBound{x} up to definitional equality.
+
+The version of \AgdaRecord{Wrap} found in Agda's standard library is
+significantly more complicated to allow for type families with arbitrarily many
+arguments in a convenient syntax, using the $n$-ary functions of
+\citet{Allais19}.
+The version in the standard library is the one I use in this thesis.
+In fact, both versions of the \AgdaRecord{Wrap} type family are the first pieces
+of novel work to be presented in this thesis.
+
+\subsection{Colours}
+
+I use the ``Conor colours'' option for Agda syntax highlighting.
+This set of colours is inspired by Conor McBride's syntax highlighting for
+Epigram 2.
+The colour given to a name is determined by the type of declaration that name
+is bound to.
+The main colours are \AgdaDatatype{blue} for types and type families,
+\AgdaField{red} for constructors of data types and fields of records,
+\AgdaFunction{green} for definitions which may unfold/compute, and
+\AgdaBound{purple} for local variables.
+
+Separately, I use \gr{green} in many places for usage annotations in traditional
+typeset mathematical notation.
+This usage of green contrasts only with ordinary black text.
