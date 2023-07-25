@@ -24,3 +24,5 @@ agda/processed-latex/
 
 *.envrc
 .direnv/
+
+*.bak
