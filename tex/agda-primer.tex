@@ -70,7 +70,7 @@ Simple function types take the form
 \AgdaArgument{A}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaArgument{B},
 coinciding with Haskell's syntax.
 Also as in Haskell and ML, the function arrow nests to the right.
-However, Agda has a termination checker ensuring that all defineable functions
+However, Agda has a termination checker ensuring that all definable functions
 are total, so many Haskell functions do not have a corresponding Agda function.
 
 The key feature distinguishing Agda from Haskell is the presence of arbitrary
@@ -175,7 +175,7 @@ The definition relies on quantifying over terms of type \AgdaPrimitive{Set},
 i.e.\ (small) types.
 This definition also gives an example of defining a function with an implicit
 argument (\AgdaBound{X}), which can typically be inferred from either the
-kargument type or the return type, so can be omitted.
+argument type or the return type, so can be omitted.
 
 \ExecuteMetaData[\SnippetsTwotex]{id0}
 
@@ -338,7 +338,7 @@ dependent pattern matching.
 In the following definition \AgdaFunction{lemma}, we want to chase equations in
 order to prove that \AgdaBound{x} is propositionally equal to \AgdaBound{z}.
 We start with the following incomplete definition, where the expression
-\AgdaHole{\{ \}0} marks an interation point, or \emph{hole}, in the program, to
+\AgdaHole{\{ \}0} marks an interaction point, or \emph{hole}, in the program, to
 which we can apply interactive commands to complete the program.
 
 \begin{code}
@@ -451,7 +451,7 @@ disjoint.
 Therefore, both cases are impossible.
 The notation when all cases are impossible is to place empty round brackets
 \AgdaSymbol{()} in the place of the impossible argument, and to not provide a
-righthand side to the clause.
+right-hand side to the clause.
 
 \ExecuteMetaData[\SnippetsThreetex]{elim-Fin-zero}
 
@@ -480,7 +480,7 @@ with respect to dependent pattern matching, while other expressions are not.
 \ExecuteMetaData[\SnippetsThreetex]{suc-injective}
 
 Ordinarily, each clause of a definition gives rise to a \emph{definitional}
-equation between its lefthand side and righthand side.
+equation between its left-hand side and right-hand side.
 In intensional type theory, as implemented by Agda, definitional and
 propositional equality are contrasted to each other.
 Definitional equality corresponds to a decidable fragment of the natural
@@ -615,7 +615,7 @@ or we can use postfix projections via the space-dot notation, as in
 \AgdaSpace{}\AgdaSymbol.\AgdaField{proj$_2$}.
 I tend to prefer the latter, also using it occasionally in ordinary mathematical
 notation (without the space).
-Both notations can also be used on the lefthand side of a clausal definition as
+Both notations can also be used on the left-hand side of a clausal definition as
 \emph{copatterns}.
 Copatterns let us think of records as being function-like, with the fields of a
 record type being the possible arguments we can pass to such a function.
@@ -652,7 +652,7 @@ are definitionally equal.
 Along with \AgdaRecord{$\Upsigma$} and \AgdaRecord{$\top$}, there are two more
 general-purpose record types I need to cover which take advantage of two special
 features of \AgdaKeyword{record}-declarations (and also
-\AgdaKeyword{data}-delcarations, but I use \AgdaKeyword{record}-declarations for
+\AgdaKeyword{data}-declarations, but I use \AgdaKeyword{record}-declarations for
 the convenience reason given in the previous paragraph).
 The first feature is that the universe level of a record type has a lower bound
 (the level of each field) but no upper bound.

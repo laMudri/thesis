@@ -56,6 +56,9 @@
 
 \usepackage[conor]{agda}
 
+\usepackage[hidelinks]{hyperref}
+\usepackage[noabbrev,nameinlink]{cleveref}
+
 \theoremstyle{definition}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{conjecture}[theorem]{Conjecture}
@@ -105,9 +108,6 @@
   \LARGE
 }
 \posttitle{\end{center}}
-
-\usepackage[hidelinks]{hyperref}
-\usepackage{cleveref}
 
 \title{A Framework for Semiring-Annotated Typed Systems \\ PhD Thesis}
 \author{James Wood
@@ -165,12 +165,13 @@ presentations of simply typed calculi without variable usage restrictions, and
 thus end up being poorly understood or suboptimal in facilitating mechanised
 reasoning.
 
-\begin{itemize}
-  \item At least one satisfying account of simply typed calculi
-    (via de Bruijn indices)
-  \item Usage restrictions enrich the logic.
-  \item I develop an account of usage-restricted calculi.
-\end{itemize}
+Concretely, the main result of this thesis is a framework for representing and
+reasoning about a wide range of calculi with restricted variable usage.
+All of these calculi support novel simultaneous renaming and substitution
+operations.
+Furthermore, I provide several other examples of generic and specific programs
+facilitated by the framework.
+All of this work is implemented in the proof assistant Agda.
 
 
 \tableofcontents
@@ -178,8 +179,8 @@ reasoning.
 \addcontentsline{toc}{chapter}{List of Figures}
 \listoffigures
 
-\addcontentsline{toc}{chapter}{List of Tables}
-\listoftables
+%\addcontentsline{toc}{chapter}{List of Tables}
+%\listoftables
 
 
 

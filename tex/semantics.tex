@@ -16,7 +16,7 @@ given similar operations on $\V$ and $\C$ as what we had earlier.
 The \AgdaFunction{semantics} function recurses on the term $M$, updating $\rho$
 whenever new variables are bound.
 In our usage-aware case, $\rho$ is also updated whenever we come across linear
-combinations induced by premise combinators $I^{\sep}$, $\sep$, and
+combinations induced by premise connectives $I^{\sep}$, $\sep$, and
 $\gr r \cdot {}$.
 
 This chapter is structured as follows.
@@ -30,8 +30,9 @@ setting in \cref{sec:kripke}.
 Then I apply the \AgdaFunction{Kripke} function space, along with much of the
 machinery I have introduced in previous chapters, to give the
 \AgdaFunction{semantics} function in \cref{sec:traversal}.
-Finally, I give the syntax-generic simultaneous renaming and substitution
-operations in \cref{sec:kit-to-sem}.
+Finally, I show that the Kripke function space simplifies under certain
+conditions in \cref{sec:reify}, and I use that case to give the syntax-generic
+simultaneous renaming and substitution operations in \cref{sec:kit-to-sem}.
 
 % Our goal in this section is to define \AgdaFunction{semantics}, a
 % recursor that turns a term into a \AgdaBound{$\C$}-value using a
@@ -258,7 +259,7 @@ provide semantic interpretations for all the additional variables.
 
 \AgdaFunction{Wrap}
 is a device that turns any type family into an equivalent type family
-that is judgementally injective in its indices, which helps with
+that is definitionally injective in its indices, which helps with
 Agda's type inference.
 It turns the type family into a parametrised
 record with a single field \AgdaField{get} whose type is the type in
@@ -410,7 +411,7 @@ obligations in giving a \AgdaRecord{Semantics} by coercing
   $\plr{\Gamma, \gr0\delta} + \plr{\gr0\gamma, \Delta} = \plr{\Gamma, \Delta}$,
   as we wanted from the result.
   The argument needs type $\gr0\gamma, \Delta \env\V \Delta$.
-  We produce this via \cref{thm:env-postren} from an environment
+  We produce this via \cref{thm:ren-env-comp} from an environment
   $\rho : \gr0\gamma, \Delta \env\V \gr0\gamma, \Delta$ created using $v$
   and a renaming which is the complement to that used on $\Box^r$.
 \end{proof}
@@ -481,3 +482,17 @@ Notice that \AgdaFunction{ren\textasciicircum$\vdash$}, witnessing the fact
 that terms are renameable, is a corollary of \AgdaFunction{Ren-Kit}.
 
 \ExecuteMetaData[\Syntactictex]{Sub-Kit}
+
+\section{Conclusion}
+
+In this chapter, I have completed my generalisation of the core of the work of
+\citet{AACMM21}.
+The key decision to be made in this generalisation process was that the Kripke
+function spaces would be based on the $\wand$ bunched connective.
+That this change works justifies the idea of a deep connection between linear
+syntaxes and bunched-logic-style handling of contexts.
+
+The main pay-off we have seen so far from this and the previous chapter is that
+all syntaxes we can describe respect substitution.
+However, in the following chapter, I give more specific worked examples using
+the generic semantic traversal and operations derived from it.

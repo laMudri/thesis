@@ -21,8 +21,8 @@ Advances in programming language techniques are evaluated by the usefulness of
 behaviours captured and goodness of the mathematical properties of the
 abstractions produced.
 
-Within programming language research, type theory is a methodology for producing
-abstractions via classifying program behaviour.
+Within programming language research, type theory is a methodology for enforcing
+abstractions by classifying program behaviour.
 The simplest and most common type systems classify programs by what values they
 may return.
 For example, the body of a C function with return type \texttt{char} is a
@@ -82,7 +82,7 @@ I introduce linearity and its applications more fully in \cref{sec:linearity}.
 The work of this thesis relies upon type theory in two distinct ways.
 Firstly, as I have introduced above, the main objects of study in this thesis
 are programming languages with interesting type systems.
-Secondly, however, type theory provides the basis of the proof assistant Agda I
+Secondly, type theory provides the basis of the proof assistant Agda I
 use to implement the aforementioned programming languages and operations upon
 them.
 I will now introduce the idea of proof assistants.
@@ -132,7 +132,7 @@ specification.
 
 Finally, many proof assistants --- including Agda~\citep{Agda}, which I use in
 this thesis --- double as programming languages themselves.
-This means that we can write progams and prove properties of them using the same
+This means that we can write programs and prove properties of them using the same
 tool.
 Also, many theorems proven in such a proof assistant have computational content.
 For example, if we prove a normalisation theorem for a programming language,
@@ -194,17 +194,18 @@ this thesis and openings for future work.
 
 \section{Naming and notation conventions}
 
-I assume familiarity with the Curry-Howard correspondence throughout this
-thesis.
+I assume familiarity with the Curry-Howard correspondence~\citep{Howard80}
+throughout this thesis.
 I make no distinction between logics and type theories, and use terminology from
 each interchangeably.
 Each following bullet point lists a collection of synonyms.
 
 \begin{itemize}
   \item assumption, hypothesis, variable
-  \item derivation, proof, term
   \item proposition, formula, type
   \item connective, type former
+  \item derivation, proof, term
+  \item derivable (formula), inhabited (type)
 \end{itemize}
 
 I carry out mechanised constructions and proofs in the proof assistant and

@@ -1,5 +1,7 @@
-We could mechanise Gentzen's definition of a natural deduction system directly,
-but this definition is quite complicated.
+As part of the Curry-Howard correspondence, terms of a $\lambda$-calculus
+correspond to derivations in a natural deduction system.
+We could mechanise Gentzen's original definition of a natural deduction system
+directly, but this definition is quite complicated.
 In particular, if we want to give derivations an inductive definition, the use
 of the discharge mechanism means that we actually need an inductive-inductive
 type --- derivations, particularly those using $\to$-introduction, can involve

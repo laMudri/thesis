@@ -92,7 +92,7 @@ sole hypothesis, and conversely does not count as a use of any other hypotheses.
 For sequential proofs, created by the \TirName{Cut} rule, if we have a proof of
 $A$ using $\Gamma$, and a proof of $B$ using $\Delta$ and $A$, then we have a
 proof of $B$ transitively using $\Delta$ and $\Gamma$.
-The exchange rule Exch says that use is invariant under permutation.
+The exchange rule \TirName{Exch} says that use is invariant under permutation.
 
 For the logical connectives, we have genuine choices as to what it means to use
 them.
@@ -316,7 +316,7 @@ One cannot produce any derivation of $\oc' A \vdash \oc A$ because
 $\oc X$.
 This lack of characterisation also holds of the rule and axioms we first gave to
 the $\Box$-modality in \cref{fig:S4-axioms}, and essentially any presentation
-that does not encorporate the modality into the judgemental structure of the
+that does not incorporate the modality into the judgemental structure of the
 calculus.
 
 A noteworthy solution to the substitution problem of \TirName{Promotion} is
@@ -393,7 +393,7 @@ substitution problem of (intuitionistic) linear logic, but the resulting system
 comes with its own problems.
 If we were to write programs in a language directly implementing the
 \citeauthor{BBdePH93} calculus, then the \TirName{Promotion} rule would be a
-pain point because it makes us rebind all of the $oc$-typed variables we need to
+pain point because it makes us rebind all of the $\oc$-typed variables we need to
 new variables.
 Additionally, we have to be explicit everywhere about weakening and contraction,
 potentially making working with $\oc$-typed variables much more fiddly than the

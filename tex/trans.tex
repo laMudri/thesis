@@ -28,7 +28,7 @@ linearity semiring $\{\gr0, \gr1, \gr\omega\}$.
 The types of DILL are the same as the types of \name, except for the
 restriction of $\oc\gr{r}$ to just $\oc\gr\omega$.
 I will write the latter simply as $\oc$ when it appears in DILL\@.
-I add sums and with-products to the calculus of \cite{Barber1996}, with the
+I add sums and with-products to the calculus of \citet{Barber1996}, with the
 obvious rules (stated fully in \cref{fig:dill2}).
 These additive type formers present no additional difficulty to the translation.
 
@@ -290,11 +290,10 @@ premise of \TirName{$\oc{\gr\omega}$-I}.
   This corresponds exactly to the restrictions of DILL's \TirName{$\oc$-I}.
 \end{proof}
 
-\subsection{Pfenning Davies}\label{sec:trans-pd}
+\subsection{Pfenning-Davies}\label{sec:trans-pd}
 
-The translation to and from the modal system of Pfenning and Davies
-\cite{judgmental} (henceforth \emph{PD}) is similar to the translation to and
-from DILL\@.
+The translation to and from the modal system of \citet{judgmental}
+(henceforth \emph{PD}) is similar to the translation to and from DILL\@.
 I present my variant of PD, again adding some common connectives, in
 \cref{fig:pd}
 The main difference is the algebra at which \name{} is instantiated.
@@ -470,6 +469,61 @@ then be directly translated into PD\@.
   argument that will take us from a non-bottom-up fact to a bottom-up fact with
   the same left argument and result.
 \end{proof}
+
+Additionally, PD has no direct equivalents to the tensor unit and tensor
+products.
+Therefore, I note that if the semiring of usage annotations satisfies some
+simple but strong criteria (as $\instPD$ does), then we can use the Cartesian
+unit and products in their stead.
+
+\begin{lemma}\label{thm:top-meet}
+  If $\gr1 \leq \gr0$ and $\gr1 \leq \gr1 + \gr1$, then $I$ is interderivable
+  with $\top$, and for all $A$ and $B$, $A \otimes B$ is interderivable with
+  $A \with B$.
+\end{lemma}
+\begin{proof}
+  The following derivations suffice.
+  I omit standard inequalities to emphasise those which use this lemma's
+  assumptions.
+  \begin{mathpar}
+    \ebrule{%
+      \infer0[$\top$-I]{\gr1I \vdash \top}
+    }
+    \and
+    \ebrule{%
+      \infer0{\plr{\gr1} \leq \plr{\gr0}}
+      \infer1[$I$-I]{\gr1\top \vdash I}
+    }
+    \and
+    \ebrule{%
+      %\infer0{\plr{\gr1} \leq \plr{\gr1 + \gr0}}
+      \infer0[Var]{\gr1\plr{A \otimes B} \vdash A \otimes B}
+      \infer0{\plr{\gr0, \gr1, \gr1} \leq \plr{\gr0, \gr1, \gr0}}
+      \infer1[Var]{\gr0\plr{A \otimes B}, \gr1A, \gr1B \vdash A}
+      \infer0{\plr{\gr0, \gr1, \gr1} \leq \plr{\gr0, \gr0, \gr1}}
+      \infer1[Var]{\gr0\plr{A \otimes B}, \gr1A, \gr1B \vdash B}
+      \infer2[$\with$-I]{\gr0\plr{A \otimes B}, \gr1A, \gr1B \vdash A \with B}
+      \infer2[$\otimes$-E]{\gr1\plr{A \otimes B} \vdash A \with B}
+    }
+    \and
+    \ebrule{%
+      \infer0{\plr{\gr1} \leq \plr{\gr1} + \plr{\gr1}}
+      \infer0[Var]{\gr1\plr{A \with B} \vdash A \with B}
+      \infer1[$\with$-E$_0$]{\gr1\plr{A \with B} \vdash A}
+      \infer0[Var]{\gr1\plr{A \with B} \vdash A \with B}
+      \infer1[$\with$-E$_1$]{\gr1\plr{A \with B} \vdash B}
+      \infer3[$\otimes$-I]{\gr1\plr{A \with B} \vdash A \otimes B}
+    }
+  \end{mathpar}
+\end{proof}
+
+\begin{remark}
+  By multiplying through on both sides, $\gr1 \leq \gr0$ is equivalent to
+  $\forall\gr x.~\gr x \leq \gr0$, and $\gr1 \leq \gr1 + \gr1$ is equivalent to
+  $\forall\gr x.~\gr x \leq \gr x + \gr x$.
+\end{remark}
+
+Finally, I give the translation itself.
 
 \begin{proposition}[\name{} $\to$ PD]
   Given a $\name_{\instPD}$ derivation of

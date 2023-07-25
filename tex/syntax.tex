@@ -46,7 +46,7 @@ $\AgdaBound{Ty} : \AgdaPrimitiveType{Set}$ of types for the system in
 scope.
 
 The \AgdaDatatype{Premise} data type describes premises of rules,
-using the bunched combinators from \cref{fig:bunched}. A single
+using the bunched connectives from \cref{fig:bunched}. A single
 premise is introduced by the
 \AgdaInductiveConstructor{$\langle$\_`$\vdash$\_$\rangle$}
 constructor.  This allows binding of additional variables
@@ -209,7 +209,7 @@ contexts and proofs.
 On concrete
 posemirings (as in this example), unification is particularly poor at
 inferring the usage contexts from the proofs because addition and
-multiplication are no longer (judgementally) injective.
+multiplication are no longer (definitionally) injective.
 The function \AgdaFunction{var\#} is a way of turning a statically known de
 Bruijn level and a usage proof into an application of \AgdaInductiveConstructor{`var}.
 
@@ -379,7 +379,7 @@ checking time, so we know that the program listed below can be elaborated by
 virtue of the whole Agda definition being type-checked.
 
 The \AgdaFunction{uvar\#} tool is like the \AgdaFunction{var\#} tool I used
-earlier --- allowing us to refer to variables by counting from the lefthand end
+earlier --- allowing us to refer to variables by counting from the left-hand end
 of the context.
 I add these numbers to the picture of the graph for convenience.
 Variables never go out of scope, despite being used, so these numbers do not
@@ -875,7 +875,7 @@ kind and an \emph{intuitionistic} kind, using $\{\gr0, \gr1, \gr\omega\}$ and
 the 1-element posemiring, respectively.
 However, the descriptions given in this thesis only allow for one posemiring.
 
-Finally, while there is a simple and well motivated core of premise combinators
+Finally, while there is a simple and well motivated core of premise connectives
 --- $\dot1$, $\dottimes$, $I^{\sep}$, $\sep$, and $\gr r \cdot \plr{-}$ --- the
 various $\Box$-modalities feel like ad hoc additions.
 While I have shown that $\Boxzp$ and $\Boxzpt$ have several practical uses, it
