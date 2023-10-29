@@ -171,6 +171,8 @@ semiring annotations.
 Even for the multiplicative fragment, we seem to be working against the
 direction of addition, instead using a subtraction operation whenever we use a
 variable.
+An algebraic presentation of this fragment is given by \citet{ZD21}, in terms of
+a partial functional cancellative addition operation.
 For exponentials, though, and particularly the $\oc$-introduction rule, what I
 have done seems ad-hoc, not based on any pointwise algebraic operation.
 
@@ -248,16 +250,16 @@ The relevance of Yalla to the work in this thesis is limited by the fact that
 Yalla is based entirely on sequent calculi, whereas I am considering only
 natural deduction calculi.
 
-\subsection{Co-de-Bruijn syntax}
+\subsection{Co-De-Bruijn syntax}
 
 \Citet{McBride18} presents a mechanisation of the simply typed
-$\lambda$-calculus in what he calls \emph{co-de-Bruijn} style.
-He notes that syntax based on de Bruijn indices, as presented in
+$\lambda$-calculus in what he calls \emph{co-De-Bruijn} style.
+He notes that syntax based on De Bruijn indices, as presented in
 \cref{sec:simple}, finds a canonical way to place contractions and weakenings
 by eagerly placing contractions wherever they could be needed (i.e., whenever a
 rule has multiple premises) and leaving weakening as late as possible (i.e., at
 the variable rule and at rules with no premises).
-Co-de-Bruijn syntax, by contrast, finds a canonical way to place contractions
+Co-De-Bruijn syntax, by contrast, finds a canonical way to place contractions
 and weakenings by doing the reverse: weakening as early as possible (i.e., as
 soon as the variable is bound) and contracting only where necessary.
 
@@ -272,14 +274,14 @@ Such rules are perhaps a new kind compared to what \citeauthor{McBride18}
 considers, but it seems likely that just copying the same context to all the
 premises would not be too hard to accommodate.
 Meanwhile, we may consider implementing the $\oc$-modality as in DILL, with
-intuitionistic variables handled using the regular co-de-Bruijn machinery from
+intuitionistic variables handled using the regular co-De-Bruijn machinery from
 the paper.
-In summary, the co-de-Bruijn approach is promising for capturing linearity, but
+In summary, the co-De-Bruijn approach is promising for capturing linearity, but
 has not been thoroughly investigated.
 
 The other relevant contribution from \citet{RPKV20} is to recast the
 context-splitting relations via connectives inspired by bunched
-logic~\citet{oHP99}.
+logic~\citep{oHP99}.
 I adapt this method in \cref{sec:lnd}, but with a different notion of
 context-splitting.
 

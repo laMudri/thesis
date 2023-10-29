@@ -27,6 +27,7 @@ $(1)/processed-latex/%.tex: $(1)/latex/%.tex
 	if [[ $$< =~ .*Simple.* ]]; then \
 	  mkdir -p $$(dir $$@); \
 	  sed \
+	  -e 's/\\AgdaPrimitive{\(Set[₁₂]?\)}/\\AgdaPrimitiveType{\1}/g' \
 	  -e 's/=⇒/⇛/g' \
 	  -e 's/\\AgdaFunction{U}/\\AgdaFunction{⒈}/g' \
 	  -e 's/`⊤/`⒈/g' \
@@ -39,6 +40,7 @@ $(1)/processed-latex/%.tex: $(1)/latex/%.tex
 	else \
 	  mkdir -p $$(dir $$@); \
 	  sed \
+	  -e 's/\\AgdaPrimitive{\(Set[₁₂]?\)}/\\AgdaPrimitiveType{\1}/g' \
 	  -e 's/=⇒/⇛/g' \
 	  -e 's/\\AgdaFunction{U}/\\AgdaFunction{⒈}/g' \
 	  -e 's/`⊤/`⒈/g' \

@@ -27,7 +27,7 @@ original term.
 This causes different challenges for different representations of terms.
 For example, with named variables and shadowing, na\"{i}vely defined
 substitution could fall foul of variable capture.
-In our approach, based on de Bruijn indices, the difficulty is that an index $i$
+In our approach, based on De Bruijn indices, the difficulty is that an index $i$
 outside a binder of $n$ variables corresponds to an index $n + i$ inside the
 binder.
 Therefore, when substituting under a binder, we must first increment any free

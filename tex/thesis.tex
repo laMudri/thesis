@@ -57,6 +57,7 @@
 \usepackage[conor]{agda}
 
 \usepackage[hidelinks]{hyperref}
+\usepackage{uri}
 \usepackage[noabbrev,nameinlink]{cleveref}
 
 \theoremstyle{definition}
@@ -109,7 +110,7 @@
 }
 \posttitle{\end{center}}
 
-\title{A Framework for Semiring-Annotated Typed Systems \\ PhD Thesis}
+\title{A Framework for Semiring-Annotated Type Systems \\ PhD Thesis}
 \author{James Wood
 \\ \small Mathematically Structured Programming\\[-0.8ex]
 \small Computer and Information Sciences\\[-0.8ex]
@@ -185,11 +186,7 @@ All of this work is implemented in the proof assistant Agda.
 
 
 \chapter{Acknowledgements}
-I would like to acknowledge...
-
-This document is adapted from the template by Jethro Browell
-(\url{https://www.overleaf.com/latex/templates/thesis-template-for-university-of-strathclyde/nfnrnmjqyxqg}),
-which was licensed under CC BY 4.0.
+\input{ack}
 
 
 
@@ -198,16 +195,16 @@ which was licensed under CC BY 4.0.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\include{intro}
+\input{intro}
 %\include{prelim}
-\include{simple}
-\include{linear}
-\include{semirings}
-\include{rensub}
+\input{simple}
+\input{linear}
+\input{semirings}
+\input{rensub}
 %\include{weighted-multicategories}
 %\include{wrel}
-\include{framework}
-\include{conc}
+\input{framework}
+\input{conc}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

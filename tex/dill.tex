@@ -18,7 +18,7 @@ valid assumptions.
 
 The new feature when dealing with linear logic, compared to modal logic, is that
 linear and intuitionistic assumptions satisfy different structural rules.
-In our de Bruijn index style, where every multi-premise rule does the maximal
+In our De Bruijn index style, where every multi-premise rule does the maximal
 contraction and weakening occurs in the leafwardmost possible position,
 this means that all of the rules have to manage the substructurality of linear
 assumptions.
@@ -107,19 +107,19 @@ that no linear assumptions can be used in the subproof.
     }
     \and
     \ebrule{%
-      \hypo{\Gamma \vdash A~\mathit{int}}
-      \hypo{\Delta \vdash B~\mathit{int}}
+      \hypo{\Gamma \vdash A~\mathit{lin}}
+      \hypo{\Delta \vdash B~\mathit{lin}}
       \infer2[$\otimes$-I]{\Gamma + \Delta \vdash A \otimes B~\mathit{lin}}
     }
     \and
     \ebrule{%
-      \hypo{\Gamma \vdash A \multimap B~\mathit{int}}
-      \hypo{\Delta \vdash A~\mathit{int}}
+      \hypo{\Gamma \vdash A \multimap B~\mathit{lin}}
+      \hypo{\Delta \vdash A~\mathit{lin}}
       \infer2[$\multimap$-E]{\Gamma + \Delta \vdash B~\mathit{lin}}
     }
     \and
     \ebrule{%
-      \hypo{\Gamma, A~\mathit{lin} \vdash B~\mathit{int}}
+      \hypo{\Gamma, A~\mathit{lin} \vdash B~\mathit{lin}}
       \infer1[$\multimap$-I]{\Gamma \vdash A \multimap B~\mathit{lin}}
     }
     \and

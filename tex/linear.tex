@@ -20,7 +20,8 @@ they are impossible to capture directly in the framework presented in
 \cref{sec:gen-syn}.
 
 Languages and systems implementing features inspired by linear logic include
-Rust~\citep{MK14,Rust}, ATS~\citep{Xi04,ZX05}, and various implementations of
+Rust~\citep{MK14,Rust}, Granule~\citep{Granule18}, ATS~\citep{Xi04,ZX05}, an
+experimental Haskell extension~\citep{BBNPS17}, and various implementations of
 session types~\citep{HLVCCDMPRTVTZ16}.
 Additionally, forms of linearity have been used in theoretical work, for example
 to bound computational complexity~\citep{GSS92,Hofmann03} or to write programs
@@ -32,7 +33,7 @@ Such a recasting may be useful to understand the metatheoretic properties of
 programs passing such static analyses.
 More user-facing implementations of modal type systems include the system for
 stack allocation in OCaml~\citep{DW22} and the approach to programmer-annotated
-erasure found in Agda and Idris~\citep{Atkey18}.
+erasure found in Agda and Idris~\citep{Atkey18,Brady21}.
 
 In this chapter, I look at two standard type-theoretic features that motivate
 considering calculi going beyond simple type theories as delineated in

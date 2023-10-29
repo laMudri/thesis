@@ -1,30 +1,55 @@
 \chapter{Introduction}
 
-This thesis advances the frontier of programming languages work that can be done
-in a proof assistant.
-I will elaborate on both of these aspects in the following paragraphs.
+Programming language design has a history stretching back almost to the
+inception of electronic computing.
+Programming language \emph{theory} has arguably an even longer history, with
+parts of mathematical logic developed in the early 20th century forming the
+vocabulary of programming language theory as we know it today.
+Programming language theory studies mathematical models of programming languages
+to help us better understand programs in existing languages, and to inform the
+design of new language features, new languages, and new programming paradigms.
 
-The main aim of programming language research is to find common patterns in
-computer programs and represent these patterns via programming language
-features.
-As a basic example, consider functions in, say, a low level language like C, in
-contrast to what these functions are compiled to in assembly language/machine
-code.
-In order to support function calls, the C runtime system manages a
-\emph{call stack}.
-A function call is compiled to a sequence of instructions which store the return
-address and the values of the arguments on the stack, move the stack pointer,
-and jump to the compiled code of the function.
-A return from a function then places the return value into the appropriate
-register, moves the stack pointer back, and jumps back to the return address.
-Advances in programming language techniques are evaluated by the usefulness of
-behaviours captured and goodness of the mathematical properties of the
-abstractions produced.
+%The field of programming language theory expands on at least two axes.
+%On one axis, we become ever more able to give multiple mathematical
+%interpretations of realistic programming language features.
+%On another, the field generates new ideas with a theoretical basis which turn
+%out to give rise to useful programming language features and paradigms.
+%Most work pushes along both of these axes, including the work covered in this
+%thesis, though most of the work covered in this thesis is phrased and directed
+%in a way that emphasises the theoretical properties over the specifics of
+%applications.
+%In phrasing things this way, I hope to impart clear intuitions about the scope
+%of this work, given its level of generality.
 
-Within programming language research, type theory is a methodology for enforcing
-abstractions by classifying program behaviour.
+%This thesis advances the frontier of programming languages work that can be done
+%in a proof assistant.
+%I will elaborate on both of these aspects in the following paragraphs.
+
+%The main aim of programming language research is to find common patterns in
+%computer programs and represent these patterns via programming language
+%features.
+%As a basic example, consider functions in, say, a low level language like C, in
+%contrast to what these functions are compiled to in assembly language/machine
+%code.
+%In order to support function calls, the C runtime system manages a
+%\emph{call stack}.
+%A function call is compiled to a sequence of instructions which store the return
+%address and the values of the arguments on the stack, move the stack pointer,
+%and jump to the compiled code of the function.
+%A return from a function then places the return value into the appropriate
+%register, moves the stack pointer back, and jumps back to the return address.
+%Advances in programming language techniques are evaluated by the usefulness of
+%behaviours captured and goodness of the mathematical properties of the
+%abstractions produced.
+
+Within programming language research, type theory is a methodology for
+classifying program behaviour.
 The simplest and most common type systems classify programs by what values they
 may return.
+For example, in many --- perhaps most --- widely used programming languages, the
+compiler will keep track of the types of expressions and their subexpressions,
+and give an error or warning to the programmer whenever there is a mismatch
+between the expected type and the actual type.
 For example, the body of a C function with return type \texttt{char} is a
 program that, if it returns a value, will return a character.
 If that function has a parameter of type \texttt{int}, then we can compose it
@@ -46,8 +71,9 @@ program's behaviour than what range of values it may return.
 For example, Java's \emph{checked exceptions} can be seen as part of the static
 type system, in which programs are classified by which exceptions they may
 throw.
-More generally, \emph{effect systems} classify programs based on all of the
-effects they may have --- such as reading input and writing to files, and also
+More generally, \emph{effect systems}~\citep{LG88} classify programs based on
+all of the effects they may have ---
+such as reading input and writing to files, and also
 internally defined effects, such as non-determinism and using an accumulator.
 In a type system which tracks effects (an \emph{effect system}), programs by
 default are pure (i.e.\ have no effects), with effects being opt-in.
@@ -91,7 +117,7 @@ A \emph{proof assistant}, also known as an \emph{interactive theorem prover}, is
 a piece of software that allows for the encoding of mathematical definitions,
 theorems, constructions, and proofs, and furthermore check that such encoded
 proofs are correct and that such encoded constructions are well formed.
-To truly by interactive, i.e.\ to actually assist, a proof assistant will
+To truly be interactive, i.e.\ to actually assist, a proof assistant will
 usually have a user interface which can read partial proofs, display
 information about what more proof needs to be given, and provide actions that
 will help complete the proof.
@@ -219,3 +245,8 @@ I give a fuller introduction to Agda in \cref{sec:agda-primer}.
 This thesis is written in \colour{}, but should be readable without.
 Agda code has syntax highlighting, and various pieces of notation related to
 usage annotations are coloured \gr{green} for emphasis.
+As a test, the word \emph{colour} in the first sentence of this paragraph should
+appear with the first two letters red, the next two green, and the final two
+blue, with the shades of red, green, and blue used for Agda code.
+Additionally, the word \emph{green} in the second sentence is written in the
+shade of green used for usage annotations.

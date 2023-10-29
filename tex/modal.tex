@@ -62,15 +62,17 @@ $\lambda$-abstractions.
 The methodology I use to produce a nicer syntax is that of \citet{judgmental}:
 capturing the desired modality in the judgemental structure of the syntax.
 To start, note the following two facts about a ``promotion'' rule similar to one
-mentioned by \citet{BBdPH93}.
+mentioned by \citet{BBdePH93}.
 
 \begin{proposition}\label{thm:NKT4-P}
-  In NJ + \TirName{N} + \TirName{K} + \TirName{4}, the following principle is
-  admissible.
+  When $\Gamma = B_1, \ldots, B_n$, let $\Box\Gamma$ abbreviate
+  $\Box B_1, \ldots, \Box B_n$.
+  Then, in NJ + \TirName{N} + \TirName{K} + \TirName{4}, the following principle
+  is admissible.
   \[
     \ebrule{%
-      \hypo{\Box B_1, \ldots, \Box B_n \vdash A}
-      \infer1[Promotion]{\Box B_1, \ldots, \Box B_n \vdash \Box A}
+      \hypo{\Box\Gamma \vdash A}
+      \infer1[Promotion]{\Box\Gamma \vdash \Box A}
     }
   \]
 \end{proposition}
@@ -78,10 +80,8 @@ mentioned by \citet{BBdPH93}.
   By induction on $n$.
   When $n = 0$, \TirName{Promotion} becomes just the necessitation rule \TirName{N}.
   For $n = \lvert\Gamma\rvert + 1$, we have the following derivation, where
-  $\Box\Gamma$ abbreviates
-  $\Box\Gamma_1, \ldots, \Box\Gamma_{\lvert\Gamma\rvert}$ and \TirName{4$'$} and
-  \TirName{K$'$} abbreviate the obvious combinations of
-  \TirName{4} and \TirName{K}, respectively, and \TirName{$\to$-E}.
+  \TirName{4$'$} and \TirName{K$'$} abbreviate the obvious combinations of
+  \TirName{4} and \TirName{K}, respectively, with \TirName{$\to$-E}.
   I silently apply weakening throughout the derivation for the sake of concision.
   \[
     \begin{prooftree}
@@ -174,7 +174,7 @@ obtain $A~\mathit{true}$, via the \TirName{vVar} rule, as justified by axiom
 The three new rules are listed in \cref{fig:PD}.
 Let $\Gamma_v$ be the context $\Gamma$ but with all true hypotheses removed,
 leaving only valid hypotheses.
-Because I am working with a de Bruijn index-style presentation, weakening needs
+Because I am working with a De Bruijn index-style presentation, weakening needs
 to be admissible.
 Therefore, the \TirName{$\Box$-I} rule needs to remove its true hypotheses,
 rather than only applying in a context in which there are no true hypotheses.

@@ -9,7 +9,7 @@ let
       titling todonotes ebproof cleveref cm-super turnstile
       acmart xstring totpages hyperxmp comment preprint
       collection-fontsrecommended collection-fontsextra epstopdf
-      tikzmark biblatex biber fontawesome was;
+      tikzmark biblatex biber fontawesome was uri;
   };
 in stdenv.mkDerivation {
   name = "thesis";

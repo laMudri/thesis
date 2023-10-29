@@ -210,8 +210,12 @@ On concrete
 posemirings (as in this example), unification is particularly poor at
 inferring the usage contexts from the proofs because addition and
 multiplication are no longer (definitionally) injective.
-The function \AgdaFunction{var\#} is a way of turning a statically known de
+The function \AgdaFunction{var\#} is a way of turning a statically known De
 Bruijn level and a usage proof into an application of \AgdaInductiveConstructor{`var}.
+In the type, \AgdaPrimitive{$\infty$} is the ``infinite'' size, which all sizes
+are less than.
+Effectively, writing \AgdaPrimitive{$\infty$} allows us to ignore sizes when we
+are not doing recursion involving sizes.
 
 \ExecuteMetaData[\HeavyItex]{cojoin-explicit}
 
@@ -809,7 +813,7 @@ logic has been encoded.
 %We use this combinator to introduce subterms that are used an unknown number of
 %times, for example the continuations of the eliminator of an inductive type,
 %or other fixed points.
-%We can also use it in linear/non-linear style systems~\cite{Benton94} to make
+%We can also use it in linear/non-linear style systems~\citep{Benton94} to make
 %sure linear variables are not available in the intuitionistic fragment.
 %
 %Adding the $\Box$ combinator is the only thing we have found that requires our

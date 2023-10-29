@@ -5,12 +5,13 @@ with Agda code being used particularly in this chapter and
 \cref{sec:framework,sec:semantics,sec:example-semantics}.
 As such, it is important for the reader to be able to read basic Agda syntax in
 order to benefit from the parts of the exposition that reside in code listings.
-The syntax of Agda is broadly similar to that of Haskell, and relatively close
-to that of Standard ML, OCaml, and Coq's Gallina sublanguage.
+The syntax of Agda is broadly similar to that of Haskell~\citep{Haskell}, and
+relatively close to that of Standard ML, OCaml, and Coq version 8's Gallina
+sublanguage~\citep{SML,OCaml,Coq}.
 I will assume that the reader is able to read basic Haskell code, and spend most
 time explaining differences thereof.
 
-\subsection{Lexing and parsing}
+\subsection{Lexical structure}
 
 Agda is extremely liberal in its set of allowed names.
 There is just a single lexical class (unlike in Haskell, where, for example,
@@ -49,7 +50,7 @@ on context.
 In patterns, an underscore has the same meaning as it has in Haskell and ML ---
 it holds the place of a pattern variable, but does not name that variable.
 In expressions, an underscore stands for an unspecified subterm which will be
-solved by unification.
+solved by unification~\citep{AP11,Miller92}.
 The solving of unspecified terms is canonical and respects $\beta\eta$-equality,
 unlike in Coq.
 
@@ -182,7 +183,8 @@ argument type or the return type, so can be omitted.
 An unfortunate feature of the definition \AgdaFunction{id$_0$} is that we cannot
 apply it to the expression \AgdaPrimitive{Set}, because \AgdaPrimitive{Set}
 contains only small types, and itself is a large type.
-We can work around these size issues using \emph{universe level polymorphism},
+We can work around these size issues using
+\emph{universe level polymorphism}~\citep{BCDE22},
 as in the following definition.
 
 \ExecuteMetaData[\SnippetsTwotex]{id}
@@ -239,8 +241,10 @@ Variables to the left of the colon can appear in the body of the
 \ExecuteMetaData[\SnippetsThreetex]{List}
 
 Slightly more flexible than parameters are \emph{Protestant indices}%
-\footnote{The terminology of Protestant/Catholic indices comes orally from Conor
-McBride. I am not aware of a written reference.}.
+\footnote{The terminology of Protestant/Catholic indices is due to Peter
+  Hancock. The mnemonic is that Catholics believe in transubstantiation, which
+  is seen as analogous to the instantiation of Catholic indices with expressions
+  that occurs during dependent pattern matching.}.
 Protestant indices also appear to the left of the colon, and also must appear
 unmodified in the \emph{return type} of all of the constructors.
 However, they may take different values in inductive appearances of the type
@@ -306,7 +310,7 @@ It has two parameters and one Catholic index (though the standard library
 version of propositional equality I use throughout this thesis has an extra
 level parameter for the sake of universe level polymorphism).
 The constructor \AgdaInductiveConstructor{refl} constructs an inhabitant of
-\AgdaArgument{M}\AgdaSpace{}\AgdaDatatype{\_$\equiv$\_}\AgdaSpace{}%
+\AgdaArgument{M}\AgdaSpace{}\AgdaDatatype{$\equiv$}\AgdaSpace{}%
 \AgdaArgument{N} only when \AgdaArgument{N} is definitionally equal to
 \AgdaArgument{M} (because terms are considered ``the same'' to the type checker
 exactly when they are definitionally equal).

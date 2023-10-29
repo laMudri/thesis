@@ -8,7 +8,7 @@ this thesis to just its closest related work.
 \citet{Autosubst15} present the system \emph{Autosubst}, which provides various
 tools for working with syntaxes with binding in the Coq proof assistant.
 Autosubst is based on similar ideas to those \citeauthor{AACMM21} use:
-de Bruijn-indexed terms with a distinguished variable rule and notion of
+De Bruijn-indexed terms with a distinguished variable rule and notion of
 binding, acted upon by simultaneous renaming and substitution.
 
 The simplest differences are essentially matters of choosing the encoding that
@@ -192,11 +192,27 @@ new, unused variables to the context).
 In contrast, the work of \citet{HHLM22} is based around the category of contexts
 under \emph{substitution} or, more precisely, the morphisms given by semantic
 environments of whatever semantics is being defined.
+The focus on substitution makes this work simpler than renaming-based
+frameworks, because we get to avoid talking about renaming, whereas we always
+ultimately need to talk about substitution.
+However, what is a gain for internal simplicity is a loss for usability.
+For the syntax, starting from substitution means that the framework provides no
+help in \emph{proving} the admissibility of substitution, because the syntax is
+not considered a model \emph{until} we can show that it admits substitution.
+Similarly, for semantic models, we have to prove that each model we consider
+respects semantic substitution, which is a stronger requirement than
+respecting renaming.
 
-\begin{itemize}
-  \item Hard to bootstrap.
-  \item All terms have the same, countably infinite context.
-\end{itemize}
+Additionally, \citet{HHLM22} gain further simplicity of definitions by not
+keeping track of contexts.
+For example, untyped substitutions on a set (as opposed to scope-indexed family)
+$X$ are functions from $\mathbb N$ to $X$.
+Similarly, the simply typed families introduced in section 6 of the
+aforementioned paper are indexed on their type, but not their context.
+Ignoring scopes/contexts lets one talk about monads (as in
+\emph{De Bruijn monads}) rather than a more complex notion like relative
+monads~\citep{ACU15}.
+However, it also means losing potentially useful and important information.
 
 \subsection{Nominal techniques}
 

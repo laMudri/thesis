@@ -167,7 +167,7 @@ left subterm and $\gr1$-annotated on the right, or vice-versa. We will
 find that, because the left subterm wants to use that variable, the
 former choice will be rejected. The function \AgdaFunction{var\#} is a
 convenience for converting statically known natural numbers,
-representing de Bruijn \emph{levels}, into variable terms.
+representing De Bruijn \emph{levels}, into variable terms.
 
 
 \section{Normalisation by evaluation}\label{sec:nbe}
@@ -178,6 +178,25 @@ $\name$.
 The algorithm contains not only a structural induction on a term using an
 environment, but also functions which create terms.
 It therefore gives an example of various parts of the framework.
+
+Given the linear theme of $\name$, one may consider using the size-based
+normalisation proof given by \citet[p.\ 71]{girard87linear} and
+\citet{Krishnaswami13}.
+However, this fails for two reasons for $\name$, both of which also apply to the
+fragment I consider here defined by
+$A, B \Coloneqq \iota \mid \oc\gr rA \multimap B$.
+Firstly, we can use the $\oc$ connective in the linear instantiation of $\name$
+to introduce contractable variables.
+The size maintenance/reduction principles do not hold in the presence of
+contraction, because substitution for a contracted variable can make the term
+grow arbitrarily larger.
+Secondly, there are instantiations other than the linear
+$\{\gr0, \gr1, \gr\omega\}$ semiring, many of which allow for non-linear
+behaviour even without the $\oc$-connective.
+For example, with the trivial semiring, we recover an intuitionistic calculus
+with no usage restrictions.
+We therefore have to use a normalisation proof which also works for standard
+Simply Typed $\lambda$-Calculus.
 
 Though it is easy to define a syntax of normal and neutral forms, I do not do so
 here.
@@ -529,11 +548,14 @@ Now I give a \AgdaRecord{Semantics}.
 The choice of \AgdaBound{$\V$} as
 \AgdaRecord{\AgdaUnderscore{}$\sqni$\AgdaUnderscore{}} is somewhat arbitrary,
 given that a standard denotational semantics would not use intermediate
-environments in the same sense as renaming and substitution, but it allows us to
-reuse the standard facts that variables support renaming and identity
-environments.
-With this choice of \AgdaBound{$\V$} and \AgdaBound{$\C$}, we interpret
-environment entries by \AgdaFunction{lookup$^R$}.
+environments in the same sense as renaming, substitution, and evaluation.
+The only requirements are that the choice of \AgdaBound{$\V$} respects renaming
+and yields inhabitants of the target family
+\AgdaFunction{$\llbracket$\_$\vdash$\_$\rrbracket$}.
+Picking \AgdaRecord{\_$\sqni$\_} means that we can use the already proven lemma
+\AgdaFunction{ren\textasciicircum$\sqni$} for the former requirement; and we use
+\AgdaFunction{lookup$^R$} --- which we would have to provide somewhere anyway
+--- to yield semantic objects.
 
 Meanwhile, for the logical rules, we ignore environments by using
 \AgdaFunction{reify} and \AgdaFunction{reify[]} to just deal with morphisms in
@@ -636,3 +658,25 @@ Then, the semantics of terms is given by the function
 
 \section{Translating between $\name$ and L/nL}\label{sec:lnl}
 \input{lnl.tex}
+
+\section{Conclusion}
+
+In this chapter, I have provided a range of example syntaxes and operations on
+them, defined with the help of the generic semantic traversal.
+Where \citet{AACMM21} give examples which focus on using the semantic
+environment effectively, my examples focus more on problems we can only work on
+using usage restrictions.
+These examples tie together the two strands of this thesis --- representation of
+syntax and semantics in Agda and usage restrictions via semiring annotations.
+
+Though all of the applications have been successfully completed, there are some
+points in them where details of the framework have forced us into an unnatural
+or suboptimal approach, relative to what we could achieve with a
+reimplementation of each specific calculus from first principles.
+Specifically, in the NbE example of \cref{sec:nbe}, I was significantly hampered
+by the inability to cleanly exclude variables from the syntax of normal forms,
+and in the encoding of a linear/non-linear calculus in \cref{sec:lnl}, we were
+forced to consider variables with linear type but intuitionistic usage
+annotation and vice versa.
+I will discuss these problems further, with suggestions of solutions, in
+\cref{sec:conc}.

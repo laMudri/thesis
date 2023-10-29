@@ -114,21 +114,21 @@ of the appropriate type.
 
 We could, as in \cref{def:lr-rec-env}, use these three clauses to define what an
 environment is.
-However, I find them difficult to work with, as it is often easier to do
-linear algebraic proofs separately from the rest of an environment.
-For example, for identity and composition of environments, as we are about to
-see, our working definition (\cref{def:lr-env})
-is easier to use because we can rely on the closure of linear maps under
-identity and composition.
-Concretely, an inductive construction of, for example, an identity environment
-would involve constructing an environment of type
+However, such a definition appears to require creative induction hypotheses in
+the proving of simple lemmas, in contrast to the more direct proofs I achieve
+below using \cref{def:lr-env}.
+To take a concrete example, consider how we may construct an ``identity''
+environment of type $\Gamma \env\V \Gamma$, as in \cref{thm:env-id} below.
+If we try to directly proceed by induction on $\Gamma$, we get to the case where
+we are aiming to construct an environment of type
 $\grP\gamma, \grQ\delta \env\V \grP\gamma, \grQ\delta$ by constructing
 environments of types $\grP\gamma, \gr0\delta \env\V \grP\gamma$ and
 $\gr0\gamma, \grQ\delta \env\V \grQ\delta$.
-These are not identity environments, so we would have to strengthen the
-induction hypothesis.
-Similar strengthening of the induction hypothesis would be required for
-composition.
+These are not identity environments, and thus do not come from the hypotheses of
+a simple induction.
+In contrast, using \cref{def:lr-env}, in \cref{thm:env-id} we are able to use
+the standard fact that there are identity linear maps, and on top of such a map
+worry only about the value assigned to each variable.
 
 One of the primary test cases for environments is simultaneous substitution,
 which will look like the \TirName{sub} rule below.
