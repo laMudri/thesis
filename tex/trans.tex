@@ -31,6 +31,8 @@ I will write the latter simply as $\oc$ when it appears in DILL\@.
 I add sums and with-products to the calculus of \citet{Barber1996}, with the
 obvious rules (stated fully in \cref{fig:dill2}).
 These additive type formers present no additional difficulty to the translation.
+As a cosmetic difference, I assume in $\name$ a base type $\iota_Y$ for each
+atomic formula $Y$ in DILL.
 
 \begin{figure}
   \begin{mathpar}
@@ -109,8 +111,8 @@ These additive type formers present no additional difficulty to the translation.
       \infer3[$\oplus$-E]{\gamma; \delta_1, \delta_2 \vdash C}
     }
   \end{mathpar}
-  \label{fig:dill2}
   \caption{The rules of DILL, extended with additive connectives}
+  \label{fig:dill2}
 \end{figure}
 
 \begin{figure}
@@ -139,8 +141,8 @@ These additive type formers present no additional difficulty to the translation.
       A \vee B &\mapsto& A \oplus B
     \end{eqns}
   \end{mathpar}
-  \label{fig:dill-pd}
   \caption{Embedding of DILL and PD types into \name}
+  \label{fig:dill-pd}
 \end{figure}
 
 \begin{proposition}[DILL $\to$ \name]
@@ -210,10 +212,14 @@ Bottom-up style corresponds to a (non-deterministic) form of
 that that form of usage checking is sufficiently general.
 
 \begin{definition}\label{def:DILL-bottom-up}
-  A derivation is said to be \emph{$\instDILL$-bottom-up} if only the following
-  facts about addition and multiplication are used, and all proofs of
+  A derivation is said to be \emph{$\instDILL$-bottom-up} if only the facts
+  about addition and multiplication listed in the tables below are used,
+  and all proofs of
   inequalities not at leaves are by reflexivity (i.e, not using the facts that
   $\gr\omega \leq \gr0$ and $\gr\omega \leq \gr1$).
+  In the tables, each row corresponds to a value for the left argument, each
+  column corresponds to a value for the right argument, and the dash (-)
+  indicates a fact that is not to be used.
 
   \makebox[\textwidth][s]{
     \begin{tabular}{c|ccc}
@@ -295,7 +301,7 @@ premise of \TirName{$\oc{\gr\omega}$-I}.
 The translation to and from the modal system of \citet{judgmental}
 (henceforth \emph{PD}) is similar to the translation to and from DILL\@.
 I present my variant of PD, again adding some common connectives, in
-\cref{fig:pd}
+\cref{fig:pd}.
 The main difference is the algebra at which \name{} is instantiated.
 
 \begin{figure}
@@ -362,13 +368,13 @@ The main difference is the algebra at which \name{} is instantiated.
       \infer3[$\vee$-E]{\gamma; \delta \vdash C\;\mathit{true}}
     }
   \end{mathpar}
-  \label{fig:pd}
   \caption{The rules of PD, extended with several standard connectives}
+  \label{fig:pd}
 \end{figure}
 
 \begin{definition}
   Let $\instPD$ denote the following semiring on the partially ordered set
-  $\{\valid \triangleleft \true \triangleleft \unused\}$.
+  $\{\valid < \true < \unused\}$.
   \begin{itemize}
     \item $0 := \unused$.
     \item $+$ is the meet ($\wedge$) according to the subusaging order.
@@ -435,9 +441,13 @@ Every $\name_{\instPD}$ derivation can be translated into bottom-up style, and
 then be directly translated into PD\@.
 
 \begin{definition}\label{def:PD-bottom-up}
-  A derivation is said to be \emph{$\instPD$-bottom-up} if only the following
-  facts about addition and multiplication are used, and all proofs of
+  A derivation is said to be \emph{$\instPD$-bottom-up} if only the facts
+  about addition and multiplication listed in the tables below are used,
+  and all proofs of
   inequalities not at leaves are by reflexivity.
+  In the tables, each row corresponds to a value for the left argument, each
+  column corresponds to a value for the right argument, and the dash (-)
+  indicates a fact that is not to be used.
 
   \makebox[\textwidth][s]{
     \begin{tabular}{c|ccc}

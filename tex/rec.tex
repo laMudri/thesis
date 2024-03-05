@@ -49,6 +49,10 @@ The alternative rule below is not compatible with linear logic, because it
 allows us to derive
 $\oc\gr r\plr{A \otimes B} \multimap \oc\gr rA \otimes \oc\gr r B$
 parametric in $\gr r$, $A$, and $B$.
+In particular, with the linearity semiring of \cref{def:lin-semiring}, we get
+$\oc\gr\omega\plr{A \otimes B} \multimap \oc\gr\omega A \otimes \oc\gr\omega B$,
+corresponding to the ordinary linear logic formula
+$\oc\plr{A \otimes B} \multimap \oc A \otimes \oc B$, which is not provable.
 
 \begin{mathpar}
   \ebrule[comb]{%
@@ -84,8 +88,9 @@ However, we want to remain generic in the choice of semiring.
 The following additions to \name{} support a broad class of
 inductive types.
 I define strictly positive functors syntactically, with the only notable
-restrictions being not being allowed to use the type variable $X$ in the domain
-of a function type and within a $\oc$-type.
+restrictions relative to the syntax of types with a type variable $X$
+being not being allowed to use $X$ in the domain of a function type or within a
+$\oc$-type.
 I then add least fixed points of such strictly positive functors to the syntax
 of types.
 
@@ -99,6 +104,9 @@ of types.
 \begin{example}
   We may define $\mathrm{List}_A \coloneqq \mu X.~I \oplus \plr{A \otimes X}$.
 \end{example}
+
+One could also consider supporting mutually inductive types, but I do not in
+this thesis for the sake of simplicity.
 
 In the typing rules, introduction of an inductive type is standard.
 For the elimination rule, we follow a similar pattern to other pattern-matching
@@ -194,6 +202,119 @@ preserved by all linear operations.
         \vdash C}
     \end{prooftree}
   \end{align*}
+
+  Specially for lists, we can note that the \TirName{nil} constructor appears
+  exactly once (at the end of a series of \TirName{cons}es) in any value.
+  This suggests that we can handle \TirName{nil} linearly when doing recursion
+  over lists --- i.e., we do not need to handle the \TirName{nil} constructor in
+  a usage context $\grQ$ satisfying $\grQ \leq \gr0$ and
+  $\grQ \leq \grQ + \grQ$.
+
+  The key in treating \TirName{nil} linearly is to use \TirName{foldr} with
+  endofunction return type $C \multimap C$.
+  Such functions let us pass the desired \TirName{nil} value through all of the
+  \TirName{cons}es into its required place.
+  I give this construction rigorously in the derivation below, which describes
+  how to take a list, a \TirName{nil} value $\nabla^n : \grS\gamma \vdash C$,
+  and a \TirName{cons} value $\nabla^c : \grQ\gamma, \gr1A, \gr1C \vdash C$ and
+  produce a result of type $C$.
+  I have omitted side conditions
+  $\grR \leq \grP + \grQ$, $\grQ \leq \gr0$, $\grQ \leq \grQ + \grQ$, and
+  $\grT \leq \grR + \grS$ in order to save space in the figure.
+  I have also omitted subderivation $\mathrm{id}$, constructing the identity
+  function (noting that $\grQ \leq \gr0$, and therefore all of the additional
+  variables can be discarded), and the details of a use of substitution ---
+  labelled \TirName{Subst}.
+  I introduce substitution in its full generality in \cref{sec:ren-sub-lr}, but
+  the intuitive justification for using substitution here is that we apply the
+  variable of type $C \multimap C$ to the variable of type $C$ to produce a
+  value of type $C$.
+  This uses up both the function and the argument, leaving just a single linear
+  value.
+  One could also imagine introducing a let-binding, together with weakening of
+  $\gr0$-annotated variables, to make the shape of the sequent line up with that
+  of $\nabla^c$.
+
+  \begin{displaymath}
+    \begin{prooftree}
+      \hypo{\grP\gamma \vdash \mathrm{List}_A}
+      \hypo{\mathrm{id}}
+      \infer[no rule]1{\grQ\gamma \vdash C \multimap C}
+      \hypo{\nabla^c}
+      \infer[no rule]1{\grQ\gamma, \gr1A, \gr1C \vdash C}
+      \infer1[Subst]{\grQ\gamma, \gr1A, \gr1\plr{C \multimap C}, \gr1C \vdash C}
+      \infer1[$\multimap$-I]{\grQ\gamma, \gr1A, \gr1\plr{C \multimap C} \vdash C \multimap C}
+      \infer3[foldr]{\grR\gamma \vdash C \multimap C}
+      \hypo{\nabla^n}
+      \infer[no rule]1{\grS\gamma \vdash C}
+      \infer2[$\multimap$-E]{\grT\gamma \vdash C}
+    \end{prooftree}
+  \end{displaymath}
+
+  Given an annotation $\gr r$ satisfying $\gr r \leq \gr0$,
+  $\gr r \leq \gr r + \gr r$, and $\gr r \leq 1$ (for example, $\gr\omega$ from
+  \cref{def:lin-semiring}), we can produce a function
+  \[
+    \mathrm{foldr}_{A,C} : \mathrm{List}_A \multimap \oc\gr rC \multimap
+    \oc\gr r\plr{A \multimap C \multimap C} \multimap C
+  \]
+  as a simple wrapping of the \TirName{foldr} rule.
+  We can get a function $\mathrm{foldr}_{A,C}'$ as follows using
+  $\mathrm{foldr}_{A,C \multimap C}$, and similar reasoning as above to
+  treat the \TirName{nil} case linearly.
+  I use square brackets to denote the \TirName{$\oc$-I} rule, a pattern
+  matching let-expression to denote the \TirName{$\oc$-E} rule, and standard
+  $\lambda$-calculus notation for function introduction and elimination.
+  \begin{align*}
+    \mathrm{foldr}_{A,C}' &: \mathrm{List}_A \multimap C \multimap
+    \oc\gr r\plr{A \multimap C \multimap C} \multimap C \\
+    \mathrm{foldr}_{A,C}' &\coloneqq \lambda e.\lambda n.\lambda c'.~%
+                            \textrm{let }[c] \coloneqq c'\textrm{ in }
+                            \mathrm{foldr}_{A,C \multimap C}\,e\,
+                            [\lambda r.~r]\,
+                            [\lambda x.\lambda f.\lambda r.~c\,x\,(f\,r)]\,
+                            n
+  \end{align*}
+\end{example}
+
+Among the inductive types given by this $\mu$ operator are also
+\emph{$\with$-lists} (\emph{with-lists}).
+
+\begin{example}
+  Let us define \emph{$\with$-lists} as follows.
+  \[
+    \mathrm{WithList}_A \coloneqq \mu X.~\top \oplus \plr{A \with X}
+  \]
+  Unlike ordinary lists (which we may call \emph{$\otimes$-lists}),
+  $\with$-lists support a \emph{lookup} operation with the type below, where
+  $\mathbb N \coloneqq \mu X.~I \oplus X$.
+  \begin{align*}
+    \mathit{lookup} :
+    \mathrm{WithList}_A \multimap \mathbb N \multimap \top \oplus A
+  \end{align*}
+  The $\name$ term implementing $\mathit{lookup}$ in terms of iterators
+  (\TirName{$\mu$-E}) is complex and tedious, so I do not show it here.
+  Instead, I provide the following clausal specification, where
+  $\mathrm{nil}\plr{-}$ and $\mathrm{cons}\plr{-}$ are the constructors of
+  $\with$-lists, $\mathrm{zero}\plr{}$ and $\mathrm{succ}\plr{}$ are the
+  constructors of $\mathbb N$, $\mathrm{inl}\plr{-}$ and $\mathrm{inr}\plr{-}$
+  are the constructors of $\oplus$, $\langle\rangle$ constructs the
+  inhabitant of $\top$, and postfix $.\pi_l$ and $.\pi_r$ are the projections
+  out of a $\with$-pair.
+
+  \[
+    \begin{pmboxed}
+      \defaultcolumn{l}
+      \> \mathit{lookup} \> \mathrm{nil}\plr{t} \> i
+      \> \coloneqq \> \mathrm{inl}\plr{\langle\rangle} \\
+      \> \mathit{lookup} \> \mathrm{cons}\plr{\mathit{xxs}}
+      \> \mathrm{zero}\plr{} \> \coloneqq
+      \> \mathrm{inr}\plr{\mathit{xxs}.\pi_l} \\
+      \> \mathit{lookup} \> \mathrm{cons}\plr{\mathit{xxs}}
+      \> \mathrm{succ}\plr{i} \> \coloneqq
+      \> \mathit{lookup}\,\plr{\mathit{xxs}.\pi_r}\,i \\
+    \end{pmboxed}
+  \]
 \end{example}
 
 Following \cref{sec:lnd}, I want to turn the ad hoc constraints on $\grP$,
@@ -201,7 +322,9 @@ $\grQ$, and $\grR$ into the result of some premise connectives.
 To do this, I introduce a new connective $\Box^{0{+}}$ defined below,
 along with the resulting implicit-context typing rules.
 
-\ExecuteMetaData[\Bunchedtex]{Box}
+\begin{samepage}
+  \ExecuteMetaData[\Bunchedtex]{Box}
+\end{samepage}
 
 \begin{align*}
   \begin{prooftree}[comb]
@@ -240,85 +363,6 @@ along with the resulting implicit-context typing rules.
       \infer3{\vdash C}
     \end{prooftree}
   \end{align*}
-\end{example}
-
-Among the inductive types given by this $\mu$ operator are also
-\emph{$\with$-lists} (\emph{with-lists}).
-
-\begin{example}
-  Let us define \emph{$\with$-lists} as follows.
-  \[
-    \mathrm{WithList}_A \coloneqq \mu X.~\top \oplus \plr{A \with X}
-  \]
-  Unlike ordinary lists (which we may call \emph{$\otimes$-lists}),
-  $\with$-lists support a \emph{lookup} operation with the type below, where
-  $\mathbb N \coloneqq \mu X.~I \oplus X$.
-  \begin{align*}
-    \mathit{lookup} :
-    \mathrm{WithList}_A \multimap \mathbb N \multimap \top \oplus A
-  \end{align*}
-  The $\name$ term implementing $\mathit{lookup}$ in terms of iterators
-  (\TirName{$\mu$-E}) is complex and tedious, so I do not show it here.
-  Instead, I provide the following clausal specification, where
-  $\mathrm{nil}\plr{-}$ and $\mathrm{cons}\plr{-}$ are the constructors of
-  $\with$-lists, $\mathrm{zero}\plr{}$ and $\mathrm{succ}\plr{}$ are the
-  constructors of $\mathbb N$, $\mathrm{inl}\plr{-}$ and $\mathrm{inr}\plr{-}$
-  are the constructors of $\oplus$, $\langle\rangle$ constructs the
-  inhabitant of $\top$, and postfix $.\pi_l$ and $.\pi_r$ are the projections
-  out of a $\with$-pair.
-  %\begin{align*}
-  %  \mathit{lookup}\,\mathrm{nil}\plr{t}\,i
-  %  &\coloneqq \mathrm{inl}\plr{\langle\rangle} \\
-  %  \mathit{lookup}\,\mathrm{cons}\plr{\mathit{xxs}}\,\mathrm{zero}\plr{}
-  %  &\coloneqq \mathrm{inr}\plr{\mathit{xxs}.\pi_l} \\
-  %  \mathit{lookup}\,\mathrm{cons}\plr{\mathit{xxs}}\,\mathrm{succ}\plr{i}
-  %  &\coloneqq \mathit{lookup}\,\plr{\mathit{xxs}.\pi_r}\,i
-  %\end{align*}
-
-  %\noindent{}\hspace{-0.75ex}
-  \[
-    \begin{pmboxed}
-      \defaultcolumn{l}
-      \> \mathit{lookup} \> \mathrm{nil}\plr{t} \> i
-      \> \coloneqq \> \mathrm{inl}\plr{\langle\rangle} \\
-      \> \mathit{lookup} \> \mathrm{cons}\plr{\mathit{xxs}}
-      \> \mathrm{zero}\plr{} \> \coloneqq
-      \> \mathrm{inr}\plr{\mathit{xxs}.\pi_l} \\
-      \> \mathit{lookup} \> \mathrm{cons}\plr{\mathit{xxs}}
-      \> \mathrm{succ}\plr{i} \> \coloneqq
-      \> \mathit{lookup}\,\plr{\mathit{xxs}.\pi_r}\,i \\
-    \end{pmboxed}
-  \]
-  %\begin{verbatim}
-  %  lookup := \xs. wfoldr(xs;
-  %    List I -o T + A;
-  %    t. \i. foldr(i; T -o T + A; \t'. inl(t'); u, r. let () := u in r) t;
-  %    xr. \i. let (i', r) :=
-  %      foldr(i;
-  %        A & (T + A) -o List I * (T + A);
-  %        \xr'. ([], prl(xr'));
-  %        u, ir. \xr'.
-  %          let () := u in
-  %          let (i', r) := ir in
-  %          (() :: i', prr(xr') prl(ir)))
-  %      xr in
-  %      foldr(i'; T + A; r; u, r'. let () := u in r'))
-  %\end{verbatim}
-  %\begin{align*}
-  %  \mathit{lookup} &:
-  %  \mathrm{WithList}_A \multimap \mathrm{List}_I \multimap \top \oplus A
-  %  \\
-  %                  &\coloneqq \lambda\mathit{xs}.~\mathrm{rec}\plr{xs; %
-  %                    \mathrm{List}_I \multimap \top \oplus A; %
-  %                    t.~\lambda i.~\mathrm{inl}\plr{%
-  %                    \mathrm{foldr}\plr{i, \top \multimap \top; \lambda t'.~t'; %
-  %                    u, r.~\textrm{let }{*} \coloneqq u\textrm{ in }r}\,t}; %
-  %                    \mathit{xr}.~\lambda i.~%
-  %                    \mathrm{foldr}\plr{i; %
-  %                    A \with \plr{\top \oplus A} \multimap \top \oplus A; %
-  %                    \lambda
-  %                    }\,\mathit{xr}}
-  %\end{align*}
 \end{example}
 
 As suggested by the notation, $\Box^{0{+}}$ may not be particularly canonical in

@@ -146,7 +146,9 @@ variable in the context.
 \end{figure}
 
 I will not cover any operational semantics or equational theory of \name{} in
-this thesis.
+this thesis, though the substitution principle and notion of environment I
+develop in \cref{sec:ren-sub-lr} make it easy to define any desired operational
+semantics.
 I will discuss a denotational semantics inspired by that of
 \citet{AbelBernardy2020} in \cref{sec:den-sem}.
 
@@ -190,6 +192,23 @@ simultaneous renaming and substitution (we will see later that a
 $\leq$-relationship between contexts gives rise to a renaming), and all of these
 make rules like \TirName{Subuse} interpretable as generalised notions of
 composition between orderings/renamings/substitutions and terms.
+
+One could imagine a system in which all $\leq$-constraints in \cref{fig:lr} are
+replaced by equality constraints, and the \TirName{Subuse} rule is turned into a
+non-syntax-directed defining rule of the system.
+Indeed, a similar system is presented by \citet{Granule18} among others.
+I prefer \TirName{Subuse} to be admissible in this thesis because it means that
+all algebra, including inequalities, happens in the same place.
+Having all of the algebra happening in the same place sets us up for
+\cref{sec:lnd}, in which I pick out some of the common patterns in the rules of
+\cref{fig:lr} and partially abstract away from the algebraic details.
+Using the abstractions of \cref{sec:lnd}, there is no natural place for a
+\TirName{Subuse} rule, though one could imagine adapting the operators there to
+introduce tightening of usage constraints.
+In terms of \cref{sec:framework}, where I consider $\name$-like syntaxes in
+general, one would expect to add a \TirName{Subuse} rule, similarly to the
+\TirName{Var} rule present in all syntaxes, if subusaging were not already
+admissible.
 
 \paragraph{Tensor- and with-products}
 Like intuitionistic linear logic (ILL), \name{} distinguishes tensor-products

@@ -80,11 +80,13 @@ their usage annotations.
 I use the same symbols for the connectives both in Agda code and in otherwise
 standard mathematical/logical notation.
 
-The first two connectives are those we've already seen for intuitionistic
+The first two connectives are those we have already seen for intuitionistic
 systems --- $\dot1$ and $\dottimes$.
-The absence of premises is encoded by $\dot1$, while the space between premises
-sharing a context is encoded by $\dottimes$.
-As for implication, I temporarily avoid giving a $\dotto$ connectives, instead
+The prototypical rules that use $\dot1$ and $\dottimes$ are the introduction
+rules for $\top$ and $\with$, respectively.
+The $\dot1$ connective encodes the absence of premises, while $\dottimes$
+encodes the space between premises sharing a context.
+As for implication, I temporarily avoid giving a $\dotto$ connective, instead
 fusing it together with $\forallb{-}$ to produce the \emph{set} of
 context-preserving functions $T \rightarrowtriangle U$.
 When we interpret a typing rule as a constructor of an inductive definition,
@@ -92,8 +94,6 @@ $\rightarrowtriangle$
 interprets the horizontal line, reflecting the fact that the usage annotations
 we start off with in the premises are those of the conclusion, corresponding to
 a general principle of resource conservation.
-The prototypical rules that use $\dot1$ and $\dottimes$ are the introduction
-rules for $\top$ and $\with$, respectively.
 
 \begin{align*}
   \begin{prooftree}
@@ -169,6 +169,16 @@ The full system \name{} is stated in terms of bunched connectives in
 \cref{fig:lr-bunched}.
 The bunched connectives also yield a reasonably concise definition of the Agda
 data type of \name{} derivations, as seen in \cref{fig:lr-bunched-Agda}.
+
+The one other change I have made between \cref{fig:lr} and \cref{fig:lr-bunched}
+is to abbreviate the conjunction of $\gamma \ni x : A$ and
+$\grP \leq \langle x \rvert$ as $\grP\gamma \sqni A$, and then omit the common
+context between the hypothesis and conclusion of the \TirName{Var} rule to give
+${} \sqni A$.
+Just as I prefer to work with a full context $\Gamma$ rather than its components
+$\gamma$ and $\grP$, I prefer to work with the usage-checked variables in
+$\Gamma \sqni A$, rather than ever considering non-usage-checked variables in
+$\gamma \ni A$ and then taking usage-correctness as an extra property.
 
 \begin{figure}
   \ebproofset{separation=0.75em}
@@ -339,7 +349,24 @@ $\forall x,x',y,y'.~x' \leq x \to y \leq y' \to xRy \to x'Ry'$.
 This category can be given the usual monoidal product of relations, which is
 the pointwise product of posets on objects.
 Then, we will always expect zero and addition to together form a cocommutative
-comonoid in this category.
+comonoid in this category --- i.e., we have a poset $M$ and order-respecting
+relations $0 : M \rel 1$ and ${+} : M \rel M \times M$ such that:
+
+\begin{itemize}
+  \item $\forall a,b.~\plr{\exists x.~{+}(a; x, b) \wedge 0(x; {\cdot})}
+    \iff a \leq b$
+  \item $\forall a,b.~\plr{\exists x.~{+}(a; b, x) \wedge 0(x; {\cdot})}
+    \iff a \leq b$
+  \item $\forall a,b,c,d.~\plr{\exists x.~{+}(a; x, d) \wedge {+}(x; b, c)}
+    \iff \plr{\exists y.~{+}(a; b, y) \wedge {+}(y; c, d)}$
+  \item $\forall a,b,c.~{+}(a; b, c) \iff {+}(a; c, b)$
+\end{itemize}
+
+For example, when dealing with contexts, we let $M \coloneqq \Ann^n$, with
+$0(\grR; {\cdot}) \coloneqq \plr{\grR \leq \gr0}$ and
+${+}(\grR; \grP, \grQ) \coloneqq \plr{\grR \leq \grP + \grQ}$, and where
+the required properties follow from the commutative monoid properties of vectors
+over a commutative monoid (the additive monoid of the semiring $\Ann$).
 With this structure, we can get the following equivalences and functions.
 
 \begin{mathpar}
@@ -355,5 +382,9 @@ With this structure, we can get the following equivalences and functions.
 I do not use algebraic properties of multiplication in conjunction with
 manipulation of bunched connectives in this thesis, but we could expect
 scalar multiplication
-to add a comodule structure over cosemiring $R$ to the cocommutative comonoid
+to add a comodule structure over the cocommutative comonoid
 given by zero and addition.
+I would then expect equivalences $\gr r \cdot I^* \leftrightarrowtriangle I^*$
+and $\gr r \cdot \plr{T \sep U} \leftrightarrowtriangle
+\gr r \cdot T \sep \gr r \cdot U$, which both at least hold in the case of
+vectors over a semiring.

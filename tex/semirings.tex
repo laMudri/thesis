@@ -61,11 +61,13 @@ $\Delta = \grQ\delta$, where $\Gamma$ is a whole context comprising a
 A usage context is a list of usage annotations, so
 $\grP = \gr{r_1}, \ldots, \gr{r_m}$ and a typing context is a list of types, so
 $\gamma = A_1, \ldots, A_m$.
+Note that, in a single context $\Gamma$, components $\grP$ and $\gamma$ have the
+same length $m$ (and the same shape when represented in Agda).
 When combined, the usage context and the typing context will be of the same
 length.
 Explicit contexts will usually be written with usage annotations and types
 interspersed, as $\gr{r_1}A_1, \ldots, \gr{r_m}A_m$.
-I use $\gr r\gamma$ to abbreviate $\gr rx_1, \ldots, \gr rx_m$.
+I use $\gr r\gamma$ to abbreviate $\gr rA_1, \ldots, \gr rA_m$.
 
 \[
   \ebrule{%
@@ -210,7 +212,7 @@ $\langle x \rvert$ is the \emph{basis vector} at position $x$.
 
 The final interesting rule form to cover is found in DILL's
 $\oc$-introduction rule.
-DILL's $\oc$-introduction can be though of as an $\gr\omega$-ary counterpart to
+DILL's $\oc$-introduction can be thought of as an $\gr\omega$-ary counterpart to
 $\otimes$-introduction, though with the same premise each time rather than
 $\gr\omega$-many premises.
 This explains why only $\gr\omega$- and
@@ -375,5 +377,5 @@ appropriate premise connectives and define their systems from there, rather than
 directly manipulating contexts.
 It may also be possible to see future work profitably abstracting over the
 posemiring annotations, requiring only that contexts form something like a
-commutative $\mathrm{Rel}$-monoid supporting variable-binding and
+commutative $\mathrm{Rel}$-monoid supporting variable binding and
 variable access.
