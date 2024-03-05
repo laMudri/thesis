@@ -45,29 +45,58 @@ replacement for \AgdaRecord{Kit}.
 
 \ExecuteMetaData[\SimpleSem]{SemanticsExplicit}
 
+\begin{figure}
+  \begin{minipage}[t]{0.333\textwidth}
+    \ExecuteMetaData[\SimpleSem]{dotone}
+  \end{minipage}
+  \begin{minipage}[t]{0.666\textwidth}
+    \ExecuteMetaData[\SimpleSem]{dottimes}
+  \end{minipage}
+  \begin{minipage}[t]{0.549\textwidth}
+    \ExecuteMetaData[\SimpleSem]{dotto}
+  \end{minipage}
+  \begin{minipage}[t]{0.450\textwidth}
+    \ExecuteMetaData[\SimpleSem]{allb}
+  \end{minipage}
+  \begin{minipage}[t]{0.450\textwidth}
+    \ExecuteMetaData[\SimpleSem]{Circle}
+  \end{minipage}
+  \begin{minipage}[t]{0.549\textwidth}
+    \ExecuteMetaData[\SimpleSem]{Box}
+  \end{minipage}
+  \caption{Simple connectives on \AgdaRecord{Ctx}\AgdaSpace{}\AgdaSymbol{$\to$}%
+    \AgdaSpace{}\AgdaPrimitive{Set}}
+  \label{fig:simple-connectives}
+\end{figure}
+
 With the aim of abstracting away from explicit contexts, bringing us closer to
 natural deduction, we can use some new notation to rephrase these requirements.
 We will work in \AgdaRecord{Ctx}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}%
 \AgdaPrimitive{Set} rather than \AgdaPrimitive{Set}.
-One of the basic connectives in this setting is the \emph{pointwise} arrow
-\AgdaFunction{\_$\dotto$\_}, which acts in
+The definitions of the main connectives I use while working in
 \AgdaRecord{Ctx}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaPrimitive{Set}
-like the non-dependent arrow does in \AgdaPrimitive{Set}.
-Another basic component is the \AgdaFunction{$\forall[\_]$} notation, which
+are listed in \cref{fig:simple-connectives}.
+In brief, \AgdaFunction{$\dot1$}, \AgdaFunction{\_$\dottimes$\_}, and
+\AgdaFunction{\_$\dotto$\_} are pointwise liftings of the singleton set, the
+Cartesian product of sets, and function sets from \AgdaPrimitive{Set} to
+\AgdaRecord{Ctx}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaPrimitive{Set}.
+Another component is the \AgdaFunction{$\forall[\_]$} notation, which
 embeds \AgdaRecord{Ctx}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}%
 \AgdaPrimitive{Set} into \AgdaPrimitive{Set} by using an implicit $\Pi$-type
 to quantify over \emph{all} contexts.
 Finally, at this stage, I introduce a modality \AgdaFunction{$\bigcirc$}
 encapsulating the pattern of considering arbitrary \emph{extensions} of a
 context.
+I use all of these connectives in both Agda code and typeset mathematical
+expressions.
+In the latter case, they will appear black rather than green.
+
 To facilitate working in this point-free setting, I give infix versions of
 the families \AgdaBound{$\V$} and \AgdaBound{$\C$} (respectively
 \AgdaFunction{\_$\V\vDash$\_} and \AgdaFunction{\_$\C\vDash$\_}).
 The principal use of these aliases is to fill the right argument with a type
 (occurring explicitly), and leave the left argument as \AgdaFunction{\_}, i.e.,
 a context given through the point-free machinery.
-
-\ExecuteMetaData[\SimpleSem]{Circle}
 
 \ExecuteMetaData[\SimpleSem]{SemanticsCircle}
 
@@ -93,6 +122,16 @@ us the ability to use \AgdaBound{b} in the extended context
 \ExecuteMetaData[\SimpleKits]{GA}.
 In particular, we point at the new variable to yield the desired term in the
 same context.
+I give the definition of each of the fields of \AgdaFunction{RenSem} using
+copattern matching.
+The definition below defines, for example, that taking the
+\AgdaField{$\llbracket$var$\rrbracket$} projection of \AgdaFunction{RenSem} will
+yield \AgdaInductiveConstructor{var}, and that taking the
+\AgdaField{$\llbracket$var$\rrbracket$} projection and then passing an argument
+\AgdaBound{b} will yield \AgdaInductiveConstructor{lam}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaBound{b}\AgdaSpace{}\AgdaSymbol{(}%
+\AgdaFunction{$\searrow^v$}\AgdaSpace{}\AgdaFunction{here$^v$}\AgdaSymbol{)}%
+\AgdaSymbol{)}.
 
 \ExecuteMetaData[\SimpleSem]{RenSemCircle}
 
@@ -104,7 +143,13 @@ from the interpretation of \AgdaBound{$\Gamma$} to the interpretation of
 The interpretation of a type is defined as usual, by recursion on the structure
 of the type.
 The interpretation of a context is the interpretation for each of its types.
-We still have environments storing variables, which delays the interpretation of
+
+\ExecuteMetaData[\SimpleSem]{semTy}
+\ExecuteMetaData[\SimpleSem]{semCtx}
+\ExecuteMetaData[\SimpleSem]{semvdash}
+
+Moving on to the interpretation of terms, we still have environments storing
+variables, which delays the interpretation of
 variables to the \AgdaField{$\llbracket$var$\rrbracket$} case and allows newly
 bound variables to be referred to directly as variables, rather than fetching
 them up-front from an environment of interpretations.
@@ -138,8 +183,7 @@ by the all-possible-renamings modality \AgdaFunction{$\Box$}.
 states that \AgdaBound{T} holds not only at \AgdaBound{$\Gamma$}, but also at
 any context \AgdaBound{$\Gamma^+$} containing \AgdaBound{$\Gamma$} (including
 \ExecuteMetaData[\SimpleKits]{GD}\ for any \AgdaBound{$\Delta$}).
-
-\ExecuteMetaData[\SimpleSem]{Box}
+Refer back to \cref{fig:simple-connectives} for the formal definition.
 
 As well as the flexibility in binding structure, the \AgdaFunction{$\Box$}
 modality allows us to use the somewhat more well behaved and standard
@@ -193,3 +237,19 @@ pass to \AgdaFunction{bindEnv}, while the extension environment
 
 \ExecuteMetaData[\SimpleSem]{sem}
 \ExecuteMetaData[\SimpleSem]{bindEnv}
+
+Because a lot of type formers have type
+\AgdaRecord{Ctx}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaDatatype{Ty}%
+\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaPrimitive{Set}
+(for example, \AgdaRecord{\_$\ni$\_}, \AgdaDatatype{\_$\vdash$\_},
+\AgdaBound{$\V$}, and \AgdaBound{$\C$}),
+I introduce the abbreviation \AgdaFunction{OpenFam} for this type, and use the
+abbreviation from now on.
+The intuition behind the name is that such a type former contains ``open''
+things --- i.e., things with free variables, analogous to open terms --- and
+form a family of sets indexed over object language types.
+The following definition comes from the code of \cref{sec:gen-syn}, where the
+specific datatype \AgdaDatatype{Ty} has been replaced by a module parameter
+\AgdaBound{Ty}, hence the change in colour.
+
+\ExecuteMetaData[\SimpleSyntaxtex]{OpenFam}

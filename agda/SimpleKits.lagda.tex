@@ -11,11 +11,15 @@ open import Relation.Binary.PropositionalEquality hiding ([_])
 infix 20 _∋_ _⊢_
 infixr 25 _`→_
 infix 30 _++ᶜ_
+\end{code}
 
+%<*Ty>
+\begin{code}
 data Ty : Set where
   ι : Ty
   _`→_ : (A B : Ty) → Ty
 \end{code}
+%</Ty>
 
 %<*Ctx>
 \begin{code}

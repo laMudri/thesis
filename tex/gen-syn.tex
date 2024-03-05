@@ -60,12 +60,30 @@ For example, we do not declare that \TirName{app} and \TirName{lam} are
 This limits our generic results to matters of syntax and variables, but provides
 a platform upon which a future semantic scheme could rest.
 
+The form of syntactic rule descriptions is given in \cref{fig:simple-syntax}.
+A rule comprises a conclusion type and a collection of premises.
+Premises are defined inductively, with a single premise comprising a context
+extension $\Delta$ (a context, representing the newly bound variables in that
+subterm) and a required type $A$ (the type of the subterm).
+Individual premises can be combined in a nullary-binary tree fashion.
+Given that conjunction of premises is interpreted as a Cartesian product, which
+is associative, the tree structure is unnecessary.
+Indeed, such a tree structure does not appear in the work of \citet{AACMM21},
+who prefer a list-like representation.
+However, a tree structure will become necessary for the extensions to
+descriptions I provide in \cref{sec:linearity} and \cref{sec:framework}.
+
 \begin{figure}
   \begin{align*}
-    \text{Premises} && \mathit{ps}, \mathit{qs} &\Coloneqq
-      \Delta \vdash A \mid {} \mid \mathit{ps} \quad \mathit{qs}
+    \text{Premises} && \mathit{ps}, \mathit{qs} \Coloneqq{}& \Delta \vdash A
+    &&\text{\color{gray}(premise with new variables $\Delta$ and type $A$)} \\
+                    &&\mid{}&
+    &&\text{\color{gray}(no premises)} \\
+                    &&\mid{}& \mathit{ps} \quad \mathit{qs}
+    &&\text{\color{gray}(conjunction of premises)} \\
     \\
-    \text{Rule} && r, s &\Coloneqq {\mathit{ps} \over \vdash A}
+    \text{Rule} && r, s \Coloneqq{}& {\mathit{ps} \over \vdash A}
+    &&\text{\color{gray}(rule with premises $\mathit{ps}$ concluding $A$)}
   \end{align*}
   \caption{The grammar of typing rules}
   \label{fig:simple-syntax}
@@ -130,24 +148,39 @@ $\Gamma, \Delta \vdash A$, and in the \AgdaField{$\llbracket$con$\rrbracket$}
 field for semantics, the parameter is
 $\Box\plr{{} \env\V \Delta \dotto {} \sdtstile{}\C A}\,\Gamma$.
 
+What I wrote in \cref{fig:simple-syntax} as $\Delta \vdash A$, in Agda I write
+as \ExecuteMetaData[\SimpleSyntaxtex]{single-premise}.
+I write the empty tree of premises as \AgdaInductiveConstructor{`$\dot1$}, and
+conjoin trees of premises using \AgdaInductiveConstructor{\_`$\dottimes$\_}.
 A single premise with newly bound variables is interpreted by shuffling the
 parts into the right place, while multiple premises are interpreted as pointwise
 products of the individual premises (giving the ellipses above).
 
+\ExecuteMetaData[\SimpleSyntaxtex]{Premises}
 \ExecuteMetaData[\SimpleSyntaxtex]{semp}
 
+I transcribe the horizontal bar in the syntax of rules given in
+\cref{fig:simple-syntax} into Agda via the infix constructor
+\AgdaInductiveConstructor{\_`$\rightarrowtriangle$\_}.
+Given that this is the only form a rule can take, I define \AgdaRecord{Rule} as
+a \AgdaKeyword{record} type rather than a \AgdaKeyword{data} type, so as to get
+projections automatically.
 A rule, with all its parameters instantiated, targets a specific type
 \AgdaBound{A$'$}, which we check to match the desired type \AgdaBound{A}.
-Finally, a whole \AgdaRecord{System} comprises a set \AgdaBound{L} of rule
-labels, and \AgdaBound{rs}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}\AgdaBound{L}%
-\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaRecord{Rule}.
+
+\ExecuteMetaData[\SimpleSyntaxtex]{Rule}
+\ExecuteMetaData[\SimpleSyntaxtex]{semr}
+
+Finally, a whole \AgdaRecord{System} comprises a set \AgdaField{Label} of rule
+labels, and \AgdaField{rules}\AgdaSpace{}\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaField{Label}\AgdaSpace{}\AgdaSymbol{$\to$}\AgdaSpace{}\AgdaRecord{Rule}.
 The interpretation of these data is to pick a rule label \AgdaBound{l}, and then
 take the interpretation of the rule \AgdaBound{rs}\AgdaSpace{}\AgdaBound{l}.
 For the sake of defining terms as a least fixed point, it is important to note
 that the interpretation of a syntax description is strictly positive in the
 parameter \AgdaBound{,\_$\llbracket$\_$\vdash$\_$\rrbracket$}.
 
-\ExecuteMetaData[\SimpleSyntaxtex]{semr}
+\ExecuteMetaData[\SimpleSyntaxtex]{System}
 \ExecuteMetaData[\SimpleSyntaxtex]{sems}
 
 The interpretation of a system description as a single layer of syntax is

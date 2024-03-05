@@ -30,13 +30,18 @@ Another main difference is that Autosubst is presented to the user largely as
 a black-box implementation of substitution and related lemmas, in contrast to
 \citeauthor{AACMM21}'s work exposing the \AgdaRecord{Semantics} bundle to the
 user, and having substitution be just one instance.
-\citet{ACMM17} and \citet{AACMM21} provide many examples of traversals over
+\Citet{ACMM17} and \citet{AACMM21} provide many examples of traversals over
 syntax using the same generic environment management as used by substitution.
 However, the focus on substitution in Autosubst has meant that reasoning about
 substitutions has been given more developed support.
 For example, the library provides a tactic \texttt{autosubst} which automates
 many equational proofs involving substitutions based on the $\sigma$-calculus of
 \citet{ACCL91}.
+This difference in exposure of the internals can be traced back to the differing
+implementation approaches of the two tools.
+Autosubst is implemented via metaprogramming in Coq's Ltac sublanguage, whereas
+\citeauthor{AACMM21}'s tool is implemented via generic programming within the
+main term language of Agda.
 
 An interesting feature of Autosubst is \emph{heterogeneous substitution}.
 The motivation for heterogeneous substitution is to handle systems like system
@@ -47,21 +52,31 @@ thanks to $\Lambda$ terms.
 \citeauthor{AACMM21} provide no direct equivalent to heterogeneous substitution,
 and it is unclear how well their work can handle polymorphic calculi.
 
-\citet{Autosubst18} propose some modifications to Autosubst which, as far as I
-can tell, have not yet been incorporated, although all of the case studies in
-the paper are mechanised in Coq.
-In the paper, they adapt and extend the work of \citeauthor{ACMM17} on generic
-semantic traversals to cover a variant of system F.
-They use the term \emph{multivariate traversal} for the generalisation of
-heterogeneous substitution to semantic traversals.
-It appears that this work could be followed through to produce syntax
-descriptions covering polymorphic calculi, which would provide a route for this
-work to be incorporated into the Autosubst library.
+\Citet{Autosubst19} describe a new version of the tool --- \emph{Autosubst 2}.
+Autosubst 2 continues the Autosubst implementation style as metaprogramming over
+Coq, but this time implements the metaprogramming as an external Haskell tool
+rather than a collection of Ltac tactics.
+Autosubst 2 moves closer to the work of \citeauthor{AACMM21} by producing types
+of well scoped terms, with scope-respecting operations over them.
+It also adopts the semantic traversals of \citet{ACMM17}, as described by
+\citet{Autosubst18}.
+Autosubst 2 surpasses both the original Autosubst and the work of
+\citet{AACMM21} in its dedicated support for mutually inductive syntax
+definitions, which would have to be encoded for use in the other two tools.
+\Citet{Autosubst19} give a running example of call-by-value System F,
+demonstrating both the handling of polymorphic calculi and mutually inductively
+defined syntax --- with expressions and values being mutually defined.
+It would be an interesting experiment to port this example to
+\citeauthor{AACMM21}'s framework, to check that these features can indeed be
+encoded.
+It is also conceivable that the syntax descriptions of \citeauthor{AACMM21}
+could be extended with explicit support for multiple mutually defined term
+sorts.
 
 \subsection{Second order abstract syntax}\label{sec:fiore}
 
 Marcelo Fiore and various collaborators have a long line of work aiming for a
-categorical account of variable-binding~\citep{FPT99,Fiore08,FH13,FH10,FM10}.
+categorical account of variable binding~\citep{FPT99,Fiore08,FH13,FH10,FM10}.
 A recent, particularly relevant paper from this line of work is that of
 \citet{FS22}, which mechanises some of this work to obtain a framework similar
 in scope to the work of \citet{AACMM21}.
@@ -103,8 +118,7 @@ work to the mechanisation of programming languages in the much later work of
 \citet{FS22}.
 
 In terms of the underlying theory, both works extend multi-sorted universal
-algebra%\todo{cite}
-with variable-binding.
+algebra with variable binding.
 However, the two extensions are subtly different.
 Universal algebra already has a notion of variable, which supports renaming and
 substitution, and which allows a given term to be evaluated when the free

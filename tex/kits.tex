@@ -19,7 +19,7 @@ is to be substituted into the place of that variable, like the $\beta$-rule for
 $\lambda$-calculus functions.
 
 While substitution has this extra role in a lot of the syntaxes with binding we
-care about, variable-binding also significantly complicates the substitution
+care about, variable binding also significantly complicates the substitution
 operation.
 Substitution acts on the free variables of a term, replacing them by terms, but
 binders mean that some subterms have \emph{more} free variables than our
@@ -56,8 +56,55 @@ substitution is a map into \emph{terms} in $\Gamma$.
 While simultaneous substitution gives us a notion of one context being
 \emph{derivable} from another, simultaneous renaming gives a similar notion
 of derivability restricted to structural rules.
+Renamings and substitutions are so named because of the operations
+\emph{renaming} and \emph{substitution}, which take a renaming (respectively, a
+substitution) and produce a map from terms in $\Delta$ to terms in $\Gamma$.
+The conspicuous contravariance in the previous definitions --- by which
+renamings/substitutions from $\Gamma$ to $\Delta$ are associated with maps from
+things in $\Delta$ to things in $\Gamma$ --- arises from the fact that terms
+(and, as a special case, variables) are naturally interpreted denotationally as
+maps from the interpretation of the context to the interpretation of the type of
+the term.
+Because the context is in the domain position, we expect context maps to act
+contravariantly on terms.
+Additionally, with the order I use, we have that the renamings from $\Gamma$ to
+a singleton context $A$ correspond to variables in context $\Gamma$ of type $A$,
+and similarly substitutions from $\Gamma$ to $A$ are just terms in context
+$\Gamma$ of type $A$, which is the way round we expect sets of variables and
+terms to be specified.
 
-In the derivation below, we assume the existence of a derivation of
+Following the above conventions, we expect the following admissible rules for
+simultaneous renaming and substitution.
+In this subsection, I use floor brackets $\lfloor$ and $\rfloor$ to group
+together those hypotheses that form the simultaneous renaming/substitution.
+The floor brackets are only a visual guide, and do not change the meaning
+of the rules.
+In these rules, $\Delta_i$ denotes the $i$th entry in context $\Delta$.
+
+\begin{mathpar}
+  \ebrule{%
+    \hypo{\Gamma \ni \Delta_1}
+    \delims{\left\lfloor}{\right.}
+    \hypo{\cdots}
+    \hypo{\Gamma \ni \Delta_n}
+    \delims{\left.}{\right\rfloor}
+    \hypo{\Delta \vdash A}
+    \infer4[Rename]{\Gamma \vdash A}
+  }
+  \and
+  \ebrule{%
+    \hypo{\Gamma \vdash \Delta_1}
+    \delims{\left\lfloor}{\right.}
+    \hypo{\cdots}
+    \hypo{\Gamma \vdash \Delta_n}
+    \delims{\left.}{\right\rfloor}
+    \hypo{\Delta \vdash A}
+    \infer4[Subst]{\Gamma \vdash A}
+  }
+\end{mathpar}
+
+As an example of applying \TirName{Subst}, consider the example below.
+We assume the existence of a derivation of
 $B, C \to C \vdash C$, and by the admissibility of substitution we thus have a
 derivation of $A \to B, A \vdash C$.
 Intuitively, the context $A \to B, A$ derives the context $B, C \to C$, so
@@ -68,10 +115,17 @@ rule below, deriving $B$ and $C \to C$ from $A \to B, A$.
 
 \begin{align*}
   &\begin{prooftree}
+    % Vertical spacing
+    \infer0{F}
+    \infer1{F}
+    \rewrite{}
     \hypo{\Pi}
     \infer[no rule]1{A \to B, A \vdash B}
+    \overlay
+    \delims{\left\lfloor}{\right.}
     \infer0[Var]{A \to B, A, C \vdash C}
     \infer1[$\to$-I]{A \to B, A \vdash C \to C}
+    \delims{\left.}{\right\rfloor}
     \hypo{B, C \to C \vdash C}
     \infer3[Subst]{A \to B, A \vdash C}
   \end{prooftree}

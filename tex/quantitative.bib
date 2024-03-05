@@ -664,6 +664,24 @@
   series = {CPP 2018}
 }
 
+@inproceedings{Autosubst19,
+  author = {Stark, Kathrin and Sch\"{a}fer, Steven and Kaiser, Jonas},
+  title = {Autosubst 2: reasoning with multi-sorted de Bruijn terms and vector substitutions},
+  year = {2019},
+  isbn = {9781450362221},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3293880.3294101},
+  doi = {10.1145/3293880.3294101},
+  abstract = {Formalising metatheory in the Coq proof assistant is tedious as reasoning with binders without native support requires a lot of uninteresting technicalities. To relieve users from so-produced boilerplate, the Autosubst framework automates working with de Bruijn terms: For each annotated inductive type, Autosubst generates a corresponding instantiation operation for parallel substitutions and a decision procedure for assumption-free substitution lemmas. However, Autosubst is implemented in Ltac, Coq's tactic language, and thus suffers from Ltac's limitations. In particular, Autosubst is restricted to Coq and unscoped, non-mutual inductive types with a single sort of variables. In this paper, we present a new version of Autosubst that overcomes these restrictions. Autosubst 2 is an external code generator, which translates second-order HOAS specifications into potentially mutual inductive term sorts. We extend the equational theory of Autosubst to the case of mutual inductive sorts by combining the application of multiple parallel substitutions into exactly one instantiation operation for each sort, i.e. we parallelise substitutions to vector substitutions. The resulting equational theory is both simpler and more expressive than that of the original Autosubst framework and allows us to present an even more elegant proof of part A of the POPLMark challenge.},
+  booktitle = {Proceedings of the 8th ACM SIGPLAN International Conference on Certified Programs and Proofs},
+  pages = {166–180},
+  numpages = {15},
+  keywords = {sigma-calculus, parallel substiutions, multi-sorted terms, de Bruijn repersentation},
+  location = {Cascais, Portugal},
+  series = {CPP 2019}
+}
+
 @article{ACCL91,
   title={Explicit substitutions},
   volume={1},
@@ -1506,6 +1524,38 @@
   bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
 
+@article{BP99DeBruijn,
+  author       = {Richard S. Bird and
+                  Ross Paterson},
+  title        = {De Bruijn Notation as a Nested Datatype},
+  journal      = {J. Funct. Program.},
+  volume       = {9},
+  number       = {1},
+  pages        = {77--91},
+  year         = {1999},
+  url          = {https://doi.org/10.1017/s0956796899003366},
+  doi          = {10.1017/S0956796899003366},
+  timestamp    = {Fri, 10 Jun 2022 10:35:14 +0200},
+  biburl       = {https://dblp.org/rec/journals/jfp/BirdP99.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{BP99Nested,
+  author       = {Richard S. Bird and
+                  Ross Paterson},
+  title        = {Generalised folds for nested datatypes},
+  journal      = {Formal Aspects Comput.},
+  volume       = {11},
+  number       = {2},
+  pages        = {200--222},
+  year         = {1999},
+  url          = {https://doi.org/10.1007/s001650050047},
+  doi          = {10.1007/S001650050047},
+  timestamp    = {Mon, 09 May 2022 16:20:12 +0200},
+  biburl       = {https://dblp.org/rec/journals/fac/BirdP99.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
 @article{GG17,
   author       = {Murdoch James Gabbay and
                   Michael Gabbay},
@@ -1738,4 +1788,154 @@
   booktitle = {Handbook of Logic in Computer Science (Vol. 2): Background: Computational Structures},
   pages = {117–309},
   numpages = {193}
+}
+
+@article{SM19,
+  author = {Sozeau, Matthieu and Mangin, Cyprien},
+  title = {Equations reloaded: high-level dependently-typed functional programming and proving in Coq},
+  year = {2019},
+  issue_date = {August 2019},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {3},
+  number = {ICFP},
+  url = {https://doi.org/10.1145/3341690},
+  doi = {10.1145/3341690},
+  abstract = {Equations is a plugin for the Coq proof assistant which provides a notation for defining programs by dependent pattern-matching and structural or well-founded recursion. It additionally derives useful high-level proof principles for demonstrating properties about them, abstracting away from the implementation details of the function and its compiled form. We present a general design and implementation that provides a robust and expressive function definition package as a definitional extension to the Coq kernel. At the core of the system is a new simplifier for dependent equalities based on an original handling of the no-confusion property of constructors.},
+  journal = {Proc. ACM Program. Lang.},
+  month = {jul},
+  articleno = {86},
+  numpages = {29},
+  keywords = {recursion, proof assistants, dependent pattern-matching}
+}
+
+@inproceedings{CH03,
+  title={First-Class Phantom Types},
+  author={James Cheney and Ralf Hinze},
+  year={2003},
+  url={https://api.semanticscholar.org/CorpusID:45443161}
+}
+
+@article{SP08,
+  title = {Meta-programming With Built-in Type Equality},
+  journal = {Electronic Notes in Theoretical Computer Science},
+  volume = {199},
+  pages = {49-65},
+  year = {2008},
+  note = {Proceedings of the Fourth International Workshop on Logical Frameworks and Meta-Languages (LFM 2004)},
+  issn = {1571-0661},
+  doi = {https://doi.org/10.1016/j.entcs.2007.11.012},
+  url = {https://www.sciencedirect.com/science/article/pii/S1571066108000789},
+  author = {Tim Sheard and Emir Pasalic},
+  keywords = {Meta-programming, Meta-language, Equality types}
+}
+
+@inproceedings{10.1145/604131.604150,
+author = {Xi, Hongwei and Chen, Chiyan and Chen, Gang},
+title = {Guarded recursive datatype constructors},
+year = {2003},
+isbn = {1581136285},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/604131.604150},
+doi = {10.1145/604131.604150},
+abstract = {We introduce a notion of guarded recursive (g.r.) datatype constructors, generalizing the notion of recursive datatypes in functional programming languages such as ML and Haskell. We address both theoretical and practical issues resulted from this generalization. On one hand, we design a type system to formalize the notion of g.r. datatype constructors and then prove the soundness of the type system. On the other hand, we present some significant applications (e.g., implementing objects, implementing staged computation, etc.) of g.r. datatype constructors, arguing that g.r. datatype constructors can have far-reaching consequences in programming. The main contribution of the paper lies in the recognition and then the formalization of a programming notion that is of both theoretical interest and practical use.},
+booktitle = {Proceedings of the 30th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
+pages = {224–235},
+numpages = {12},
+keywords = {guarded recursive datatype constructors},
+location = {New Orleans, Louisiana, USA},
+series = {POPL '03}
+}
+
+@article{XCC03,
+  author = {Xi, Hongwei and Chen, Chiyan and Chen, Gang},
+  title = {Guarded recursive datatype constructors},
+  year = {2003},
+  issue_date = {January 2003},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {38},
+  number = {1},
+  issn = {0362-1340},
+  url = {https://doi.org/10.1145/640128.604150},
+  doi = {10.1145/640128.604150},
+  abstract = {We introduce a notion of guarded recursive (g.r.) datatype constructors, generalizing the notion of recursive datatypes in functional programming languages such as ML and Haskell. We address both theoretical and practical issues resulted from this generalization. On one hand, we design a type system to formalize the notion of g.r. datatype constructors and then prove the soundness of the type system. On the other hand, we present some significant applications (e.g., implementing objects, implementing staged computation, etc.) of g.r. datatype constructors, arguing that g.r. datatype constructors can have far-reaching consequences in programming. The main contribution of the paper lies in the recognition and then the formalization of a programming notion that is of both theoretical interest and practical use.},
+  journal = {SIGPLAN Not.},
+  month = {jan},
+  pages = {224–235},
+  numpages = {12},
+  keywords = {guarded recursive datatype constructors}
+}
+
+@inproceedings{10.1145/2676726.2676969,
+author = {Krishnaswami, Neelakantan R. and Pradic, Pierre and Benton, Nick},
+title = {Integrating Linear and Dependent Types},
+year = {2015},
+isbn = {9781450333009},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2676726.2676969},
+doi = {10.1145/2676726.2676969},
+abstract = {In this paper, we show how to integrate linear types with type dependency, by extending the linear/non-linear calculus of Benton to support type dependency. Next, we give an application of this calculus by giving a proof-theoretic account of imperative programming, which requires extending the calculus with computationally irrelevant quantification, proof irrelevance, and a monad of computations. We show the soundness of our theory by giving a realizability model in the style of Nuprl, which permits us to validate not only the beta-laws for each type, but also the eta-laws. These extensions permit us to decompose Hoare triples into a collection of simpler type-theoretic connectives, yielding a rich equational theory for dependently-typed higher-order imperative programs. Furthermore, both the type theory and its model are relatively simple, even when all of the extensions are considered.},
+booktitle = {Proceedings of the 42nd Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
+pages = {17–30},
+numpages = {14},
+keywords = {dependent types, hoare triples, intersection types, linear types, proof irrelevance, separation logic},
+location = {Mumbai, India},
+series = {POPL '15}
+}
+
+@article{Vakar14,
+  author       = {Matthijs V{\'{a}}k{\'{a}}r},
+  title        = {Syntax and Semantics of Linear Dependent Types},
+  journal      = {CoRR},
+  volume       = {abs/1405.0033},
+  year         = {2014},
+  url          = {http://arxiv.org/abs/1405.0033},
+  eprinttype    = {arXiv},
+  eprint       = {1405.0033},
+  timestamp    = {Mon, 13 Aug 2018 16:48:19 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/Vakar14.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+@article{KPB15,
+  author = {Krishnaswami, Neelakantan R. and Pradic, Pierre and Benton, Nick},
+  title = {Integrating Linear and Dependent Types},
+  year = {2015},
+  issue_date = {January 2015},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {50},
+  number = {1},
+  issn = {0362-1340},
+  url = {https://doi.org/10.1145/2775051.2676969},
+  doi = {10.1145/2775051.2676969},
+  abstract = {In this paper, we show how to integrate linear types with type dependency, by extending the linear/non-linear calculus of Benton to support type dependency. Next, we give an application of this calculus by giving a proof-theoretic account of imperative programming, which requires extending the calculus with computationally irrelevant quantification, proof irrelevance, and a monad of computations. We show the soundness of our theory by giving a realizability model in the style of Nuprl, which permits us to validate not only the beta-laws for each type, but also the eta-laws. These extensions permit us to decompose Hoare triples into a collection of simpler type-theoretic connectives, yielding a rich equational theory for dependently-typed higher-order imperative programs. Furthermore, both the type theory and its model are relatively simple, even when all of the extensions are considered.},
+  journal = {SIGPLAN Not.},
+  month = {jan},
+  pages = {17–30},
+  numpages = {14},
+  keywords = {dependent types, hoare triples, intersection types, linear types, proof irrelevance, separation logic}
+}
+
+@inproceedings{BM98,
+  author       = {Richard S. Bird and
+                  Lambert G. L. T. Meertens},
+  editor       = {Johan Jeuring},
+  title        = {Nested Datatypes},
+  booktitle    = {Mathematics of Program Construction, MPC'98, Marstrand, Sweden, June
+                  15-17, 1998, Proceedings},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {1422},
+  pages        = {52--67},
+  publisher    = {Springer},
+  year         = {1998},
+  url          = {https://doi.org/10.1007/BFb0054285},
+  doi          = {10.1007/BFB0054285},
+  timestamp    = {Tue, 14 May 2019 10:00:46 +0200},
+  biburl       = {https://dblp.org/rec/conf/mpc/BirdM98.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
 }

@@ -1,11 +1,20 @@
 \chapter{Mechanisation of simple types}\label{sec:simple}
 
 In this chapter, I review and justify the family of approaches usually used to
-represent simple type systems inside dependently typed proof assistants.
-These approaches were first presented by \citet{AR99}, who showed a way of
-representing well \emph{scoped} terms in a language with polymorphic recursion,
-and extended the representation to well \emph{typed} terms in a language with
-dependent types.
+represent simple type systems inside dependently typed proof assistants:
+intrinsically well scoped and well typed representations.
+The line of work leading to intrinsically well typed representations of syntax
+starts with \citet{BH94}, who defined, in Standard ML, a type of
+$\lambda$-calculus terms indexed on the set/type of variables they contain, and
+gave some operations on them.
+Later, \citet{AR99} (working from a suggestion by Hook) and \citet{BP99DeBruijn}
+used Haskell's support for nested
+datatypes and polymorphic recursion over them to define types of terms indexed
+only over \emph{free} variables, with a $\lambda$-abstraction having one fewer
+free variable than its immediate subterm.
+\Citet{AR99} also showed how to extend this well \emph{scoped} representation of
+terms to a well \emph{typed} representation, given a metalanguage with dependent
+types.
 The representation of terms relies on indexing on both a context --- giving the
 types of all the free variables --- and a type for the term itself.
 A basic operation on terms is \emph{simultaneous substitution}, which replaces
@@ -16,15 +25,17 @@ each variable in the context by a term in another context.
 %composition of a Cartesian multicategory, which allows all of the terms being
 %substituted in to share a context.
 
-This chapter almost entirely reviews prior work.
+This chapter reviews prior work, except for a mildly novel connecting stage at
+the start of \cref{sec:gen-sem} introducing the
+\AgdaFunction{$\bigcirc$}-modality.
 First, in \cref{sec:agda-primer}, I give an introduction to Agda, the proof
 assistant I work in throughout this thesis.
 Then, in \cref{sec:terms}, I use a presentation of the dependently typed
 encoding of the simply typed $\lambda$-calculus from \citet{AR99} to set
 notational conventions.
-\Cref{sec:kits} presents the unpublished work of \citet{McBride05},
+\Cref{sec:kits} presents the work of \citet{BHKM12},
 successively deriving simultaneous renaming and simultaneous substitution for
-the terms defined in \cref{sec:terms}.
+the terms defined in \cref{sec:terms} from a single traversal of the syntax.
 The rest of the chapter generalises the shared core of renaming and substitution
 in two dimensions: in \cref{sec:gen-sem} following \citet{ACMM17} to cover
 semantic traversals, and in \cref{sec:gen-syn} following \citet{AACMM21} to

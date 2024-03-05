@@ -9,11 +9,43 @@ open import Data.Product
 open import Data.Unit
 open import Function.Base using (id; _ˢ_)
 open import Relation.Binary.PropositionalEquality hiding ([_])
-open import Relation.Nary
 
 open import SimpleKits
 open Kits hiding (ren; sub; Kit)
+
+infixr 6 _⇒_
+infixr 7 _∩_
 \end{code}
+
+% All connectives together for figure:
+
+%<*dotone>
+\begin{code}
+U : (Ctx → Set)
+U Γ = ⊤
+\end{code}
+%</dotone>
+
+%<*dottimes>
+\begin{code}
+_∩_ : (T U : Ctx → Set) → (Ctx → Set)
+(T ∩ U) Γ = T Γ × U Γ
+\end{code}
+%</dottimes>
+
+%<*dotto>
+\begin{code}
+_⇒_ : (T U : Ctx → Set) → (Ctx → Set)
+(T ⇒ U) Γ = T Γ → U Γ
+\end{code}
+%</dotto>
+
+%<*allb>
+\begin{code}
+∀[_] : (Ctx → Set) → Set
+∀[ T ] = ∀ {Γ} → T Γ
+\end{code}
+%</allb>
 
 %<*EnvSyntax>
 \begin{code}
@@ -109,6 +141,7 @@ It is useless, though.
     RenSem .⟦app⟧ = app
     RenSem .⟦lam⟧ b = lam (b (↘ᵛ hereᵛ))
 
+    ren : ∀ {Γ Δ A} → Env _∋_ Γ Δ → Δ ⊢ A → Γ ⊢ A
     ren = sem RenSem
 \end{code}
 %</RenSemCircle>
@@ -123,16 +156,30 @@ It is useless, though.
     sub = sem SubSem
 \end{code}
 
-%<*SetSemCircle>
+%<*semTy>
 \begin{code}
     ⟦_⟧Ty : Ty → Set
     ⟦ ι ⟧Ty = ℕ
     ⟦ A `→ B ⟧Ty = ⟦ A ⟧Ty → ⟦ B ⟧Ty
+\end{code}
+%</semTy>
+
+%<*semCtx>
+\begin{code}
     ⟦_⟧Ctx : Ctx → Set
     ⟦ Γ ⟧Ctx = Liftₙ ⟦_⟧Ty (Γ .ty-ctx)
+\end{code}
+%</semCtx>
+
+%<*semvdash>
+\begin{code}
     ⟦_⊢_⟧ : Ctx → Ty → Set
     ⟦ Γ ⊢ A ⟧ = ⟦ Γ ⟧Ctx → ⟦ A ⟧Ty
+\end{code}
+%</semvdash>
 
+%<*SetSemCircle>
+\begin{code}
     SetSem : Semantics _∋_ ⟦_⊢_⟧
     SetSem .↙ᵏ v = ↙ᵛ v
     SetSem .⟦var⟧ (el i refl) γ = γ .get i

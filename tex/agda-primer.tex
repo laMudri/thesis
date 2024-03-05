@@ -202,7 +202,8 @@ Agda's \AgdaKeyword{data}-declarations are similar in scope to Haskell's, with
 the addition of indexing by terms of arbitrary type.
 \AgdaKeyword{data}-declarations give us indexed inductive sum-of-product types.
 
-All \AgdaKeyword{data}-declarations use GADT syntax.
+All \AgdaKeyword{data}-declarations use \emph{generalised algebraic data type}
+(GADT) syntax~\citep{CH03,SP08,XCC03}.
 The body of a declaration comprises a list of constructor names paired with
 their types.
 Where two constructors have the same type, they may be written on the same line
@@ -254,7 +255,7 @@ recursion to indices of arbitrary type~\citep{Mycroft84,Henglein93}.
 
 I give two examples of type families with Protestant indices.
 The first, \AgdaDatatype{NestedList} is standard from the polymorphic recursion
-literature.
+literature~\citep{BM98}.
 It is worth noting at this point that Agda permits overloading of constructors,
 which are disambiguated by the type family they are being used to construct.
 This overloading allows \AgdaDatatype{List} and \AgdaDatatype{NestedList} to
@@ -708,13 +709,15 @@ of novel work to be presented in this thesis.
 
 I use the ``Conor colours'' option for Agda syntax highlighting.
 This set of colours is inspired by Conor McBride's syntax highlighting for
-Epigram 2.
+Epigram.
 The colour given to a name is determined by the type of declaration that name
 is bound to.
 The main colours are \AgdaDatatype{blue} for types and type families,
 \AgdaField{red} for constructors of data types and fields of records,
 \AgdaFunction{green} for definitions which may unfold/compute, and
 \AgdaBound{purple} for local variables.
+The actual rendering of Agda code into \LaTeX{} is done by a backend of the Agda
+compiler invoked via the command \texttt{agda --latex}.
 
 Separately, I use \gr{green} in many places for usage annotations in traditional
 typeset mathematical notation.
