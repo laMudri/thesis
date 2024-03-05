@@ -97,7 +97,7 @@ mentioned by \citet{BBdePH93}.
 
 \begin{proposition}\label{thm:PT-NKT4}
   In NJ + \TirName{Promotion} + \TirName{T}, we can derive the original axioms
-  and rule of S4: \TirName{N}, \TirName{K}, \TirName{T}, and \TirName{4}
+  and rule of S4: \TirName{N}, \TirName{K}, \TirName{T}, and \TirName{4}.
 \end{proposition}
 \begin{proof}
   The rule \TirName{N} and axiom \TirName{T} are immediate.
@@ -106,8 +106,10 @@ mentioned by \citet{BBdePH93}.
   \TirName{$\to$-E}.
   \begin{mathpar}
     \ebrule{%
-      \infer0[T$'$]{\Box\plr{A \to B} \vdash A \to B}
-      \infer0[T$'$]{\Box A \vdash A}
+      \infer0[Var]{\Box\plr{A \to B} \vdash \Box\plr{A \to B}}
+      \infer1[T$'$]{\Box\plr{A \to B} \vdash A \to B}
+      \infer0[Var]{\Box A \vdash \Box A}
+      \infer1[T$'$]{\Box A \vdash A}
       \infer2[$\to$-E]{\Box\plr{A \to B}, \Box A \vdash B}
       \infer1[Promotion]{\Box\plr{A \to B}, \Box A \vdash \Box B}
       \infer1[$\to$-I]{\Box\plr{A \to B} \vdash \Box A \to \Box B}
@@ -126,8 +128,8 @@ mentioned by \citet{BBdePH93}.
 introduce the $\Box$ operator and a \TirName{T}-like rule to eliminate the
 $\Box$ operator may be a possible approach to capture S4 in a natural deduction
 style.
-However, we do not want to add such a rule to our system because it is not
-stable under substitution.
+However, we do not want to add \TirName{Promotion} to our system because it is
+not stable under substitution.
 For example, let
 $\sigma : \Box A \wedge \Box B \env\vdash \Box A, \Box B$ be the substitution
 whose two components are given by left projection and right projection,
@@ -135,10 +137,27 @@ respectively.
 The substitution principle says that we should be able to turn any derivation of
 $\Box A, \Box B \vdash \Box C$ into a derivation of
 $\Box A \wedge \Box B \vdash \Box C$.
-However, if we concluded $\Box A, \Box B \vdash \Box C$ by \TirName{Promotion},
-then it becomes unclear how to conclude $\Box A \wedge \Box B \vdash \Box C$.
+Let $A \coloneqq B \to C$.
+Then, we have the following derivation of $\Box A, \Box B \vdash \Box C$, where
+\TirName{T$'$} is the same abbreviation as it was in the proof of
+\cref{thm:PT-NKT4}.
+
+\begin{displaymath}
+  \begin{prooftree}
+    \infer0[Var]{\Box\plr{B \to C}, \Box B \vdash \Box\plr{B \to C}}
+    \infer1[T$'$]{\Box\plr{B \to C}, \Box B \vdash B \to C}
+    \infer0[Var]{\Box\plr{B \to C}, \Box B \vdash \Box B}
+    \infer1[T$'$]{\Box\plr{B \to C}, \Box B \vdash B}
+    \infer2[$\to$-E]{\Box\plr{B \to C}, \Box B \vdash C}
+    \infer1[Promotion]{\Box\plr{B \to C}, \Box B \vdash \Box C}
+  \end{prooftree}
+\end{displaymath}
+
+However, it is unclear how to derive
+$\Box\plr{B \to C} \wedge \Box B \vdash \Box C$ in NJ + \TirName{Promotion} +
+\TirName{T}.
 In particular, \TirName{Promotion} does not apply because the formula
-$\Box A \wedge \Box B$ is headed by $\wedge$, rather than $\Box$.
+$\Box\plr{B \to C} \wedge \Box B$ is headed by $\wedge$, rather than $\Box$.
 
 Instead of constraining the types of all of the items in the context, the
 solution given by \citet{judgmental} is to diversify the shapes of contexts, and
@@ -171,7 +190,7 @@ Otherwise, like true hypotheses, an $A~\mathit{valid}$ hypothesis can be used to
 obtain $A~\mathit{true}$, via the \TirName{vVar} rule, as justified by axiom
 \TirName{4}.
 
-The three new rules are listed in \cref{fig:PD}.
+The three new rules are listed below.
 Let $\Gamma_v$ be the context $\Gamma$ but with all true hypotheses removed,
 leaving only valid hypotheses.
 Because I am working with a De Bruijn index-style presentation, weakening needs
@@ -179,27 +198,24 @@ to be admissible.
 Therefore, the \TirName{$\Box$-I} rule needs to remove its true hypotheses,
 rather than only applying in a context in which there are no true hypotheses.
 
-\begin{figure}
-  \begin{mathpar}
-    \ebrule{%
-      \hypo{\Gamma_v \vdash A~\mathit{true}}
-      \infer1[$\Box$-I]{\Gamma \vdash \Box A~\mathit{true}}
-    }
-    \and
-    \ebrule{%
-      \hypo{\Gamma \vdash \Box A~\mathit{true}}
-      \hypo{\Gamma, A~\mathit{valid} \vdash B~\mathit{true}}
-      \infer2[$\Box$-E]{\Gamma \vdash B~\mathit{true}}
-    }
-    \and
-    \ebrule{%
-      \hypo{\Gamma \ni \plr{A~\mathit{valid}}}
-      \infer1[vVar]{\Gamma \vdash A~\mathit{true}}
-    }
-  \end{mathpar}
-  \caption{The new rules of the \citeauthor{judgmental} presentation of IS4.}
-  \label{fig:PD}
-\end{figure}
+\vspace{-2.5em}
+\begin{mathpar}
+  \ebrule{%
+    \hypo{\Gamma_v \vdash A~\mathit{true}}
+    \infer1[$\Box$-I]{\Gamma \vdash \Box A~\mathit{true}}
+  }
+  \and
+  \ebrule{%
+    \hypo{\Gamma \vdash \Box A~\mathit{true}}
+    \hypo{\Gamma, A~\mathit{valid} \vdash B~\mathit{true}}
+    \infer2[$\Box$-E]{\Gamma \vdash B~\mathit{true}}
+  }
+  \and
+  \ebrule{%
+    \hypo{\Gamma \ni \plr{A~\mathit{valid}}}
+    \infer1[vVar]{\Gamma \vdash A~\mathit{true}}
+  }
+\end{mathpar}
 
 Whereas \citet{judgmental} prove single substitution for both true and valid
 hypotheses (as well as \emph{possible} hypotheses, and for possible judgements,
@@ -257,8 +273,8 @@ check that they interact in the desired way.
 
 \begin{lemma}[lookup]\label{thm:PD-lookup}
   If $\vDash$ respects renaming (i.e., we have a function
-  $\mathrm{ren}^\vDash :
-  \Gamma \env\ni \Delta \to \Delta \vDash A \to \Gamma \vDash A$
+  \mbox{$\mathrm{ren}^\vDash :
+  \Gamma \env\ni \Delta \to \Delta \vDash A \to \Gamma \vDash A$}
   for each $\Gamma$, $\Delta$, and $A$), then
   from an environment $\rho : \Gamma \env\vDash \Delta$ and a variable
   $x : \Delta \ni A$, we get a value $\rho(x) : \Gamma \vDash A$.

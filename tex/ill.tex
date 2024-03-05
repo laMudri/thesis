@@ -142,100 +142,76 @@ contraction, but distinct in linear logic.
       \hypo{\Gamma, B, A, \Delta \vdash C}
       \infer1[Exch]{\Gamma, A, B, \Delta \vdash C}
     }
-
-    \and
-
-    \ebrule{%
-      \hypo{\Gamma \vdash C}
-      \infer1[$I$-L]{\Gamma, I \vdash C}
-    }
-
-    \and
-
-    \ebrule{%
-      \infer0[$I$-R]{{\cdot} \vdash I}
-    }
-
-    \and
-
-    \ebrule{%
-      \hypo{\Gamma, A, B \vdash C}
-      \infer1[$\otimes$-L]{\Gamma, A \otimes B \vdash C}
-    }
-
-    \and
-
-    \ebrule{%
-      \hypo{\Gamma \vdash A}
-      \hypo{\Delta \vdash B}
-      \infer2[$\otimes$-R]{\Gamma, \Delta \vdash A \otimes B}
-    }
-
-    \and
-
-    \ebrule{%
-      \hypo{\Gamma \vdash A}
-      \hypo{\Delta, B \vdash C}
-      \infer2[$\multimap$-L]{\Gamma, \Delta, A \multimap B \vdash C}
-    }
-
-    \and
-
-    \ebrule{%
-      \hypo{\Gamma, A \vdash B}
-      \infer1[$\multimap$-R]{\Gamma \vdash A \multimap B}
-    }
-
-    \and
-
-    \ebrule{%
-      \infer0[$0$-L]{\Gamma, 0 \vdash C}
-    }
-
-    \and
-
-    \text{(no $0$-R)}
-
-    \and
-
-    \ebrule{%
-      \hypo{\Gamma, A \vdash C}
-      \hypo{\Gamma, B \vdash C}
-      \infer2[$\oplus$-L]{\Gamma, A \oplus B \vdash C}
-    }
-
-    \and
-
-    \ebrule{%
-      \hypo{\Gamma \vdash A_i}
-      \infer1[$\oplus$-R$_i$]{\Gamma \vdash A_0 \oplus A_1}
-    }
-
-    \and
-
-    \text{(no $\top$-L)}
-
-    \and
-
-    \ebrule{%
-      \infer0[$\top$-R]{\Gamma \vdash \top}
-    }
-
-    \and
-
-    \ebrule{%
-      \hypo{\Gamma, A_i \vdash C}
-      \infer1[$\with$-L$_i$]{\Gamma, A_0 \with A_1 \vdash C}
-    }
-
-    \and
-
-    \ebrule{%
-      \hypo{\Gamma \vdash A}
-      \hypo{\Gamma \vdash B}
-      \infer2[$\with$-R]{\Gamma \vdash A \with B}
-    }
   \end{mathpar}
+  \begin{displaymath}
+    \arraycolsep=4em
+    \begin{array}{cc}
+      \ebrule{%
+        \hypo{\Gamma \vdash C}
+        \infer1[$I$-L]{\Gamma, I \vdash C}
+      }
+      &
+      \ebrule{%
+        \infer0[$I$-R]{{\cdot} \vdash I}
+      }
+      \\\\
+      \ebrule{%
+        \hypo{\Gamma, A, B \vdash C}
+        \infer1[$\otimes$-L]{\Gamma, A \otimes B \vdash C}
+      }
+      &
+      \ebrule{%
+        \hypo{\Gamma \vdash A}
+        \hypo{\Delta \vdash B}
+        \infer2[$\otimes$-R]{\Gamma, \Delta \vdash A \otimes B}
+      }
+      \\\\
+      \ebrule{%
+        \hypo{\Gamma \vdash A}
+        \hypo{\Delta, B \vdash C}
+        \infer2[$\multimap$-L]{\Gamma, \Delta, A \multimap B \vdash C}
+      }
+      &
+      \ebrule{%
+        \hypo{\Gamma, A \vdash B}
+        \infer1[$\multimap$-R]{\Gamma \vdash A \multimap B}
+      }
+      \\\\
+      \ebrule{%
+        \infer0[$0$-L]{\Gamma, 0 \vdash C}
+      }
+      &
+      \text{(no $0$-R)}
+      \\\\
+      \ebrule{%
+        \hypo{\Gamma, A \vdash C}
+        \hypo{\Gamma, B \vdash C}
+        \infer2[$\oplus$-L]{\Gamma, A \oplus B \vdash C}
+      }
+      &
+      \ebrule{%
+        \hypo{\Gamma \vdash A_i}
+        \infer1[$\oplus$-R$_i$]{\Gamma \vdash A_0 \oplus A_1}
+      }
+      \\\\
+      \text{(no $\top$-L)}
+      &
+      \ebrule{%
+        \infer0[$\top$-R]{\Gamma \vdash \top}
+      }
+      \\\\
+      \ebrule{%
+        \hypo{\Gamma, A_i \vdash C}
+        \infer1[$\with$-L$_i$]{\Gamma, A_0 \with A_1 \vdash C}
+      }
+      &
+      \ebrule{%
+        \hypo{\Gamma \vdash A}
+        \hypo{\Gamma \vdash B}
+        \infer2[$\with$-R]{\Gamma \vdash A \with B}
+      }
+    \end{array}
+  \end{displaymath}
   \caption{Multiplicative-additive fragment of linear logic}
   \label{fig:mall}
 \end{figure}
@@ -370,7 +346,7 @@ rule from \cref{fig:bang-seq}, but on the right.
 The \citeauthor{BBdePH93} \TirName{Promotion} rule is more formally complex, but
 can be understood as follows.
 We notice that the problem with the \TirName{Promotion} rule of
-\TirName{fig:bang-seq} when added to a natural deduction system is that it
+\cref{fig:bang-seq} when added to a natural deduction system is that it
 restricts the types of assumptions in the concluding sequent.
 In other words, the sequent calculus \TirName{Promotion} rule is acting like
 both a right-rule and, problematically, a left-rule, to some degree.

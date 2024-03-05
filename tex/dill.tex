@@ -67,8 +67,8 @@ multiplicative and additive connectives look not too dissimilar to those in
 \cref{fig:mall}.
 However, their treatment of intuitionistic assumptions (contraction and
 weakening automatically, as in non-substructural calculi) is new.
-Meanwhile, the rules for the $\oc$-modality are the same as those for
-the $\Box$-modality given in \cref{fig:PD}, except for the implicit structural
+Meanwhile, the rules for the $\oc$-modality are the same as \TirName{$\Box$-I}
+and \TirName{$\Box$-E} from \cref{sec:modal}, except for the implicit structural
 rules applying to linear assumptions.
 For example, where the \TirName{$\Box$-I} rule discards true assumptions, the
 \TirName{$\oc$-I} rule cannot discard linear assumptions, but instead requires
@@ -88,7 +88,7 @@ that no linear assumptions can be used in the subproof.
       \hypo{\Gamma \ni A}
       \infer1[Var]{\Gamma \vdash A~\mathit{lin}}
     }
-    \and
+    \\
     \ebrule{%
       \hypo{\Gamma \vdash I~\mathit{lin}}
       \hypo{\Delta \vdash C~\mathit{lin}}
@@ -99,7 +99,7 @@ that no linear assumptions can be used in the subproof.
       \hypo{\Gamma~\mathit{int}}
       \infer1[$I$-I]{\Gamma \vdash I~\mathit{lin}}
     }
-    \and
+    \\
     \ebrule{%
       \hypo{\Gamma \vdash A \otimes B~\mathit{lin}}
       \hypo{\Delta, A~\mathit{lin}, B~\mathit{lin} \vdash C~\mathit{lin}}
@@ -111,7 +111,7 @@ that no linear assumptions can be used in the subproof.
       \hypo{\Delta \vdash B~\mathit{lin}}
       \infer2[$\otimes$-I]{\Gamma + \Delta \vdash A \otimes B~\mathit{lin}}
     }
-    \and
+    \\
     \ebrule{%
       \hypo{\Gamma \vdash A \multimap B~\mathit{lin}}
       \hypo{\Delta \vdash A~\mathit{lin}}
@@ -122,14 +122,14 @@ that no linear assumptions can be used in the subproof.
       \hypo{\Gamma, A~\mathit{lin} \vdash B~\mathit{lin}}
       \infer1[$\multimap$-I]{\Gamma \vdash A \multimap B~\mathit{lin}}
     }
-    \and
+    \\
     \ebrule{%
       \hypo{\Gamma \vdash 0~\mathit{lin}}
       \infer1[$0$-E]{\Gamma + \Delta \vdash C~\mathit{lin}}
     }
     \and
     \text{(no \TirName{$0$-I})}
-    \and
+    \\
     \ebrule{%
       \hypo{\Gamma \vdash A \oplus B~\mathit{lin}}
       \hypo{\Delta, A~\mathit{lin} \vdash C~\mathit{lin}}
@@ -141,13 +141,13 @@ that no linear assumptions can be used in the subproof.
       \hypo{\Gamma \vdash A_i~\mathit{lin}}
       \infer1[$\oplus$-I$_i$]{\Gamma \vdash A_0 \oplus A_1~\mathit{lin}}
     }
-    \and
+    \\
     \text{(no \TirName{$\top$-E})}
     \and
     \ebrule{%
       \infer0[$\top$-I]{\Gamma \vdash \top~\mathit{lin}}
     }
-    \and
+    \\
     \ebrule{%
       \hypo{\Gamma \vdash A_0 \with A_1~\mathit{lin}}
       \infer1[$\with$-E$_i$]{\Gamma \vdash A_i~\mathit{lin}}
@@ -158,7 +158,7 @@ that no linear assumptions can be used in the subproof.
       \hypo{\Gamma \vdash B~\mathit{lin}}
       \infer2[$\with$-I]{\Gamma \vdash A \with B~\mathit{lin}}
     }
-    \and
+    \\
     \ebrule{%
       \hypo{\Gamma \vdash \oc A~\mathit{lin}}
       \hypo{\Delta, A~\mathit{int} \vdash \oc C~\mathit{lin}}
@@ -187,10 +187,30 @@ will provide useful enough intuitions to justify including here.
 However, I will revisit the idea of environments for linear calculi in a more
 general semiring-annotated setting in \cref{sec:ren-sub-lr}.
 
-Finally, notice that the rules given in \cref{fig:dill} characterise $\oc$ up to
+Notice that the rules given in \cref{fig:dill} characterise $\oc$ up to
 logical equivalence.
 The main feature ensuring this property is that each logical rule contains
 exactly one occurrence of a logical connective, meaning that each logical rule
 is only defining that connective in that place.
 For the full characterisation result, we also require local soundness and
 completeness of $\oc$, as discussed by \citet{judgmental} in the modal setting.
+
+As a concluding note on DILL, and as motivation for \cref{sec:semirings}, I
+consider the extension of DILL to type dependency.
+Such an extension has been studied by \citet{Vakar14}, and a similar extension
+to linear/non-linear logic~\citep{Benton94} has been studied by \citet{KPB15}.
+While these systems are well behaved on their own terms, both conspicuously omit
+dependency on linear values.
+This limitation means that one is not able to reason inside the language about
+linear values --- for example, we cannot state equations between linear values.
+The limitation arises from the fact that, in DILL and most other traditional
+presentations of linear logic, linear variables go out of scope in any subterms
+in which they are not used.
+As noted by \citet{McBride16}, appearance in types should not be considered
+\emph{use}.
+According to DILL, unused linear variables are not in scope, and thus linear
+variables are not in scope for types, and thus cannot appear in types.
+\Citet{McBride16} develops a system, refined by \citet{Atkey18}, in which unused
+linear variables remain in scope, and thus can appear in types.
+It is this system, based on semiring annotations on variables, which is
+most closely related to the system I present in \cref{sec:semirings}.
