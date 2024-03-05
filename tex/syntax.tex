@@ -45,7 +45,7 @@ a conclusion type. We assume that there is a
 $\AgdaBound{Ty} : \AgdaPrimitiveType{Set}$ of types for the system in
 scope.
 
-The \AgdaDatatype{Premise} data type describes premises of rules,
+The \AgdaDatatype{Premises} data type describes premises of rules,
 using the bunched connectives from \cref{fig:bunched}. A single
 premise is introduced by the
 \AgdaInductiveConstructor{$\langle$\_`$\vdash$\_$\rangle$}
@@ -67,24 +67,26 @@ line in a traditionally presented typing rule.
 
 Finally, a \AgdaRecord{System} consists of a set of rule labels (i.e.,
 constructor names), and for each label a description of the
-corresponding rule. We use $\rhd$ as infix notation for systems to
+corresponding rule. I use $\rhd$ as infix notation for systems to
 associate the label set with the rules.
 
 \ExecuteMetaData[\Syntaxtex]{System}
 
 % \paragraph{\Cref{fig:lr-comb} as a \AgdaRecord{System}.}
 
-As an example, we transcribe a fragment of $\name$ (as defined in
-\cref{fig:lr} and \cref{fig:lr-bunched}) into a description.
-We give the set of types of
+As an example, I transcribe a fragment of $\name$ (as defined in
+\cref{fig:lr} and \cref{fig:lr-bunched}) as a description.
+I give the set of types of
 this system as a data type \AgdaDatatype{Ty} (together with a base
-type \AgdaInductiveConstructor{$\iota$}). We assume that there is a
+type \AgdaInductiveConstructor{$\iota$}).
+I assume that there is a
 posemiring \AgdaInductiveConstructor{Ann} in scope for the
 annotations.
 There is one label for each instantiation of a logical
 rule, but the labels contain no further information about subterms or
-restrictions on the context. This will be provided when we associate
-labels with \AgdaRecord{Rule}s in a \AgdaRecord{System}.
+restrictions on the context.
+This will be provided by the \AgdaRecord{Rule} associated to each label in a
+\AgdaRecord{System}.
 
 \noindent
 \begin{minipage}[t]{0.5\textwidth}
@@ -102,24 +104,40 @@ To build a system, we associate with each label a rule:
 Compared to \cref{fig:lr-bunched}, modulo the Agda notation, we can see
 that the fundamental structure has been preserved: The rules match
 one-to-one, and the bunched premises are the same. A major difference
-is that we do not include a counterpart to the
+is that I do not include a counterpart to the
 \AgdaInductiveConstructor{var} rule in a
 \AgdaRecord{System}. Variables are common to all the systems
-representable in our framework.
+representable in this framework.
 
 \section{Terms of a \AgdaRecord{System}}\label{sec:terms-of-system}
 
 The next thing we want to do is to build terms in the described type system.
-The following definitions are useful for talking about types indexed over
-contexts, judgement forms, and judgement forms admitting newly bound variables,
-respectively.
+The following three definitions are useful for talking about types indexed over
+contexts.
+An \emph{open type} (\AgdaFunction{OpenType}) is a type
+indexed over a context.
+These are the things that bunched connectives connect, and thus serve as the
+interpretation of \AgdaDatatype{Premises}.
+
+\ExecuteMetaData[\Syntaxtex]{OpenType}
+
+An \emph{open family} (\AgdaFunction{OpenFam}) is
+indexed on a context and additionally on an object language type.
+Judgement forms, such as the families of variables, terms, and semantics
+thereof, are examples of open families.
 
 \ExecuteMetaData[\Syntaxtex]{OpenFam}
 
-To specify the meaning of descriptions, we assume some
-\AgdaBound{X}\AgdaSpace{}\AgdaSymbol:\AgdaSpace{}\AgdaFunction{ExtOpenFam}%
-\AgdaSpace{}\AgdaSymbol{\_},
-% \ExecuteMetaData[\Interpretationtex]{X},
+An \emph{extensible open family} (\AgdaFunction{ExtOpenFam})
+is like an open family, but is indexed over an additional context.
+This additional context is intended to represent newly bound variables, which
+may just be added to the existing context, or the extensible open family may
+treat them differently to the existing variables.
+
+\ExecuteMetaData[\Syntaxtex]{ExtOpenFam}
+
+To specify the meaning of descriptions, let us assume some
+extensible open family \AgdaBound{X},
 over which we form one layer of syntax, using the function
 \AgdaFunction{$\llbracket$\_$\rrbracket$p} that interprets
 \AgdaDatatype{Premises} defined below.  The first argument to
@@ -240,10 +258,6 @@ necessary proofs via a \AgdaRecord{System}-generic elaborator in
 %\todo{To be clear, we don't actually write this.}
 
 %\ExecuteMetaData[\HeavyItex]{lR-term}
-
-% A layer of syntax supports the following functorial action.
-
-% \ExecuteMetaData[\Maptex]{map-s-type}
 
 \section{More example syntaxes}\label{sec:other-syntaxes}
 
@@ -525,6 +539,14 @@ Additionally, variations such as $\Box^0$ (requiring only that the context is
 ${} \leq \gr0$) and $\Box^{0{+}{*}}$ (requiring, in addition to
 $\Box^{0{+}}$, closure under multiplication by any scalar) can be added to the
 framework independently of each other and of $\Box^{0{+}}$.
+I define $\Box^{0{+}{*}}$ as follows.
+
+\[
+  \plr{\Box^{0{+}{*}}T}\,\grP\gamma \coloneqq
+  \plr{\grP \leq \grQ} \times
+  \plr{\grQ \leq \gr0} \times \plr{\grQ \leq \grQ + \grQ} \times
+  \plr{\forall\gr r.~\grQ \leq \gr r\grQ} \times T\,\grQ\gamma
+\]
 
 As well as the use case of inductive types, as shown in \cref{sec:rec}, I use
 the $\Box^{0{+}{*}}$-modality to encode the restriction to intuitionistic
@@ -705,6 +727,13 @@ one I have taken in this thesis, but that is left to future work.
 
 The rules are presented in Agda code below, and also using bunched inference
 rule notation in \cref{fig:LnL-bunched}.
+Recall that \AgdaDatatype{Hand} is a type containing two inhabitants ---
+\AgdaInductiveConstructor{ll} and \AgdaInductiveConstructor{rr}.
+I use the notation \AgdaFunction{[} \AgdaBound{X} \AgdaFunction{>}
+\AgdaBound{i} \AgdaFunction{<} \AgdaBound{Y} \AgdaFunction{]}, for
+\AgdaBound{i} \AgdaSymbol: \AgdaDatatype{Hand}, to mean \AgdaBound{X} when
+\AgdaBound{i} is \AgdaInductiveConstructor{ll} and \AgdaBound{Y} when
+\AgdaBound{i} is \AgdaInductiveConstructor{rr}.
 
 \begin{figure}
   \begin{mathpar}
