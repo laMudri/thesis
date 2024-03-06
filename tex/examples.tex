@@ -260,11 +260,11 @@ usable only for rules that bind no new variables --- i.e., the parameter
 
 \begin{lemma}[\AgdaFunction{reify[]}]
   We have a function of type
-  $\mathrm{Kripke}\,\V\,\C\,\plr{\cdot} \rightarrowtriangle \C$ for any open
-  families $\V$ and $\C$.
+  $\AgdaFunction{Kripke}\,\V\,\C\,\plr{\cdot} \rightarrowtriangle \C$ for any
+  open families $\V$ and $\C$.
 \end{lemma}
 \begin{proof}
-  Let $b : \mathrm{Kripke}\,\V\,\C\,\plr{\cdot}\,\Gamma\,A$.
+  Let $b : \AgdaFunction{Kripke}\,\V\,\C\,\plr{\cdot}\,\Gamma\,A$.
   We give $b$ the identity renaming (corresponding to no extension of the
   context), yielding
   $b\,1 : \plr{\plr{-} \env\V {\cdot} \wand \plr{-} \sdtstile{}\C A}\,\Gamma$.

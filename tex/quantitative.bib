@@ -1939,3 +1939,21 @@ series = {POPL '15}
   biburl       = {https://dblp.org/rec/conf/mpc/BirdM98.bib},
   bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
+
+@inproceedings{Chlipala08,
+  author = {Chlipala, Adam},
+  title = {Parametric higher-order abstract syntax for mechanized semantics},
+  year = {2008},
+  isbn = {9781595939197},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/1411204.1411226},
+  doi = {10.1145/1411204.1411226},
+  abstract = {We present parametric higher-order abstract syntax (PHOAS), a new approach to formalizing the syntax of programming languages in computer proof assistants based on type theory. Like higher-order abstract syntax (HOAS), PHOAS uses the meta language's binding constructs to represent the object language's binding constructs. Unlike HOAS, PHOAS types are definable in general-purpose type theories that support traditional functional programming, like Coq's Calculus of Inductive Constructions. We walk through how Coq can be used to develop certified, executable program transformations over several statically-typed functional programming languages formalized with PHOAS; that is, each transformation has a machine-checked proof of type preservation and semantic preservation. Our examples include CPS translation and closure conversion for simply-typed lambda calculus, CPS translation for System F, and translation from a language with ML-style pattern matching to a simpler language with no variable-arity binding constructs. By avoiding the syntactic hassle associated with first-order representation techniques, we achieve a very high degree of proof automation.},
+  booktitle = {Proceedings of the 13th ACM SIGPLAN International Conference on Functional Programming},
+  pages = {143–156},
+  numpages = {14},
+  keywords = {type-theoretic semantics, interactive proof assistants, dependent types, compiler verification},
+  location = {Victoria, BC, Canada},
+  series = {ICFP '08}
+}

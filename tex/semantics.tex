@@ -2,7 +2,7 @@ Having fixed a universe of syntaxes, in which we can build terms, the next thing
 to do is to write recursive functions on terms.
 With terms being given by an inductive \AgdaSymbol{data} type definition, they
 already come with a recursion and an induction principle.
-However, these principles do not handle variable-binding, which we have seen
+However, these principles do not handle variable binding, which we have seen
 with the fact that we had to write the \AgdaFunction{bind} helper
 function for renaming and substitution in \cref{sec:lrsub}.
 
@@ -164,6 +164,12 @@ over a layer of syntax, there must be a linear map \AgdaBound{$\Psi$} relating t
 domain and codomain usage contexts, and \AgdaBound{f} should be usable
 wherever the domain and codomain usage contexts are similarly related by
 \AgdaBound{$\Psi$}.
+The things contained in a layer of syntax are inhabitants of extensible open
+families --- either subterms with newly bound variables \AgdaBound{$\Theta$} or
+semantic interpretations thereof.
+Therefore, function \AgdaBound{f} maps between extensible open families
+\AgdaBound{X} and \AgdaBound{Y}, which are given the same newly bound variables
+and result type.
 
 \ExecuteMetaData[\Maptex]{map-s-type}
 
@@ -237,7 +243,8 @@ of function space that describes a \AgdaBound{$\C$}-value parametrised by
 \AgdaBound{$\Delta$}-many additional \AgdaBound{$\V$}-values (all correctly
 typed and usage-annotated).
 It is used to describe how to go under binders in a
-Higher-Order Abstract Syntax style: To go under a binder we must
+parametric higher-order abstract syntax (PHOAS) style~\citep{Chlipala08}:
+To go under a binder we must
 provide semantic interpretations for all the additional variables.
 
 % When going under binders during a recursion, the context will be extended by some $\Theta$. This means that the current environment must be extended with $\Theta$s-worth of $\V$s
@@ -257,13 +264,17 @@ provide semantic interpretations for all the additional variables.
 
 \ExecuteMetaData[\Semanticstex]{Kripke}
 
-\AgdaFunction{Wrap}
-is a device that turns any type family into an equivalent type family
-that is definitionally injective in its indices, which helps with
-Agda's type inference.
-It turns the type family into a parametrised
-record with a single field \AgdaField{get} whose type is the type in
-the body of the $\lambda$-abstraction.
+I introduced \AgdaRecord{Wrap} in \cref{sec:records} as a device that turns a
+unary type family into an equivalent type family that is definitionally
+injective in its indices, which helps with Agda's type inference.
+It turns the original type family into a parametrised
+record with a single field \AgdaField{get}, whose type is the type in
+the body of the $\lambda$-abstraction, and a constructor
+\AgdaInductiveConstructor{mk} mapping from the original family to the wrapped
+family.
+The green \AgdaFunction{Wrap} is an extension of the blue \AgdaRecord{Wrap} to
+type families of arbitrary arity, made possible thanks to the work of
+\citet{Allais19}.
 For understanding the meaning of
 \AgdaFunction{Kripke}, \AgdaFunction{Wrap} can be ignored.
 
@@ -272,10 +283,14 @@ If $\Delta$ is of the form $\gr{s_1}B_1, \ldots, \gr{s_n}B_n$, then
 \ExecuteMetaData[\Snippetstex]{KripkeExpanded}\ by Currying.  That is
 to say, the Kripke function is expecting a value for each newly bound
 variable, at the multiplicity of its annotation, together with the
-resources supporting each of those values. We use the ``magic wand''
+resources supporting each of those values. I use the ``magic wand''
 function space here to enforce the invariant that the freshly bound
 variables have usage annotations that are added to the existing
-variables, not shared with them. The use of the
+variables, not shared with them.
+This use of the magic wand goes hand-in-hand with the understanding of
+environments as separating conjunctions developed in \cref{sec:lrkits}, and both
+are crucial refinements of the previous intuitionistic work.
+The use of the
 \AgdaFunction{$\Box^r$} modality ensures that we can still use it in
 the presence of additional variables introduced by weakening.
 
@@ -397,10 +412,11 @@ obligations in giving a \AgdaRecord{Semantics} by coercing
 \begin{lemma}[\AgdaFunction{reify}]\label{thm:reify}
   If $\V$ is an open family such that there is a function
   $v : {\sqni} \rightarrowtriangle \V$, we get a function of type
-  $\mathrm{Kripke}\,\V\,\C \rightarrowtriangle \mathrm{Scope}\,\C$ for any $\C$.
+  $\AgdaFunction{Kripke}\,\V\,\C \rightarrowtriangle \AgdaFunction{Scope}\,\C$
+  for any $\C$.
 \end{lemma}
 \begin{proof}
-  Let $b : \mathrm{Kripke}\,\V\,\C\,\Delta\,\Gamma\,A$.
+  Let $b : \AgdaFunction{Kripke}\,\V\,\C\,\Delta\,\Gamma\,A$.
   That is, $b$ is a Kripke function yielding $\C$-computations
   We want to apply $b$ so as to get a $\C\,\plr{\Gamma, \Delta}\,A$.
   Let $\grP\gamma = \Gamma$ and $\grQ\delta = \Delta$.
