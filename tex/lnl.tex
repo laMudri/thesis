@@ -215,9 +215,9 @@ For example, $\plr{\gr0A, \gr1B, \gr\omega C}^\circ =
 In Agda code, I define the $\plr{-}^\circ$ operator on
 $\oiw \times \mathrm{Ty}_{\name}$ (the one that introduces a $G$ for each
 $\gr\omega$) via a \emph{view} \AgdaDatatype{LIView}~\citep{MM04}.
-I define usage annotations $\gr0$ and $\gr1$ (\AgdaInductiveConstructor{u0} and
-\AgdaInductiveConstructor{u1} in Agda) to be \emph{linear}, with only
-$\gr\omega$ (\AgdaInductiveConstructor{u$\upomega$}) being
+I define usage annotations $\gr0$ and $\gr1$ (\AgdaInductiveConstructor{0\#} and
+\AgdaInductiveConstructor{1\#} in Agda) to be \emph{linear}, with only
+$\gr\omega$ (\AgdaInductiveConstructor{$\upomega$\#}) being
 \emph{intuitionistic}.
 \AgdaDatatype{LIView} is a view because of the existence of
 \ExecuteMetaData[\LinIntViewtex]{liview-type}, and well behaved in the sense

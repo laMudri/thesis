@@ -51,13 +51,18 @@ trivialised, we set the ambient posemiring to the 1-element $\mathbf0$
 posemiring.
 In contrast to syntax descriptions, even though types can contain usage
 annotations, the type of types does not depend on the type of usage annotations.
-This means that, in our simplified syntax, terms have types from the original
+This means that, in the simplified syntax, terms have types from the original
 system even though variables have trivial usage annotations.
-We define the $\mathbf0$ posemiring as follows, being careful to use the
+I define the $\mathbf0$ posemiring as follows, being careful to use the
 0-field record type \AgdaRecord{$\top$} so that everything algebraic gets
 solved by Agda's $\eta$-laws.
 Indeed, in this very definition, all of the semiring operations and laws are
 canonically inferred.
+This inference extends to entire contexts.
+Recall that a context is a record containing a size and two functional vectors.
+This means that, if we give the size and vector of types, the context is
+determined up to definitional equality, because we know that the usage vector
+is a function that always returns the unique usage annotation.
 
 \ExecuteMetaData[\UsageChecktex]{0-poSemiring}
 
@@ -92,6 +97,70 @@ These inverse operations combine monadically (in fact, applicatively) to give
 inverses to the vector operations of zero, addition, scaling, and basis.
 
 \ExecuteMetaData[\UsageChecktex]{NonDetInverses}
+
+\begin{example}\label{def:01w-inv}
+  The example \AgdaRecord{NonDetInverses} I use in this section is for the
+  linearity ($\instDILL$) semiring.
+  The fields of the record are filled by the following functions.
+  They implement all of the ``bottom-up'' laws, as defined in
+  \cref{def:DILL-bottom-up}.
+
+  To invert both \AgdaInductiveConstructor{0\#} and
+  \AgdaInductiveConstructor{1\#}, we give one result whenever the respective
+  relation (\AgdaBound{x} \AgdaDatatype{$\leq$} \AgdaInductiveConstructor{0\#}
+  and \AgdaBound{x} \AgdaDatatype{$\leq$} \AgdaInductiveConstructor{1\#}) holds.
+  This means giving a result both when \AgdaBound{x} is the annotation itself,
+  and also when \AgdaBound{x} is \AgdaInductiveConstructor{$\omega$\#}.
+  We are forced into this choice by the need to make $\gr\omega$-annotated
+  variables both discardable and usable, without any intervening operations.
+
+  \noindent
+  \begin{minipage}[t]{0.5\textwidth}
+    \ExecuteMetaData[\ZeroOneManytex]{0-inv}
+  \end{minipage}
+  \begin{minipage}[t]{0.5\textwidth}
+    \ExecuteMetaData[\ZeroOneManytex]{1-inv}
+  \end{minipage}
+
+  In inverting addition, we return all possible results for
+  \AgdaInductiveConstructor{0\#} and \AgdaInductiveConstructor{1\#}, but
+  restrict the results for \AgdaInductiveConstructor{$\omega$\#} so as to avoid
+  unnecessarily specialisation of $\gr\omega$-annotated variables into $0$- or
+  $1$-annotated variables.
+  Any variables annotated $\gr\omega$ will stay annotated $\gr\omega$ after
+  applying rules using separating conjunction.
+
+  \begin{samepage}
+    \ExecuteMetaData[\ZeroOneManytex]{plus-inv}
+  \end{samepage}
+
+  Similarly to the case for addition, when inverting multiplication we apply
+  the bottom-up restrictions.
+  We enforce that multiplying by \AgdaInductiveConstructor{1\#} acts as a strict
+  identity function, rather than allowing specialisation of
+  \AgdaInductiveConstructor{$\omega$\#}.
+  For \AgdaBound{x} \AgdaSymbol{=} \AgdaInductiveConstructor{0\#}, we know that
+  \AgdaBound{z} has to be \AgdaInductiveConstructor{0\#} by annihilation.
+  However, this much leaves \AgdaBound{y} completely unspecified, so we choose
+  the most permissive result \AgdaInductiveConstructor{$\omega$\#}.
+  For \AgdaBound{x} \AgdaSymbol{=} \AgdaInductiveConstructor{$\omega$\#},
+  \AgdaInductiveConstructor{0\#}-annotated variables stay
+  \AgdaInductiveConstructor{0\#}-annotated,
+  \AgdaInductiveConstructor{$\omega$\#}-annotated variables stay
+  \AgdaInductiveConstructor{$\omega$\#}-annotated, and
+  \AgdaInductiveConstructor{1\#}-annotated variables are not allowed in the
+  conclusion.
+  The choices for
+  \AgdaBound{x} \AgdaSymbol{=} \AgdaInductiveConstructor{$\omega$\#} correspond
+  to how the $\oc$-introduction rule in DILL works.
+
+  \begin{samepage}
+    \ExecuteMetaData[\ZeroOneManytex]{mult-inv}
+  \end{samepage}
+
+  As argued by \cref{thm:DILL-bottom-up}, the bottom-up restrictions do not
+  constrain the range of meaningfully different terms that can be produced.
+\end{example}
 
 We choose the \AgdaBound{$\V$} of our semantics to be (unannotated) variables.
 For the \AgdaBound{$\C$}, we consider \emph{functions} from candidate usage
@@ -146,28 +215,31 @@ terms, and otherwise we have to supply the intended usage annotations.
 
 We can now use the elaborator to automatically infer the usage
 annotations for the example at the end of \cref{sec:terms-of-system}.
-This allows us to write:
+Instantiating the elaborator to the \AgdaRecord{NonDetInverses} given in
+\cref{def:01w-inv} allows us to write:
+
 \ExecuteMetaData[\PaperExamplestex]{cojoin}
-We have instantiated the usage elaborator so that:
-\AgdaField{0\#$^{-1}$} is a singleton on $\gr0$ and $\gr\omega$, and
-empty on $\gr1$; \AgdaField{1\#$^{-1}$} is a singleton on $\gr1$ and
-$\gr\omega$, and empty on $\gr0$; \AgdaField{+$^{-1}$} gives $\gr0
-\mapsto [(\gr0,\gr0)]$, $\gr1 \mapsto [(\gr0,\gr1),(\gr1,\gr0)]$, and
-$\gr\omega \mapsto [(\gr\omega,\gr\omega)]$; and \AgdaField{*$^{-1}$}
-gives $(\gr\omega, \gr0) \mapsto [\gr0]$, $(\gr\omega, \gr1) \mapsto
-[]$, and $(\gr\omega, \gr\omega) \mapsto [\gr\omega]$ (omitting
-$(\gr0, \_)$ and $(\gr1, \_)$ cases for brevity). Note that we do not
-consider splitting $\gr\omega$ up as, say, $\gr1 + \gr\omega$, because
-this splitting would introduce more non-determinism but not allow any
-more terms to be typed. As such, the only non-determinism comes when
-we have variables annotated $\gr1$ and need to do an additive split,
-like when we apply the \AgdaInductiveConstructor{!E} rule below. At
-this point, the variable can become either $\gr0$-annotated in the
-left subterm and $\gr1$-annotated on the right, or vice-versa. We will
-find that, because the left subterm wants to use that variable, the
-former choice will be rejected. The function \AgdaFunction{var\#} is a
-convenience for converting statically known natural numbers,
-representing De Bruijn \emph{levels}, into variable terms.
+
+When elaborating this definition, the only non-determinism comes when
+applying the \AgdaInductiveConstructor{!E}-rule with the
+\AgdaInductiveConstructor{1\#}-annotated variable of type
+\AgdaInductiveConstructor{!} \AgdaInductiveConstructor{$\omega$\#} %
+\AgdaBound{A} in scope.
+The non-determinism is resolved in the left subterm of this application, as the
+application of the variable rule forces the annotation to become not
+\AgdaInductiveConstructor{0\#}, hence \AgdaInductiveConstructor{1\#}, on the
+left, and therefore become \AgdaInductiveConstructor{0\#} on the right.
+
+Compare the one-line definition of \AgdaFunction{cojoin-!$\omega$} above with
+the equivalent definition we saw in \cref{sec:terms-of-system} not using the
+usage elaborator, in which we have to repeatedly specify both the usage contexts
+and the (entirely obvious) proofs relating them.
+
+\ExecuteMetaData[\HeavyItex]{cojoin-explicit}
+
+%The function \AgdaFunction{var\#} is a
+%convenience for converting statically known natural numbers,
+%representing De Bruijn \emph{levels}, into variable terms.
 
 
 \section{Normalisation by evaluation}\label{sec:nbe}
@@ -232,9 +304,15 @@ The NbE model of types is given by \AgdaFunction{\_$\vDash$\_}.
 It is defined by induction on the type.
 The base type is interpreted by terms of base type, while
 the function type is interpreted by the Kripke function space (essentially a
-special case of \AgdaFunction{Kripke} with $\Delta = \gr rA$, though reusing
-the \AgdaFunction{Kripke} definition causes difficulty for the termination
-checker).
+special case of \AgdaFunction{Kripke} with $\Delta = \gr rA$)
+\footnote{
+  Using
+  \AgdaFunction{Kripke} \AgdaFunction{\_$\vDash\_$} \AgdaFunction{\_$\vDash\_$}
+  here causes difficulty for the termination checker because
+  \AgdaFunction{Wrap}, and hence \AgdaFunction{Kripke}, does not reduce, leaving
+  occurrences of \AgdaFunction{\_$\vDash\_$} not applied to smaller (or indeed
+  any) arguments.
+}.
 The interpretation of the base type additionally requires a \AgdaRecord{Lift}
 of its universe level, because \AgdaFunction{$\Box^r$} produces a large type
 (a type in \AgdaPrimitive{Set$_1$}).
@@ -381,6 +459,20 @@ I believe that this difficulty could be worked around via carefully placed
 assertions that various contexts are well formed --- and in particular that the
 extended context introduced by a \AgdaFunction{$\Box^r$} is well formed.
 
+However, we can see by inspection that the algorithm given above is producing
+normal forms and neutral forms in the places we would expect them to be.
+At function type, \AgdaFunction{nbeReify} adds a $\lambda$-abstraction, around
+the result of a recursive call, so if the base type values (terms) it receives
+from the semantics are always normal, \AgdaFunction{nbeReify} will always
+produce normal forms.
+In fact, we expect the base type terms to be neutral forms.
+We can see that they are neutral forms because we only ever pass
+\AgdaFunction{nbeReflect} neutral forms, and the only larger terms it produces
+are applications of the term it is given to normal forms coming from
+\AgdaFunction{nbeReify}.
+The traversal \AgdaFunction{evalSem} does not directly produce any terms; terms
+(of base type) only appear via the environment.
+
 Also, I have not given an account of many of the connectives of $\name$.
 Of particular interest would be the types with pattern-matching eliminators ---
 $I$, $\otimes$, $0$, $\oplus$, and $\oc$.
@@ -395,7 +487,10 @@ Standard denotational semantics falls out as a somewhat trivial case of
 A lot of work is done in the generic traversal \AgdaFunction{semantics} to
 maintain a $\V$-environment, where $\V$ is a reasonably variable-like semantic
 family.
-For a simple denotational semantics, we set $\V$ to be variables
+For a simple denotational semantics, we set $\V$ to be variables --- the minimal
+family of values able to retain enough information to be meaningful in any
+semantics --- and gradually build up an identity renaming ($\sqni$-environment)
+as we go under binders.
 
 As an example denotational semantics for a semiring-annotated calculus, I take
 a semantics in world-indexed relations.
@@ -419,6 +514,11 @@ depending on the annotation of each free variable (respectively,
 \AgdaInductiveConstructor{$\wn\wn$}, and
 \AgdaInductiveConstructor{\textasciitilde\textasciitilde}).
 This provides an additional example to those of \citet{AbelBernardy2020}.
+The example includes the following type declaration, giving the carrier type of
+the variance posemiring.
+For the operations, refer to \cref{def:monotonicity-posemiring}.
+
+\ExecuteMetaData[\Monotex]{WayUp}
 
 In the semantics of this section, types are interpreted as
 \emph{world-indexed relations}~\citep{AbelBernardy2020,context-constrained}.
