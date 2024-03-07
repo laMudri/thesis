@@ -1,6 +1,6 @@
 \def\LRKits{../agda/processed-latex/LRKits.tex}
 
-I can now show that, using the notion of \emph{environment} derived in
+I now show that, using the notion of \emph{environment} derived in
 \cref{sec:lrkits}, we can replicate the Agda proofs from
 \cref{sec:syntactic-kits} in the usage-aware setting of $\name$.
 From \cref{sec:lenv}, we know that environments are preserved under all
@@ -20,19 +20,32 @@ Environments, elsewhere notated $\Gamma \env\V \Delta$, are rendered as
 \AgdaSpace{}\AgdaBound{$\Gamma$}\AgdaSpace{}\AgdaRecord{$\Rightarrow^e$}%
 \AgdaSpace{}\AgdaBound{$\Delta$}.
 
-We start with a slightly modified definition of \AgdaRecord{Kit}.
-We saw in \cref{thm:lr-bind} that in the usage-annotated context, we restrict
-weakening of $\V$-values to just $\gr0$-use variables.
-Meanwhile, the function $\mathrm{vr}$, also seen in \cref{thm:lr-bind}, maps
-usage-checked variables to $\V$-values, and the function $\mathrm{tm}$, used
-to coerce $V$-values yielded by the environment into terms, stays the same.
-I state weakening in a slightly different way than previously, so as to help
+I start with the definition \AgdaFunction{Weakening}, which says what it means
+for a family of values \AgdaBound{$\V$} to respect one step of weakening on the
+right by $\gr0$-use variables.
+I state weakening in a slightly different way to what appears in the statement
+of \cref{thm:lr-bind}, so as to help
 unification against a known result type (avoiding the problem described by
 \citet{McBride12} as \emph{green slime}).
 The type \AgdaFunction{Weakening}\AgdaSpace{}\AgdaBound{$\V$} can be read as
 saying that, for any context $\grP\gamma$ of shape $s + t$, if the right of
 $\grP$ is below $\gr0$, then a value in the left part of $\grP\gamma$ weakens
 to a value in the whole of $\grP\gamma$.
+
+\ExecuteMetaData[\LRKits]{Weakening}
+
+Given this new definition of \AgdaFunction{Weakening}, the record
+\AgdaRecord{Kit} remains largely unchanged relative to what we saw in
+\cref{sec:syntactic-kits}.
+We still want $\V$-values to respect weakening (as used in \cref{thm:lr-bind}),
+and to support maps \AgdaField{vr} from variables (also used in
+\cref{thm:lr-bind}) and \AgdaField{tm} into terms (used when traversal reaches a
+variable, we get a value from the environment, and want to produce a term from
+that value).
+As well as \AgdaFunction{Weakening}, note that \AgdaRecord{\_$\sqni$\_} and, of
+course, \AgdaDatatype{\_$\vdash$\_} have different definitions to the
+corresponding intuitionistic notions, but they still represent morally the same
+parts of the language and its metatheory.
 
 \ExecuteMetaData[\LRKits]{Kit}
 
@@ -53,7 +66,22 @@ Given a \AgdaRecord{Kit}\AgdaSpace{}\AgdaBound{$\V$},
 Given \AgdaFunction{bindEnv} (\cref{thm:lr-bind}), \AgdaFunction{env-+}
 (\cref{thm:lr-env-add}), and \AgdaFunction{env-*} (\cref{thm:lr-env-scale}),
 we can reproduce the syntactic traversal \AgdaFunction{trav}.
-With all these lemmas in place, writing \AgdaFunction{trav}
+Similarly to the unchanged high-level definition of \AgdaRecord{Kit}, we are
+aiming for an unchanged traversal principle expressed by the rule below.
+When $\V$ has a \AgdaRecord{Kit} structure, and we have a $\V$-environment from
+$\Gamma$ to $\Delta$, we can transform a term in $\Delta$ to a term in $\Gamma$
+of the same type.
+
+\[
+  \begin{prooftree}
+    \hypo{\text{\AgdaRecord{Kit}\AgdaSpace{}}\V}
+    \hypo{\Gamma \env\V \Delta}
+    \hypo{\Delta \vdash A}
+    \infer3[Trav]{\Gamma \vdash A}
+  \end{prooftree}
+\]
+
+With all the lemmas of \cref{sec:lenv} in place, writing \AgdaFunction{trav}
 becomes routine.
 When processing a rule, we work our way up through the
 premise connectives, applying \AgdaFunction{env-*} wherever we see a

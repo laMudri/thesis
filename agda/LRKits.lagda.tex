@@ -67,13 +67,17 @@ module LRKits (poSemiring : PoSemiring 0ℓ 0ℓ 0ℓ) where
       sp′ , record { [_]_⇒ᵉ_ ρ; fit-here = fit-here′ }
 \end{code}
 
-%<*Kit>
+%<*Weakening>
 \begin{code}
   Weakening : ∀ {v} {A : Set} → (Ctx → A → Set v) → Set v
   Weakening 𝓥 =
     ∀ {s t P} {γ : Vector Ty (s <+> t)} → P ∘ ↘ ≤* 0* →
     𝓥 (ctx (P ∘ ↙) (γ ∘ ↙)) ⊆ 𝓥 (ctx P γ)
+\end{code}
+%</Weakening>
 
+%<*Kit>
+\begin{code}
   record Kit (𝓥 : Ctx → Ty → Set) : Set where
     constructor kit
     field

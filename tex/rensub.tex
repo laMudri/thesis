@@ -2,15 +2,41 @@
 
 In \cref{sec:semirings}, I defined my calculus of interest $\name$.
 In this chapter, I develop the necessary syntactic metatheory for
-specifying and implementing the substitution operation.
-I follow the approach of \cref{sec:kits} using syntactic kits, but have to make
-significant changes to the underlying notion of \emph{environment} before doing
-so.
-I give and informally motivate these changes to environments in
-\cref{sec:lrkits}, and prove some properties of the new definition in
+specifying and implementing the simultaneous substitution operation.
+My aim in this chapter is to replay the development in \cref{sec:kits}, making
+minimal changes to lemmas and theorems so as to support semiring usage
+annotations.
+The big change I make in this chapter is to the definition of
+\emph{environment}.
+In terms of ideas, I believe that the definition of environment I give in
+\cref{sec:lrkits} is the main contribution of this thesis.
+Its primary novel feature is the use of a linear map --- in the sense found in
+linear algebra --- to distribute usage annotations across the values in the
+environment.
+
+The resulting substitution operation bears some similarity to a multi-variable
+substitution operation given by \citet{petricek-thesis}.
+This is the only other presentation I have found in the literature of an
+operation similar to simultaneous substitution for a linear or linear-like
+calculus.
+I discuss Petricek's substitution lemma in more detail in \cref{sec:petricek}.
+In brief, relative to Petricek's work, I extract the environment from the
+substitution lemma, tidy up the definition, and present usage-annotated
+environments as a reusable tool and object of study in their own right.
+I reuse the resulting definition of environment in the remainder of this thesis,
+taking advantage of the properties and generality of definition established in
+this chapter, particularly in \cref{sec:semantics,sec:example-semantics}.
+
+The body of this chapter starts with a motivation for and a definition of
+environment in the usage-annotated setting in \cref{sec:lrkits}.
+I then give some key properties of and operations on these environments in
 \cref{sec:lenv}.
-Finally, I apply these new environments to the syntax of $\name$ in
-\cref{sec:lrsub} to derive renaming and substitution operators.
+I apply the previous definitions and properties to the problems of simultaneous
+renaming and substitution for $\name$ in \cref{sec:lrsub}, which also connects
+the previous sections' mathematical developments with Agda code.
+I then compare the yielded substitution operation with the one given by Petricek
+in \cref{sec:petricek}, before a concluding discussion in
+\cref{sec:ren-sub-lr-conc}.
 
 \section{What are linear renaming and substitution?}\label{sec:lrkits}
 \input{lrkits.tex}
@@ -20,6 +46,7 @@ Finally, I apply these new environments to the syntax of $\name$ in
 \input{lrsub.tex}
 \section{Comparison with Petricek's substitution lemma}\label{sec:petricek}
 \input{petricek.tex}
+
 \section{Conclusion}\label{sec:ren-sub-lr-conc}
 
 In this and the preceding chapter, I have developed a discipline for specifying
